@@ -1,0 +1,1 @@
+<div style="position: absolute; bottom: 0px; left: 0px; width: 728px; height: 90px;" id="adsense"></div>
