@@ -1,0 +1,50 @@
+/* $Id: html-elements.css,v 1.1.2.2 2009/02/13 19:42:10 johnalbin Exp $ */
+
+/****
+ **** STYLING FOR YELLOW PAGE CONTECT
+ ****/
+
+div.node .meta,
+div.node .meta .terms,
+div.node .meta .submitted,
+div.comment .submitted
+{
+  color:#999999;
+  font-size:0.929em;
+  padding-right: 10px;
+  display: inline;
+}
+
+
+div.bcard
+{
+  clear: both;
+  padding: 5px;
+  background-color: #B7FCB7;
+  border: 1px solid #7AC97A;
+  /*shade colors of #98fb98 at
+		http://www.w3schools.com/tags/ref_colorpicker.asp?colorhex=98FB98*/
+}
+
+div.bcard table
+{
+  margin: 0;
+}
+
+div.bcard td
+{
+  padding: 1px 3px;
+}
+
+div.bcard td.text_right
+{
+  width: 80px;
+  text-align: right;
+}
+
+div.comment .comment-inner
+{
+  margin: 5px 0;
+  padding: 5px;
+  border-top: 1px solid #cccccc;
+}
