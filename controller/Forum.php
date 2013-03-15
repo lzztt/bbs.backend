@@ -228,6 +228,12 @@ class Forum extends Controller
       }
 
       $node = new Node();
+/*
+      if ($node->validatePostContent($this->request) !== TRUE)
+      {
+         $user = new UserObject();
+      }
+*/
       $node->tid = $forum['tid'];
       $node->uid = $this->request->uid;
       $node->title = $this->request->post['title'];

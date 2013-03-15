@@ -1,6 +1,6 @@
 <?php
 
-namespace Site;
+namespace site;
 
 use lzx\core\ClassLoader;
 use lzx\core\Handler;

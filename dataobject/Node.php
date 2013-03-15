@@ -355,6 +355,65 @@ class Node extends DataObject
       $this->_db->query('DELETE FROM yp_rating WHERE nid = ' . $nid . ' AND uid = ' . $uid);
    }
 
+   /**
+    * @param \lzx\core\Request $request
+    */
+   public function validatePostContent($request)
+   {
+      return TRUE;
+
+      //$request->uid;
+      $nodeCount = $this->_db->val('SELECT COUNT(*) FROM nodes WHERE uid = ' . $request->uid);
+      if ($nodeCount > 3)
+      {
+         return TRUE;
+      }
+
+      $geo = \geoip_record_by_name($request->ip);
+      if ($geo['country_code'] == 'US')
+      {
+         return TRUE;
+      }
+
+      // check against previous 2 nodes
+      if ($nodeCount > 1)
+      {
+         $arr = $this->_db->query('SELECT title, body FROM nodes WHERE uid = ' . $request->uid . 'ORDER BY nid DESC LIMIT 2');
+         foreach ($arr as $data)
+         {
+            // check title
+            // check body
+
+            if (FALSE)
+            {
+               return FALSE;
+            }
+         }
+      }
+      // check against previous 2 comments
+      $arr = $this->_db->query('SELECT body FROM comments WHERE uid = ' . $request->uid . 'ORDER BY cid DESC LIMIT 2');
+      foreach ($arr as $body)
+      {
+         // check body
+         if (FALSE)
+         {
+            return FALSE;
+         }
+      }
+
+      // check against example spam posts (body only)
+      $words = $this->_db->query('SELECT word FROM spam_words');
+      foreach ($words as $w)
+      {
+         if (FALSE)
+         {
+            return FALSE;
+         }
+      }
+
+      return TRUE;
+   }
+
 }
 
 //__END_OF_FILE__

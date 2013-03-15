@@ -98,7 +98,7 @@ class User extends Controller
          $link_tabs = $this->_link_tabs('/user/register');
          $form = new Form(array(
             'action' => '/user/register'
-            ));
+         ));
 
          $fieldset = new HTMLElement('fieldset', new HTMLElement('legend', '帐户信息'));
          $username = new Input('username', '用户名', '允许空格，不允许"."、“-”、“_”以外的其他符号', TRUE);
@@ -141,7 +141,7 @@ class User extends Controller
 
          $fieldset = new HTMLElement('fieldset', new HTMLElement('legend', '图形验证CAPTCHA'));
          $img = new HTMLElement('img', NULL, array('id' => 'captchaImage', 'title' => '图形验证', 'alt' => '图形验证未能正确显示，请刷新', 'src' => '/captcha'));
-         $changeImage = new HTMLElement('a','看不清，换一张', array('onclick' => 'document.getElementById(\'captchaImage\').setAttribute(\'src\',\'/captcha/\' + Math.random().toString().slice(2)); event.preventDefault();', 'href' => '#'));
+         $changeImage = new HTMLElement('a', '看不清，换一张', array('onclick' => 'document.getElementById(\'captchaImage\').setAttribute(\'src\',\'/captcha/\' + Math.random().toString().slice(2)); event.preventDefault();', 'href' => '#'));
          $captcha = new Input('captcha', '上面图片的内容是什么？', 'Enter the characters shown in the image', TRUE);
          $fieldset->addElements($img, $changeImage, $captcha->toHTMLElement());
          $form->addElements($fieldset);
@@ -151,7 +151,7 @@ class User extends Controller
       }
       else
       {
-         if (strtolower($session->captcha) != strtolower($this->request->post['captcha']))
+         if (\strtolower($session->captcha) != \strtolower($this->request->post['captcha']))
          {
             $this->error('错误：图形验证码错误');
          }
@@ -176,6 +176,12 @@ class User extends Controller
          }
 
          $user = new UserObject();
+
+         if ($user->checkSpamEmail($this->request->post['email']) === FALSE)
+         {
+            $this->error('您填写的电子邮箱不能通过论坛注册');
+         }
+
          $user->username = $this->request->post['username'];
          if ($user->getCount() > 0)
          {
@@ -241,7 +247,7 @@ class User extends Controller
       $form = new Form(array(
          'action' => '/user/password',
          'id' => 'user-pass'
-         ));
+      ));
       $email = new Input('email', '注册电子邮箱地址', '输入您注册时使用的电子邮箱地址', TRUE);
       $email->type = 'email';
       $form->setData($email->toHTMLElement());
@@ -265,7 +271,7 @@ class User extends Controller
          $form = new Form(array(
             'action' => '/user/password',
             'id' => 'user-pass'
-            ));
+         ));
          $username = new Input('username', '用户名', '输入您的用户名', TRUE);
          $email = new Input('email', '注册电子邮箱地址', '输入您注册时使用的电子邮箱地址', TRUE);
          $email->type = 'email';
@@ -380,7 +386,7 @@ class User extends Controller
          $form = new Form(array(
             'action' => '/user/login',
             'id' => 'user-login'
-            ));
+         ));
          $username = new Input('username', '用户名', '输入您在 缤纷休斯顿 华人论坛 的用户名', TRUE);
          $password = new Input('password', '密码', '输入与您用户名相匹配的密码', TRUE);
          $password->type = 'password';
@@ -453,8 +459,8 @@ class User extends Controller
       {
          $user = new UserObject();
          $user->uid = (int) $uid;
-         $nids = $user->delete();
-         foreach ($nids as $nid)
+         $user->delete();
+         foreach ($user->getAllNodeIDs() as $nid)
          {
             $this->cache->delete('/node/' . $nid);
          }
@@ -491,7 +497,7 @@ class User extends Controller
          $form = new Form(array(
             'action' => $this->request->uri,
             'enctype' => 'multipart/form-data'
-            ));
+         ));
 
          $user = new UserObject($uid);
 
@@ -676,8 +682,8 @@ class User extends Controller
       $info[] = array('dt' => '性别', 'dd' => $sex);
       if ($user->birthday)
       {
-         $birthday = substr(sprintf('%08u', $user->birthday), 4, 4);
-         $birthday = substr($birthday, 0, 2) . '/' . substr($birthday, 2, 2);
+         $birthday = \substr(\sprintf('%08u', $user->birthday), 4, 4);
+         $birthday = \substr($birthday, 0, 2) . '/' . \substr($birthday, 2, 2);
       }
       else
       {
@@ -688,25 +694,44 @@ class User extends Controller
       $info[] = array('dt' => '兴趣爱好', 'dd' => $user->interests);
       $info[] = array('dt' => '自我介绍', 'dd' => $user->favoriteQuotation);
 
-      $info[] = array('dt' => '注册时间', 'dd' => date('m/d/Y H:i:s T', $user->createTime));
-      $info[] = array('dt' => '上次登录时间', 'dd' => date('m/d/Y H:i:s T', $user->lastAccessTime));
+      $info[] = array('dt' => '注册时间', 'dd' => \date('m/d/Y H:i:s T', $user->createTime));
+      $info[] = array('dt' => '上次登录时间', 'dd' => \date('m/d/Y H:i:s T', $user->lastAccessTime));
 
       if ($user->lastAccessIP)
       {
+         $city = 'unknown';
+         $region = 'unknown';
+         $country = 'unknown';
+
          try
          {
             $geo = \geoip_record_by_name($user->lastAccessIP);
-            $location = $geo['city'] . ', ' . \geoip_region_name_by_code($geo['country_code'], $geo['region']) . ', ' . $geo['country_name'];
+
+            if ($geo['city'])
+            {
+               $city = $geo['city'];
+            }
+
+            if ($geo['country_name'])
+            {
+               $country = $geo['country_name'];
+            }
+
+            if ($geo['region'] && $geo['country_code'])
+            {
+               $region = \geoip_region_name_by_code($geo['country_code'], $geo['region']);
+            }
          }
          catch (\Exception $e)
          {
-            //echo $e->getMessage();
-            $location = '未知';
+            $this->logger->error($e->getMessage());
          }
+
+         $location = $city . ', ' . $region . ', ' . $country;
       }
       else
       {
-         $location = '未知';
+         $location = 'unknown location';
       }
       $info[] = array('dt' => '上次登录地点', 'dd' => $location);
 
@@ -776,7 +801,7 @@ class User extends Controller
                   $this->html->link($words, '/pm/' . $m['topicMID']),
                   $m['fromName'] . ' -> ' . $m['toName'],
                   \date('m/d/Y H:i', $m['time'])
-               ));
+            ));
          }
 
          $messages = $this->html->table(array('thead' => $thead, 'tbody' => $tbody));
@@ -800,7 +825,7 @@ class User extends Controller
             $form = new Form(array(
                'action' => '/user/' . $user->uid . '/pm',
                'id' => 'user-pm-send'
-               ));
+            ));
             $receipt = new HTMLElement('div', array('收信人: ', $this->html->link($user->username, '/user/' . $user->uid)));
             $message = new TextArea('body', '短信正文', '最少5个字母或3个汉字', TRUE);
 

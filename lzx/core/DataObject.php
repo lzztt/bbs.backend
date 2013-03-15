@@ -12,6 +12,10 @@ use lzx\core\MySQL;
  * first field is the id field, must be integer
  */
 
+/**
+ * @property \lzx\core\MySQL $_db
+ */
+
 abstract class DataObject
 {
 
