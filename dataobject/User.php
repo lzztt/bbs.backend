@@ -66,7 +66,7 @@ class User extends DataObject
    {
       return in_array($uid, array(
          1
-         ));
+      ));
    }
 
    public function login($username, $password)
@@ -126,14 +126,27 @@ class User extends DataObject
       $this->update('status');
       $this->_db->query('DELETE FROM sessions WHERE uid = ' . $this->uid);
       $this->_db->query('UPDATE nodes SET status = 0 WHERE uid = ' . $this->uid);
+      $this->_db->query('INSERT INTO spam_emails (email, banTime) SELECT email, UNIX_TIMESTAMP() FROM users WHERE uid = ' . $this->uid);
       //$this->_db->query('DELETE FROM comments WHERE uid = ' . $this->uid);
+   }
 
+   public function getAllNodeIDs()
+   {
       $nids = array();
-      foreach ($this->_db->select('SELECT nid FROM nodes WHERE uid = ' . $this->uid) as $n)
+      if ($this->uid > 1)
       {
-         $nids[] = $n['nid'];
+         foreach ($this->_db->select('SELECT nid FROM nodes WHERE uid = ' . $this->uid) as $n)
+         {
+            $nids[] = $n['nid'];
+         }
       }
       return $nids;
+   }
+
+   public function checkSpamEmail($email)
+   {
+      $count = $this->_db->val('SELECT COUNT(*) FROM spam_emails WHERE email = ' . $this->_db->str($email));
+      return ($count > 0 ? FALSE : TRUE);
    }
 
    public function getRecentNodes($limit)
@@ -223,7 +236,7 @@ class User extends DataObject
    {
       $sql = 'SELECT'
          . ' (SELECT count(*) FROM users) as userCount,'
-         . ' (SELECT count(*) FROM users WHERE createTime >= ' . \strtotime(\date("m/d/Y")). ' ) as userTodayCount,'
+         . ' (SELECT count(*) FROM users WHERE createTime >= ' . \strtotime(\date("m/d/Y")) . ' ) as userTodayCount,'
          . ' (SELECT username FROM users WHERE status = 1 ORDER BY uid DESC LIMIT 1) AS latestUser';
       $r = $this->_db->row($sql);
 
