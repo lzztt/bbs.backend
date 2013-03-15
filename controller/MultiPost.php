@@ -6,6 +6,7 @@ use lzx\core\Controller;
 use lzx\core\BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
+use lzx\core\MySQL;
 use site\dataobject\Node as NodeObject;
 use site\dataobject\NodeYellowPage;
 use site\dataobject\Comment;
@@ -18,8 +19,23 @@ class MultiPost extends Controller
 
    public function run()
    {
+      $this->cache->setStatus(FALSE);
 
-      $len = \mb_strlen($body);
+      $page = $this->loadController('Page');
+      $page->updateInfo();
+      $page->setPage();
+
+      $n = new NodeObject();
+      $n->uid = 9367;
+      $nodes = $n->getList('title,body');
+      $str = '';
+      foreach ($nodes as $node)
+      {
+         $str .= (\mb_strlen($node['title']) . '<br />' . $node['title'] . '<br />');
+         $str .= (\mb_strlen($node['body']) . '<br />' . $node['body'] . '<br />');
+      }
+      $this->html->var['content'] = \nl2br($str);
+      return;
       if ($len > 50)
       {
          //
@@ -27,6 +43,16 @@ class MultiPost extends Controller
          {
             $start = \intval($len * $i / 10 - 2);
             $sub = \mb_substr($body, $start, 5);
+         }
+      }
+
+      $n->validatePostContent($request);
+      // if $user->ncount() <= 3 and  check
+      {
+         // get geoip county
+         // if $user->geoip->contry != 'US', check
+         {
+
          }
       }
    }
