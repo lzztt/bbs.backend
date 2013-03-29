@@ -35,8 +35,7 @@ class MySQL extends \mysqli
 
    // Singleton methord for each database
    /**
-    * @return MySQL
-    * @return mysqli
+    * @return MySQL|mysqli
     */
    public static function getInstance($config = NULL, $setAsDefault = FALSE)
    {
