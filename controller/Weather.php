@@ -31,7 +31,16 @@ class Weather extends Controller
 
    public function get_weather_div($zip)
    {
-      return '<div style="float: right">' . $this->get_weather($zip) . '</div>';
+      try
+      {
+         return '<div style="float: right">' . $this->get_weather($zip) . '</div>';
+      }
+      catch (\Exception $e)
+      {
+         $this->logger->error($e->getMessage());
+         $this->cache->setStatus(FALSE);
+         return '';
+      }
    }
 
    public function get_weather($zip)
