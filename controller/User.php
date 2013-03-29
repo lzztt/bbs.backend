@@ -145,7 +145,12 @@ class User extends Controller
          $captcha = new Input('captcha', '上面图片的内容是什么？', 'Enter the characters shown in the image', TRUE);
          $fieldset->addElements($img, $changeImage, $captcha->toHTMLElement());
          $form->addElements($fieldset);
-         $form->setButton(array('submit' => '创建新帐号'));
+         $terms = new HTMLElement('fieldset', new HTMLElement('legend', '网站使用规范和免责声明'));
+         $terms->addElements(
+            new HTMLElement('a', '网站使用规范', array('href' => '/node/23200')), new HTMLElement('br'), new HTMLElement('a', '免责声明', array('href' => '/term'))
+         );
+         $form->addElements($terms);
+         $form->setButton(array('submit' => '同意使用规范和免责声明，并创建新帐号'));
 
          $this->html->var['content'] = $link_tabs . $form;
       }
@@ -209,6 +214,7 @@ class User extends Controller
          $user->password = NULL; // will send generated password to email
          $user->status = NULL; // status NULL for new unactivated user
          $user->createTime = $this->request->timestamp;
+         $user->lastAccessIP = $this->request->ip;
          if (isset($user->birthday))
          {
             $_timestamp = strtotime($user->birthday);
@@ -361,6 +367,7 @@ class User extends Controller
          }
          elseif (isset($user->uid))
          {
+            $this->logger->info('Login Fail: ' . $user->username . ' @ ' . $this->request->ip);
             if ($user->status == 1)
             {
                $this->error('错误：错误的密码。');
@@ -369,11 +376,10 @@ class User extends Controller
             {
                $this->error('错误：该帐号已被封禁，如有问题请联络网站管理员。');
             }
-            $this->logger->info('Password Fail: ' . $user->username . ' @ ' . $this->request->ip);
-            return;
          }
          else
          {
+            $this->logger->info('Login Fail: ' . $user->username . ' @ ' . $this->request->ip);
             $this->error('错误：错误的用户名。');
          }
       }

@@ -1,21 +1,4 @@
 <div class="front-items">
-性别年龄分布
-    <table id="ageGroup">
-        <tbody><tr>
-                <th>性别</th>
-                <th>年龄</th>
-                <th>人数</th>
-            </tr>
-            <?php foreach ($ageGroup as $i => $a): ?>
-                <tr <?php echo ($i % 2 == 0) ? '' : 'class="alt"'; ?> >
-                    <td><?php echo $a['sex'] ? '男' : '女'; ?></td>
-                    <td><?php echo $a['age']; ?></td>
-                    <td><?php echo $a['count']; ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<br />
     <table id="attendees">
         <tbody><tr>
                 <th></th>
@@ -41,30 +24,6 @@
 </div>
 
 <style type="text/css">
-#ageGroup {
-    border-collapse: collapse;
-    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
-    width: 100%;
-}
-
-#ageGroup th {
-    background-color: #A7C942;
-    color: #FFFFFF;
-    font-size: 1.4em;
-    padding-bottom: 4px;
-    padding-top: 5px;
-    text-align: left;
-}
-
-#ageGroup td, #ageGroup th {
-    border: 1px solid #98BF21;
-    padding: 3px 7px 2px;
-}
-
-#ageGroup tr.alt td {
-    background-color: #EAF2D3;
-    color: #000000;
-}
 #attendees {
     border-collapse: collapse;
     font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;

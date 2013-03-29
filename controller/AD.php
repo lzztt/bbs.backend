@@ -21,6 +21,7 @@ class AD extends Controller
 
    public function run()
    {
+      $this->request->pageNotFound();
       $page = $this->loadController('Page');
       $page->updateInfo();
       $page->setPage();
