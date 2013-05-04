@@ -144,11 +144,11 @@ class Cache
       $_key = $this->_cleanKey($key);
       if ($_key[0] === '/')
       { // page cache, //robots don't have pages in private zone
-         $files = $this->path . '/{public,private}' . $_key . '*#*.html*'; // include get parameters
+         $files = $this->public_zone . $_key . '*.html.gz ' . $this->private_zone . $_key . '*.html'; // include get parameters
       }
       else
       { // fragment, only stored in private zone
-         $files = $this->path . '/private/' . $_key . '#*.txt';
+         $files = $this->private_zone . '/' . $_key . '.txt';
       }
       $pmap = $this->_getMapName($key, FALSE);
       $cmap = $this->_getMapName($key);
@@ -294,6 +294,7 @@ class Cache
    private function _runCommand($cmd)
    {
       $cmd = self::NOHUP . ' ' . self::BASH . ' -c "' . $cmd . '" 1 >> ' . $this->path . '/cache.log 2>&1 &'; // non-block command
+      \error_log($cmd);
       \shell_exec($cmd);
    }
 
