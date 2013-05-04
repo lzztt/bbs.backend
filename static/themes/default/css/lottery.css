@@ -20,7 +20,7 @@ body {
     vertical-align: baseline;
     overflow: auto;
     /*    background: none repeat scroll 0 0 #FFFFFF;*/
-    background: url('/themes/default/images/pc/bg.png') repeat scroll 0 0 #2F2F2F;
+    background: url('/themes/default/images/bg.png') repeat scroll 0 0 #2F2F2F;
     color: #333333;
 }
 
@@ -156,7 +156,7 @@ a.bigbutton {
 
 #footer {
     clear: both;
-    background: url('/themes/default/images/pc/bg.png') repeat scroll 0 0 transparent;
+    background: url('/themes/default/images/bg.png') repeat scroll 0 0 transparent;
     border-top: 2px solid #999999;
     position: relative;
     min-height: 10px;
