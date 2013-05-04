@@ -1,169 +1,169 @@
 html
 {
-    height:101%; /*always show the right scroll bar*/
-    font-size: 100%
+   height:101%; /*always show the right scroll bar*/
+   font-size: 100%
 }
 
 body
 {
-    /*
-     * To use a 12px font size on the page, delete the 14px declarations.
-     * to use a 14px font size on the page, delete the 12px declarations.
-    */
+   /*
+    * To use a 12px font size on the page, delete the 14px declarations.
+    * to use a 14px font size on the page, delete the 12px declarations.
+   */
 
-    /* Use a 12px base font size with a 16px line height */
-    /* font-size: 0.75em; /* 16px x .75 = 12px */
-    /* line-height: 1.333em; /* 12px x 1.333 = 16px */
+   /* Use a 12px base font size with a 16px line height */
+   /* font-size: 0.75em; /* 16px x .75 = 12px */
+   /* line-height: 1.333em; /* 12px x 1.333 = 16px */
 
-    /* Use a 14px base font size with a 18px line height */
-    font-size: 0.875em; /* 16px x .875 = 14px */
-    line-height: 1.286em; /* 14px x 1.286 = 18px */
-    margin: 0;
-    padding: 0;
-    font-family: Tahoma, Geneva, Helvetica, Arial, Verdana, "Bitstream Vera Sans", sans-serif, 宋体, SimSun;
-    background-color: #E1F5A9;
+   /* Use a 14px base font size with a 18px line height */
+   font-size: 0.875em; /* 16px x .875 = 14px */
+   line-height: 1.286em; /* 14px x 1.286 = 18px */
+   margin: 0;
+   padding: 0;
+   font-family: Tahoma, Geneva, Helvetica, Arial, Verdana, "Bitstream Vera Sans", sans-serif, 宋体, SimSun;
+   background-color: #E1F5A9;
 }
 
 #page_header,
 #page_body,
 #page_footer
 {
-    /*
-     * If you want to make the page a fixed width and centered in the viewport,
-     * this is the standards-compliant way to do that. See also the ie.css file
-     * for the necessary IE5 hack to center a div.
-    */
-    margin-left: auto;
-    margin-right: auto;
-    width: 1000px;
-    position: relative;
-    /*border-left: 1px solid #8ACC26;
-    border-right: 1px solid #8ACC26;*/
+   /*
+    * If you want to make the page a fixed width and centered in the viewport,
+    * this is the standards-compliant way to do that. See also the ie.css file
+    * for the necessary IE5 hack to center a div.
+   */
+   margin-left: auto;
+   margin-right: auto;
+   width: 1000px;
+   position: relative;
+   /*border-left: 1px solid #8ACC26;
+   border-right: 1px solid #8ACC26;*/
 }
 
 #page_header,
 #page_body
 {
-    background: #ffffff;
+   background: #ffffff;
 }
 
 /* tab navigation */
 ul.tabs
 {
-    border-bottom: 1px solid #BBBBBB;
-    border-collapse: collapse;
-    height: auto;
-    line-height: normal;
-    list-style: none outside none;
-    margin: 5px;
-    padding: 0 0 0 1em;
-    white-space: nowrap;
+   border-bottom: 1px solid #BBBBBB;
+   border-collapse: collapse;
+   height: auto;
+   line-height: normal;
+   list-style: none outside none;
+   margin: 5px;
+   padding: 0 0 0 1em;
+   white-space: nowrap;
 }
 
 ul.tabs li
 {
-    display: inline;
-    background-color: #DDDDDD;
-    border-color: #BBBBBB;
-    border-style: solid;
-    border-width: 1px;
-    margin: 0 2px;
+   display: inline;
+   background-color: #DDDDDD;
+   border-color: #BBBBBB;
+   border-style: solid;
+   border-width: 1px;
+   margin: 0 2px;
 }
 ul.tabs li:hover {
-    background-color: #EEEEEE;
-    border-color: #CCCCCC;
-    border-bottom-color: #EEEEEE;
+   background-color: #EEEEEE;
+   border-color: #CCCCCC;
+   border-bottom-color: #EEEEEE;
 }
 
 ul.tabs li.active
 {
-    background-color: #FFFFFF;
-    border-color: #BBBBBB #BBBBBB #FFFFFF;
-    border-style: solid;
-    border-width: 1px;
+   background-color: #FFFFFF;
+   border-color: #BBBBBB #BBBBBB #FFFFFF;
+   border-style: solid;
+   border-width: 1px;
 }
 
 ul.tabs li a {
-    height: auto;
-    margin-right: 0.5em; /* LTR */
-    padding: 0 1em;
-    text-decoration: none;
+   height: auto;
+   margin-right: 0.5em; /* LTR */
+   padding: 0 1em;
+   text-decoration: none;
 }
 
 
 ul.tabs li.active a {
-    color: #000000;
+   color: #000000;
 }
 
 /*pager*/
 ul.pager {
-    clear: both;
-    text-align: center;
+   clear: both;
+   text-align: center;
 }
 ul.pager li {
-    background-image:none;
-    display:inline;
-    list-style-type:none;
-    padding: 0.5em;
+   background-image:none;
+   display:inline;
+   list-style-type:none;
+   padding: 0.5em;
 }
 ul.pager li.pageActive a {
-    font-weight:bold;
-    background-color: #aaaaaa;
-    border: 1px solid #888888;
+   font-weight:bold;
+   background-color: #aaaaaa;
+   border: 1px solid #888888;
 }
 
 /*form*/
 div.form_element
 {
-    clear: both;
-    position: relative;
-    padding: 5px 0;
+   clear: both;
+   position: relative;
+   padding: 5px 0;
 }
 
 div.element_label
 {
-    float: left;
-    width: 150px;
-    text-align: right;
+   float: left;
+   width: 150px;
+   text-align: right;
 }
 
 div.element_input
 {
-    margin-left: 160px;
+   margin-left: 160px;
 }
 
 input,
 textarea
 {
-    border: 1px solid #006;
-    background: #ffc;
-    margin: 0 7px 0 2px;
-    padding: 1px;
+   border: 1px solid #006;
+   background: #ffc;
+   margin: 0 7px 0 2px;
+   padding: 1px;
 }
 input:hover,
 textarea:hover
 {
-    border-color: orange;
-    background: #FFFFFF;
+   border-color: orange;
+   background: #FFFFFF;
 }
 button,
 a.button
 {
-    -webkit-box-shadow: rgba(0, 0, 0, 0.0.97) 0px 1px 0px 0px;
-    background-color: #5B74A8;
-    border: 1px solid #29447E;
-    font-family: 'Lucida Grande', Tahoma, Verdana, Arial, sans-serif;
-    /*font-size: 14px;
-    line-height: 18px;*/
-    padding: 1px 3px;
-    margin: 0 2px;
-    color: #fff;
-    border-radius: 5px;
+   -webkit-box-shadow: rgba(0, 0, 0, 0.0.97) 0px 1px 0px 0px;
+   background-color: #5B74A8;
+   border: 1px solid #29447E;
+   font-family: 'Lucida Grande', Tahoma, Verdana, Arial, sans-serif;
+   /*font-size: 14px;
+   line-height: 18px;*/
+   padding: 1px 3px;
+   margin: 0 2px;
+   color: #fff;
+   border-radius: 5px;
 }
 button:hover,
 a.button:hover
 {
-    border: 1px solid #000000;
+   border: 1px solid #000000;
 }
 /*
 button {
@@ -178,161 +178,165 @@ button:hover {
 .element_required,
 .element_help
 {
-    font-weight: bold;
+   font-weight: bold;
 }
 .element_required
 {
-    color: #CC0000;
+   color: #CC0000;
 }
 .element_help
 {
-    color: #00CC00;
+   color: #00CC00;
 }
 
 .clear-block {
-    display: block;
+   display: block;
+   clear: both;
 }
 
-.hidden {
-    display: none;
+.hidden,
+[data-urole],
+[data-umode]
+{
+   display: none;
 }
 
 img {
-    border: 0 none;
+   border: 0 none;
 }
 
 /*even_odd*/
 .even
 {
-    background:none repeat scroll 0 0 #EEEEEE;
+   background:none repeat scroll 0 0 #EEEEEE;
 }
 .odd
 {
-    background:none repeat scroll 0 0 #FFFFFF;
+   background:none repeat scroll 0 0 #FFFFFF;
 }
 
 
 /*pm*/
 ul.pm_thread
 {
-    list-style-type: none;
+   list-style-type: none;
 }
 
 ul.pm_thread li
 {
-    display: block;
-    overflow: hidden;
-    position: relative;
-    clear: both;
+   display: block;
+   overflow: hidden;
+   position: relative;
+   clear: both;
 }
 ul.pm_thread li div.pm_avatar,
 ul.pm_thread li div.pm_info,
 ul.pm_thread li div.pm_body
 {
-    float: left;
+   float: left;
 }
 ul.pm_thread li div.pm_info
 {
-    text-align: right;
-    width: 120px;
-    padding: 3px 5px;
+   text-align: right;
+   width: 120px;
+   padding: 3px 5px;
 }
 ul.pm_thread li div.pm_body
 {
-    width: 640px;
-    padding: 3px 5px;
+   width: 640px;
+   padding: 3px 5px;
 }
 
 /*actions*/
 div.ed_actions
 {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
+   position: absolute;
+   bottom: 5px;
+   right: 5px;
 }
 
 /*avatar*/
 img.avatar
 {
-    display: block;
-    padding: 2px;
+   display: block;
+   padding: 2px;
 }
 
 /*front-items*/
 .front-items{
-    clear:both;
-    overflow: hidden;
+   clear:both;
+   overflow: hidden;
 }
 .front-items .item-list{
-    width:33%;
-    overflow:hidden;
-    float:left;
+   width:33%;
+   overflow:hidden;
+   float:left;
 }
 .front-items .item-list h2{
-    margin:0;
-    padding:2px 4px;
-    background-color:#7FBDEF;
+   margin:0;
+   padding:2px 4px;
+   background-color:#7FBDEF;
 }
 .front-items .item-list ul{
-    margin:0;
-    margin-bottom:10px;
-    /*border:0px solid #DDD;
-    border-top:0;*/
+   margin:0;
+   margin-bottom:10px;
+   /*border:0px solid #DDD;
+   border-top:0;*/
 }
 .front-items .item-list ul li
 {
-    overflow:hidden;
-    white-space:nowrap;
-    padding:2px 8px;
-    border-bottom:1px dashed #CCC;
+   overflow:hidden;
+   white-space:nowrap;
+   padding:2px 8px;
+   border-bottom:1px dashed #CCC;
 }
 
 .front-items .item-list ul li span.li_right
 {
-    float:right;
-    color:#333;
-    padding-left:5px;
+   float:right;
+   color:#333;
+   padding-left:5px;
 }
 /*dt,dd*/
 dt,dd
 {
-    display: block;
-    float: left;
-    margin: 0;
-    padding: 3px;
+   display: block;
+   float: left;
+   margin: 0;
+   padding: 3px;
 }
 dt
 {
-    width: 100px;
-    clear: left;
-    text-align: right;
-    color: #29447E;
+   width: 100px;
+   clear: left;
+   text-align: right;
+   color: #29447E;
 }
 dd
 {
-    float: left;
+   float: left;
 }
 
 /*user*/
 div.avatar_div
 {
-    float:left;
-    text-align: center;
+   float:left;
+   text-align: center;
 }
 dl
 {
-    float:left;
+   float:left;
 }
 div.user_recent_topics
 {
-    clear: both;
+   clear: both;
 }
 
 div.user_recent_topics table
 {
-    width: 480px;
-    margin: 10px;
-    float: left;
+   width: 480px;
+   margin: 10px;
+   float: left;
 }
 
 
@@ -346,23 +350,23 @@ div.user_recent_topics table
 .block ul, /* Drupal overrides */
 .item-list ul
 {
-    margin: 0.5em 0;
-    padding: 0;
-    list-style-type: none;
+   margin: 0.5em 0;
+   padding: 0;
+   list-style-type: none;
 }
 
 li
 {
-    margin: 0;
-    padding: 0;
+   margin: 0;
+   padding: 0;
 }
 
 .item-list ul li /* Drupal override */
 {
-    margin: 0;
-    padding-left: 10px;
-    padding-right: 4px;
-    list-style: inherit;
+   margin: 0;
+   padding-left: 10px;
+   padding-right: 4px;
+   list-style: inherit;
 }
 
 
@@ -377,29 +381,29 @@ li
 pre.debug,
 pre.message
 {
-    background-color: #000000;
-    color: #ffffff;
-    margin: 1px 0px;
-    padding: 3px;
+   background-color: #000000;
+   color: #ffffff;
+   margin: 1px 0px;
+   padding: 3px;
 }
 
 div.form_row
 {
-    clear: both;
-    padding: 2px;
+   clear: both;
+   padding: 2px;
 }
 
 div.form_row div.form_label
 {
-    float: left;
-    width: 100px;
-    margin-right: 10px;
-    text-align: right;
+   float: left;
+   width: 100px;
+   margin-right: 10px;
+   text-align: right;
 }
 
 div.form_row div.form_data
 {
-    margin-left: 110px;
+   margin-left: 110px;
 }
 
 
@@ -410,44 +414,44 @@ div.form_row div.form_data
 
 #header-inner
 {
-    position: relative;
-    height: 150px;
+   position: relative;
+   height: 150px;
 }
 
 #topmenu
 {
-    /*shade color for YellowGreen #ADFF2F*/
-    float:right;
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 3;
+   /*shade color for YellowGreen #ADFF2F*/
+   float:right;
+   position: absolute;
+   top: 0;
+   right: 0;
+   z-index: 3;
 }
 
 #topmenu ul
 {
-    background-color: #D6FF97;
-    border-left: 1px solid #8ACC26;
-    border-bottom: 1px solid #8ACC26;
-    float:left;
-    margin:0;
-    padding: 0 5px;
+   background-color: #D6FF97;
+   border-left: 1px solid #8ACC26;
+   border-bottom: 1px solid #8ACC26;
+   float:left;
+   margin:0;
+   padding: 0 5px;
 }
 
 #topmenu ul li
 {
-    float:left;
-    padding:0 2px;
-    list-style:none outside none;
-    line-height: 26px;
+   float:left;
+   padding:0 2px;
+   list-style:none outside none;
+   line-height: 26px;
 }
 
 #weather
 {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index:3;
+   position: absolute;
+   right: 0;
+   bottom: 0;
+   z-index:3;
 }
 
 #logo-title /* Wrapper for logo, website name, and slogan */
@@ -456,9 +460,9 @@ div.form_row div.form_data
 
 #logo /* Wrapper for logo */
 {
-    float: left;
-    margin: 0 10px 0 0;
-    padding: 0;
+   float: left;
+   margin: 0 10px 0 0;
+   padding: 0;
 }
 
 #logo-image /* The actual logo image */
@@ -467,40 +471,40 @@ div.form_row div.form_data
 
 h1#site-name, div#site-name /* The name of the website */
 {
-    margin: 0;
-    font-size: 2em;
-    line-height: 1.3em;
-    font-weight: bold;
+   margin: 0;
+   font-size: 2em;
+   line-height: 1.3em;
+   font-weight: bold;
 }
 
 #site-name a:link,
 #site-name a:hover,
 #site-name a:visited
 {
-    color: #000;
-    text-decoration: none;
+   color: #000;
+   text-decoration: none;
 }
 
 #site-name a:hover
 {
-    text-decoration: underline;
+   text-decoration: underline;
 }
 
 #site-slogan /* The slogan (or tagline) of a website */
 {
-    font-size:1.5em;
+   font-size:1.5em;
 }
 
 #header-blocks /* Wrapper for any blocks placed in the header region */
 {
-    clear: both; /* Clear the logo */
+   clear: both; /* Clear the logo */
 }
 
 #copyright {
-    color: #555555;
+   color: #555555;
 
-    padding: 10px;
-    text-align: center;
+   padding: 10px;
+   text-align: center;
 }
 /*
   a:link
@@ -525,137 +529,137 @@ h1#site-name, div#site-name /* The name of the website */
   }
 */
 #navbar {
-    /*  float: left;*/
-    height: 28px;
-    margin-left: 0;
-    margin-right: -100%;
-    padding: 0;
-    width: 100%;
-    clear:both;
-    background-color: #8ACC26;
+   /*  float: left;*/
+   height: 28px;
+   margin-left: 0;
+   margin-right: -100%;
+   padding: 0;
+   width: 100%;
+   clear:both;
+   background-color: #8ACC26;
 }
 
 #navbar_user {
-    float: right;
+   float: right;
 }
 
 #navbar_user li {
-    height: 26px;
+   height: 26px;
 }
 
 #navbar_user label,
 #navbar_user input {
-    display: block;
-    float: left;
-    line-height: 18px;
-    padding: 4px 5px;
+   display: block;
+   float: left;
+   line-height: 18px;
+   padding: 4px 5px;
 }
 
 #navbar_user label
 {
-    color: #105289;
+   color: #105289;
 }
 
 #navbar_user input {
-    margin: 2px;
-    padding: 1px;
-    vertical-align:middle;
-    border: 1px solid #999999;
+   margin: 2px;
+   padding: 1px;
+   vertical-align:middle;
+   border: 1px solid #999999;
 }
 
 #navbar_user input.form-text {
-    width:66px;
+   width:66px;
 }
 
 #navbar_user input.form-submit
 {
-    background-color: transparent;
-    color: #105289;
-    font-family: Tahoma,Geneva,Helvetica,Arial,Verdana,"Bitstream Vera Sans",sans-serif,宋体,SimSun;
-    font-size: 1em;
-    border: 0px;
-    margin: 0px;
-    padding: 4px 5px;
+   background-color: transparent;
+   color: #105289;
+   font-family: Tahoma,Geneva,Helvetica,Arial,Verdana,"Bitstream Vera Sans",sans-serif,宋体,SimSun;
+   font-size: 1em;
+   border: 0px;
+   margin: 0px;
+   padding: 4px 5px;
 }
 
 /* added by ikki for the inline login bar */
 #navbar #user-login-form
 {
-    float:right;
-    border-top: 1px solid #8ACC26;
-    border-bottom: 1px solid #8ACC26;
-    background-color:#D6FF97;
-    line-height: 26px;
-    padding: 0 5px;
+   float:right;
+   border-top: 1px solid #8ACC26;
+   border-bottom: 1px solid #8ACC26;
+   background-color:#D6FF97;
+   line-height: 26px;
+   padding: 0 5px;
 }
 #navbar #user-login-form .form-item,
 #navbar #user-login-form .item-list
 {
-    float: left;
-    line-height:26px;
-    margin: 0;
+   float: left;
+   line-height:26px;
+   margin: 0;
 }
 #navbar #user-login-form .form-item label
 {
-    display: inline;
-    float: left;
-    font-weight: normal;
-    padding: 0 0 0 3px;
+   display: inline;
+   float: left;
+   font-weight: normal;
+   padding: 0 0 0 3px;
 }
 #navbar #user-login-form .form-item label span
 {
-    display: none;
+   display: none;
 }
 #navbar #user-login-form .form-item input.form-text
 {
-    display: block;
-    height: 16px;
-    padding: 2px;
-    border: 1px solid #999999;
-    margin: 2px 3px;
-    float: left;
-    vertical-align:middle;
-    width:66px;
+   display: block;
+   height: 16px;
+   padding: 2px;
+   border: 1px solid #999999;
+   margin: 2px 3px;
+   float: left;
+   vertical-align:middle;
+   width:66px;
 }
 #navbar #user-login-form input.form-submit
 {
-    display: block;
-    height: 22px;
-    padding: 1px 3px;
-    border: 1px solid #999999;
-    margin: 2px 3px;
-    font-size: 1em;
-    line-height: 20px;
-    font-weight:normal;
-    float: left;
-    vertical-align:middle;
+   display: block;
+   height: 22px;
+   padding: 1px 3px;
+   border: 1px solid #999999;
+   margin: 2px 3px;
+   font-size: 1em;
+   line-height: 20px;
+   font-weight:normal;
+   float: left;
+   vertical-align:middle;
 }
 #navbar #user-login-form .item-list li
 {
-    padding: 0 0 0 5px;
+   padding: 0 0 0 5px;
 }
 /* END added by ikki for the inline login bar */
 
 #navbar li {
-    float: left;
+   float: left;
 }
 
 .item-list ul li {
-    list-style: inherit;
-    margin: 0;
-    padding-left: 10px;
-    padding-right: 4px;
+   list-style: inherit;
+   margin: 0;
+   padding-left: 10px;
+   padding-right: 4px;
 }
 
 .block ul, .item-list ul {
-    list-style-type: none;
-    margin: 0.5em 0;
-    padding: 0;
+   list-style-type: none;
+   margin: 0.5em 0;
+   padding: 0;
 }
 
 #navbar ul {
-    margin: 0;
-    padding: 0;
-    text-align: left;
+   margin: 0;
+   padding: 0;
+   text-align: left;
 }
 

@@ -11,9 +11,7 @@ use lzx\core\Request;
 use lzx\core\Session;
 use lzx\core\Cookie;
 use lzx\core\Cache;
-use lzx\core\Controller;
 use lzx\html\Template;
-use lzx\core\File;
 
 /**
  *
@@ -24,6 +22,12 @@ use lzx\core\File;
  * @property lzx\core\Request $request
  * @property lzx\core\Session $session
  */
+// cookie->uid
+// cookie->urole
+// cookie->umode
+// session->uid
+// session->urole
+
 class WebApp
 {
 
@@ -73,7 +77,6 @@ class WebApp
          Handler::setErrorHandler();
 
          $this->logger = Logger::getInstance($this->path['log'], array(), TRUE);
-         $this->logger->userAgent = $_GET['umode'];
 
          // set logger before set the Exception Handler
          Handler::$logger = $this->logger;
@@ -93,16 +96,16 @@ class WebApp
       }
       catch (\Exception $e)
       {
-         $msg = '[longzox] initialization exception: [' . $type . '] ' . $e->getMessage() . \PHP_EOL . $e->getTraceAsString();
+         $msg = '[longzox] framework WebApp initialization error: [' . $type . '] ' . $e->getMessage();
          if ($this->logger instanceof Logger)
          {
-            $this->logger->error($msg);
+            $this->logger->error($msg . \PHP_EOL . $e->getTraceAsString(), FALSE);
          }
          else
          {
-            \error_log($msg);
+            \error_log($msg . \PHP_EOL . $e->getTraceAsString());
          }
-         exit('longzox framework WebApp initialization error: ' . $e->getMessage());
+         exit('<pre>' . $msg . '</pre>');
       }
 
       // website is offline
@@ -133,7 +136,7 @@ class WebApp
       }
 
       $db = MySQL::getInstance($this->config->database, TRUE);
-      $db->setLogger($this->logger);
+
       if ($this->config->stage !== 'production') // DEV or TEST stage
       {
          $db->debugMode = TRUE;
@@ -141,32 +144,21 @@ class WebApp
 
       // get cookie
       $cookie = $this->getCookie();
-      if ($cookie->uid == 0 && isset($cookie->urole))
-      {
-         unset($cookie->urole);
-      }
 
       // start session
-      if ($request->umode == Controller::UMODE_ROBOT)
-      {
-         $session = new \stdClass();
-         $session->uid = 0;
-      }
-      else
-      {
-         $session = $this->startSession();
-         if ($cookie->uid != $session->uid)
-         {
-            $cookie->clear();
-            $session->clear();
-         }
-      }
+      $session = $this->getSession($cookie);
+
+      // set user info for logger
+      $userinfo = 'uid=' . $session->uid
+            . ' umode=' . $this->getUmode($cookie)
+            . ' urole=' . (isset($cookie->urole) ? $cookie->urole : 'guest');
+      $this->logger->setUserInfo($userinfo);
 
       // set request uid based on session uid
       $request->uid = $session->uid;
 
       // start cache
-      $cache = Cache::getInstance($this->config->cache_path, $request->umode, $cookie->urole);
+      $cache = Cache::getInstance($this->config->cache_path);
       $cache->setLogger($this->logger);
       $cache->setStatus($this->config->cache);
 
@@ -174,7 +166,7 @@ class WebApp
 
       // start template
       Template::$theme = $this->config->theme;
-      Template::$path = $this->path['theme'] . '/' . $this->config->theme . '/' . $request->umode;
+      Template::$path = $this->path['theme'] . '/' . $this->config->theme;
       $html = new Template('html');
       $html->var['domain'] = $this->config->domain;
 
@@ -211,6 +203,7 @@ class WebApp
       if ($this->config->stage !== 'production') // DEV or TEST stage
       {
          echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
+         echo $userinfo . \PHP_EOL;
          echo \print_r(MySQL::$queries, TRUE) . '</pre>';
       }
    }
@@ -225,25 +218,11 @@ class WebApp
          {
             foreach (\array_keys($request->get) as $key)
             {
-               if (!\in_array($key, $get_keys) && $key !== 'umode')
+               if (!\in_array($key, $get_keys))
                {
                   $this->logger->error('unsupport GET key:' . $key);
                   return FALSE;
                }
-            }
-         }
-      }
-
-      // ban! bad robot access
-      if ($this->config->robot_controllers)
-      {
-         $robot_controllers = \explode(',', $this->config->robot_controllers);
-         if (\sizeof($robot_controllers) > 0)
-         {
-            if ($request->umode == Controller::UMODE_ROBOT && !\in_array($request->args[0], $robot_controllers))
-            {
-               $this->logger->error('unsupport robot controller:' . $request->args[0]);
-               return FALSE;
             }
          }
       }
@@ -253,16 +232,47 @@ class WebApp
    }
 
    /**
+    * @param Cookie $cookie
+    */
+   private function getUmode(Cookie $cookie)
+   {
+      static $umode;
+
+      if (!isset($umode))
+      {
+         $umode = $cookie->umode;
+
+         if (!\in_array($umode, array(Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT)))
+         {
+            $agent = $_SERVER['HTTP_USER_AGENT'];
+            if (\preg_match('/(iPhone|Android|BlackBerry)/i', $agent))
+            {
+               // if ($http_user_agent ~ '(iPhone|Android|BlackBerry)') {
+               $umode = Template::UMODE_MOBILE;
+            }
+            elseif (\preg_match('/(http|Yahoo|bot)/i', $agent))
+            {
+               $umode = Template::UMODE_ROBOT;
+               //}if ($http_user_agent ~ '(http|Yahoo|bot)') {
+            }
+            else
+            {
+               $umode = Template::UMODE_PC;
+            }
+            $cookie->umode = $umode;
+         }
+      }
+
+      return $umode;
+   }
+
+   /**
     *
     * @return Request
     */
    public function getRequest()
    {
       $req = Request::getInstance();
-      if (!\in_array($req->umode, array(Controller::UMODE_PC, Controller::UMODE_MOBILE, Controller::UMODE_ROBOT)))
-      {
-         $req->umode = Controller::UMODE_PC;
-      }
       if (!isset($req->language))
       {
          $req->language = $this->config->language;
@@ -274,34 +284,72 @@ class WebApp
     *
     * @return Session
     */
-   public function startSession()
+   public function getSession(Cookie $cookie)
    {
-      $lifetime = $this->config->cookie->lifetime;
-      $path = $this->config->cookie->path ? $this->config->cookie->path : '/';
-      $domain = $this->config->cookie->domain ? $this->config->cookie->domain : $this->config->domain;
-      \session_set_cookie_params($lifetime, $path, $domain);
-      \session_name('LZXSID');
+      static $session;
 
-      $session = Session::getInstance();
+      if (!isset($session))
+      {
+         $umode = $this->getUmode($cookie);
+
+         if ($umode == Template::UMODE_ROBOT)
+         {
+            Session::$isDummyInstance = TRUE;
+         }
+         else
+         {
+            $lifetime = $this->config->cookie->lifetime;
+            $path = $this->config->cookie->path ? $this->config->cookie->path : '/';
+            $domain = $this->config->cookie->domain ? $this->config->cookie->domain : $this->config->domain;
+            \session_set_cookie_params($lifetime, $path, $domain);
+            \session_name('LZXSID');
+         }
+         $session = Session::getInstance();
+
+         if ($cookie->uid != $session->uid)
+         {
+            $cookie->clear();
+            $session->clear();
+         }
+      }
 
       return $session;
    }
 
    public function getCookie()
    {
-      $lifetime = $this->config->cookie->lifetime;
-      $path = $this->config->cookie->path ? $this->config->cookie->path : '/';
-      $domain = $this->config->cookie->domain ? $this->config->cookie->domain : $this->config->domain;
-      Cookie::setParams($lifetime, $path, $domain);
+      static $cookie;
 
-      $cookie = Cookie::getInstance();
+      if (!isset($cookie))
+      {
+         $lifetime = $this->config->cookie->lifetime;
+         $path = $this->config->cookie->path ? $this->config->cookie->path : '/';
+         $domain = $this->config->cookie->domain ? $this->config->cookie->domain : $this->config->domain;
+         Cookie::setParams($lifetime, $path, $domain);
+
+         $cookie = Cookie::getInstance();
+
+         // check cookie for robot agent
+         $umode = $this->getUmode($cookie);
+         if ($umode == Template::UMODE_ROBOT && ($cookie->uid != 0 || isset($cookie->urole)))
+         {
+            $cookie->uid = 0;
+            unset($cookie->urole);
+         }
+
+         // check role for guest
+         if ($cookie->uid == 0 && isset($cookie->urole))
+         {
+            unset($cookie->urole);
+         }
+      }
 
       return $cookie;
    }
 
    public function registerHookEventListener()
    {
-
+      
    }
 
    /**
@@ -314,7 +362,7 @@ class WebApp
    {
       $ctrler = $request->args[0];
       require_once $this->path['root'] . '/route.php';
-      
+
       if (\array_key_exists($ctrler, $route))
       {
          $ctrlerClass = $route[$ctrler];

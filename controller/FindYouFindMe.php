@@ -225,6 +225,11 @@ class FindYouFindMe extends Controller
       {
          $this->request->pageNotFound();
       }
+      if ($this->request->timestamp < strtotime("04/06/2013 22:00:00 CDT"))
+      {
+         $this->html->var['content'] = "<p>ERROR: The page you request is not available yet.<BR />You will get the final contact list after attending the activity</p>";
+         return;
+      }
 
       if ($this->request->timestamp < strtotime("04/08/2013 22:00:00 CDT"))
       {

@@ -43,7 +43,7 @@ display:none !important;
     customSearchControl.draw('cse', options);
   }, true);
 </script>
-<link rel="stylesheet" href="http://www.google.com/cse/style/look/greensky.css" type="text/css" />
+<link rel="stylesheet" href="http://www.google.com/cse/style/look/greensky.css" />
 
 <div id="cse" style="width:90%;"></div>
 HTML;
