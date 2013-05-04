@@ -11,7 +11,7 @@ ul.forum-links li {
     list-style-type: none;
     list-style-image: none;
 }
-div.forum-post-panel-main {
+div.forum-post-main {
     border-left:1px solid #e5e5e5;
 }
 div.author-pane {

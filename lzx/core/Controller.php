@@ -21,9 +21,6 @@ namespace lzx\core;
 abstract class Controller
 {
 
-   const UMODE_PC = 'pc';
-   const UMODE_MOBILE = 'mobile';
-   const UMODE_ROBOT = 'robot';
    const GUEST_UID = 0;
    const ADMIN_UID = 1;
 

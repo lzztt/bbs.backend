@@ -3,14 +3,11 @@
 namespace site\controller;
 
 use lzx\core\Controller;
-use lzx\core\Session;
 use site\dataobject\User as UserObject;
 use site\dataobject\PrivMsg;
 use lzx\html\HTMLElement;
-use lzx\html\FormElement;
 use lzx\html\Form;
 use lzx\html\Input;
-use lzx\html\Hidden;
 use lzx\html\Select;
 use lzx\html\TextArea;
 use lzx\html\InputGroup;
@@ -214,7 +211,7 @@ class User extends Controller
          $user->password = NULL; // will send generated password to email
          $user->status = NULL; // status NULL for new unactivated user
          $user->createTime = $this->request->timestamp;
-         $user->lastAccessIP = $this->request->ip;
+         $user->lastAccessIPInt = (int) \ip2long($this->request->ip);
          if (isset($user->birthday))
          {
             $_timestamp = strtotime($user->birthday);
@@ -362,7 +359,7 @@ class User extends Controller
          {
             $this->session->uid = $user->uid;
             $this->cookie->uid = $user->uid;
-            $this->cookie->urole = ($user->uid == self::ROOT_UID) ? 'super' : 'member';
+            $this->cookie->urole = ($user->uid == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
             $this->request->redirect($this->cookie->loginReferer);
          }
          elseif (isset($user->uid))
@@ -431,6 +428,7 @@ class User extends Controller
    {
       if ($this->request->uid == 0)
       {
+         $this->cookie->urole = Template::UROLE_GUEST;
          $this->request->redirect('/');
       }
 
@@ -441,9 +439,8 @@ class User extends Controller
          //session_destroy();
          $this->session->clear(); // keep session record but clear the whole $_SESSION variable
          $this->cookie->uid = 0;
-         unset($this->cookie->urole);
+         $this->cookie->urole = Template::UROLE_GUEST;
          unset($this->cookie->pmCount);
-         unset($this->cookie->isModerator);
          $this->request->redirect('/');
       }
       else
@@ -703,43 +700,7 @@ class User extends Controller
       $info[] = array('dt' => '注册时间', 'dd' => \date('m/d/Y H:i:s T', $user->createTime));
       $info[] = array('dt' => '上次登录时间', 'dd' => \date('m/d/Y H:i:s T', $user->lastAccessTime));
 
-      if ($user->lastAccessIP)
-      {
-         $city = 'unknown';
-         $region = 'unknown';
-         $country = 'unknown';
-
-         try
-         {
-            $geo = \geoip_record_by_name($user->lastAccessIP);
-
-            if ($geo['city'])
-            {
-               $city = $geo['city'];
-            }
-
-            if ($geo['country_name'])
-            {
-               $country = $geo['country_name'];
-            }
-
-            if ($geo['region'] && $geo['country_code'])
-            {
-               $region = \geoip_region_name_by_code($geo['country_code'], $geo['region']);
-            }
-         }
-         catch (\Exception $e)
-         {
-            $this->logger->error($e->getMessage());
-         }
-
-         $location = $city . ', ' . $region . ', ' . $country;
-      }
-      else
-      {
-         $location = 'unknown location';
-      }
-      $info[] = array('dt' => '上次登录地点', 'dd' => $location);
+      $info[] = array('dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP($user->lastAccessIP));
 
       $dlist = $this->html->dlist($info);
 

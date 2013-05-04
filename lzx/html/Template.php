@@ -3,7 +3,6 @@
 namespace lzx\html;
 
 use lzx\html\HTMLElement;
-use lzx\core\Request;
 
 /**
  *
@@ -12,6 +11,12 @@ use lzx\core\Request;
 class Template
 {
 
+   const UMODE_PC = 'pc';
+   const UMODE_MOBILE = 'mobile';
+   const UMODE_ROBOT = 'robot';
+   const UROLE_GUEST = 'guest';
+   const UROLE_USER = 'user';
+   const UROLE_ADM = 'adm';
    const EVEN_ODD_CLASS = 'js_even_odd_parent';
 
    public static $path;
@@ -38,7 +43,14 @@ class Template
       try
       {
          \extract($this->var);
+         $tpl_theme = self::$theme;
          $tpl_path = self::$path;
+         $umode_pc = self::UMODE_PC;
+         $umode_mobile = self::UMODE_MOBILE;
+         $umode_robot = self::UMODE_ROBOT;
+         $urole_guest = self::UROLE_GUEST;
+         $urole_user = self::UROLE_USER;
+         $urole_adm = self::UROLE_ADM;
 
          \ob_start();                 // Start output buffering
          include self::$path . '/' . $this->tpl . '.tpl.php';      // Include the template file
@@ -49,7 +61,7 @@ class Template
       {
          \ob_end_clean();
          $output = '[longzox] Error: failed to render template ' . $this->tpl . '<br />'
-            . 'Message: ' . $e->getMessage();
+               . 'Message: ' . $e->getMessage();
          self::$status = FALSE;
          //$output .= \nl2br(\print_r($e, TRUE));
       }
@@ -110,14 +122,14 @@ class Template
       $css = '';
       foreach ($this->css as $i)
       {
-         $css .= '<link type="text/css" rel="stylesheet" media="all" href="' . $i . '" />';
+         $css .= '<link rel="stylesheet" media="all" href="' . $i . '" />';
       }
       $this->var['head_css'] = $css;
 
       $js = '';
       foreach ($this->js as $i)
       {
-         $js .= '<script type="text/javascript" src="' . $i . '"></script>';
+         $js .= '<script src="' . $i . '"></script>';
       }
       $this->var['head_js'] = $js;
 

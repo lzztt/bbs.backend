@@ -95,7 +95,7 @@ class Node extends DataObject
 
       $sql = 'SELECT n.*,'
          . ' (SELECT COUNT(*) FROM comments AS c WHERE c.nid = ' . $nid . ') AS commentCount,'
-         . ' u.username, u.sex, u.signature, u.createTime as joinTime, u.avatar, u.badge, u.points'
+         . ' u.username, u.sex, u.signature, u.createTime as joinTime, u.lastAccessIPInt as accessIP, u.avatar, u.badge, u.points'
          . ' FROM nodes AS n JOIN users AS u ON n.uid = u.uid'
          . ' WHERE n.status > 0 AND u.status > 0 AND n.nid = ' . $nid;
       $arr = $this->_db->row($sql);
@@ -141,7 +141,7 @@ class Node extends DataObject
       $offset = ($offset > 0) ? 'OFFSET ' . $offset : '';
 
       $sql = 'SELECT c.*,'
-         . ' u.username, u.sex, u.signature, u.createTime as joinTime, u.avatar, u.badge, u.points'
+         . ' u.username, u.sex, u.signature, u.createTime as joinTime, u.lastAccessIPInt as accessIP, u.avatar, u.badge, u.points'
          . ' FROM comments AS c LEFT JOIN users AS u ON c.uid = u.uid'
          . ' WHERE c.nid = ' . $nid . ' ORDER BY c.createTime ASC ' . $limit . ' ' . $offset;
       $arr = $this->_db->select($sql);
@@ -298,7 +298,7 @@ class Node extends DataObject
 
    public function getLatestImmigrationPosts()
    {
-      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 9';
+      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 10';
       return $this->_db->select($sql);
    }
 

@@ -14,6 +14,7 @@ use lzx\core\MySQL;
 class Session
 {
 
+   public static $isDummyInstance = FALSE;
    private $_db;
 
    // CLASS FUNCTIONS
@@ -49,15 +50,14 @@ class Session
 
    private function __construct()
    {
-      $this->_db = MySQL::getInstance();
-
-
-      // DB error! return as GUEST!
-      if (MySQL::$hasError)
+      // dummy session or DB error! return as ROBOT mode!
+      if (self::$isDummyInstance)
       {
          $this->uid = 0; // don't start session and DB, use empty $_SESSION array directly
          return;
       }
+
+      $this->_db = MySQL::getInstance();
 
       session_set_save_handler(array($this, 'open'), array($this, 'close'), array($this, 'read'), array($this, 'write'), array($this, 'destroy'), array($this, 'gc'));
       session_start();

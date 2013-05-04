@@ -36,13 +36,22 @@ class Page extends Controller
 
    public function updateAccessInfo()
    {
-      if ($this->request->uid > 0)
+      $uid = $this->request->uid;
+      if ($uid > 0)
       {
-         $user = new UserObject();
-         $user->uid = $this->request->uid;
+         $user = new UserObject($uid, 'lastAccessIPInt');
          $user->lastAccessTime = $this->request->timestamp;
-         $user->lastAccessIP = $this->request->ip;
-         $user->update('lastAccessTime,lastAccessIP');
+         $ip = (int) \ip2long($this->request->ip);
+         if ($ip != $user->lastAccessIPInt)
+         {
+            $user->lastAccessIPInt = $ip;
+            $user->update('lastAccessTime,lastAccessIPInt');
+            $this->cache->delete('authorPanel' . $uid);
+         }
+         else
+         {
+            $user->update('lastAccessTime');
+         }
       }
    }
 
@@ -81,89 +90,66 @@ class Page extends Controller
 
    public function setCSSJS()
    {
-      if ($this->request->umode == 'pc')
-      {
-         $js = array(
-            /*
-              '/themes/' . Template::$theme . '/js/cookie.js',
-              '/themes/' . Template::$theme . '/js/jquery-1.8.3.js',
-              '/themes/' . Template::$theme . '/js/jquery.upload-1.0.2.js',
-              '/markitup/jquery.markitup.js',
-              '/markitup/sets/bbcode/set.js',
-              '/themes/' . Template::$theme . '/js/superfish.js',
-              '/themes/' . Template::$theme . '/js/coin-slider.js',
-              '/themes/' . Template::$theme . '/js/jquery.MetaData.js',
-              '/themes/' . Template::$theme . '/js/jquery.rating.js',
-              '/themes/' . Template::$theme . '/js/main.js',
-             */
-            '/themes/' . Template::$theme . '/js/minpc_1354442581.js',
-         );
-         $css = array(
-            /*
-              '/themes/' . Template::$theme . '/css/default.css',
-              '/themes/' . Template::$theme . '/css/system.css',
-              '/themes/' . Template::$theme . '/css/houstonbbs.css',
-              '/themes/' . Template::$theme . '/css/html-elements.css',
-              '/themes/' . Template::$theme . '/css/advanced_forum.css',
-              '/themes/' . Template::$theme . '/css/advanced_forum-structure.css',
-              '/themes/' . Template::$theme . '/css/superfish.css',
-              '/markitup/skins/markitup/style.css',
-              '/markitup/sets/bbcode/style.css',
-              '/themes/' . Template::$theme . '/css/coin-slider-styles.css',
-              '/themes/' . Template::$theme . '/css/yp.css',
-              '/themes/' . Template::$theme . '/css/jquery.rating.css',
-              '/themes/' . Template::$theme . '/css/privatemsg-view.css',
-             */
-            '/themes/' . Template::$theme . '/css/minpc_1354442581.css',
-         );
-      }
-      elseif ($this->request->umode == 'mobile')
-      {
-         $js = array(
-            /*
-              '/themes/' . Template::$theme . '/js/cookie.js',
-              '/themes/' . Template::$theme . '/js/jquery-1.8.3.js',
-              '/themes/' . Template::$theme . '/js/jquery.upload-1.0.2.js',
-              '/markitup/jquery.markitup.js',
-              '/markitup/sets/bbcode/set.js',
-              '/themes/' . Template::$theme . '/js/superfish.js',
-              '/themes/' . Template::$theme . '/js/coin-slider.js',
-              '/themes/' . Template::$theme . '/js/jquery.MetaData.js',
-              '/themes/' . Template::$theme . '/js/jquery.rating.js',
-              '/themes/' . Template::$theme . '/js/main.js',
-             */
-            '/themes/' . Template::$theme . '/js/minmb_1354442581.js',
-         );
-         $css = array(
-            /*
-              '/themes/' . Template::$theme . '/css/default.css',
-              '/themes/' . Template::$theme . '/css/system.css',
-              '/themes/' . Template::$theme . '/css/houstonbbs.css',
-              '/themes/' . Template::$theme . '/css/html-elements.css',
-              '/markitup/skins/markitup/style.css',
-              '/markitup/sets/bbcode/style.css',
-             */
-            '/themes/' . Template::$theme . '/css/minmb_1354442581.css',
-         );
-      }
-      else // robot
-      {
-         return;
-      }
+      /*
+        $js = array(/*
+        '/themes/' . Template::$theme . '/js/cookie.js',
+        //'/themes/' . Template::$theme . '/js/jquery-1.8.3.js',
+        //'/themes/' . Template::$theme . '/js/jquery-1.9.1.js',
+        '/themes/' . Template::$theme . '/js/jquery.upload-1.0.2.js',
+        //'/markitup/jquery.markitup.js',
+        //'/markitup/sets/bbcode/set.js',
+        '/themes/' . Template::$theme . '/js/jquery.markitup.js',
+        '/themes/' . Template::$theme . '/js/jquery.markitup.bbcode.set.js',
+        '/themes/' . Template::$theme . '/js/hoverIntent.js',
+        '/themes/' . Template::$theme . '/js/superfish.js',
+        '/themes/' . Template::$theme . '/js/coin-slider.js',
+        '/themes/' . Template::$theme . '/js/jquery.MetaData.js',
+        '/themes/' . Template::$theme . '/js/jquery.rating.js',
+        '/themes/' . Template::$theme . '/js/main.js',
+        //'/themes/' . Template::$theme . '/js/minpc_1354442581.js',
+       * 
+       */
+      /*
+        );
+        $css = array(
+        /*
+        '/themes/' . Template::$theme . '/css/default.css',
+        '/themes/' . Template::$theme . '/css/system.css',
+        '/themes/' . Template::$theme . '/css/houstonbbs.css',
+        '/themes/' . Template::$theme . '/css/html-elements.css',
+        '/themes/' . Template::$theme . '/css/advanced_forum.css',
+        '/themes/' . Template::$theme . '/css/advanced_forum-structure.css',
+        '/themes/' . Template::$theme . '/css/superfish.css',
+        //'/markitup/skins/markitup/style.css',
+        //'/markitup/sets/bbcode/style.css',
+        '/themes/' . Template::$theme . '/css/markitup.style.css',
+        '/themes/' . Template::$theme . '/css/markitup.bbcode.css',
+        '/themes/' . Template::$theme . '/css/coin-slider-styles.css',
+        '/themes/' . Template::$theme . '/css/yp.css',
+        '/themes/' . Template::$theme . '/css/jquery.rating.css',
+        '/themes/' . Template::$theme . '/css/privatemsg-view.css',
+        //'/themes/' . Template::$theme . '/css/minpc_1354442581.css',
+       * 
+       */
+      /*
+        );
 
-      $head_css = '';
-      foreach ($css as $i)
-      {
-         $head_css .= '<link type="text/css" rel="stylesheet" media="all" href="' . $i . '" />';
-      }
-      $this->html->var['head_css'] = $head_css;
 
-      $head_js = '';
-      foreach ($js as $i)
-      {
-         $head_js .= '<script type="text/javascript" src="' . $i . '"></script>';
-      }
-      $this->html->var['head_js'] = $head_js;
+        $head_css = '';
+        foreach ($css as $i)
+        {
+        $head_css .= '<link rel="stylesheet" media="all" href="' . $i . '" />';
+        }
+        $this->html->var['head_css'] = $head_css;
+
+        $head_js = '';
+        foreach ($js as $i)
+        {
+        $head_js .= '<script src="' . $i . '"></script>';
+        }
+        $this->html->var['head_js'] = $head_js;
+       *
+       */
    }
 
 }

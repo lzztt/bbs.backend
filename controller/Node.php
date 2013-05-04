@@ -111,11 +111,9 @@ class Node extends Controller
          $this->request->pageNotFound();
       }
 
-      $isLoggedIn = ($this->request->uid > 0);
-
       $breadcrumb = '<a href="/forum">论坛</a>'
-         . ' > <a href="/forum/' . $tags[1]['tid'] . '">' . $tags[1]['name'] . '</a>'
-         . ' > <a href="/forum/' . $tags[2]['tid'] . '">' . $tags[2]['name'] . '</a>';
+            . ' > <a href="/forum/' . $tags[1]['tid'] . '">' . $tags[1]['name'] . '</a>'
+            . ' > <a href="/forum/' . $tags[2]['tid'] . '">' . $tags[2]['name'] . '</a>';
 
       $pageNo = $this->request->get['page'];
       $pageCount = ceil($node['commentCount'] / self::COMMENTS_PER_PAGE);
@@ -136,30 +134,17 @@ class Node extends Controller
       );
 
       $posts = array();
-      if ($this->request->umode == 'pc')
-      {
-         $authorPanelInfo = array(
-            'uid' => NULL,
-            'username' => NULL,
-            'avatar' => NULL,
-            'sex' => NULL,
-            'joinTime' => NULL,
-            'points' => NULL,
-         );
-      }
-      elseif ($this->request->umode == 'mobile')
-      {
-         $authorPanelInfo = array(
-            'uid' => NULL,
-            'username' => NULL,
-         );
-      }
-      else
-      {
-         $authorPanelInfo = array(
-            'username' => NULL,
-         );
-      }
+
+      $authorPanelInfo = array(
+         'uid' => NULL,
+         'username' => NULL,
+         'avatar' => NULL,
+         'sex' => NULL,
+         'accessIP' => NULL,
+         'joinTime' => NULL,
+         'points' => NULL,
+      );
+
 
       $timeFormat = 'l, m/d/Y - H:i T';
       if ($pageNo == 1)
@@ -175,14 +160,9 @@ class Node extends Controller
          $node['signature'] = \nl2br($node['signature']);
 
          $node['authorPanel'] = $this->authorPanel(\array_intersect_key($node, $authorPanelInfo));
+         $node['city'] = $this->request->getCityFromIP($node['accessIP']);
          $node['attachments'] = $this->attachments($node['files'], $node['body']);
-         $node['filesJSON'] = \json_encode($node['files']);
-
-         if ($node['nid'] == 23284 && $this->request->umode == self::UMODE_PC)
-         {
-            $weather = $this->loadController('Weather');
-            $node['HTMLbody'] = $weather->get_weather_div('77833') . $node['HTMLbody'];
-         }
+         $node['filesJSON'] = \json_encode($node['files']);         
 
          $posts[] = $node;
       }
@@ -205,6 +185,7 @@ class Node extends Controller
             $c['signature'] = \nl2br($c['signature']);
 
             $c['authorPanel'] = $this->authorPanel(\array_intersect_key($c, $authorPanelInfo));
+            $c['city'] = $this->request->getCityFromIP($c['accessIP']);
             $c['attachments'] = $this->attachments($c['files'], $c['body']);
             $c['filesJSON'] = \json_encode($c['files']);
 
@@ -212,19 +193,15 @@ class Node extends Controller
          }
       }
 
-      if ($isLoggedIn)
-      {
-         $editor_contents = array(
-            'display' => TRUE,
-            'title_display' => FALSE,
-            'node_title' => $node['title'],
-            'form_handler' => '/node/' . $node['nid'] . '/comment'
-         );
-         $editor = new Template('editor_bbcode', $editor_contents);
-      }
+      $editor_contents = array(
+         'show_title' => FALSE,
+         'title' => $node['title'],
+         'form_handler' => '/node/' . $node['nid'] . '/comment'
+      );
+      $editor = new Template('editor_bbcode', $editor_contents);
+
 
       $contents += array(
-         'isLoggedIn' => $isLoggedIn,
          'posts' => $posts,
          'editor' => $editor
       );
@@ -252,6 +229,7 @@ class Node extends Controller
             {
                $info['avatar'] = '/data/avatars/avatar0' . mt_rand(1, 5) . '.jpg';
             }
+            $info['city'] = $this->request->getCityFromIP($info['accessIP']);
             $authorPanel = new Template('author_panel_forum', $info);
             $this->cache->store('authorPanel' . $info['uid'], $authorPanel);
          }
@@ -263,11 +241,6 @@ class Node extends Controller
 
    private function attachments($files, $body)
    {
-      if ($this->request->umode === self::UMODE_ROBOT)
-      {
-         return;
-      }
-
       $attachments = NULL;
       $_files = array();
       $_images = array();
@@ -439,8 +412,6 @@ class Node extends Controller
 
    public function displayYellowPageAction()
    {
-      $isLoggedIn = ($this->request->uid > 0);
-
       $nodeObj = new NodeObject();
       $nid = \intval($this->request->args[1]);
       $node = $nodeObj->getYellowPageNode($nid);
@@ -455,8 +426,8 @@ class Node extends Controller
       }
 
       $breadcrumb = '<a href="/yp">黄页</a>'
-         . ' > <a href="/yp/' . $tags[1]['tid'] . '">' . $tags[1]['name'] . '</a>'
-         . ' > <a href="/yp/' . $tags[2]['tid'] . '">' . $tags[2]['name'] . '</a>';
+            . ' > <a href="/yp/' . $tags[1]['tid'] . '">' . $tags[1]['name'] . '</a>'
+            . ' > <a href="/yp/' . $tags[2]['tid'] . '">' . $tags[2]['name'] . '</a>';
 
       $pageNo = $this->request->get['page'];
       $pageCount = ceil($node['commentCount'] / self::COMMENTS_PER_PAGE);
@@ -510,7 +481,6 @@ class Node extends Controller
       }
 
       $contents += array(
-         'isLoggedIn' => $isLoggedIn,
          'node' => $node,
          'comments' => $cmts
       );
@@ -664,9 +634,9 @@ class Node extends Controller
 // display pm edit form
          $tags = $node->getTags($nid);
          $breadcrumb = '<a href="/forum">论坛</a>'
-            . ' > <a href="/forum/' . $tags[1]['cid'] . '">' . $tags[1]['name'] . '</a>'
-            . ' > <a href="/forum/' . $tags[2]['cid'] . '">' . $tags[2]['name'] . '</a>'
-            . ' > <a href="/node/' . $node->nid . '">' . $this->html->truncate($node->title, 45) . '</a>';
+               . ' > <a href="/forum/' . $tags[1]['cid'] . '">' . $tags[1]['name'] . '</a>'
+               . ' > <a href="/forum/' . $tags[2]['cid'] . '">' . $tags[2]['name'] . '</a>'
+               . ' > <a href="/node/' . $node->nid . '">' . $this->html->truncate($node->title, 45) . '</a>';
 
          $content = array(
             'breadcrumb' => $breadcrumb,

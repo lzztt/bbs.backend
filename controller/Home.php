@@ -30,12 +30,11 @@ class Home extends Controller
          'latestYellowPageReplies' => $this->getLatestYellowPageReplies(),
          'recentActivities' => $this->getRecentActivities(),
       );
-      if ($this->request->umode === self::UMODE_PC)
-      {
+
          $content += array(
             'imageSlider' => $this->getImageSlider(),
          );
-      }
+
       $this->html->var['content'] = new Template('home', $content);
    }
 
@@ -43,10 +42,9 @@ class Home extends Controller
    {
       $node = new Node();
       $r = $node->getNodeStat();
-      if ($this->request->umode == 'pc')
-      {
+
          $r['alexa'] = \strval(new Template('alexa'));
-      }
+
 
       $user = new User();
       $res = \array_merge($r, $user->getUserStat($this->request->timestamp - 300));
