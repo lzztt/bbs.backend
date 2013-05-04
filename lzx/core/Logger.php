@@ -10,10 +10,10 @@ class Logger
    const WARNING = 'WARNING';
    const ERROR = 'ERROR';
 
+   private $_userinfo;
    private $_dir;
    private $_file;
    private $_time;
-   public $userAgent = 'unknown';
 
    private function __construct($logDir, array $logFiles)
    {
@@ -68,6 +68,11 @@ class Logger
       return $this->_dir;
    }
 
+   public function setUserInfo($userinfo)
+   {
+      $this->_userinfo = $userinfo;
+   }
+
    public function info($str)
    {
       $this->_log($str, self::INFO, FALSE);
@@ -88,18 +93,19 @@ class Logger
       $this->_log($str, self::WARNING);
    }
 
-   public function error($str, $traces_to_ignore = 2)
+   public function error($str, $trace = TRUE)
    {
-      $this->_log($str, self::ERROR, TRUE, $traces_to_ignore);
+      $this->_log($str, self::ERROR, $trace);
    }
 
    private function _log($str, $type, $trace = TRUE, $traces_to_ignore = 2)
    {
-      $log = '[' . $this->_time . '] [' . $type . '] [' . $this->userAgent . "]\n[MSG] " . $str . \PHP_EOL;
+      $log = '[' . $this->_time . '] [' . $this->_userinfo . ']' . \PHP_EOL
+            . '[URI] ' . $_SERVER['REQUEST_URI'] . ' <' . $_SERVER['REMOTE_ADDR'] . '> ' . $_SERVER['HTTP_USER_AGENT'] . \PHP_EOL
+            . '[' . $type . '] ' . $str . \PHP_EOL;
 
       if ($trace)
       {
-         $log .= '[URI] ' . $_SERVER['REQUEST_URI'] . ' @ ' . $_SERVER['REMOTE_ADDR'] . ' : ' . $_SERVER['HTTP_USER_AGENT'] . \PHP_EOL;
          $log .= $this->_get_debug_print_backtrace($traces_to_ignore) . \PHP_EOL;
       }
 
@@ -119,8 +125,8 @@ class Logger
          {
             $object = isset($call['class']) ? $call['class'] . $call['type'] : '';
             $ret[] = '#' . \str_pad($i, 3, ' ')
-               . '[' . $object . $call['function'] . ']'
-               . ' called at [' . $call['file'] . ': ' . $call['line'] . ']';
+                  . '[' . $object . $call['function'] . ']'
+                  . ' called at [' . $call['file'] . ': ' . $call['line'] . ']';
          }
       }
 

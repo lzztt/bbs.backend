@@ -58,22 +58,18 @@ class Handler
    public static function exceptionHandler(\Exception $e)
    {
       $type = \get_class($e);
-      $msg = '[longzox] Uncaught exception: [' . $type . '] ' . $e->getMessage() . \PHP_EOL . $e->getTraceAsString();
+      $msg = '[longzox] Uncaught exception: [' . $type . '] ' . $e->getMessage();
       if (self::$logger instanceof Logger)
       {
-         self::$logger->error($msg);
+         self::$logger->error($msg . \PHP_EOL . $e->getTraceAsString(), FALSE);
       }
       else
       {
-         \error_log($msg);
+         \error_log($msg . \PHP_EOL . $e->getTraceAsString());
       }
       if (self::$showErrorOnPage)
       {
          echo '<pre>' . $msg . '</pre>';
-      }
-      else
-      {
-         echo '<pre>[longzox] Uncaught exception: [' . $type . '] ' . $e->getMessage() . '</pre>';
       }
    }
 

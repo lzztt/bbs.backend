@@ -154,7 +154,6 @@ class Forum extends Controller
 
    public function showForumTopic($forum)
    {
-      $isLoggedIn = ($this->request->uid != 0);
 
       $node = new Node();
       $nodeCount = $node->getNodeCount($forum['tid']);
@@ -181,16 +180,13 @@ class Forum extends Controller
          $nodes[$i]['lastCommentTime'] = date('m/d/Y H:i', $n['lastCommentTime']);
       }
 
-      if ($isLoggedIn)
-      {
-         $editor_contents = array(
-            'display' => FALSE,
-            'title_display' => TRUE,
-            'node_title' => '',
-            'form_handler' => '/forum/' . $forum['tid'] . '/node',
-         );
-         $editor = new Template('editor_bbcode', $editor_contents);
-      }
+      $editor_contents = array(
+         'display' => FALSE,
+         'title_display' => TRUE,
+         'node_title' => '',
+         'form_handler' => '/forum/' . $forum['tid'] . '/node',
+      );
+      $editor = new Template('editor_bbcode', $editor_contents);
 
       // build node forum cache map
       /*
@@ -202,7 +198,6 @@ class Forum extends Controller
        */
 
       $contents = array(
-         'isLoggedIn' => $isLoggedIn,
          'tid' => $forum['tid'],
          'boardName' => $board['name'],
          'boardDescription' => $board['description'],
@@ -228,12 +223,12 @@ class Forum extends Controller
       }
 
       $node = new Node();
-/*
-      if ($node->validatePostContent($this->request) !== TRUE)
-      {
-         $user = new UserObject();
-      }
-*/
+      /*
+        if ($node->validatePostContent($this->request) !== TRUE)
+        {
+        $user = new UserObject();
+        }
+       */
       $node->tid = $forum['tid'];
       $node->uid = $this->request->uid;
       $node->title = $this->request->post['title'];

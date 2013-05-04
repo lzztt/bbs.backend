@@ -109,7 +109,6 @@ class YP extends Controller
       }
 
       $contents = array(
-         'isLoggedIn' => $isLoggedIn,
          'tid' => $tid,
          'cateName' => $tags[$tid]['name'],
          'cateDescription' => $tags[$tid]['description'],

@@ -51,7 +51,7 @@ class Captcha extends Controller
    private function _generate_image($code, $format)
    {
       // Get font.
-      $font = $this->path['file'] . '/themes/' . Template::$theme . '/images/pc/Tuffy.ttf';
+      $font = $this->path['file'] . '/themes/' . Template::$theme . '/images/Tuffy.ttf';
 
       // get other settings
       $font_size = 36;

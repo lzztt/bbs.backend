@@ -27,10 +27,6 @@ class AD extends Controller
       $page->setPage();
 
       $this->cache->setStatus(FALSE);
-      if ($this->request->umode == self::UMODE_ROBOT)
-      {
-         $this->request->pageForbidden();
-      }
 
       $func = $this->request->args[1] ? $this->request->args[1] : 'yp';
       if (method_exists($this, $func))
@@ -41,6 +37,23 @@ class AD extends Controller
 
    public function yp()
    {
+       $form_yp_sp = <<<'YP_SP'
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="FKY5DLSE3T7SY">
+<table>
+<tr><td><input type="hidden" name="on0" value="Ad Months">Ad Months</td></tr><tr><td><select name="os0">
+	<option value="3 months">3 months $120.00 USD</option>
+	<option value="6 months">6 months $195.00 USD</option>
+	<option value="12 months">12 months $306.00 USD</option>
+</select> </td></tr>
+</table>
+<input type="hidden" name="currency_code" value="USD">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+YP_SP;
+       
       $form_yp = <<<'YP'
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_s-xclick">
@@ -77,6 +90,12 @@ YP;
 HEAD;
 
       $content = new HTMLElement('div', NULL);
+/*      
+      $form = new HTMLElement('div', NULL);
+      $form->setDataByIndex(NULL, new HTMLElement('h3', 'Yellow Page Web Advertisement (SH Home Remodeling)'));
+      $form->setDataByIndex(NULL, $form_yp_sp);
+      $content->setDataByIndex(NULL, $form);
+ */     
       $form = new HTMLElement('div', NULL);
       $form->setDataByIndex(NULL, new HTMLElement('h3', 'Yellow Page Web Advertisement'));
       $form->setDataByIndex(NULL, $form_yp);

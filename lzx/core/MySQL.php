@@ -2,15 +2,13 @@
 
 namespace lzx\core;
 
-use lzx\core\Logger;
+use lzx\core\DBException;
 
 class MySQL extends \mysqli
 {
 
    public static $queries = array();
-   public static $hasError = FALSE;
    public $debugMode = FALSE;
-   private $logger;
    private $db;
    private $result;
    private $r;
@@ -23,13 +21,12 @@ class MySQL extends \mysqli
 
       if ($this->connect_error)
       {
-         $this->logError('Could not connect to database: ' . $this->connect_error, NULL);
-         return;
+         throw new DBException('Could not connect to database: ' . $this->connect_error, $this->db);
       }
 
       if ($this->set_charset('utf8') === FALSE)
       {
-         $this->logError('Could not set default character set: ' . $this->error);
+         throw new DBException('Could not set default character set: ' . $this->error, $this->db);
       }
    }
 
@@ -49,7 +46,7 @@ class MySQL extends \mysqli
       }
 
       $required_config_keys = array('host', 'username', 'passwd', 'dbname');
-      if(!\is_object($config))
+      if (!\is_object($config))
       {
          $config = (object) $config;
       }
@@ -58,7 +55,7 @@ class MySQL extends \mysqli
       {
          if (empty($config->$key))
          {
-            throw new \Exception('missing database parameters : ' . $key);
+            throw new \InvalidArgumentException('missing database parameters : ' . $key);
          }
       }
 
@@ -76,29 +73,6 @@ class MySQL extends \mysqli
       return $instances[$key];
    }
 
-   public function setLogger(Logger $logger)
-   {
-      $this->logger = $logger;
-   }
-
-   private function logError($err, $sql = null)
-   {
-      self::$hasError = TRUE;
-      $log = "Database Error\n"
-         . (isset($this->db) ? '[DB] ' . $this->db . \PHP_EOL : '')
-         . (isset($sql) ? '[SQL] ' . $sql . \PHP_EOL : '')
-         . (empty($err) ? '' : '[DBMSG] ' . $err);
-
-      if ($this->logger instanceof Logger)
-      {
-         $this->logger->error(\trim($log), 4);
-      }
-      else
-      {
-         throw new \Exception('no logger found for MySQL object');
-      }
-   }
-
    /**
     * Returns result resource from given query
     *
@@ -107,11 +81,6 @@ class MySQL extends \mysqli
     */
    public function query($sql)
    {
-      if (self::$hasError)
-      {
-         return FALSE;
-      }
-
       if ($this->debugMode)
       {
          // query debug timer and info
@@ -126,7 +95,7 @@ class MySQL extends \mysqli
 
       if ($this->result === FALSE)
       {
-         $this->logError($this->error, $sql);
+         throw new DBException('Query error: ' . $this->error, $this->db, $sql);
       }
 
       return $this->result;

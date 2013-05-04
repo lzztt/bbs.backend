@@ -9,7 +9,6 @@ if (\PHP_SAPI === 'cli')
    $_SERVER['HTTP_HOST'] = 'www.longzox.com';
    $opts = \getopt('l::a::');
    $_SERVER['REQUEST_URI'] = $opts['l'] ? $opts['l'] : '/';
-   $_GET['umode'] = $opts['a'] ? $opts['a'] : 'pc';
 }
 
 require_once __DIR__ . '/lzx/WebApp.php';
