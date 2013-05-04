@@ -16,37 +16,48 @@ class Cache
 
    public static $status = FALSE;
    public $path;
-   public $umode;
-   public $urole;
    private $logger;
    private $public_zone;
    private $private_zone;
    private $map_zone;
 
-   private function __construct($path, $umode, $urole)
+   private function __construct($path)
    {
       $this->path = $path;
-      $this->umode = $umode;
-      $this->urole = $urole;
 
-      $this->public_zone = $path . '/public/' . $umode;
-      $this->private_zone = $path . '/private/' . $umode;
+      $this->public_zone = $path . '/public';
+      $this->private_zone = $path . '/private';
       $this->map_zone = $path . '/map';
 
-      $this->_runCommand(self::MKDIR . ' -p ' . $path . '/{public,private}/{pc,mobile,robot} ' . $path . '/map');
+      if (!is_dir($this->public_zone))
+      {
+         \mkdir($this->public_zone, 0755, TRUE);
+      }
+      if (!is_dir($this->private_zone))
+      {
+         \mkdir($this->private_zone, 0755, TRUE);
+      }
+      if (!is_dir($this->map_zone))
+      {
+         \mkdir($this->map_zone, 0755, TRUE);
+      }
    }
 
    /*
     * @return \lzx\core\Cache
     */
 
-   public static function getInstance($path = '', $umode = '', $urole = '')
+   public static function getInstance($path = NULL)
    {
       static $instance;
 
       if (!isset($instance))
       {
-         $instance = new self($path, $umode, $urole);
+         if (\is_null($path))
+         {
+            throw new \Exception('error: no instance available. A cache path is required to create a new cache instance');
+         }
+         $instance = new self($path);
       }
 
       return $instance;
@@ -77,8 +88,8 @@ class Cache
          return;
       }
 
-      if ($public) // gzip data for public cache file used by webserver
-      {
+      if ($public)
+      { // gzip data for public cache file used by webserver
          $data = \gzencode($data, 6); // use 6 as default and equal to webserver gzip compression level
       }
 
@@ -87,8 +98,8 @@ class Cache
    }
 
 // The function to fetch data returns false on failure
-   public function fetch($key) // only fetch unzipped files from private zone
-   {
+   public function fetch($key)
+   { // only fetch unzipped files from private zone
       if (!self::$status)
       {
          return FALSE;
@@ -131,13 +142,13 @@ class Cache
       // so all maps and caches will break, after this node and map get deleted
       // FIRST: delete self
       $_key = $this->_cleanKey($key);
-      if ($_key[0] === '/') // page cache, //robots don't have pages in private zone
-      {
-         $files = $this->path . '/{public/pc,public/mobile,public/robot,private/pc,private/mobile}' . $_key . '*#*.html*'; // include get parameters
+      if ($_key[0] === '/')
+      { // page cache, //robots don't have pages in private zone
+         $files = $this->path . '/{public,private}' . $_key . '*#*.html*'; // include get parameters
       }
-      else // fragment, only stored in private zone
-      {
-         $files = $this->path . '/{private/pc,private/mobile,private/robot}/' . $_key . '#*.txt';
+      else
+      { // fragment, only stored in private zone
+         $files = $this->path . '/private/' . $_key . '#*.txt';
       }
       $pmap = $this->_getMapName($key, FALSE);
       $cmap = $this->_getMapName($key);
@@ -168,7 +179,7 @@ class Cache
       {
          $children[] = $mapCacheKey;
          $fn_cmap = $this->_getMapName($key);
-         $c_stored = $this->_write($fn_cmap, implode(PHP_EOL, $children));
+         $c_stored = $this->_write($fn_cmap, \implode(\PHP_EOL, $children));
       }
 
       $parents = $this->_fetchRawMap($mapCacheKey, FALSE);
@@ -180,7 +191,7 @@ class Cache
       {
          $parents[] = $key;
          $fn_pmap = $this->_getMapName($mapCacheKey, FALSE);
-         $p_stored = $this->_write($fn_pmap, implode(PHP_EOL, $parents));
+         $p_stored = $this->_write($fn_pmap, \implode(\PHP_EOL, $parents));
       }
 
       return ($c_stored && $p_stored);
@@ -206,12 +217,12 @@ class Cache
       $fn = $this->_getMapName($key, $childMap);
 
       $lines = \trim($this->_read($fn));
-      return ($lines ? \array_unique(\explode(PHP_EOL, $lines)) : array());
+      return ($lines ? \array_unique(\explode(\PHP_EOL, $lines)) : array());
    }
 
    public function clearAllCache()
    {
-      $cmd = 'rm -rf ' . $this->path . '/* && mkdir -p ' . $this->path . '/{public,private}/{pc,mobile,robot} ' . $this->path . '/map';
+      $cmd = 'rm -rf ' . $this->path . '/* && mkdir -p ' . $this->path . '/{public,private,map}';
       $this->_runCommand($cmd);
       $this->logger->info("clear all cache\n[CMD] " . $cmd);
    }
@@ -220,7 +231,7 @@ class Cache
    {
       static $fileNames = array();
 
-      $cache_key = trim($key);
+      $cache_key = \trim($key);
 
       if (!\array_key_exists($cache_key, $fileNames))
       {
@@ -232,7 +243,7 @@ class Cache
 
          // page uri or fragment file key
          $_key = ($_key[0] === '/' ? 'p_' : 'f_') . trim($_key, '/');
-         $_key = preg_replace('/[^0-9a-z\.\_\-]/i', '_', $_key);
+         $_key = \preg_replace('/[^0-9a-z\.\_\-]/i', '_', $_key);
 
          $fileName[$cache_key] = $this->map_zone . '/' . $_key;
       }
@@ -245,7 +256,8 @@ class Cache
       try
       {
          // read only if exist!!
-         return \is_file($file) ? \file_get_contents($file) : FALSE;;
+         return \is_file($file) ? \file_get_contents($file) : FALSE;
+         ;
       }
       catch (\ErrorException $e)
       {
@@ -258,7 +270,7 @@ class Cache
    {
       try
       {
-         if (\file_put_contents($file, $data, LOCK_EX) !== FALSE)
+         if (\file_put_contents($file, $data, \LOCK_EX) !== FALSE)
          {
             return TRUE;
          }
@@ -285,23 +297,23 @@ class Cache
       \shell_exec($cmd);
    }
 
-   private function _getFileName($key, $public = FALSE) // get private file name by default
-   {
+   private function _getFileName($key, $public = FALSE)
+   { // get private file name by default
       static $fileNames = array();
       $cache_key = ($public ? 'public_' : 'private_') . $key;
 
       if (!\array_key_exists($cache_key, $fileNames))
       {
          $_key = $this->_cleanKey($key);
-         if ($_key[0] === '/') // page
-         {
-            if ($public) // output gz files, for webserver read
-            {
-               $fn = $this->public_zone . $_key . '#' . $this->urole . '.html.gz';
+         if ($_key[0] === '/')
+         { // page
+            if ($public)
+            { // output gz files, for webserver read
+               $fn = $this->public_zone . $_key . '.html.gz';
             }
-            else // use unzipped file, for php read and write
-            {
-               $fn = $this->private_zone . $_key . '#' . $this->urole . '.html';
+            else
+            { // use unzipped file, for php read and write
+               $fn = $this->private_zone . $_key . '.html';
             }
 
             // create dir if not exist
@@ -311,15 +323,15 @@ class Cache
                \mkdir($dir, 0755, TRUE);
             }
          }
-         else // fragment only in private zone, so ignore $public
-         {
+         else
+         { // fragment only in private zone, so ignore $public
             if ($public)
             {
                throw new \Exception('error: public zone can not have cache fragment');
             }
             else
             {
-               $fn = $this->private_zone . '/' . $_key . '#' . $this->urole . '.txt';
+               $fn = $this->private_zone . '/' . $_key . '.txt';
             }
          }
          $fileName[$cache_key] = $fn;
@@ -332,7 +344,7 @@ class Cache
    {
       static $keys = array();
 
-      $_key = trim($key);
+      $_key = \trim($key);
 
       if (!\array_key_exists($_key, $keys))
       {
@@ -341,13 +353,13 @@ class Cache
             throw new \Exception('error cache key : ' . $key);
          }
 
-         if ($_key[0] === '/') // page uri
-         {
-            $keys[$_key] = strpos($_key, '?') ? str_replace('?', '#', $_key) : ($_key . '#');
+         if ($_key[0] === '/')
+         { // page uri
+            $keys[$_key] = \strpos($_key, '?') ? \str_replace('?', '#', $_key) : ($_key . '#');
          }
-         else // fragment or map key
-         {
-            $keys[$_key] = preg_replace('/[^0-9a-z\.\_\-]/i', '_', $_key);
+         else
+         { // fragment or map key
+            $keys[$_key] = \preg_replace('/[^0-9a-z\.\_\-]/i', '_', $_key);
          }
       }
 

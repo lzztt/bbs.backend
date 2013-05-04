@@ -9,7 +9,6 @@ class Request
 
    public $domain;
    public $ip;
-   public $umode;
    public $uri;
    public $referer;
    public $args;
@@ -31,7 +30,6 @@ class Request
       $this->domain = $_SERVER['HTTP_HOST'];
       $this->ip = $_SERVER['REMOTE_ADDR'];
       $this->uri = $_SERVER['REQUEST_URI'];
-      $this->umode = $_GET['umode'];
 
       $this->timestamp = (int) $_SERVER['REQUEST_TIME'];
       $this->datetime = date('Y-m-d H:i:s T', $this->timestamp);
@@ -63,7 +61,7 @@ class Request
 
    private function _getAgent()
    {
-
+      
    }
 
    /*
@@ -167,6 +165,84 @@ class Request
       curl_close($c);
 
       return $data; // will return FALSE on failure
+   }
+
+   public function getCityFromIP($ip)
+   {
+      $city = 'N/A';
+
+      try
+      {
+         if (\is_null($ip))
+         {
+            return $city;
+         }
+
+         if (\is_numeric($ip))
+         {
+            $ip = \long2ip($ip);
+         }
+
+         $geo = \geoip_record_by_name($ip);
+
+         if ($geo['city'])
+         {
+            $city = $geo['city'];
+         }
+      }
+      catch (\Exception $e)
+      {
+         return 'UNKNOWN';
+      }
+
+      return $city;
+   }
+
+   public function getLocationFromIP($ip)
+   {
+      $location = 'N/A';
+
+      try
+      {
+         if (\is_null($ip))
+         {
+            return $location;
+         }
+
+         if (\is_numeric($ip))
+         {
+            $ip = \long2ip($ip);
+         }
+
+         $city = 'N/A';
+         $region = 'N/A';
+         $country = 'N/A';
+
+         $geo = \geoip_record_by_name($ip);
+
+         if ($geo['city'])
+         {
+            $city = $geo['city'];
+         }
+
+         if ($geo['country_name'])
+         {
+            $country = $geo['country_name'];
+         }
+
+         if ($geo['region'] && $geo['country_code'])
+         {
+            $region = \geoip_region_name_by_code($geo['country_code'], $geo['region']);
+         }
+
+         $location = $city . ', ' . $region . ', ' . $country;
+      }
+      catch (\Exception $e)
+      {
+         return 'UNKNOWN';
+      }
+
+      return $location;
    }
 
    public function pageNotFound($msg = NULL)

@@ -26,10 +26,6 @@ class IOstat extends Controller
       $page->setPage();
 
       $this->cache->setStatus(FALSE);
-      if ($this->request->umode !== 'pc')
-      {
-         $this->request->pageForbidden();
-      }
 
 
       $this->html->var['content'] = $this->sarchart();

@@ -240,16 +240,14 @@ table.forum-topics td.icon {
     clear: both;
     border-top:1px solid #CCCCCC;
     position: relative;
+    overflow: hidden;
 }
 
 /* Header at the top of each post */
 .post-info {
-    height:100%;
-    clear: both;
     margin-bottom: 3px;
     padding: 3px 10px;
     color:#006400;
-    height: 18px;
     background-color: #F0E68C;
 }
 
@@ -261,18 +259,14 @@ table.forum-topics td.icon {
     float: right;
 }
 
-.posted-on {
-    float: left;
-}
-
 /* Author information pane */
 /* Note: more CSS in the author pane css file */
-.forum-post-panel-sub {
+.forum-post-panel {
     float: left;
     width: 145px;
 }
 
-.forum-post-panel-sub .author-pane {
+.forum-post-panel .author-pane {
     margin: 5px 0 5px 10px;
 }
 
@@ -281,27 +275,24 @@ table.forum-topics td.icon {
 }
 
 /* Post text area */
-.forum-post-panel-main {
-    /*margin-left: 150px; /*Set left margin to LeftColumnWidth*/
-    min-height: 50px;
-    height: auto !important;
-    height: 350px;
+.forum-post-main {
+    margin-left: 150px; /*Set left margin to LeftColumnWidth*/
     width: 810px;
-    float: right;
 }
 
-.forum-post-panel-main .content {
+.forum-post-main .post-content {
     padding-top: 2px;
+    padding-bottom: 5px;
 }
 
-.forum-post-panel-main .post-title,
-.forum-post-panel-main .content {
+.forum-post-main .post-title,
+.forum-post-main .post-content {
     margin-left: 0;
     padding-left: 10px;
     overflow: hidden;
 }
 
-.forum-post-panel-main p {
+.forum-post-main p {
     margin-right: 10px;
 }
 
@@ -310,7 +301,6 @@ table.forum-topics td.icon {
     margin: 10px;
     padding: 3px 0;
     border-top:1px solid #CCCCCC;
-    clear:left;
     max-height: 38px;
     line-height:140%;
     overflow:hidden;
@@ -319,21 +309,14 @@ table.forum-topics td.icon {
 }
 
 /* Post footer */
-.forum-post-footer {
-    clear: both;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 810px;
+.post-footer {
     /*height: 100px;*/
     overflow: hidden;
 }
 
-.forum-post-links {
+.post-links {
     line-height: 2em;
     text-align: right;
-    margin: 5px;
-    max-height: 30px;
+    padding: 5px;
     overflow: hidden;
 }
-

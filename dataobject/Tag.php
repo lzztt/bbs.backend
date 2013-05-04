@@ -214,7 +214,7 @@ class Tag extends DataObject
       foreach ($tree['children'] as $branch)
       {
          $liMenu .= '<li><a title="' . $branch['name'] . '" href="/' . $type . '/' . $branch['tid'] . '">' . $branch['name'] . '</a>';
-         $liMenu .= '<ul style="visibility: hidden; display: none;">';
+         $liMenu .= '<ul style="display: none;">';
          foreach ($branch['children'] as $leaf)
          {
             $liMenu .= '<li><a title="' . $leaf['name'] . '" href="/' . $type . '/' . $leaf['tid'] . '">' . $leaf['name'] . '</a></li>';
