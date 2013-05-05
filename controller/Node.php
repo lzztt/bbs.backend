@@ -591,9 +591,9 @@ class Node extends Controller
       $comment->createTime = $this->request->timestamp;
       $comment->save();
 
-      if (isset($this->request->post['star_vote']) && \is_numeric($this->request->post['star_vote']))
+      if (isset($this->request->post['star']) && \is_numeric($this->request->post['star']))
       {
-         $rating = (int) $this->request->post['star_vote'];
+         $rating = (int) $this->request->post['star'];
          if ($rating > 0)
          {
             $node->updateRating($nid, $this->request->uid, $rating, $this->request->timestamp);

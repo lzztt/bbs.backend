@@ -62,7 +62,7 @@
 
          <div>
             <?php for ($i = 1; $i <= 10; $i++): ?>
-               <input name="star-avg" type="radio" class="star_vote {split:2}" disabled="disabled" <?php echo (((int) round($node['ratingAvg'] * 2)) == $i) ? 'checked="checked"' : ''; ?>/>
+               <input name="star-avg" type="radio" class="star {split:2}" disabled="disabled" <?php echo (((int) round($node['ratingAvg'] * 2)) == $i) ? 'checked="checked"' : ''; ?>/>
             <?php endfor; ?>
             <span> (<?php echo '平均分：' . round($node['ratingAvg'], 1) . '，' . $node['ratingCount'] . '人评过分'; ?>)</span>
          </div>
@@ -81,7 +81,7 @@
 
                   <div>
                      <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <input name ="star_<?php echo $c['id']; ?>" type="radio" class="star_vote" disabled="disabled" <?php echo ($c['rating'] == $i) ? 'checked="checked"' : ''; ?>/>
+                        <input name ="star_<?php echo $c['id']; ?>" type="radio" class="star" disabled="disabled" <?php echo ($c['rating'] == $i) ? 'checked="checked"' : ''; ?>/>
                      <?php endfor; ?>
                   </div>
 
@@ -110,12 +110,12 @@
                      <div id="edit-fivestar-rating-wrapper" class="form-item">
                         <label for="edit-fivestar-rating">星级评分: <span style="font-size: 0.929em; font-weight: normal;">(每位用户只有最新的一次星级评分在系统中有效，如果您不想更新星级评分，可以忽略此选项。)</span></label>
 
-                        <input name="star_vote" type="radio" class="star_vote" value="1" title="非常差"/>
-                        <input name="star_vote" type="radio" class="star_vote" value="2" title="差"/>
-                        <input name="star_vote" type="radio" class="star_vote" value="3" title="一般"/>
-                        <input name="star_vote" type="radio" class="star_vote" value="4" title="好"/>
-                        <input name="star_vote" type="radio" class="star_vote" value="5" title="非常好"/>
-                        <span style="margin: 0pt 0pt 0pt 20px;" id="star_vote_tip"></span>
+                        <input name="star" type="radio" class="star" value="1" title="非常差"/>
+                        <input name="star" type="radio" class="star" value="2" title="差"/>
+                        <input name="star" type="radio" class="star" value="3" title="一般"/>
+                        <input name="star" type="radio" class="star" value="4" title="好"/>
+                        <input name="star" type="radio" class="star" value="5" title="非常好"/>
+                        <span style="margin: 0pt 0pt 0pt 20px;" id="star_tip"></span>
                      </div>
                      <div id="edit-comment-wrapper" class="form-item">
                         <label for="edit-comment">评论:<span title="此项必填。" class="form-required">*</span></label>
