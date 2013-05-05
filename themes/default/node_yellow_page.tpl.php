@@ -102,7 +102,7 @@
       <?php endif; ?>
 
       <div class="box">
-         <div class="box-inner user">
+         <div class="box-inner" data-urole='<?php echo $urole_user; ?>'>
             <h2 class="title">发表评论</h2>
             <div id="editor-div">
                <form id="editor-form" method="post" accept-charset="UTF-8" action="/node/<?php echo $nid; ?>/comment">
