@@ -60,7 +60,6 @@ $func($path, $logger, $config);
 function do_user($path, $logger, $config)
 {
    $db = MySQL::getInstance($config->database, TRUE);
-   $db->setLogger($logger);
 
    $user = new User();
    $user->where('status', NULL, '=');
@@ -126,7 +125,6 @@ function do_activity($path, $logger, $config)
    $refreshTimeFile = $path['log'] . '/activity_cache_refresh_time.txt';
 
    $db = MySQL::getInstance($config->database, TRUE);
-   $db->setLogger($logger);
 
    $activities = $db->select('SELECT a.startTime, n.nid, n.title, u.username, u.email FROM activities AS a JOIN nodes AS n ON a.nid = n.nid JOIN users AS u ON n.uid = u.uid WHERE a.status IS NULL');
    if (\sizeof($activities) > 0)
@@ -238,7 +236,6 @@ function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $cu
 function do_session($path, $logger, $config)
 {
    $db = MySQL::getInstance($config->database, TRUE);
-   $db->setLogger($logger);
    $currentTime = \intval($_SERVER['REQUEST_TIME']);
    $db->query('DELETE FROM sessions WHERE uid = 0 AND mtime < ' . ($currentTime - 21600));
    $db->query('DELETE FROM sessions WHERE mtime < ' . ($currentTime - $config->cookie->lifetime));
@@ -249,7 +246,6 @@ function do_backup($path, $logger, $config)
 {
    // clean database before backup
    $db = MySQL::getInstance($config->database, TRUE);
-   $db->setLogger($logger);
    $db->query('CALL clean()');
    $db->free();
    unset($db);
@@ -263,7 +259,6 @@ function do_backup($path, $logger, $config)
    echo \shell_exec($cmd);
    /*
      $db = MySQL::getInstance($config->database, TRUE);
-     $db->setLogger($logger);
 
      $db->query('CALL clean()');
      //get all of the tables
