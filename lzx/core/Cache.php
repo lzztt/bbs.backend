@@ -294,7 +294,6 @@ class Cache
    private function _runCommand($cmd)
    {
       $cmd = self::NOHUP . ' ' . self::BASH . ' -c "' . $cmd . '" 1 >> ' . $this->path . '/cache.log 2>&1 &'; // non-block command
-      \error_log($cmd);
       \shell_exec($cmd);
    }
 
