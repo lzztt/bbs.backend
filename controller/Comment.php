@@ -47,9 +47,9 @@ class Comment extends Controller
       $file->updateFileList($files, $comment->nid, $cid);
       $this->cache->delete('imageSlider');
 
-      if (isset($this->request->post['star_vote']) && \is_numeric($this->request->post['star_vote']))
+      if (isset($this->request->post['star']) && \is_numeric($this->request->post['star']))
       {
-         $rating = (int) $this->request->post['star_vote'];
+         $rating = (int) $this->request->post['star'];
          if ($rating > 0)
          {
             $node = new Node();
