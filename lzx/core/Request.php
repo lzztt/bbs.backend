@@ -209,7 +209,7 @@ class Request
             return $location;
          }
 
-         if (\is_numeric($ip))
+         if (\filter_var($action, \FILTER_VALIDATE_INT, array('options' => array('min_range' => 0, 'max_range' => 4294967295))))
          {
             $ip = \long2ip($ip);
          }
