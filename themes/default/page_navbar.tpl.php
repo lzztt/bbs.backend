@@ -27,13 +27,13 @@
          <ul class="sf-menu" data-urole='<?php echo $urole_user; ?>'>
             <li data-umode='<?php echo $umode_mobile; ?>'><a href="/" title="首页">首页</a></li>
             <li><a id="pm" class="popup" href="/user/pm" title="短信">短信</a></li>
-            <li><a class="popup" href="/user" title="我的账户">我的账户</a></li>
+            <li><a class="popup" href="/user/display" title="我的账户">我的账户</a></li>
             <li><a class="popup" href="/user/logout" title="登出">登出</a></li>
             <li style="border-right:0px;"><a class="view_switch" data-umode='<?php echo $umode_pc; ?>' href="#mobile" title="切换到手机版">手机版</a><a class="view_switch" data-umode='<?php echo $umode_mobile; ?>' href="#pc" title="切换到电脑版">电脑版</a></li>
          </ul>
          <ul class="sf-menu" data-urole='<?php echo $urole_guest; ?>'>
             <li data-umode='<?php echo $umode_mobile; ?>'><a href="/" title="首页">首页</a></li>
-            <li data-umode='<?php echo $umode_mobile; ?>'><a class="popup" href="/user" title="登录">登录</a></li>
+            <li data-umode='<?php echo $umode_mobile; ?>'><a class="popup" href="/user/login" title="登录">登录</a></li>
             <li data-umode='<?php echo $umode_pc; ?>'>
                <label for="username">用户名:</label>
                <input id="edit-name" class="form-text" type="text" required="required" placeholder="用户名" maxlength="50" name="username" size="15" value="">
