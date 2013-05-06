@@ -32,14 +32,14 @@ class Request
       $this->uri = $_SERVER['REQUEST_URI'];
 
       $this->timestamp = (int) $_SERVER['REQUEST_TIME'];
-      $this->datetime = date('Y-m-d H:i:s T', $this->timestamp);
+      $this->datetime = \date('Y-m-d H:i:s T', $this->timestamp);
 
       $this->args = $this->getURIargs();
       $this->post = $this->_toUTF8($_POST);
       $this->get = $this->_toUTF8($_GET);
       $this->files = $this->getUploadFiles();
 
-      $arr = explode($this->domain, $_SERVER['HTTP_REFERER']);
+      $arr = \explode($this->domain, $_SERVER['HTTP_REFERER']);
       $this->referer = sizeof($arr) > 1 ? $arr[1] : '/';
    }
 
@@ -140,29 +140,29 @@ class Request
 
    public function redirect($uri = NULL)
    {
-      if (is_null($uri))
+      if (\is_null($uri))
       {
          $uri = $this->referer;
       }
-      header('Location: ' . $uri);
+      \header('Location: ' . $uri);
       exit; // terminate excuation
    }
 
    public function hashURI($uri = NULL)
    {
-      return substr(session_id(), -3) . substr(md5($uri ? $uri : $_SERVER['REQUEST_URI']), -5);
+      return \substr(\session_id(), -3) . \substr(md5($uri ? $uri : $_SERVER['REQUEST_URI']), -5);
    }
 
    public function curlGetData($url)
    {
-      $c = curl_init($url);
-      curl_setopt_array($c, array(
+      $c = \curl_init($url);
+      \curl_setopt_array($c, array(
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_CONNECTTIMEOUT => 2,
          CURLOPT_TIMEOUT => 3
       ));
-      $data = curl_exec($c);
-      curl_close($c);
+      $data = \curl_exec($c);
+      \curl_close($c);
 
       return $data; // will return FALSE on failure
    }
@@ -269,7 +269,7 @@ class Request
 
    private function _toUTF8($in)
    {
-      if (is_array($in))
+      if (\is_array($in))
       {
          $out = array();
          foreach ($in as $key => $value)
@@ -279,15 +279,15 @@ class Request
          return $out;
       }
 
-      if (is_string($in) && !mb_check_encoding($in, "UTF-8"))
+      if (\is_string($in) && !\mb_check_encoding($in, "UTF-8"))
       { // user input data is trimed and cleaned here, escapte html tags
-         return utf8_encode($in);
+         return \utf8_encode($in);
          //return utf8_encode(trim(preg_replace('/<[^>]*>/', '', $in)));
          //to trim all tags: preg_replace('/<[^>]*>/', '',  trim($in))
          //to escape tags: str_replace(array('<', '>'), array('&lt;', '&gt;'), trim($in))
       }
 
-      return trim(preg_replace('/<[^>]*>/', '', $in));
+      return \trim(\preg_replace('/<[^>]*>/', '', $in));
    }
 
    // this is controller's job
