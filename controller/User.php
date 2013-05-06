@@ -37,11 +37,11 @@ class User extends Controller
          {
             $action = $args[1];
             // uri = /user/<uid> ...
-            if (\filter_var($action, \FILTER_VALIDATE_INT, array('min_range' => 1)))
+            if (\filter_var($action, \FILTER_VALIDATE_INT, array('options' => array('min_range' => 1))))
             {
                // will need to set this cookie here!
                $this->cookie->loginReferer = $this->request->uri;
-               $this->request->redirect('/user');
+               $this->request->redirect('/user/login');
             }
          }
       }
@@ -49,23 +49,13 @@ class User extends Controller
       else
       {
          $this->cache->setStatus(FALSE); // we don't cache at page level, different users have different PM page
-
-         if (\sizeof($args) == 1) // uri = /user
+         // no uid provided, uri = /user/<action>
+         if (!\filter_var($args[1], FILTER_VALIDATE_INT, array('options' => array('min_range' => 1))))
          {
-            $args[] = $this->request->uid;
+            $args = \array_merge(array($args[0], $this->request->uid), \array_slice($args, 1));
             $this->request->args = $args;
          }
-         else
-         {
-            $uid = $args[1];
-            // uri = /user/<action>
-            if (!\filter_var($uid, FILTER_VALIDATE_INT, array('min_range' => 1)))
-            {
-               $args = \array_merge(array($args[0], $this->request->uid), \array_slice($args, 1));
-               $this->request->args = $args;
-            }
-         }
-         $action = sizeof($args) > 2 ? $args[2] : 'display';
+         $action = \sizeof($args) > 2 ? $args[2] : 'display';
       }
 
       try
@@ -144,7 +134,7 @@ class User extends Controller
          $form->addElements($fieldset);
          $terms = new HTMLElement('fieldset', new HTMLElement('legend', '网站使用规范和免责声明'));
          $terms->addElements(
-            new HTMLElement('a', '网站使用规范', array('href' => '/node/23200')), new HTMLElement('br'), new HTMLElement('a', '免责声明', array('href' => '/term'))
+               new HTMLElement('a', '网站使用规范', array('href' => '/node/23200')), new HTMLElement('br'), new HTMLElement('a', '免责声明', array('href' => '/term'))
          );
          $form->addElements($terms);
          $form->setButton(array('submit' => '同意使用规范和免责声明，并创建新帐号'));
@@ -748,7 +738,7 @@ class User extends Controller
          $mailboxList = $this->html->linkTabs(array(
             '/user/' . $user->uid . '/pm/inbox' => '收件箱',
             '/user/' . $user->uid . '/pm/sent' => '发件箱'
-            ), $activeLink
+               ), $activeLink
          );
 
          $pageNo = (int) $this->request->get['page'];
