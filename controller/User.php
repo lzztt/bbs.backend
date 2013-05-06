@@ -332,7 +332,8 @@ class User extends Controller
       {
          $this->request->redirect('/');
       }
-
+      
+      $this->cache->setStatus(FALSE);      
       $ref = $this->request->referer;
       $guestActions = array('/user', '/user/login', '/user/register', '/user/password', '/user/username');
       //update page redirection
@@ -350,7 +351,13 @@ class User extends Controller
             $this->session->uid = $user->uid;
             $this->cookie->uid = $user->uid;
             $this->cookie->urole = ($user->uid == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
-            $this->request->redirect($this->cookie->loginReferer);
+            $referer = '/';
+            if ($this->cookie->loginReferer)
+            {
+               $referer = $this->cookie->loginReferer;
+               unset($this->cookie->loginReferer);
+            }
+            $this->request->redirect($referer);
          }
          elseif (isset($user->uid))
          {
