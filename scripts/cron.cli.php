@@ -69,7 +69,7 @@ function do_user($path, $logger, $config)
    if (\sizeof($users) > 0)
    {
       $mailer = new Mailer($config->mail->domain);
-      Template::$path = $path['theme'] . '/' . $config->theme . '/' . 'pc';
+      Template::$path = $path['theme'] . '/' . $config->theme;
       foreach ($users as $u)
       {
          $password = $user->randomPW(); // will send generated password to email
@@ -120,7 +120,7 @@ function do_node($path, $logger, $config)
 function do_activity($path, $logger, $config)
 {
    $cacheKey = 'recentActivities';
-   $cache = Cache::getInstance($config->cache_path, 'pc', 'member');
+   $cache = Cache::getInstance($config->cache_path);
    $cache->setLogger($logger);
    $refreshTimeFile = $path['log'] . '/activity_cache_refresh_time.txt';
 
@@ -130,7 +130,7 @@ function do_activity($path, $logger, $config)
    if (\sizeof($activities) > 0)
    {
       $mailer = new Mailer($config->mail->domain);
-      Template::$path = $path['theme'] . '/' . $config->theme . '/' . 'pc';
+      Template::$path = $path['theme'] . '/' . $config->theme;
 
       foreach ($activities as $a)
       {

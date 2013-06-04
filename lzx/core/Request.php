@@ -248,15 +248,22 @@ class Request
    public function pageNotFound($msg = NULL)
    {
       \header('Content-Type: text/html; charset=UTF-8');
-      \header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+      \header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
       exit($msg ? $msg : '404 Not Found :(');
       // terminate excuation
+   }
+   
+   public function pageServerError($msg = NULL)
+   {
+      \header('Content-Type: text/html; charset=UTF-8');
+      \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error');
+      exit($msg ? $msg : '500 Server Error :(');
    }
 
    public function pageForbidden($msg = NULL)
    {
       \header('Content-Type: text/html; charset=UTF-8');
-      \header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
+      \header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
       exit($msg ? $msg : '403 Forbidden :(');
       // terminate excuation
    }

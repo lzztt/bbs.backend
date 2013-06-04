@@ -65,7 +65,7 @@ class User extends Controller
       catch (\Exception $e)
       {
          $this->logger->error($e->getMessage());
-         $this->request->pageNotFound();
+         $this->request->pageServerError();
       }
    }
 
@@ -697,7 +697,7 @@ class User extends Controller
       $info[] = array('dt' => '注册时间', 'dd' => \date('m/d/Y H:i:s T', $user->createTime));
       $info[] = array('dt' => '上次登录时间', 'dd' => \date('m/d/Y H:i:s T', $user->lastAccessTime));
 
-      $info[] = array('dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP($user->lastAccessIP));
+      $info[] = array('dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP($user->lastAccessIPInt));
 
       $dlist = $this->html->dlist($info);
 
