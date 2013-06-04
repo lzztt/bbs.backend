@@ -49,7 +49,7 @@ class Node extends DataObject
       $sql = 'SELECT n.nid, n.title, n.weight, n.viewCount, n.createTime, n.uid AS createrUID, u.username AS createrName, '
          . 'IFNULL((SELECT c.createTime FROM comments AS c WHERE c.nid = n.nid ORDER BY c.createTime DESC LIMIT 1), n.createTime) AS lastUpdateTime '
          . 'FROM nodes AS n JOIN users AS u ON n.uid = u.uid '
-         . 'WHERE (n.status > 0 AND n.tid = ' . (int) $tid . ') OR n.nid IN (22860, 23200) '
+         . 'WHERE (n.status > 0 AND n.tid = ' . (int) $tid . ') OR n.nid IN (22860, 23200, 25295) '
          . 'ORDER BY n.weight DESC, lastUpdateTime DESC ' . $limit . ' ' . $offset;
 
       $list = $this->_db->select($sql);
@@ -298,7 +298,7 @@ class Node extends DataObject
 
    public function getLatestImmigrationPosts()
    {
-      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 11';
+      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 10';
       return $this->_db->select($sql);
    }
 

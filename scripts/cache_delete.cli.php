@@ -54,7 +54,7 @@ if(\sizeof($cacheKeys) < 1)
    exit;
 }
 
-$cache = Cache::getInstance($config->cache_path, 'pc', 'member');
+$cache = Cache::getInstance($config->cache_path);
 $cache->setLogger($logger);
 foreach($cacheKeys as $k)
 {
