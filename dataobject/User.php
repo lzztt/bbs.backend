@@ -57,7 +57,7 @@ class User extends DataObject
 
    public function randomPW()
    {
-      $chars = 'aABCdEeFfGHiKLMmNPRrSTWXY23456789@#$-_=';
+      $chars = 'aABCdEeFfGHiKLMmNPRrSTWXY23456789@#$=';
       $salt = \substr(\str_shuffle($chars), 0, 3);
       return $salt . \substr(\str_shuffle($chars), 0, 7); // will send generated password to email
    }
