@@ -332,8 +332,8 @@ class User extends Controller
       {
          $this->request->redirect('/');
       }
-      
-      $this->cache->setStatus(FALSE);      
+
+      $this->cache->setStatus(FALSE);
       $ref = $this->request->referer;
       $guestActions = array('/user', '/user/login', '/user/register', '/user/password', '/user/username');
       //update page redirection
@@ -420,6 +420,54 @@ class User extends Controller
       return $this->html->linkTabs($tabs, $active_link);
    }
 
+   // switch to user or back to super user
+   public function switchAction()
+   {
+      // switch to user
+      if ($this->session->uid == self::ROOT_UID)
+      {
+         if (\filter_var($this->request->args[3], FILTER_VALIDATE_INT, array('options' => array('min_range' => 2))))
+         {
+            $user = new UserObject($this->request->args[3], 'username');
+            if ($user->exists())
+            {
+               $this->logger->info('switching from user ' . $this->session->uid . ' to user ' . $user->uid . '[' . $user->username . ']');
+               $this->session->suid = $this->session->uid;
+               $this->session->uid = $user->uid;
+               $this->cookie->uid = $user->uid;
+               $this->cookie->urole = ($user->uid == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
+               $this->html->var['content'] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
+            }
+            else
+            {
+               $this->error('user does not exist');
+            }
+         }
+         else
+         {
+            $this->error('invalid user id');
+         }
+      }
+      // switch back to super user
+      elseif (isset($this->session->suid))
+      {
+         $suid = $this->session->suid;
+         unset($this->session->suid);
+         if ($suid == self::ROOT_UID)
+         {
+            $this->logger->info('switching back from user ' . $this->request->uid . ' to user ' . $suid);
+            $this->session->uid = $suid;
+            $this->cookie->uid = $suid;
+            $this->cookie->urole = ($suid == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
+            $this->html->var['content'] = 'not logged out, just switched back to super user';
+         }
+      }
+      else
+      {
+         $this->request->pageNotFound();
+      }
+   }
+
 // user logout
    public function logoutAction()
    {
@@ -427,6 +475,13 @@ class User extends Controller
       {
          $this->cookie->urole = Template::UROLE_GUEST;
          $this->request->redirect('/');
+      }
+
+      // logout to switch back to super user
+      if (isset($this->session->suid))
+      {
+         $this->runAction('switch');
+         return;
       }
 
       $this->cache->setStatus(FALSE);

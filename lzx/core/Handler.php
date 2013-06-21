@@ -14,7 +14,7 @@ class Handler
    private static $errorHandler;
    private static $exceptionHandler;
    public static $logger;
-   public static $showErrorOnPage = FALSE;
+   public static $displayError = True;
 
    public static function setErrorHandler()
    {
@@ -48,10 +48,10 @@ class Handler
             \set_exception_handler($handler);
             self::$exceptionHandler = $handler;
          }
-      }
-      else
-      {
-         throw new \Exception('failed to set exception handler');
+         else
+         {
+            throw new \Exception('failed to set exception handler');
+         }
       }
    }
 
@@ -67,10 +67,13 @@ class Handler
       {
          \error_log($msg . \PHP_EOL . $e->getTraceAsString());
       }
-      if (self::$showErrorOnPage)
+
+      if (self::$displayError)
       {
-         echo '<pre>' . $msg . '</pre>';
+         echo $msg. \PHP_EOL;
       }
    }
 
 }
+
+//_END_OF_FILE
