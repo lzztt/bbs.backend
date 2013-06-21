@@ -174,8 +174,7 @@ class YP extends Controller
          $node->tid = $tid;
          $node->uid = $this->request->uid;
          $node->title = $this->request->post['title'];
-         $keys = array('address', 'phone', 'email', 'website', 'fax', 'introduction');
-         $node->body = $this->request->post['introduction'];
+         $node->body = $this->request->post['body'];
          $node->createTime = $this->request->timestamp;
          $node->status = 1;
          $node->save();

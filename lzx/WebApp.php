@@ -92,11 +92,11 @@ class WebApp
          }
 
          // display errors on page if not in production stage
-         Handler::$showErrorOnPage = ($this->config->stage !== 'production');
+         Handler::$displayError = ($this->config->stage !== 'production');
       }
       catch (\Exception $e)
       {
-         $msg = '[longzox] framework WebApp initialization error: [' . $type . '] ' . $e->getMessage();
+         $msg = '[longzox] WebApp initialization error: ' . $e->getMessage();
          if ($this->logger instanceof Logger)
          {
             $this->logger->error($msg . \PHP_EOL . $e->getTraceAsString(), FALSE);
@@ -105,7 +105,7 @@ class WebApp
          {
             \error_log($msg . \PHP_EOL . $e->getTraceAsString());
          }
-         exit('<pre>' . $msg . '</pre>');
+         exit($msg);
       }
 
       // website is offline
