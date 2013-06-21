@@ -221,7 +221,21 @@ class Forum extends Controller
       {
          $this->error('Topic title or body is too short.');
       }
-
+/*
+      // check region
+      $region = \geoip_record_by_name($this->request->ip);
+      if ($region === FALSE || $region['region'] != 'TX')
+      {
+         // do spam check
+         $node->checkspam($uid);
+         // 3 nodes in 3 minutes
+         // 6 commnets in 1 minute
+      }
+      
+      // check duplicate
+      $node->checkduplicate()
+      
+*/
       $node = new Node();
       /*
         if ($node->validatePostContent($this->request) !== TRUE)

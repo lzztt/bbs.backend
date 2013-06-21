@@ -6,6 +6,7 @@ $config = array(
    //'stage' => 'testing',
    //'stage' => 'production',
    //'cache' => TRUE,
+   'cache' => FALSE,
    'database' => array(
       'host' => 'p:localhost',
       'username' => 'web',
@@ -39,12 +40,5 @@ if ($config['domain'] === 'houstonbbs.com')
 {
    $config['stage'] = 'production';
    $config['cache'] = TRUE;
-}
-
-if ($_SERVER['REMOTE_ADDR'] != '99.89.57.251' && \substr($_SERVER['REMOTE_ADDR'], 0, 10) != '192.168.1.')
-{
-   \header('Content-Type: text/html; charset=UTF-8');
-   \header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
-   exit('404 Not Found :(');
 }
 //__END_OF_FILE__
