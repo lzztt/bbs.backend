@@ -298,7 +298,7 @@ class Node extends DataObject
 
    public function getLatestImmigrationPosts()
    {
-      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 10';
+      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 11';
       return $this->_db->select($sql);
    }
 
