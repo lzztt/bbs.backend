@@ -11,8 +11,8 @@
 
             <div class="forum-top-links">
                <ul class="links forum-links">
-                  <li data-urole='<?php echo $urole_user; ?>'><a class="reply button" href="/node/<?php echo $nid; ?>/comment">评论</a></li>
-                  <li data-urole='<?php echo $urole_guest; ?>'>您需要先<a href="/user">登录</a>或<a href="/user/register">注册</a>才能发表评论</li>
+                  <li data-urole='<?php echo $urole_user; ?>'><a rel="nofollow" class="reply button" href="/node/<?php echo $nid; ?>/comment">评论</a></li>
+                  <li data-urole='<?php echo $urole_guest; ?>'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表评论</li>
                </ul>
             </div>
 
@@ -89,8 +89,8 @@
 
                   <div class="post-links user">
                      <ul class="links inline forum-links">
-                        <li><a title="Edit" class="edit button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $c['uid']; ?>" id="<?php echo $c['type'] . '-' . $c['id']; ?>-edit" href="<?php echo '/' . $c['type'] . '/' . $c['id'] . '/edit'; ?>">编辑</a></li>
-                        <li><a title="Delete" class="delete button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $c['uid']; ?>" id="<?php echo $c['type'] . '-' . $c['id']; ?>-delete" href="<?php echo '/' . $c['type'] . '/' . $c['id'] . '/delete'; ?>">删除</a></li>
+                        <li><a rel="nofollow" title="Edit" class="edit button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $c['uid']; ?>" id="<?php echo $c['type'] . '-' . $c['id']; ?>-edit" href="<?php echo '/' . $c['type'] . '/' . $c['id'] . '/edit'; ?>">编辑</a></li>
+                        <li><a rel="nofollow" title="Delete" class="delete button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $c['uid']; ?>" id="<?php echo $c['type'] . '-' . $c['id']; ?>-delete" href="<?php echo '/' . $c['type'] . '/' . $c['id'] . '/delete'; ?>">删除</a></li>
                      </ul>
                   </div>
                   <div id="<?php echo $c['type'] . '-' . $c['id']; ?>-raw" style="display:none;">
@@ -131,7 +131,7 @@
             </div>
          </div>
          <div class="box-inner" data-urole='<?php echo $urole_guest; ?>'>
-            您需要先<a href="/user">登录</a>或<a href="/user/register">注册</a>才能发表评论
+            您需要先<a rel="nofollow" href="/user">登录</a>或<a rel="nofollow" href="/user/register">注册</a>才能发表评论
          </div>
       </div> <!-- /box-inner, /box -->
    </div>
