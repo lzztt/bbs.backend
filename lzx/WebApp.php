@@ -12,6 +12,7 @@ use lzx\core\Session;
 use lzx\core\Cookie;
 use lzx\core\Cache;
 use lzx\html\Template;
+use lzx\core\Mailer;
 
 /**
  *
@@ -85,6 +86,10 @@ class WebApp
 
          // load site config and class config
          $this->config = Config::getInstance($siteDir . '/config.php');
+         $mailer = new Mailer($this->config->domain, 'logger');
+         $mailer->to = $this->config->webmaster;
+         $this->logger->setMailer($mailer);
+         
          if (\is_null($this->config->cache))
          {
             // enable cache if cache not set and not in developemtn stage
@@ -165,6 +170,7 @@ class WebApp
       $this->registerHookEventListener();
 
       // start template
+      Template::setLogger($this->logger);
       Template::$theme = $this->config->theme;
       Template::$path = $this->path['theme'] . '/' . $this->config->theme;
       $html = new Template('html');

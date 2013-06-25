@@ -2,6 +2,11 @@
 
 namespace lzx\core;
 
+use lzx\core\Mailer;
+
+/**
+ * @param Mailer $_mailer
+ */
 class Logger
 {// static class instead of singleton
 
@@ -14,14 +19,15 @@ class Logger
    private $_dir;
    private $_file;
    private $_time;
+   private $_mailer = NULL;
 
    private function __construct($logDir, array $logFiles)
    {
       $file_default = array(
          self::INFO => 'php_info.log',
          self::DEBUG => 'php_debug.log',
-         self::WARNING => 'php_debug.log',
-         self::ERROR => 'php_debug.log',
+         self::WARNING => 'php_warning.log',
+         self::ERROR => 'php_error.log',
       );
       $this->_dir = $logDir;
       $this->_time = \date('Y-m-d H:i:s T', (int) $_SERVER['REQUEST_TIME']);
@@ -32,6 +38,16 @@ class Logger
          $this->_file[$logLevel] = $logDir . '/' . $files[$logLevel];
       }
    }
+   
+   /**
+    * 
+    * @staticvar array $instances
+    * @param type $logDir
+    * @param array $logFiles
+    * @param type $setAsDefault
+    * @return Logger
+    * @throws \InvalidArgumentException
+    */
 
    public static function getInstance($logDir = NULL, array $logFiles = array(), $setAsDefault = FALSE)
    {
@@ -72,6 +88,11 @@ class Logger
    {
       $this->_userinfo = $userinfo;
    }
+   
+   public function setMailer(Mailer $mailer)
+   {
+      $this->_mailer = $mailer;
+   }
 
    public function info($str)
    {
@@ -107,6 +128,13 @@ class Logger
       if ($trace)
       {
          $log .= $this->_get_debug_print_backtrace($traces_to_ignore) . \PHP_EOL;
+      }
+      
+      if ($type == self::ERROR && isset($this->_mailer))
+      {
+         $this->_mailer->subject = 'web error: ' . $_SERVER['REQUEST_URI'];
+         $this->_mailer->body = $log;
+         $this->_mailer->send();
       }
 
       file_put_contents($this->_file[$type], $log, \FILE_APPEND | \LOCK_EX);
