@@ -2,12 +2,9 @@
 
 namespace lzx\html;
 
+use lzx\core\Logger;
 use lzx\html\HTMLElement;
 
-/**
- *
- *
- */
 class Template
 {
 
@@ -22,6 +19,12 @@ class Template
    public static $path;
    public static $theme;
    private static $status = TRUE;
+
+   /**
+    * @var Logger $logger
+    * @static Logger $logger
+    */
+   private static $logger = NULL;
    //private static $tpl_cache = array(); // pool for rendered templates without $var
    public $tpl;
    public $var = array(); // controller need to fill this array (or an array Theme can access)
@@ -60,13 +63,22 @@ class Template
       catch (\Exception $e)
       {
          \ob_end_clean();
-         $output = '[longzox] Error: failed to render template ' . $this->tpl . '<br />'
-               . 'Message: ' . $e->getMessage();
+         if (isset(self::$logger))
+         {
+            self::$logger->error($e->getMessage());
+         }
+         $output = '[longzox template error]';
+
          self::$status = FALSE;
          //$output .= \nl2br(\print_r($e, TRUE));
       }
 
       return $output;
+   }
+
+   public static function setLogger(Logger $logger)
+   {
+      self::$logger = $logger;
    }
 
    public static function getStatus()

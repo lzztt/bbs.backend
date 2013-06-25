@@ -12,8 +12,8 @@
 
          <div class="forum-top-links">
             <ul class="links forum-links">
-               <li data-urole='<?php echo $urole_user; ?>'><a class="bb-create-node button" href="/forum/<?php echo $tid; ?>/node">发表新话题</a></li>
-               <li data-urole='<?php echo $urole_guest; ?>'>您需要先<a href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题</li>
+               <li data-urole='<?php echo $urole_user; ?>'><a rel="nofollow" class="bb-create-node button" href="/forum/<?php echo $tid; ?>/node">发表新话题</a></li>
+               <li data-urole='<?php echo $urole_guest; ?>'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题</li>
             </ul>
          </div>
 

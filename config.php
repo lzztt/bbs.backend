@@ -27,10 +27,7 @@ $config = array(
    //'path' => '/',
    //'domain' => $config['domain'],
    ),
-   'mail' => array(
-      'user' => 'no-reply',
-   //'domain' => $config['domain'],
-   ),
+   'webmaster' => NULL,
 );
 
 // make this file immutable

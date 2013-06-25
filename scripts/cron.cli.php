@@ -23,10 +23,8 @@ class MyApp extends App
       $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
       // load site config and class config
       $this->config = Config::getInstance($this->path['root'] . '/config.php');
-      
-      $domain = 'houstonbbs.com';
-      $this->config->domain = $domain;
-      $this->config->mail->domain = $domain;
+
+      $this->config->domain = 'houstonbbs.com';
 
       $this->path['theme'] = $this->path['root'] . '/themes';
       $this->path['backup'] = $this->path['root'] . '/backup';
@@ -58,8 +56,8 @@ class MyApp extends App
 
       if (\sizeof($users) > 0)
       {
-         $mailer = new Mailer($this->config->mail->domain);
-         Template::$this->path = $this->path['theme'] . '/' . $this->config->theme;
+         $mailer = new Mailer($this->config->domain);
+         Template::$path = $this->path['theme'] . '/' . $this->config->theme;
          foreach ($users as $u)
          {
             $password = $user->randomPW(); // will send generated password to email
@@ -107,8 +105,8 @@ class MyApp extends App
       $activities = $db->select('SELECT a.startTime, n.nid, n.title, u.username, u.email FROM activities AS a JOIN nodes AS n ON a.nid = n.nid JOIN users AS u ON n.uid = u.uid WHERE a.status IS NULL');
       if (\sizeof($activities) > 0)
       {
-         $mailer = new Mailer($this->config->mail->domain);
-         Template::$this->path = $this->path['theme'] . '/' . $this->config->theme;
+         $mailer = new Mailer($this->config->domain);
+         Template::$path = $this->path['theme'] . '/' . $this->config->theme;
 
          foreach ($activities as $a)
          {
