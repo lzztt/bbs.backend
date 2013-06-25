@@ -59,7 +59,7 @@ class Node extends Controller
 
       if ($action !== 'display' && $this->request->uid == 0)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
 
@@ -311,7 +311,7 @@ class Node extends Controller
 
       if ($this->request->uid != 1 && $this->request->uid != $node->uid)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
 
@@ -346,7 +346,7 @@ class Node extends Controller
 
       if ($this->request->uid != 1 && $this->request->uid != $node->uid)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
 
@@ -493,7 +493,7 @@ class Node extends Controller
       $this->cache->setStatus(FALSE);
       if ($this->request->uid != 1)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
 
@@ -552,7 +552,7 @@ class Node extends Controller
       $this->cache->setStatus(FALSE);
       if ($this->request->uid != 1)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
       $nid = \intval($this->request->args[1]);
@@ -625,7 +625,7 @@ class Node extends Controller
 
       if ($this->request->uid != $node->uid && $this->request->uid != 1)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->error('错误：您只能将自己发表的帖子发布为活动。');
       }
 

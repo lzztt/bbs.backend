@@ -4,15 +4,13 @@ namespace lzx\core;
 
 class Mailer
 {
-
-   const SIGNATURE = "\n\n-----------------\nThe HoustonBBS Team";
-
    public $domain;
    public $from;
    public $to;
    public $subject;
    public $is_html = FALSE;
    public $body;
+   public $signature = "\n\n-----------------\nThe HoustonBBS Team";
 
    public function __construct($domain = NULL, $from = 'noreply')
    {
@@ -41,10 +39,10 @@ class Mailer
          return FALSE;
       }
 
-      $subject = "=?UTF-8?B?" . base64_encode(trim(str_replace(array("\r", \PHP_EOL, "\r\n"), "", $this->subject))) . "?=";
-      $body = $this->body . self::SIGNATURE;
+      $subject = "=?UTF-8?B?" . \base64_encode(trim(str_replace(array("\r", \PHP_EOL, "\r\n"), "", $this->subject))) . "?=";
+      $body = $this->body . $this->signature;
 
-      if (mail($this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain))
+      if (\mail($this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain))
       {
          return TRUE;
       }

@@ -16,7 +16,7 @@ class Comment extends Controller
    {
       if ($this->request->uid == 0)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
       $action = $this->request->args[2];
@@ -35,7 +35,7 @@ class Comment extends Controller
       $comment = new CommentObject($cid, 'nid,uid');
       if ($this->request->uid != 1 && $this->request->uid != $comment->uid)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
       $comment->body = $this->request->post['body'];
@@ -70,7 +70,7 @@ class Comment extends Controller
 
       if ($this->request->uid != 1 && $this->request->uid != $comment->uid)
       {
-         $this->logger->error('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
          $this->request->pageForbidden();
       }
 

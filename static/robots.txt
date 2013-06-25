@@ -93,12 +93,19 @@ Disallow: /?q=user/register/
 Disallow: /?q=user/login/
 Disallow: /?*
 Disallow: /boost_stats.php
+Disallow: /*sort*
 Disallow: /*order*
 Disallow: /*layout*
 Disallow: /.*
 # block access to files
 Disallow: /*.
 Disallow: /*.*
+# block non-guest action pages
+Disallow: /*/commet
+Disallow: /*/edit
+Disallow: /*/delete
+Disallow: /node/*/activity
+Disallow: /forum/*/node
 
 User-agent: *
 Disallow: /
