@@ -19,6 +19,7 @@ class FindYouFindMe extends Controller
    private $tea_start = '2011-08-21';
    private $rich_start = '2012-03-11';
    private $thirty_start = '2013-03-19';
+   private $thirty_two_start = '2013-08-16';
    private $db;
 
    public function run()
@@ -30,6 +31,7 @@ class FindYouFindMe extends Controller
       $this->tea_start = \strtotime($this->tea_start);
       $this->rich_start = \strtotime($this->rich_start);
       $this->thirty_start = \strtotime($this->thirty_start);
+      $this->thirty_two_start = \strtotime($this->thirty_two_start);
 
       $func = ($this->request->args[1] ? $this->request->args[1] : 'show') . 'Action';
       if (\method_exists($this, $func))
@@ -49,7 +51,7 @@ class FindYouFindMe extends Controller
 
    public function nodeAction()
    {
-      $this->request->redirect('/node/24037');
+      $this->request->redirect('/node/32576');
    }
 
    // show activity details
@@ -146,8 +148,8 @@ class FindYouFindMe extends Controller
 
       $contents = array(
          'name' => $attendee->name,
-         'male' => $this->db->val('SELECT count(*) FROM fyfm_attendees WHERE sex = 1 AND time > ' . $this->thirty_start),
-         'female' => $this->db->val('SELECT count(*) FROM fyfm_attendees WHERE sex = 0 AND time > ' . $this->thirty_start)
+         'male' => $this->db->val('SELECT count(*) FROM fyfm_attendees WHERE sex = 1 AND time > ' . $this->thirty_two_start),
+         'female' => $this->db->val('SELECT count(*) FROM fyfm_attendees WHERE sex = 0 AND time > ' . $this->thirty_two_start)
       );
 
 
@@ -210,12 +212,13 @@ class FindYouFindMe extends Controller
    public function viewComment()
    {
       $db = $this->db;
-      $comments = $db->select('SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->thirty_start . ' ORDER BY cid ASC');
+      $comments = $db->select('SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->thirty_two_start . ' ORDER BY cid ASC');
+      $comments_thirty = $db->select('SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->thirty_start . ' AND time < ' . $this->thirty_two_start . ' ORDER BY cid ASC');
       $comments_rich = $db->select('SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->rich_start . ' AND time < ' . $this->thirty_start . ' ORDER BY cid ASC');
       $comments_tea = $db->select('SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->tea_start . ' AND time < ' . $this->rich_start . ' ORDER BY cid ASC');
       $comments_qixi = $db->select('SELECT name, body, time FROM fyfm_comments WHERE time < ' . $this->tea_start . ' ORDER BY cid ASC');
 
-      return new Template('FFview_comment', array('comments' => $comments, 'comments_rich' => $comments_rich, 'comments_tea' => $comments_tea, 'comments_qixi' => $comments_qixi));
+      return new Template('FFview_comment', array('comments' => $comments, 'comments_thirty' => $comments_thirty, 'comments_rich' => $comments_rich, 'comments_tea' => $comments_tea, 'comments_qixi' => $comments_qixi));
    }
 
    // private attendee info
@@ -225,17 +228,17 @@ class FindYouFindMe extends Controller
       {
          $this->request->pageNotFound();
       }
-      if ($this->request->timestamp < strtotime("04/06/2013 22:00:00 CDT"))
+      if ($this->request->timestamp < strtotime("09/14/2013 22:00:00 CDT"))
       {
          $this->html->var['content'] = "<p>ERROR: The page you request is not available yet.<BR />You will get the final contact list after attending the activity</p>";
          return;
       }
 
-      if ($this->request->timestamp < strtotime("04/08/2013 22:00:00 CDT"))
+      if ($this->request->timestamp < strtotime("09/16/2013 22:00:00 CDT"))
       {
          $db = $this->db;
          $content = array(
-            'attendees' => $db->select('SELECT a.name, a.sex, a.email, a.time, c.body FROM fyfm_attendees as a left join fyfm_comments as c on a.cid = c.cid WHERE a.time > ' . $this->thirty_start . ' order by a.aid'),
+            'attendees' => $db->select('SELECT a.name, a.sex, a.email, a.time, c.body FROM fyfm_attendees as a left join fyfm_comments as c on a.cid = c.cid WHERE a.time > ' . $this->thirty_two_start . ' order by a.aid'),
             //'ageGroup' => $db->select('SELECT sex, age, count(*) AS count FROM fyfm_attendees WHERE time > ' . $this->thirty_start . ' GROUP by sex, age order by sex, age')
          );
 
@@ -366,11 +369,26 @@ class FindYouFindMe extends Controller
          '七夕' => $this->getAgeStatJSON(1312350024, 1313607290),
          '得闲饮茶' => $this->getAgeStatJSON(1313941540, 1315549125),
          '有钱人' => $this->getAgeStatJSON(1331521805, 1332011793),
+         '三十看从前' => $this->getAgeStatJSON(1363746005, 1376629987),
       );
 
       $stat = array();
-
-      $sanshi = $this->getAgeStatJSON(1363746005, 1463746005);
+      
+      $sanshi_two = $this->getAgeStatJSON(1376629987, 1463746005);
+      $stat[] = array(
+         array(
+            'title' => '三十看从前聚会(二) 女生 (' . $sanshi_two[0]['total'] . ')人',
+            'data' => $sanshi_two[0]['json'],
+            'div_id' => 'div_sanshi_two_female'
+         ),
+         array(
+            'title' => '三十看从前聚会(二) 男生 (' . $sanshi_two[1]['total'] . ')人',
+            'data' => $sanshi_two[1]['json'],
+            'div_id' => 'div_sanshi_two_male'
+         ),
+      );
+      
+      $sanshi = $this->getAgeStatJSON(1363746005, 1376629987);
       $stat[] = array(
          array(
             'title' => '三十看从前聚会 女生 (' . $sanshi[0]['total'] . ')人',
@@ -436,14 +454,14 @@ class FindYouFindMe extends Controller
          . ' (SELECT count(*) FROM fyfm_counts) AS visitorCount,'
          . ' (SELECT sum(count) FROM fyfm_counts) AS hitCount,'
          . ' (SELECT count(*) FROM fyfm_comments) AS commentCount,'
-         . ' (SELECT count(*) FROM fyfm_attendees WHERE time > 1363912925) as attendeeCount,'
-         . ' (SELECT count(*) FROM fyfm_attendees WHERE sex = 1 and time > 1363912925) as maleCount,'
-         . ' (SELECT count(*) FROM fyfm_attendees WHERE sex = 0 and time > 1363912925) as femaleCount,'
+         . ' (SELECT count(*) FROM fyfm_attendees WHERE time > 1376629987) as attendeeCount,'
+         . ' (SELECT count(*) FROM fyfm_attendees WHERE sex = 1 and time > 1376629987) as maleCount,'
+         . ' (SELECT count(*) FROM fyfm_attendees WHERE sex = 0 and time > 1376629987) as femaleCount,'
          . ' (SELECT count(*) FROM fyfm_subscribers) as subscriberCount';
       $r = $this->db->row($sql);
-      $r['attendeeCount_prev'] = 148;
-      $r['maleCount_prev'] = 83;
-      $r['femaleCount_prev'] = 65;
+      $r['attendeeCount_prev'] = 193;
+      $r['maleCount_prev'] = 110;
+      $r['femaleCount_prev'] = 83;
       $footer = new Template('FFpage_footer', $r);
 
       if ($return)

@@ -55,14 +55,7 @@ class Convert extends Controller
          $n = new Node();
          $n->nid = $nd['nid'];
          $n->body = $arr['introduction'];
-         if ($n->body)
-         {
-            $n->update('body');
-         }
-         else
-         {
-            $n->setNULL('body');
-         }
+         $n->update('body');
          echo 'updated ' . $n->nid;
       }
    }

@@ -68,19 +68,19 @@ class Select extends FormElement
          {
             $i++;
             $option = new HTMLElement('li');
-            $input_id = \implode('_', array($type, $this->name, $i));
-            $input_attr = array(
-               'id' => $input_id,
+            $option_id = \implode('_', array($type, $this->name, $i));
+            $option_attr = array(
+               'id' => $option_id,
                'type' => $type,
                'name' => $this->name,
                'value' => $value
             );
-            if (in_array($value, $this->_value))
+            if (\in_array($value, $this->_value))
             {
-               $input_attr['checked'] = 'checked';
+               $option_attr['checked'] = 'checked';
             }
-            $option->addElements(new HTMLElement('input', NULL, array_merge($this->attributes, $input_attr)));
-            $option->addElements(new HTMLElement('label', $text, array('for' => $input_id)));
+            $option->addElements(new HTMLElement('option', NULL, array_merge($this->attributes, $option_attr)));
+            $option->addElements(new HTMLElement('label', $text, array('for' => $option_id)));
             $list->addElements($option);
          }
       }
@@ -91,11 +91,11 @@ class Select extends FormElement
          {
             $attr['multiple'] = 'multiple';
          }
-         $list = new HTMLElement('select', NULL, array_merge($this->attributes, $attr));
+         $list = new HTMLElement('select', NULL, \array_merge($this->attributes, $attr));
          foreach ($this->options as $value => $text)
          {
-            $option_attr['value'] = $value;
-            if (in_array($value, $this->_value))
+            $option_attr = array('value' => $value);
+            if (\in_array($value, $this->_value))
             {
                $option_attr['selected'] = 'selected';
             }
