@@ -86,10 +86,14 @@ class WebApp
 
          // load site config and class config
          $this->config = Config::getInstance($siteDir . '/config.php');
-         $mailer = new Mailer($this->config->domain, 'logger');
-         $mailer->to = $this->config->webmaster;
-         $this->logger->setMailer($mailer);
-         
+         $webmaster = $this->config->webmaster;
+         if (\filter_var($webmaster, \FILTER_VALIDATE_EMAIL))
+         {
+            $mailer = new Mailer($this->config->domain, 'logger');
+            $mailer->to = $webmaster;
+            $this->logger->setMailer($mailer);
+         }
+
          if (\is_null($this->config->cache))
          {
             // enable cache if cache not set and not in developemtn stage
@@ -193,7 +197,7 @@ class WebApp
       $ctrler->session = $session;
       $ctrler->cookie = $cookie;
       $ctrler->run();
-
+      
       $html = (string) $html;
 
       // output page content
@@ -226,7 +230,15 @@ class WebApp
             {
                if (!\in_array($key, $get_keys))
                {
-                  $this->logger->error('unsupport GET key:' . $key);
+                  $umode = $this->getUmode($this->getCookie());
+                  if ($umode == Template::UMODE_ROBOT)
+                  {
+                     $this->logger->warn('unsupport GET key:' . $key);
+                  }
+                  else
+                  {
+                     $this->logger->error('unsupport GET key:' . $key);
+                  }
                   return FALSE;
                }
             }
@@ -251,15 +263,15 @@ class WebApp
          if (!\in_array($umode, array(Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT)))
          {
             $agent = $_SERVER['HTTP_USER_AGENT'];
-            if (\preg_match('/(iPhone|Android|BlackBerry)/i', $agent))
-            {
-               // if ($http_user_agent ~ '(iPhone|Android|BlackBerry)') {
-               $umode = Template::UMODE_MOBILE;
-            }
-            elseif (\preg_match('/(http|Yahoo|bot)/i', $agent))
+            if (\preg_match('/(http|Yahoo|bot)/i', $agent))
             {
                $umode = Template::UMODE_ROBOT;
                //}if ($http_user_agent ~ '(http|Yahoo|bot)') {
+            }
+            elseif (\preg_match('/(iPhone|Android|BlackBerry)/i', $agent))
+            {
+               // if ($http_user_agent ~ '(iPhone|Android|BlackBerry)') {
+               $umode = Template::UMODE_MOBILE;
             }
             else
             {
@@ -322,6 +334,11 @@ class WebApp
       return $session;
    }
 
+   /**
+    * 
+    * @staticvar type $cookie
+    * @return Cookie
+    */
    public function getCookie()
    {
       static $cookie;
