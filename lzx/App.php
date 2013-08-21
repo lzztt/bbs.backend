@@ -5,6 +5,8 @@ namespace lzx;
 use lzx\core\ClassLoader;
 use lzx\core\Handler;
 use lzx\core\Logger;
+use lzx\core\Config;
+use lzx\core\Mailer;
 
 /**
  *
@@ -61,6 +63,16 @@ abstract class App
          Handler::$logger = $this->logger;
          // set ExceptionHandler
          Handler::setExceptionHandler();
+
+         // load site config and class config
+         $this->config = Config::getInstance($appDir . '/config.php');
+         $webmaster = $this->config->webmaster;
+         if (\filter_var($webmaster, \FILTER_VALIDATE_EMAIL))
+         {
+            $mailer = new Mailer($this->config->domain, 'logger');
+            $mailer->to = $webmaster;
+            $this->logger->setMailer($mailer);
+         }
       }
       catch (\Exception $e)
       {

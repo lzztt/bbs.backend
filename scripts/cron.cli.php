@@ -10,22 +10,19 @@ use lzx\html\Template;
 use lzx\core\Cache;
 use site\dataobject\User;
 
-$siteDir = \dirname(__DIR__);
+$_SITEDIR = \dirname(__DIR__);
+// note: cache path in php and nginx are using server_name
+$_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
+// $config->domain need http_host
+$_SERVER['HTTP_HOST'] = 'www.houstonbbs.com';
 
-require_once $siteDir . '/lzx/App.php';
+require_once $_SITEDIR . '/lzx/App.php';
 
 class MyApp extends App
 {
 
    public function run($argc, $argv)
    {
-      // note: cache path in php and nginx are using servername
-      $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
-      // load site config and class config
-      $this->config = Config::getInstance($this->path['root'] . '/config.php');
-
-      $this->config->domain = 'houstonbbs.com';
-
       $this->path['theme'] = $this->path['root'] . '/themes';
       $this->path['backup'] = $this->path['root'] . '/backup';
 
@@ -138,7 +135,7 @@ class MyApp extends App
          $newActivityStartTime = $activities[0]['startTime'];
          if ($refreshTime < $currentTime || $refreshTime > $newActivityStartTime)
          {
-            updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime);
+            $this->updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime);
          }
 
          $mailer->to = 'admin@houstonbbs.com';
@@ -242,7 +239,7 @@ class MyApp extends App
 
 }
 
-$app = new MyApp(__NAMESPACE__, $siteDir);
+$app = new MyApp(__NAMESPACE__, $_SITEDIR);
 
 $app->run($argc, $argv);
 

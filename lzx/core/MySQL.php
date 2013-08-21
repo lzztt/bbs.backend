@@ -9,6 +9,8 @@ class MySQL extends \mysqli
 
    public static $queries = array();
    public $debugMode = FALSE;
+   private $hasError = FALSE;
+   private $autoCommitStatus = TRUE;
    private $db;
    private $result;
    private $r;
@@ -21,16 +23,73 @@ class MySQL extends \mysqli
 
       if ($this->connect_error)
       {
-         throw new DBException('Could not connect to database: ' . $this->connect_error, $this->db);
+         $this->dbError('Could not connect to database: ' . $this->connect_error);
       }
+
+      $this->beginTransaction();
 
       if ($this->set_charset('utf8') === FALSE)
       {
-         throw new DBException('Could not set default character set: ' . $this->error, $this->db);
+         $this->dbError('Could not set default character set: ' . $this->error);
       }
    }
 
-   // Singleton methord for each database
+   private function dbError($msg, $sql = NULL)
+   {
+      $this->hasError = TRUE;
+      throw new DBException($msg, $this->db, $sql);
+   }
+
+   public function autocommit($status)
+   {
+      if ($this->autoCommitStatus != $status)
+      {
+         if (parent::autocommit($status))
+         {
+            $this->autoCommitStatus = $status;
+         }
+         else
+         {
+            $this->dbError('Failed to set autocommit: ' . $this->error);
+         }
+      }
+   }
+
+   public function beginTransaction()
+   {
+      $this->autocommit(FALSE);
+   }
+
+   public function endTransaction()
+   {
+      if (!$this->autoCommitStatus)
+      {
+         if ($this->hasError == FALSE)
+         {
+            if ($this->commit() == FALSE)
+            {
+               $this->dbError('Failed commit: ' . $this->error);
+            }
+         }
+         else
+         {
+            if ($this->rollback() == FALSE)
+            {
+               $this->dbError('Failed rollback: ' . $this->error);
+            }
+         }
+         $this->autocommit(TRUE);
+      }
+   }
+
+   public function __destruct()
+   {
+      $this->endTransaction();
+      // do not close! otherwise session handler won't work!
+      //$this->close();
+   }
+
+// Singleton methord for each database
    /**
     * @return MySQL|mysqli
     */
@@ -83,7 +142,7 @@ class MySQL extends \mysqli
    {
       if ($this->debugMode)
       {
-         // query debug timer and info
+// query debug timer and info
          $_timer = \microtime(TRUE);
          $this->result = parent::query($sql);
          self::$queries[] = \sprintf('%8.6f', \microtime(TRUE) - $_timer) . ' : ' . $sql;
@@ -95,7 +154,7 @@ class MySQL extends \mysqli
 
       if ($this->result === FALSE)
       {
-         throw new DBException('Query error: ' . $this->error, $this->db, $sql);
+         $this->dbError('Query error: ' . $this->error, $sql);
       }
 
       return $this->result;

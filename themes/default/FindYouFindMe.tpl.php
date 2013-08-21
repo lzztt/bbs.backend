@@ -34,7 +34,7 @@
 
    </head>
    <body>
-      <a href="/node/24037" id="activity" style="display: none; visibility: hidden;">4月6日(周六) 三十看从前</a>
+      <a href="/node/32576" id="activity" style="display: none; visibility: hidden;">9月14日(周六) 三十看从前(二)</a>
       <div id="wrapper">
          <div class="b5" id="bar">
             <div class="b1"></div>
