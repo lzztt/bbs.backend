@@ -31,6 +31,7 @@ class Comment extends DataObject
    {
       $this->_db->query('INSERT INTO files_deleted (fid, path) SELECT fid, path FROM files AS f WHERE f.cid = ' . $this->cid);
       $this->_db->query('DELETE c, f FROM comments AS c LEFT JOIN files AS f ON c.cid = f.cid WHERE c.cid = ' . $this->cid);
+      /*
       if (\is_null($this->uid))
       {
          $this->load('uid');
@@ -39,6 +40,7 @@ class Comment extends DataObject
       {
          $this->_db->query('UPDATE users SET points = points - 1 WHERE uid = ' . $this->uid);
       }
+       */
    }
 
 }

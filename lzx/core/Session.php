@@ -59,15 +59,15 @@ class Session
 
       $this->_db = MySQL::getInstance();
 
-      session_set_save_handler(array($this, 'open'), array($this, 'close'), array($this, 'read'), array($this, 'write'), array($this, 'destroy'), array($this, 'gc'));
-      session_start();
+      \session_set_save_handler(array($this, 'open'), array($this, 'close'), array($this, 'read'), array($this, 'write'), array($this, 'destroy'), array($this, 'gc'));
+      \session_start();
 
       if (!isset($this->uid))
       {
          $this->uid = 0;
       }
    }
-
+   
    /**
     * Return the Session object
     *
@@ -106,7 +106,8 @@ class Session
    public function write($sid, $data)
    {
       $timestamp = (int) $_SERVER['REQUEST_TIME'];
-      $this->_db->query('REPLACE INTO sessions (sid,data,mtime,uid) VALUES (' . $this->_db->str($sid) . ', ' . $this->_db->str($data) . ',' . $timestamp . ',' . $this->uid . ')');
+      $this->_db->query('INSERT INTO sessions (sid,data,mtime,uid) VALUES (' . $this->_db->str($sid) . ', ' . $this->_db->str($data) . ',' . $timestamp . ',' . $this->uid . ')' .
+         ' ON DUPLICATE KEY UPDATE data = VALUES(data), mtime = VALUES(mtime), uid = VALUES(uid)');
       return TRUE;
    }
 
