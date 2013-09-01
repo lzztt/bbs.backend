@@ -201,7 +201,7 @@ class User extends Controller
             $_timestamp = strtotime( $user->birthday );
             $user->birthday = is_int( $_timestamp ) ? $_timestamp : null;
          }
-         $user->save();
+         $user->add();
          $this->html->var['content'] = '感谢注册！您的帐号已被创建并等待管理员激活，一般会在一小时之内被激活，初始密码将在帐号被激活后邮寄至您的注册电子邮箱。<br />如果您在一小时之内没有收到帐号激活的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
       }
    }
@@ -698,7 +698,7 @@ class User extends Controller
 
          $user->birthday = (int) ($this->request->post['byear'] . $this->request->post['bmonth'] . $this->request->post['bday']);
 
-         $user->save();
+         $user->update();
 
          $this->html->var['content'] = '您的最新资料已被保存。';
 
@@ -867,7 +867,7 @@ class User extends Controller
             $pm->time = $this->request->timestamp;
             $pm->isNew = 1;
             $pm->isDeleted = 0;
-            $pm->save();
+            $pm->add();
             $pm->topicMID = $pm->mid;
             $pm->update( 'topicMID' );
 

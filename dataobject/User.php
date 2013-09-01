@@ -87,8 +87,6 @@ class User extends DataObject
          $this->load('uid');
          if ($this->exists())
          {
-//$this->password = $hash;
-//$this->save();
             $sql = 'UPDATE ' . $this->_table
                . ' SET phpass = NULL, password = ' . $this->_db->str($hash)
                . ' WHERE uid = ' . $this->uid;
@@ -101,8 +99,6 @@ class User extends DataObject
          $this->load('uid,phpass');
          if ($phpass->CheckPassword($password, $this->phpass))
          {
-//$this->password = $hash;
-//$this->update('password');
             $sql = 'UPDATE ' . $this->_table
                . ' SET phpass = NULL, password = ' . $this->_db->str($hash)
                . ' WHERE uid = ' . $this->uid;
