@@ -14,50 +14,57 @@ class Comment extends Controller
 
    public function run()
    {
-      if ($this->request->uid == 0)
+      if ( $this->request->uid == 0 )
       {
-         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
          $this->request->pageForbidden();
       }
       $action = $this->request->args[2];
-      $this->runAction($action);
+      $this->runAction( $action );
    }
 
    public function editAction()
    { // edit existing comment
-      $cid = \intval($this->request->args[1]);
+      $cid = \intval( $this->request->args[1] );
 
-      if (strlen($this->request->post['body']) < 5)
+      if ( strlen( $this->request->post['body'] ) < 5 )
       {
-         $this->error('Comment body is too short.');
+         $this->error( 'Comment body is too short.' );
       }
 
-      $comment = new CommentObject($cid, 'nid,uid');
-      if ($this->request->uid != 1 && $this->request->uid != $comment->uid)
+      $comment = new CommentObject( $cid, 'nid,uid' );
+      if ( $this->request->uid != 1 && $this->request->uid != $comment->uid )
       {
-         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
          $this->request->pageForbidden();
       }
       $comment->body = $this->request->post['body'];
       $comment->lastModifiedTime = $this->request->timestamp;
-      $comment->update();
+      try
+      {
+         $comment->update();
+      }
+      catch ( \Exception $e )
+      {
+         $this->error( $e->getMessage(), TRUE );
+      }
 
-      $files = \is_array($this->request->post['files']) ? $this->request->post['files'] : array();
+      $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : array( );
       $file = new File();
-      $file->updateFileList($files, $comment->nid, $cid);
-      $this->cache->delete('imageSlider');
+      $file->updateFileList( $files, $comment->nid, $cid );
+      $this->cache->delete( 'imageSlider' );
 
-      if (isset($this->request->post['star']) && \is_numeric($this->request->post['star']))
+      if ( isset( $this->request->post['star'] ) && \is_numeric( $this->request->post['star'] ) )
       {
          $rating = (int) $this->request->post['star'];
-         if ($rating > 0)
+         if ( $rating > 0 )
          {
             $node = new Node();
-            $node->updateRating($comment->nid, $comment->uid, $rating, $this->request->timestamp);
+            $node->updateRating( $comment->nid, $comment->uid, $rating, $this->request->timestamp );
          }
       }
 
-      $this->cache->delete('/node/' . $comment->nid);
+      $this->cache->delete( '/node/' . $comment->nid );
 
       $this->request->redirect();
    }
@@ -65,46 +72,46 @@ class Comment extends Controller
    public function deleteAction()
    {
       $comment = new CommentObject();
-      $comment->cid = \intval($this->request->args[1]);
-      $comment->load('uid,nid');
+      $comment->cid = \intval( $this->request->args[1] );
+      $comment->load( 'uid,nid' );
 
-      if ($this->request->uid != 1 && $this->request->uid != $comment->uid)
+      if ( $this->request->uid != 1 && $this->request->uid != $comment->uid )
       {
-         $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
          $this->request->pageForbidden();
       }
 
       $comment->delete();
 
-      $node = new Node($comment->nid, 'tid');
-      $this->cache->delete('/node/' . $node->nid);
+      $node = new Node( $comment->nid, 'tid' );
+      $this->cache->delete( '/node/' . $node->nid );
 
-      if (\in_array($node->tid, Tag::getLeafTIDs(1))) // forum tag
+      if ( \in_array( $node->tid, Tag::getLeafTIDs( 1 ) ) ) // forum tag
       {
-         $this->cache->delete('/forum/' . $node->tid);
+         $this->cache->delete( '/forum/' . $node->tid );
          // take care by cache map
          //$this->cache->delete('latestForumTopicReplies');
       }
 
-      if (\in_array($node->tid, Tag::getLeafTIDs(2))) // yellow page tag
+      if ( \in_array( $node->tid, Tag::getLeafTIDs( 2 ) ) ) // yellow page tag
       {
          $c = new CommentObject();
          $c->nid = $comment->nid;
          $c->uid = $comment->uid;
-         if ($c->getCount() == 0)
+         if ( $c->getCount() == 0 )
          {
             $node = new Node();
             $node->nid = $comment->nid;
-            $node->deleteRating($comment->nid, $comment->uid);
+            $node->deleteRating( $comment->nid, $comment->uid );
          }
-         $this->cache->delete('latestYellowPageReplies');
+         $this->cache->delete( 'latestYellowPageReplies' );
       }
 
-      $user = new User($comment->uid, 'points');
+      $user = new User( $comment->uid, 'points' );
       $user->points -= 1;
-      $user->update('points');
+      $user->update( 'points' );
 
-      $this->request->redirect($this->request->referer);
+      $this->request->redirect( $this->request->referer );
    }
 
 }

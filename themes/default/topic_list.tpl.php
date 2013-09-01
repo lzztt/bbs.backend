@@ -17,65 +17,68 @@
             </ul>
          </div>
 
-         <?php if (isset($pager)): ?>
+         <?php if ( isset( $pager ) ): ?>
             <div class="item-list"><ul class="pager"><?php echo $pager; ?></ul></div>
          <?php endif; ?>
-         <table id="forum-topic-4" class="forum-topics">
-            <thead>
-               <tr>
-                  <th class="topic-icon"></th>
-                  <th class="topic-topic">主题</th>
-                  <th class="topic-replies">回复</th>
-                  <th class="topic-replies">浏览</th>
-                  <th class="topic-created">作者</th>
-                  <th class="topic-lreply active">最后回复</th>
-               </tr>
-            </thead>
-
-            <tbody class='js_even_odd_parent' id="ajax_node_list">
-               <?php foreach ($nodes as $node): ?>
-                  <tr class="<?php echo ($node['weight'] >= 1) ? ' sticky-topic' : ''; ?>">
-                     <td class="icon"><div class="forum-icon">
-
-                           <img src="/themes/default/images/forum/topic-<?php echo ($node['weight'] >= 1) ? 'sticky' : 'default' ?>.png" alt="" title="" width="22" height="22" />
-                        </div></td>
-
-                     <td class="title">
-                        <?php echo ($node['weight'] >= 1) ? '置顶: ' : '' ?><a href="/node/<?php echo $node['nid']; ?>"><?php echo $node['title']; ?></a>            </td>
-
-                     <td class="replies">
-                        <div class="num num-replies"><?php echo $node['commentCount']; ?></div>
-                     </td>
-
-                     <td class="replies">
-                        <div class="num num-view" id="ajax_viewCount_<?php echo $node['nid']; ?>"></div>
-                     </td>
-
-
-                     <td class="created">
-                        作者 <?php echo $node['createrName']; ?><br /><?php echo ($node['createTime']); ?></td>
-
-                     <td class="last-reply">
-                        <?php if ($node['commentCount'] > 0): ?>
-                           作者 <?php echo $node['lastCommenterName']; ?><br /><?php echo ($node['lastCommentTime']); ?>
-                        <?php endif; ?>
-                     </td>
+         <?php if ( isset( $nodes ) ): ?>
+            <table id="forum-topic-4" class="forum-topics">
+               <thead>
+                  <tr>
+                     <th class="topic-icon"></th>
+                     <th class="topic-topic">主题</th>
+                     <th class="topic-replies">回复</th>
+                     <th class="topic-replies">浏览</th>
+                     <th class="topic-created">作者</th>
+                     <th class="topic-lreply active">最后回复</th>
                   </tr>
-               <?php endforeach; ?>
+               </thead>
 
-            </tbody>
-         </table>
-         <script type="text/javascript">
-            $(document).ready(function() {
-               $.getJSON('<?php echo $ajaxURI; ?>', function(data) {
-                  var stat = $('#ajax_node_list');
-                  for (var prop in data)
-                  {
-                     $('#ajax_' + prop, stat).html(data[prop]);
-                  }
+               <tbody class='js_even_odd_parent' id="ajax_node_list">
+                  <?php foreach ( $nodes as $node ): ?>
+                     <tr class="<?php echo ($node['weight'] >= 2) ? ' sticky-topic' : ''; ?>">
+                        <td class="icon"><div class="forum-icon">
+
+                              <img src="/themes/default/images/forum/topic-<?php echo ($node['weight'] >= 2) ? 'sticky' : 'default' ?>.png" alt="" title="" width="22" height="22" />
+                           </div></td>
+
+                        <td class="title">
+                           <?php // YING ?>
+                           <?php echo ($node['weight'] >= 2) ? '置顶: ' : '' ?><a href="/node/<?php echo $node['nid']; ?>"><?php echo $node['title']; ?></a>            </td>
+
+                        <td class="replies">
+                           <div class="num num-replies"><?php echo $node['commentCount']; ?></div>
+                        </td>
+
+                        <td class="replies">
+                           <div class="num num-view" id="ajax_viewCount_<?php echo $node['nid']; ?>"></div>
+                        </td>
+
+
+                        <td class="created">
+                           作者 <?php echo $node['createrName']; ?><br /><?php echo ($node['createTime']); ?></td>
+
+                        <td class="last-reply">
+                           <?php if ( $node['commentCount'] > 0 ): ?>
+                              作者 <?php echo $node['lastCommenterName']; ?><br /><?php echo ($node['lastCommentTime']); ?>
+                           <?php endif; ?>
+                        </td>
+                     </tr>
+                  <?php endforeach; ?>
+
+               </tbody>
+            </table>
+            <script type="text/javascript">
+               $(document).ready(function() {
+                  $.getJSON('<?php echo $ajaxURI; ?>', function(data) {
+                     var stat = $('#ajax_node_list');
+                     for (var prop in data)
+                     {
+                        $('#ajax_' + prop, stat).html(data[prop]);
+                     }
+                  });
                });
-            });
-         </script>
+            </script>
+         <?php endif; ?>
 
          <?php echo $editor; ?>
 
@@ -116,7 +119,7 @@
             </div>
          </div>
 
-         <?php if (isset($pager)): ?>
+         <?php if ( isset( $pager ) ): ?>
             <div class="item-list"><ul class="pager"><?php echo $pager; ?></ul></div>
             <?php endif; ?>
       </div>

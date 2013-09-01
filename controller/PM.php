@@ -119,7 +119,7 @@ class PM extends Controller
       $pm->body = $this->request->post['body'];
       $pm->time = $this->request->timestamp;
       $pm->isNew = 1;
-      $pm->save();
+      $pm->add();
 
       $this->request->redirect('/pm/' . $topicMID);
    }

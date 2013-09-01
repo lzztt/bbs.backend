@@ -318,7 +318,15 @@ class Node extends Controller
       $node->title = $this->request->post['title'];
       $node->body = $this->request->post['body'];
       $node->lastModifiedTime = $this->request->timestamp;
-      $node->update();
+
+      try
+      {
+         $node->update();
+      }
+      catch ( \Exception $e )
+      {
+         $this->error( $e->getMessage(), TRUE );
+      }
 
       $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : array( );
       $file = new File();
@@ -384,7 +392,14 @@ class Node extends Controller
       $comment->uid = $this->request->uid;
       $comment->body = $this->request->post['body'];
       $comment->createTime = $this->request->timestamp;
-      $comment->save();
+      try
+      {
+         $comment->add();
+      }
+      catch ( \Exception $e )
+      {
+         $this->error( $e->getMessage(), TRUE );
+      }
 
       if ( $this->request->post['files'] )
       {
@@ -522,7 +537,8 @@ class Node extends Controller
             $keys = array( 'address', 'phone', 'email', 'website', 'fax' );
             foreach ( $keys as $k )
             {
-               $node_yp->$k = \strlen( $this->request->post[$k] ) ? $this->request->post[$k] : NULL;;
+               $node_yp->$k = \strlen( $this->request->post[$k] ) ? $this->request->post[$k] : NULL;
+               ;
             }
 
             $node_yp->update();
@@ -582,7 +598,7 @@ class Node extends Controller
       $comment->uid = $this->request->uid;
       $comment->body = $this->request->post['body'];
       $comment->createTime = $this->request->timestamp;
-      $comment->save();
+      $comment->add();
 
       if ( isset( $this->request->post['star'] ) && \is_numeric( $this->request->post['star'] ) )
       {
