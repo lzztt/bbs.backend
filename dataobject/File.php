@@ -183,7 +183,24 @@ class File extends DataObject
       $arr1 = $this->_db->select('SELECT f.nid, f.name, f.path, n.title FROM files AS f JOIN nodes AS n ON f.nid = n.nid WHERE (n.tid != 18 AND n.status = 1) ORDER BY f.fid DESC LIMIT 30');
       $images0 = $this->_image($arr0, $file_path, 5);
       $images1 = $this->_image($arr1, $file_path, 5);
-      $images = array_merge($images0, $images1);
+      // YING
+      $found = false;
+      foreach ( $images1 as $i )
+      {
+         if ( $i['nid'] == 32902 )
+         {
+            $found = true;
+            break;
+         }
+      }
+      if ( !$found )
+      {
+         $arr2 = $this->_db->select( 'SELECT f.nid, f.name, f.path, n.title FROM files AS f JOIN nodes AS n ON f.nid = n.nid WHERE f.nid = 32902' );
+         \shuffle( $arr2 );
+         $images2 = $this->_image( $arr2, $file_path, 1 );
+         $images1[4] = $images2[0];
+      }
+      $images = \array_merge($images0, $images1);
 
       return $images;
    }

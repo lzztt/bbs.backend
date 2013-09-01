@@ -21,6 +21,7 @@ $config = array(
    'get_keys' => 'p,page,type,tid,nid,nids',
    'lang_default' => 'zh-cn',
    'theme' => 'default',
+   'theme_adm' => 'adm',
    'domain' => \implode('.', \array_slice(\explode('.', $_SERVER['HTTP_HOST']), -2)),
    'cookie' => array(
       'lifetime' => 2592000,

@@ -20,15 +20,12 @@ class Adm extends Controller
 
    public function run()
    {
+      Template::$theme = $this->config->theme_adm;
       $this->cache->setStatus(FALSE);
       if ($this->request->uid !== self::ADMIN_UID)
       {
          $this->request->pageNotFound();
       }
-
-      $page = $this->loadController('Page');
-      $page->updateInfo();
-      $page->setPage();
 
       $action = $this->request->args[1] ? $this->request->args[1] : 'user';
       $this->html->var['content'] = $this->runAction($action);

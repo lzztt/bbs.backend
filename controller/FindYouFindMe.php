@@ -133,12 +133,12 @@ class FindYouFindMe extends Controller
          $comment->name = $this->request->post['anonymous'] ? $this->request->ip : $this->request->post['name'];
          $comment->body = $this->request->post['comment'];
          $comment->time = $this->request->timestamp;
-         $comment->save();
+         $comment->add();
          $attendee->cid = $comment->cid;
       }
 
       $attendee->time = $this->request->timestamp;
-      $attendee->save();
+      $attendee->add();
 
 
       $mailer = new Mailer();
@@ -202,7 +202,7 @@ class FindYouFindMe extends Controller
 
       $comment->body = $this->request->post['comment'];
       $comment->time = $this->request->timestamp;
-      $comment->save();
+      $comment->add();
 
       $output = '谢谢您的留言，请点击这里<a class="commentViewButton" style="color:#A0522D" href="#">查看所有留言</a>'
          . '<script type="text/javascript">$("#footer").load("/single/footer");</script>';
@@ -263,7 +263,7 @@ class FindYouFindMe extends Controller
 
       $subscriber->email = $this->request->post['email'];
       $subscriber->time = $this->request->timestamp;
-      $subscriber->save();
+      $subscriber->add();
 
 
       $mailer = new Mailer();
