@@ -27,15 +27,15 @@ class Template
    private static $logger = NULL;
    //private static $tpl_cache = array(); // pool for rendered templates without $var
    public $tpl;
-   public $var = array(); // controller need to fill this array (or an array Theme can access)
+   public $var = array( ); // controller need to fill this array (or an array Theme can access)
 
 //   public $css = array();
 //   public $js = array();
 
-   public function __construct($tpl, $var = array())
+   public function __construct( $tpl, $var = array( ) )
    {
       $this->tpl = $tpl;
-      if (!empty($var))
+      if ( !empty( $var ) )
       {
          $this->var = $var;
       }
@@ -45,9 +45,9 @@ class Template
    {
       try
       {
-         \extract($this->var);
+         \extract( $this->var );
          $tpl_theme = self::$theme;
-         $tpl_path = self::$path;
+         $tpl_path = self::$path . '/' . self::$theme;
          $umode_pc = self::UMODE_PC;
          $umode_mobile = self::UMODE_MOBILE;
          $umode_robot = self::UMODE_ROBOT;
@@ -56,16 +56,16 @@ class Template
          $urole_adm = self::UROLE_ADM;
 
          \ob_start();                 // Start output buffering
-         include self::$path . '/' . $this->tpl . '.tpl.php';      // Include the template file
+         include $tpl_path . '/' . $this->tpl . '.tpl.php';      // Include the template file
          $output = \ob_get_contents();   // Get the contents of the buffer
          \ob_end_clean();                // End buffering and discard
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          \ob_end_clean();
-         if (isset(self::$logger))
+         if ( isset( self::$logger ) )
          {
-            self::$logger->error($e->getMessage());
+            self::$logger->error( $e->getMessage() );
          }
          $output = '[longzox template error]';
 
@@ -76,7 +76,7 @@ class Template
       return $output;
    }
 
-   public static function setLogger(Logger $logger)
+   public static function setLogger( Logger $logger )
    {
       self::$logger = $logger;
    }
@@ -94,23 +94,23 @@ class Template
     *
     */
 
-   public function formatTime($timestamp)
+   public function formatTime( $timestamp )
    {
-      return \date('m/d/Y H:i', $timestamp);
+      return \date( 'm/d/Y H:i', $timestamp );
    }
 
-   public function truncate($str, $len = 45)
+   public function truncate( $str, $len = 45 )
    {
-      if (\strlen($str) < $len / 2)
+      if ( \strlen( $str ) < $len / 2 )
       {
          return $str;
       }
-      $mb_len = \mb_strlen($str);
-      $rate = \sqrt($mb_len / \strlen($str)); // sqrt(0.7) = 0.837
-      $s_len = ( $rate > 0.837 ? \ceil($len * $rate) : \floor(($len - 2) * $rate) );
+      $mb_len = \mb_strlen( $str );
+      $rate = \sqrt( $mb_len / \strlen( $str ) ); // sqrt(0.7) = 0.837
+      $s_len = ( $rate > 0.837 ? \ceil( $len * $rate ) : \floor( ($len - 2) * $rate ) );
       // the cut_off length is depend on the rate of non-single characters
       //var_dump(implode(' - ', array(\strlen($str), $mb_len, $s_len, $rate, $str,  \mb_substr($str, 0, $s_len))));
-      return ($mb_len > $s_len) ? \mb_substr($str, 0, $s_len) : $str;
+      return ($mb_len > $s_len) ? \mb_substr( $str, 0, $s_len ) : $str;
    }
 
 // local time function. do not touch them
@@ -118,34 +118,34 @@ class Template
 // we only store timestamp in database, for query and comparation
 // we only display local time based on timezones
 // do not use T in format, timezone info is not correct
-   public function localDate($format, $timestamp = TIMESTAMP)
+   public function localDate( $format, $timestamp = TIMESTAMP )
    {
-      return date($format, TIMESTAMP + ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
+      return date( $format, TIMESTAMP + ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600 );
    }
 
 // do not use timezone info in the $time string
-   public function localStrToTime($time)
+   public function localStrToTime( $time )
    {
-      return (strtotime($time) - ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
+      return (strtotime( $time ) - ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
    }
 
    public function renderPage()
    {
       $css = '';
-      foreach ($this->css as $i)
+      foreach ( $this->css as $i )
       {
          $css .= '<link rel="stylesheet" media="all" href="' . $i . '" />';
       }
       $this->var['head_css'] = $css;
 
       $js = '';
-      foreach ($this->js as $i)
+      foreach ( $this->js as $i )
       {
          $js .= '<script src="' . $i . '"></script>';
       }
       $this->var['head_js'] = $js;
 
-      return $this->render('html');
+      return $this->render( 'html' );
    }
 
    /**
@@ -180,10 +180,10 @@ class Template
     * @param array $attributes
     * @return \lzx\core\HTMLElement
     */
-   public function link($name, $url, array $attributes = array())
+   public function link( $name, $url, array $attributes = array( ) )
    {
       $attributes['href'] = $url;
-      return new HTMLElement('a', $name, $attributes);
+      return new HTMLElement( 'a', $name, $attributes );
    }
 
    // a list of text links
@@ -195,11 +195,11 @@ class Template
     * @param boolean $even_odd
     * @return \lzx\core\HTMLElement
     */
-   public function ulist(array $list, array $attributes = array(), $even_odd = TRUE)
+   public function ulist( array $list, array $attributes = array( ), $even_odd = TRUE )
    {
-      if ($even_odd)
+      if ( $even_odd )
       {
-         if (\array_key_exists('class', $attributes))
+         if ( \array_key_exists( 'class', $attributes ) )
          {
             $attributes['class'] .= ' ' . self::EVEN_ODD_CLASS;
          }
@@ -208,7 +208,7 @@ class Template
             $attributes['class'] = self::EVEN_ODD_CLASS;
          }
       }
-      return new HTMLElement('ul', $this->_li($list), $attributes);
+      return new HTMLElement( 'ul', $this->_li( $list ), $attributes );
    }
 
    /**
@@ -217,49 +217,49 @@ class Template
     * @param array $attributes
     * @return \lzx\core\HTMLElement
     */
-   public function olist(array $list, array $attributes = array())
+   public function olist( array $list, array $attributes = array( ) )
    {
-      return new HTMLElement('ol', $this->_li($list), $attributes);
+      return new HTMLElement( 'ol', $this->_li( $list ), $attributes );
    }
 
-   private function _li($list)
+   private function _li( $list )
    {
-      $_list = array();
-      foreach ($list as $li)
+      $_list = array( );
+      foreach ( $list as $li )
       {
-         if (\is_string($li) || $li instanceof HTMLElement)
+         if ( \is_string( $li ) || $li instanceof HTMLElement )
          {
-            $_list[] = new HTMLElement('li', $li);
+            $_list[] = new HTMLElement( 'li', $li );
          }
-         elseif (\is_array($li))
+         elseif ( \is_array( $li ) )
          {
-            if (!\array_key_exists('text', $li))
+            if ( !\array_key_exists( 'text', $li ) )
             {
-               throw new \Exception('list data is not found (missing "text" value in array)');
+               throw new \Exception( 'list data is not found (missing "text" value in array)' );
             }
-            elseif (!\array_key_exists('attributes', $li))
+            elseif ( !\array_key_exists( 'attributes', $li ) )
             {
-               throw new \Exception('list attributes is not found (missing "attributes" value in array)');
+               throw new \Exception( 'list attributes is not found (missing "attributes" value in array)' );
             }
             else
             {
-               $_list[] = new HTMLElement('li', $li['text'], $li['attributes']);
+               $_list[] = new HTMLElement( 'li', $li['text'], $li['attributes'] );
             }
          }
       }
       return $_list;
    }
 
-   public function dlist(array $list, array $attributes = array())
+   public function dlist( array $list, array $attributes = array( ) )
    {
-      $dl = new HTMLElement('dl', NULL, $attributes);
-      foreach ($list as $li)
+      $dl = new HTMLElement( 'dl', NULL, $attributes );
+      foreach ( $list as $li )
       {
-         if (!is_array($li) || \sizeof($li) < 2)
+         if ( !is_array( $li ) || \sizeof( $li ) < 2 )
          {
-            throw new \Exception('$list need to be an array with dt and dd data');
+            throw new \Exception( '$list need to be an array with dt and dd data' );
          }
-         $dl->addElements(new HTMLElement('dt', $li['dt']), new HTMLElement('dd', (string) $li['dd']));
+         $dl->addElements( new HTMLElement( 'dt', $li['dt'] ), new HTMLElement( 'dd', (string) $li['dd'] ) );
       }
       return $dl;
    }
@@ -270,25 +270,25 @@ class Template
     * @param string $active_link
     * @return HTMLElement
     */
-   public function linkTabs(array $links, $active_link = NULL)
+   public function linkTabs( array $links, $active_link = NULL )
    {
-      $list = array();
-      foreach ($links as $link => $text)
+      $list = array( );
+      foreach ( $links as $link => $text )
       {
-         if ($link == $active_link)
+         if ( $link == $active_link )
          {
             $list[] = array(
-               'text' => $this->link($text, $link),
-               'attributes' => array('class' => 'active'),
+               'text' => $this->link( $text, $link ),
+               'attributes' => array( 'class' => 'active' ),
             );
          }
          else
          {
-            $list[] = $this->link($text, $link);
+            $list[] = $this->link( $text, $link );
          }
       }
 
-      return $this->ulist($list, array('class' => 'tabs'), FALSE);
+      return $this->ulist( $list, array( 'class' => 'tabs' ), FALSE );
    }
 
    /**
@@ -315,76 +315,76 @@ class Template
     *    'text' => string
     * );
     */
-   public function table(array $data, array $attributes = array(), $even_odd = TRUE)
+   public function table( array $data, array $attributes = array( ), $even_odd = TRUE )
    {
-      $table = new HTMLElement('table', NULL, $attributes);
-      if (array_key_exists('caption', $data) && strlen($data['caption']) > 0)
+      $table = new HTMLElement( 'table', NULL, $attributes );
+      if ( array_key_exists( 'caption', $data ) && strlen( $data['caption'] ) > 0 )
       {
-         $table->addElements(new HTMLElement('caption', $data['caption']));
+         $table->addElements( new HTMLElement( 'caption', $data['caption'] ) );
       }
-      if (array_key_exists('thead', $data) && \sizeof($data['thead']) > 0)
+      if ( array_key_exists( 'thead', $data ) && \sizeof( $data['thead'] ) > 0 )
       {
-         $table->addElements(new HTMLElement('thead', self::_table_row($data['thead'], TRUE)));
+         $table->addElements( new HTMLElement( 'thead', self::_table_row( $data['thead'], TRUE ) ) );
       }
-      if (array_key_exists('tfoot', $data) && \sizeof($data['tfoot']) > 0)
+      if ( array_key_exists( 'tfoot', $data ) && \sizeof( $data['tfoot'] ) > 0 )
       {
-         $table->addElements(new HTMLElement('tfoot', self::_table_row($data['tfoot'])));
+         $table->addElements( new HTMLElement( 'tfoot', self::_table_row( $data['tfoot'] ) ) );
       }
-      if (!array_key_exists('tbody', $data))
+      if ( !array_key_exists( 'tbody', $data ) )
       {
-         throw new \Exception('table body (tbody) data is not found');
-      }
-
-      $tbody_attr = $even_odd ? array('class' => self::EVEN_ODD_CLASS) : array();
-
-      $tbody = new HTMLElement('tbody', NULL, $tbody_attr);
-
-      foreach ($data['tbody'] as $tr)
-      {
-         $tbody->addElements(self::_table_row($tr));
+         throw new \Exception( 'table body (tbody) data is not found' );
       }
 
-      $table->addElements($tbody);
+      $tbody_attr = $even_odd ? array( 'class' => self::EVEN_ODD_CLASS ) : array( );
+
+      $tbody = new HTMLElement( 'tbody', NULL, $tbody_attr );
+
+      foreach ( $data['tbody'] as $tr )
+      {
+         $tbody->addElements( self::_table_row( $tr ) );
+      }
+
+      $table->addElements( $tbody );
 
       return $table;
    }
 
-   private function _table_row($row, $isHeader = FALSE)
+   private function _table_row( $row, $isHeader = FALSE )
    {
-      if (!\array_key_exists('cells', $row))
+      if ( !\array_key_exists( 'cells', $row ) )
       {
-         throw new \Exception('row cells (tr) data is not found');
+         throw new \Exception( 'row cells (tr) data is not found' );
       }
-      if (array_key_exists('attributes', $row))
+      if ( array_key_exists( 'attributes', $row ) )
       {
-         $tr = new HTMLElement('tr', NULL, $row['attributes']);
+         $tr = new HTMLElement( 'tr', NULL, $row['attributes'] );
       }
       else
       {
-         $tr = new HTMLElement('tr', NULL);
+         $tr = new HTMLElement( 'tr', NULL );
       }
 
       $tag = $isHeader ? 'th' : 'td';
-      foreach ($row['cells'] as $td)
+      foreach ( $row['cells'] as $td )
       {
-         if (\is_string($td) || $td instanceof HTMLElement)
+         if ( \is_string( $td ) || $td instanceof HTMLElement )
          {
-            $tr->addElements(new HTMLElement($tag, $td));
+            $tr->addElements( new HTMLElement( $tag, $td ) );
          }
-         elseif (\is_array($td))
+         elseif ( \is_array( $td ) )
          {
-            if (!\array_key_exists('text', $td))
+            if ( !\array_key_exists( 'text', $td ) )
             {
-               throw new \Exception('cell data is not found (missing "text" value in array)');
+               throw new \Exception( 'cell data is not found (missing "text" value in array)' );
             }
 
-            if (\array_key_exists('attributes', $td))
+            if ( \array_key_exists( 'attributes', $td ) )
             {
-               $tr->addElements(new HTMLElement($tag, $td['text'], $td['attributes']));
+               $tr->addElements( new HTMLElement( $tag, $td['text'], $td['attributes'] ) );
             }
             else
             {
-               $tr->addElements(new HTMLElement($tag, $td['text']));
+               $tr->addElements( new HTMLElement( $tag, $td['text'] ) );
             }
          }
       }
@@ -395,11 +395,11 @@ class Template
     * $form
     */
 
-   public function form($inputs, $action, $method = 'get', $attributes = array())
+   public function form( $inputs, $action, $method = 'get', $attributes = array( ) )
    {
       //input text, radio, checkbox, textarea,
       $attributes['action'] = $action;
-      $attributes['method'] = \in_array($method, array('get', 'post')) ? $method : 'get';
+      $attributes['method'] = \in_array( $method, array( 'get', 'post' ) ) ? $method : 'get';
    }
 
    /*
@@ -430,76 +430,76 @@ class Template
     * );
     */
 
-   public function select($name, $type, $label, array $options, $attributes)
+   public function select( $name, $type, $label, array $options, $attributes )
    {
-      if ($type == 'checkbox' || $type == 'radio')
+      if ( $type == 'checkbox' || $type == 'radio' )
       {
-         $list = new HTMLElement('ul', NULL, array('class' => 'select_options'));
+         $list = new HTMLElement( 'ul', NULL, array( 'class' => 'select_options' ) );
          $i = 0;
-         foreach ($options as $op)
+         foreach ( $options as $op )
          {
             $i++;
-            $option = new HTMLElement('li');
-            $input_id = \implode('_', array($type, $name, $i));
+            $option = new HTMLElement( 'li' );
+            $input_id = \implode( '_', array( $type, $name, $i ) );
             $input_attr = array(
                'id' => $input_id,
                'type' => $type,
                'name' => $name,
                'value' => $op['value']
             );
-            $option->addElements(new HTMLElement('input', NULL, $input_attr));
-            $option->addElements(new HTMLElement('label', $op['text'], array('for' => $input_id)));
-            $list->addElements($option);
+            $option->addElements( new HTMLElement( 'input', NULL, $input_attr ) );
+            $option->addElements( new HTMLElement( 'label', $op['text'], array( 'for' => $input_id ) ) );
+            $list->addElements( $option );
          }
       }
    }
 
-   public function input($name, $type, $label = '', $attributes = array())
+   public function input( $name, $type, $label = '', $attributes = array( ) )
    {
-      if ($type == 'radio' || $type == 'checkbox')
+      if ( $type == 'radio' || $type == 'checkbox' )
       {
-         return new HTMLElement('ul');
+         return new HTMLElement( 'ul' );
       }
-      $label_div = new HTMLElement('div', new HTMLElement('label', $label, array('for' => $name)));
-      if (array_key_exists('title', $attributes))
+      $label_div = new HTMLElement( 'div', new HTMLElement( 'label', $label, array( 'for' => $name ) ) );
+      if ( array_key_exists( 'title', $attributes ) )
       {
          //$label_div->data = array()
       }
-      $input_div = new HTMLElement('div', new HTMLElement('input', NULL, $attributes), array('class' => 'input_div'));
+      $input_div = new HTMLElement( 'div', new HTMLElement( 'input', NULL, $attributes ), array( 'class' => 'input_div' ) );
       //  <div>
       //        <input id="element_1" name="element_1" class="element text medium" type="text" maxlength="255" value=""/>
       //  </div>
    }
 
-   public function uri(array $args = array(), array $get = array())
+   public function uri( array $args = array( ), array $get = array( ) )
    {
-      $conditions = array();
-      foreach ($get as $k => $v)
+      $conditions = array( );
+      foreach ( $get as $k => $v )
       {
          $conditions[] = $k . '=' . $v;
       }
-      $query = \implode('&', $conditions);
+      $query = \implode( '&', $conditions );
 
-      return \htmlspecialchars('/' . \implode('/', $args) . ($query ? '?' . $query : ''));
+      return \htmlspecialchars( '/' . \implode( '/', $args ) . ($query ? '?' . $query : '') );
    }
 
-   public function generatePager($pageNo, $pageCount, $uri)
+   public function generatePager( $pageNo, $pageCount, $uri )
    {
-      if ($pageNo > $pageCount || $pageNo === 'last')
+      if ( $pageNo > $pageCount || $pageNo === 'last' )
       {
          $pageNo = $pageCount;
       }
-      if ($pageNo < 1)
+      if ( $pageNo < 1 )
       {
          $pageNo = 1;
       }
 
-      if ($pageCount < 2)
+      if ( $pageCount < 2 )
       {
-         return array($pageNo, null);
+         return array( $pageNo, null );
       }
 
-      if ($pageCount <= 7)
+      if ( $pageCount <= 7 )
       {
          $pageFirst = 1;
          $pageLast = $pageCount;
@@ -508,43 +508,43 @@ class Template
       {
          $pageFirst = $pageNo - 3;
          $pageLast = $pageNo + 3;
-         if ($pageFirst < 1)
+         if ( $pageFirst < 1 )
          {
             $pageFirst = 1;
             $pageLast = 7;
          }
-         elseif ($pageLast > $pageCount)
+         elseif ( $pageLast > $pageCount )
          {
             $pageFirst = $pageCount - 6;
             $pageLast = $pageCount;
          }
       }
 
-      if ($pageNo != 1)
+      if ( $pageNo != 1 )
       {
-         $pager[] = array('text' => $this->link('<<', $uri), 'attributes' => array('class' => 'pageFirst'));
-         $pager[] = array('text' => $this->link('<', $uri . '?page=' . ($pageNo - 1)), 'attributes' => array('class' => 'pagePrevious'));
+         $pager[] = array( 'text' => $this->link( '<<', $uri ), 'attributes' => array( 'class' => 'pageFirst' ) );
+         $pager[] = array( 'text' => $this->link( '<', $uri . '?page=' . ($pageNo - 1) ), 'attributes' => array( 'class' => 'pagePrevious' ) );
       }
-      for ($i = $pageFirst; $i <= $pageLast; $i++)
+      for ( $i = $pageFirst; $i <= $pageLast; $i++ )
       {
-         if ($i == $pageNo)
+         if ( $i == $pageNo )
          {
-            $pager[] = array('text' => $this->link((string) $i, $uri . '?page=' . $i), 'attributes' => array('class' => 'pageActive'));
+            $pager[] = array( 'text' => $this->link( (string) $i, $uri . '?page=' . $i ), 'attributes' => array( 'class' => 'pageActive' ) );
          }
          else
          {
-            $pager[] = $this->link((string) $i, $uri . '?page=' . $i);
+            $pager[] = $this->link( (string) $i, $uri . '?page=' . $i );
          }
       }
-      if ($pageNo != $pageCount)
+      if ( $pageNo != $pageCount )
       {
-         $pager[] = array('text' => $this->link('>', $uri . '?page=' . ($pageNo + 1)), 'attributes' => array('class' => 'pageNext'));
-         $pager[] = array('text' => $this->link('>>', $uri . '?page=' . $pageCount), 'attributes' => array('class' => 'pageLast'));
+         $pager[] = array( 'text' => $this->link( '>', $uri . '?page=' . ($pageNo + 1) ), 'attributes' => array( 'class' => 'pageNext' ) );
+         $pager[] = array( 'text' => $this->link( '>>', $uri . '?page=' . $pageCount ), 'attributes' => array( 'class' => 'pageLast' ) );
       }
 
-      $pager = $this->ulist($pager, array('class' => 'pager'), FALSE);
+      $pager = $this->ulist( $pager, array( 'class' => 'pager' ), FALSE );
 
-      return array($pageNo, $pager);
+      return array( $pageNo, $pager );
    }
 
 }

@@ -255,7 +255,7 @@ class Tag extends DataObject
          $tag->name = $t['name'];
          $tag->description = $t['description'];
          $tag->weight = $weight;
-         $tag->save();
+         $tag->add();
          $weight++;
          $tag->root = $tag->tid;
          $tag->update('root');
@@ -280,7 +280,7 @@ class Tag extends DataObject
          $tag->parent = $root_tid;
          $tag->weight = $weight;
          $tag->root = $root_tid;
-         $tag->save();
+         $tag->add();
          $weight++;
          echo $t['name'] . PHP_EOL;
       }
@@ -302,7 +302,7 @@ class Tag extends DataObject
             $tag->parent = $parent_tid;
             $tag->weight = $weight;
             $tag->root = $root_tid;
-            $tag->save();
+            $tag->add();
             $weight++;
             echo $t['name'] . PHP_EOL;
          }

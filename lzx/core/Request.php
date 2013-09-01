@@ -3,7 +3,8 @@
 namespace lzx\core;
 
 class Request
-{//static class instead of singleton
+{
+   //static class instead of singleton
 
    const HOME = 'home';
 
@@ -25,22 +26,22 @@ class Request
 
    private function __construct()
    {
-      $_SERVER['REQUEST_URI'] = \strtolower($_SERVER['REQUEST_URI']);
+      $_SERVER['REQUEST_URI'] = \strtolower( $_SERVER['REQUEST_URI'] );
 
       $this->domain = $_SERVER['HTTP_HOST'];
       $this->ip = $_SERVER['REMOTE_ADDR'];
       $this->uri = $_SERVER['REQUEST_URI'];
 
-      $this->timestamp = (int) $_SERVER['REQUEST_TIME'];
-      $this->datetime = \date('Y-m-d H:i:s T', $this->timestamp);
+      $this->timestamp = \intval( $_SERVER['REQUEST_TIME'] );
+      $this->datetime = \date( 'Y-m-d H:i:s T', $this->timestamp );
 
       $this->args = $this->getURIargs();
-      $this->post = $this->_toUTF8($_POST);
-      $this->get = $this->_toUTF8($_GET);
+      $this->post = $this->_toUTF8( $_POST );
+      $this->get = $this->_toUTF8( $_GET );
       $this->files = $this->getUploadFiles();
 
-      $arr = \explode($this->domain, $_SERVER['HTTP_REFERER']);
-      $this->referer = sizeof($arr) > 1 ? $arr[1] : '/';
+      $arr = \explode( $this->domain, $_SERVER['HTTP_REFERER'] );
+      $this->referer = sizeof( $arr ) > 1 ? $arr[1] : '/';
    }
 
    /**
@@ -52,7 +53,7 @@ class Request
    {
       static $instance;
 
-      if (!isset($instance))
+      if ( !isset( $instance ) )
       {
          $instance = new self();
       }
@@ -72,17 +73,17 @@ class Request
    {
       static $_files;
 
-      if (!isset($_files))
+      if ( !isset( $_files ) )
       {
-         $_files = array();
-         foreach ($_FILES as $type => $file)
+         $_files = array( );
+         foreach ( $_FILES as $type => $file )
          {
-            $_files[$type] = array();
-            if (\is_array($file['error'])) // file list
+            $_files[$type] = array( );
+            if ( \is_array( $file['error'] ) ) // file list
             {
-               for ($i = 0; $i < \sizeof($file['error']); $i++)
+               for ( $i = 0; $i < \sizeof( $file['error'] ); $i++ )
                {
-                  foreach (\array_keys($file) as $key)
+                  foreach ( \array_keys( $file ) as $key )
                   {
                      $_files[$type][$i][$key] = $file[$key][$i];
                   }
@@ -98,21 +99,21 @@ class Request
       return $_files;
    }
 
-   public function getURIargs($uri = NULL)
+   public function getURIargs( $uri = NULL )
    {
-      static $_URIargs = array();
+      static $_URIargs = array( );
 
-      if (\is_null($uri))
+      if ( \is_null( $uri ) )
       {
          $uri = $_SERVER['REQUEST_URI'];
       }
 
-      if (!\array_key_exists($uri, $_URIargs))
+      if ( !\array_key_exists( $uri, $_URIargs ) )
       {
-         $_arr = \explode('?', $uri);
-         $_URIargs[$uri] = \explode('/', \trim($_arr[0], '/'));
+         $_arr = \explode( '?', $uri );
+         $_URIargs[$uri] = \explode( '/', \trim( $_arr[0], '/' ) );
 
-         if (empty($_URIargs[$uri][0]))
+         if ( empty( $_URIargs[$uri][0] ) )
          {
             $_URIargs[$uri][0] = self::HOME;
          }
@@ -121,76 +122,76 @@ class Request
       return $_URIargs[$uri];
    }
 
-   public function buildURI(array $args = array(), array $get = array())
+   public function buildURI( array $args = array( ), array $get = array( ) )
    {
-      $query = array();
-      foreach ($get as $k => $v)
+      $query = array( );
+      foreach ( $get as $k => $v )
       {
          $query[] = $k . '=' . $v;
       }
-      $query = implode('&', $query);
+      $query = implode( '&', $query );
 
-      if (sizeof($args) > 0 && $args[0] == self::HOME)
+      if ( sizeof( $args ) > 0 && $args[0] == self::HOME )
       {
-         $args = array_slice($args, 1);
+         $args = array_slice( $args, 1 );
       }
 
-      return '/' . implode('/', $args) . ($query ? '?' . $query : '');
+      return '/' . implode( '/', $args ) . ($query ? '?' . $query : '');
    }
 
-   public function redirect($uri = NULL)
+   public function redirect( $uri = NULL )
    {
-      if (\is_null($uri))
+      if ( \is_null( $uri ) )
       {
          $uri = $this->referer;
       }
-      \header('Location: ' . $uri);
+      \header( 'Location: ' . $uri );
       exit; // terminate excuation
    }
 
-   public function hashURI($uri = NULL)
+   public function hashURI( $uri = NULL )
    {
-      return \substr(\session_id(), -3) . \substr(md5($uri ? $uri : $_SERVER['REQUEST_URI']), -5);
+      return \substr( \session_id(), -3 ) . \substr( md5( $uri ? $uri : $_SERVER['REQUEST_URI']  ), -5 );
    }
 
-   public function curlGetData($url)
+   public function curlGetData( $url )
    {
-      $c = \curl_init($url);
-      \curl_setopt_array($c, array(
+      $c = \curl_init( $url );
+      \curl_setopt_array( $c, array(
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_CONNECTTIMEOUT => 2,
          CURLOPT_TIMEOUT => 3
-      ));
-      $data = \curl_exec($c);
-      \curl_close($c);
+      ) );
+      $data = \curl_exec( $c );
+      \curl_close( $c );
 
       return $data; // will return FALSE on failure
    }
 
-   public function getCityFromIP($ip)
+   public function getCityFromIP( $ip )
    {
       $city = 'N/A';
 
       try
       {
-         if (\is_null($ip))
+         if ( \is_null( $ip ) )
          {
             return $city;
          }
 
-         if (\is_numeric($ip))
+         if ( \is_numeric( $ip ) )
          {
-            $ip = \long2ip($ip);
+            $ip = \long2ip( $ip );
          }
 
-         $geo = \geoip_record_by_name($ip);
+         $geo = \geoip_record_by_name( $ip );
 
-         if ($geo['city'])
+         if ( $geo['city'] )
          {
             $city = $geo['city'];
          }
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          return 'UNKNOWN';
       }
@@ -198,46 +199,46 @@ class Request
       return $city;
    }
 
-   public function getLocationFromIP($ip)
+   public function getLocationFromIP( $ip )
    {
       $location = 'N/A';
 
       try
       {
-         if (\is_null($ip))
+         if ( \is_null( $ip ) )
          {
             return $location;
          }
 
-         if (\filter_var($action, \FILTER_VALIDATE_INT, array('options' => array('min_range' => 0, 'max_range' => 4294967295))))
+         if ( \filter_var( $action, \FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0, 'max_range' => 4294967295 ) ) ) )
          {
-            $ip = \long2ip($ip);
+            $ip = \long2ip( $ip );
          }
 
          $city = 'N/A';
          $region = 'N/A';
          $country = 'N/A';
 
-         $geo = \geoip_record_by_name($ip);
+         $geo = \geoip_record_by_name( $ip );
 
-         if ($geo['city'])
+         if ( $geo['city'] )
          {
             $city = $geo['city'];
          }
 
-         if ($geo['country_name'])
+         if ( $geo['country_name'] )
          {
             $country = $geo['country_name'];
          }
 
-         if ($geo['region'] && $geo['country_code'])
+         if ( $geo['region'] && $geo['country_code'] )
          {
-            $region = \geoip_region_name_by_code($geo['country_code'], $geo['region']);
+            $region = \geoip_region_name_by_code( $geo['country_code'], $geo['region'] );
          }
 
          $location = $city . ', ' . $region . ', ' . $country;
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          return 'UNKNOWN';
       }
@@ -245,56 +246,56 @@ class Request
       return $location;
    }
 
-   public function pageNotFound($msg = NULL)
+   public function pageNotFound( $msg = NULL )
    {
-      \header('Content-Type: text/html; charset=UTF-8');
-      \header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-      exit($msg ? $msg : '404 Not Found :(');
-      // terminate excuation
-   }
-   
-   public function pageServerError($msg = NULL)
-   {
-      \header('Content-Type: text/html; charset=UTF-8');
-      \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error');
-      exit($msg ? $msg : '500 Server Error :(');
-   }
-
-   public function pageForbidden($msg = NULL)
-   {
-      \header('Content-Type: text/html; charset=UTF-8');
-      \header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
-      exit($msg ? $msg : '403 Forbidden :(');
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+      \header( $_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found' );
+      exit( $msg ? $msg : '404 Not Found :('  );
       // terminate excuation
    }
 
-   public function pageExit($output = NULL)
+   public function pageServerError( $msg = NULL )
    {
-      \header('Content-Type: text/html; charset=UTF-8');
-      exit($output);
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+      \header( $_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error' );
+      exit( $msg ? $msg : '500 Server Error :('  );
    }
 
-   private function _toUTF8($in)
+   public function pageForbidden( $msg = NULL )
    {
-      if (\is_array($in))
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+      \header( $_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden' );
+      exit( $msg ? $msg : '403 Forbidden :('  );
+      // terminate excuation
+   }
+
+   public function pageExit( $output = NULL )
+   {
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+      exit( $output );
+   }
+
+   private function _toUTF8( $in )
+   {
+      if ( \is_array( $in ) )
       {
-         $out = array();
-         foreach ($in as $key => $value)
+         $out = array( );
+         foreach ( $in as $key => $value )
          {
-            $out[$this->_toUTF8($key)] = $this->_toUTF8($value);
+            $out[$this->_toUTF8( $key )] = $this->_toUTF8( $value );
          }
          return $out;
       }
 
-      if (\is_string($in) && !\mb_check_encoding($in, "UTF-8"))
+      if ( \is_string( $in ) && !\mb_check_encoding( $in, "UTF-8" ) )
       { // user input data is trimed and cleaned here, escapte html tags
-         return \utf8_encode($in);
+         return \utf8_encode( $in );
          //return utf8_encode(trim(preg_replace('/<[^>]*>/', '', $in)));
          //to trim all tags: preg_replace('/<[^>]*>/', '',  trim($in))
          //to escape tags: str_replace(array('<', '>'), array('&lt;', '&gt;'), trim($in))
       }
 
-      return \trim(\preg_replace('/<[^>]*>/', '', $in));
+      return \trim( \preg_replace( '/<[^>]*>/', '', $in ) );
    }
 
    // this is controller's job

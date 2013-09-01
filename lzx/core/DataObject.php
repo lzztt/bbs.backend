@@ -9,7 +9,7 @@ namespace lzx\core;
 use lzx\core\MySQL;
 
 /*
- * first key is the id key, must be integer
+ * support tables with one primary key
  */
 
 /**
@@ -18,55 +18,34 @@ use lzx\core\MySQL;
 abstract class DataObject
 {
 
-   private static $_int_type_key = array( 'int', 'bool' );
-   private static $_float_type_key = array( 'float', 'double', 'real' );
-   private static $_text_type_key = array( 'char', 'text', 'binary', 'blob', 'date', 'time', 'year' );
-   private static $_keys = array( );
    protected $_db;
-   private $_table;
-   private $_keys_all;
-   private $_keys_int;
-   private $_keys_float;
-   private $_keys_text;
-   private $_keys_dirty;
-   private $_pkey;
-   private $_values;
-   private $_exists;
-   private $_join_tables;
-   private $_join_keys;
-   private $_where;
-   private $_order;
+   protected $_table;
+   private $_keys_all = array( );
+   private $_keys_int = array( );
+   private $_keys_float = array( );
+   private $_keys_text = array( );
+   private $_keys_dirty = array( );
+   private $_pkey = NULL;
+   private $_values = array( );
+   private $_exists = FALSE;
+   private $_join_tables = '';
+   private $_join_keys = '';
+   private $_where = array( );
+   private $_order = array( );
 
    /*
     * user input keys will not have alias
     */
 
-   public function __construct( MySQL $db, $table, $load_id = NULL, $keys = '' )
+   public function __construct( MySQL $db, $table, $pkey = NULL, $keys = '' )
    {
-      if ( !\array_key_exists( $table, self::$_keys ) )
-      {
-         self::$_keys[$table] = $this->_getObjectKeys( $table, $db );
-      }
-      $this->_keys_all = self::$_keys[$table]['all'];
-      $this->_keys_int = self::$_keys[$table]['int'];
-      $this->_keys_float = self::$_keys[$table]['float'];
-      $this->_keys_text = self::$_keys[$table]['text'];
-      $this->_pkey = self::$_keys[$table]['pkey'];
-      $this->_keys_dirty = array( );
-
       $this->_db = $db;
       $this->_table = $table;
-      $this->_values = array( );
+      $this->_getObjectKeys();
 
-      $this->_exists = FALSE;
-      $this->_join_tables = '';
-      $this->_join_keys = '';
-      $this->_where = array( );
-      $this->_order = array( );
-
-      if ( $load_id ) // not empty
+      if ( $pkey ) // not empty
       {
-         $this->id = $load_id;
+         $this->_values[$this->_pkey] = $pkey;
          $this->load( $keys );
       }
    }
@@ -76,19 +55,7 @@ abstract class DataObject
     */
    public function __set( $key, $val )
    {
-      if ( $key == 'id' || $key == $this->_pkey )
-      {
-         $val_int = (int) $val;
-         if ( $val_int > 0 )
-         {
-            $this->_values[$this->_pkey] = $val_int;
-         }
-         else
-         {
-            throw new \Exception( 'Non-integer ID : ' . $val );
-         }
-      }
-      elseif ( \in_array( $key, $this->_keys_all ) )
+      if ( \in_array( $key, $this->_keys_all ) )
       {
          $this->_values[$key] = $val;
          // mark key as dirty
@@ -103,17 +70,9 @@ abstract class DataObject
       }
    }
 
-   /**
-    * this is a shortcut so you can
-    * do like $company->id instead of company->companyID
-    */
    public function __get( $key )
    {
-      if ( $key == 'id' )
-      {
-         return $this->_values[$this->_pkey];
-      }
-      elseif ( \in_array( $key, $this->_keys_all ) )
+      if ( \in_array( $key, $this->_keys_all ) )
       {
          return $this->_values[$key];
       }
@@ -125,33 +84,33 @@ abstract class DataObject
 
    public function __isset( $key )
    {
-      if ( $key == 'id' )
-      {
-         $key = $this->_pkey;
-      }
-
       return \array_key_exists( $key, $this->_values );
    }
 
    public function __unset( $key )
    {
-      if ( $key == 'id' )
-      {
-         $key = $this->_pkey;
-      }
-
       unset( $this->_values[$key] );
 
-      $dirty = \array_search( $key, $this->_keys_dirty );
-      if ( $dirty !== FALSE )
-      {
-         unset( $this->_keys_dirty[$dirty] );
-      }
+      $this->_unDirty( $key );
    }
 
    public function getKeys()
    {
       return $this->_keys_all;
+   }
+
+   private function _isDirty( $key )
+   {
+      return \in_array( $key, $this->_keys_dirty );
+   }
+
+   private function _unDirty( $key )
+   {
+      $dirty = \array_search( $key, $this->_keys_dirty );
+      if ( $dirty !== FALSE )
+      {
+         unset( $this->_keys_dirty[$dirty] );
+      }
    }
 
    /**
@@ -213,17 +172,6 @@ abstract class DataObject
    }
 
    /**
-    * Determines Add or Update operation
-    *
-    *
-    * @return bool
-    */
-   public function save()
-   {
-      return (\array_key_exists( $this->_pkey, $this->_values ) ? $this->update() : $this->add());
-   }
-
-   /**
     * Insert a record
     *
     * @return bool
@@ -264,14 +212,14 @@ abstract class DataObject
       {
          $this->_values[$this->_pkey] = $this->_db->insert_id();
       }
-      
-      $this->_keys_dirty = array();
+
+      $this->_keys_dirty = array( );
       $this->_exists = TRUE;
       return TRUE;
    }
 
    /**
-    * Update a record
+    * Update a record / records
     *
     * user input keys will not have alias
     *
@@ -284,6 +232,8 @@ abstract class DataObject
          throw new \Exception( 'updating an object with no dirty properties to database' );
       }
 
+      $this->_unDirty( $this->_pkey );
+
       $keys = empty( $keys ) ? $this->_keys_dirty : \array_intersect( $this->_keys_dirty, \explode( ',', $keys ) );
 
       if ( \sizeof( $keys ) == 0 )
@@ -291,20 +241,18 @@ abstract class DataObject
          throw new \Exception( 'updating key set is empty' );
       }
 
-      $pkey = $this->_pkey;
-
-      if ( \in_array( $pkey, $keys ) )
+      if ( \in_array( $this->_pkey, $keys ) )
       {
-         throw new \Exception( 'could not update primary key : ' . $pkey );
+         throw new \Exception( 'could not update primary key : ' . $this->_pkey );
       }
 
       $this->_clean();
 
       if ( \sizeof( $this->_where ) == 0 )
       {
-         if ( \array_key_exists( $pkey, $this->_values ) )
+         if ( \array_key_exists( $this->_pkey, $this->_values ) )
          {
-            $this->where( $pkey, $this->_values[$pkey], '=' );
+            $this->where( $this->_pkey, $this->_values[$this->_pkey], '=' );
          }
          else
          {
@@ -328,7 +276,7 @@ abstract class DataObject
       $return_status = $this->_db->query( $sql );
 
       // unmake dirty keys for single object
-      if ( \array_key_exists( $pkey, $this->_values ) && $return_status !== FALSE )
+      if ( \array_key_exists( $this->_pkey, $this->_values ) && $return_status !== FALSE )
       {
          $this->_keys_dirty = \array_diff( $this->_keys_dirty, $keys );
       }
@@ -352,11 +300,10 @@ abstract class DataObject
    public function getIndexedList( $keys = '', $limit = false, $offset = false )
    {
       $list = array( );
-      $pkey = $this->_pkey;
 
       foreach ( $this->getList( $keys, $limit, $offset ) as $i )
       {
-         $list[$i[$pkey]] = $i;
+         $list[$i[$this->_pkey]] = $i;
       }
       return $list;
    }
@@ -399,7 +346,6 @@ abstract class DataObject
 
       if ( $table == $this->_table )
       {
-         $pkey = $this->_pkey;
          $pkey_in_keys = FALSE;
 
          foreach ( $keys_array as $key )
@@ -407,7 +353,7 @@ abstract class DataObject
             $key = \explode( ' ', \trim( $key ) );
             if ( \in_array( $key[0], $this->_keys_all ) )
             {
-               if ( $key[0] == $pkey )
+               if ( $key[0] == $this->_pkey )
                {
                   $pkey_in_keys = TRUE;
                }
@@ -422,7 +368,7 @@ abstract class DataObject
 
          if ( !$pkey_in_keys )
          {
-            $keys = $table . '.' . $pkey . ', ' . $keys;
+            $keys = $table . '.' . $this->_pkey . ', ' . $keys;
          }
       }
       else
@@ -494,11 +440,6 @@ abstract class DataObject
     */
    public function where( $key, $value, $condition )
    {
-      if ( $key === 'id' )
-      {
-         $key = $this->_pkey;
-      }
-
       if ( !\in_array( $key, $this->_keys_all ) )
       {
          throw new \Exception( 'ERROR non-existing key : ' . $key );
@@ -514,15 +455,15 @@ abstract class DataObject
       {
          if ( \in_array( $key, $this->_keys_int ) )
          {
-            $value = (int) $value;
+            $value = \intval( $value );
          }
          elseif ( \in_array( $key, $this->_keys_float ) )
          {
-            $value = (float) $value;
+            $value = \floatval( $value );
          }
          elseif ( \in_array( $key, $this->_keys_text ) )
          {
-            $value = $this->_db->str( $value );
+            $value = $this->_db->str( \strval( $value ) );
          }
          else
          {
@@ -665,96 +606,104 @@ abstract class DataObject
       return ($keys == 'count(*)') ? $this->_db->val( $sql ) : $this->_db->select( $sql );
    }
 
-   private function _getObjectKeys( $table, MySQL $db )
+   private function _getObjectKeys()
    {
-      $int_keys = array( );
-      $float_keys = array( );
-      $text_keys = array( );
-      $pkey = NULL;
-      $res = $db->select( 'DESCRIBE ' . $table );
 
-      foreach ( $res as $r )
+      static $_int_type_key = array( 'int', 'bool' );
+      static $_float_type_key = array( 'float', 'double', 'real' );
+      static $_text_type_key = array( 'char', 'text', 'binary', 'blob', 'date', 'time', 'year' );
+      static $_keys = array( );
+
+      if ( \array_key_exists( $this->_table, $_keys ) )
       {
-         // primary key
-         if ( $r['Key'] == 'PRI' )
+         $this->_keys_all = $_keys[$this->_table]['all'];
+         $this->_keys_int = $_keys[$this->_table]['int'];
+         $this->_keys_float = $_keys[$this->_table]['float'];
+         $this->_keys_text = $_keys[$this->_table]['text'];
+         $this->_pkey = $_keys[$this->_table]['pkey'];
+      }
+      else
+      {
+         $res = $this->_db->select( 'DESCRIBE ' . $this->_table );
+
+         foreach ( $res as $r )
          {
-            // no primary key found yet
-            if ( \is_null( $pkey ) )
+            $this->_keys_all[] = $r['Field'];
+
+            // primary key
+            if ( $r['Key'] == 'PRI' )
             {
-               // int type
-               if ( \strpos( $r['Type'], 'int' ) !== FALSE )
+               // no primary key found yet
+               if ( \is_null( $this->_pkey ) )
                {
-                  $pkey = $r['Field'];
-                  $int_keys[] = $r['Field'];
-                  continue;
+                  // int type
+                  if ( \strpos( $r['Type'], 'int' ) !== FALSE )
+                  {
+                     $this->_pkey = $r['Field'];
+                  }
                }
                else
                {
-                  throw new \Exception( 'non-integer primary key : ' . $r['Field'] . ' -> ' . $r['Type'] );
+                  throw new \Exception( 'found multiple primary keys : ' . $this->_pkey . ', ' . $r['Field'] );
                }
             }
-            else
+
+            $found = FALSE;
+            foreach ( $_int_type_key as $i )
             {
-               throw new \Exception( 'found multiple primary keys : ' . $pkey . ', ' . $r['Field'] );
+               if ( \strpos( $r['Type'], $i ) !== FALSE )
+               {
+                  $this->_keys_int[] = $r['Field'];
+                  $found = TRUE;
+                  break;
+               }
             }
-            var_dump($pkey);
+            if ( $found )
+            {
+               continue;
+            }
+            foreach ( $_float_type_key as $f )
+            {
+               if ( \strpos( $r['Type'], $f ) !== FALSE )
+               {
+                  $this->_keys_float[] = $r['Field'];
+                  $found = TRUE;
+                  break;
+               }
+            }
+            if ( $found )
+            {
+               continue;
+            }
+            foreach ( $_text_type_key as $t )
+            {
+               if ( \strpos( $r['Type'], $t ) !== FALSE )
+               {
+                  $this->_keys_text[] = $r['Field'];
+                  $found = TRUE;
+                  break;
+               }
+            }
+            if ( $found )
+            {
+               continue;
+            }
+            throw new \Exception( 'could not determine key type : ' . $r['Field'] . ' -> ' . $r['Type'] );
          }
 
-         $found = FALSE;
-         foreach ( self::$_int_type_key as $i )
+         if ( \is_null( $this->_pkey ) )
          {
-            if ( \strpos( $r['Type'], $i ) !== FALSE )
-            {
-               $int_keys[] = $r['Field'];
-               $found = TRUE;
-               break;
-            }
+            throw new \Exception( 'no primary key found: ' . $table );
          }
-         if ( $found )
-         {
-            continue;
-         }
-         foreach ( self::$_float_type_key as $f )
-         {
-            if ( \strpos( $r['Type'], $f ) !== FALSE )
-            {
-               $float_keys[] = $r['Field'];
-               $found = TRUE;
-               break;
-            }
-         }
-         if ( $found )
-         {
-            continue;
-         }
-         foreach ( self::$_text_type_key as $t )
-         {
-            if ( \strpos( $r['Type'], $t ) !== FALSE )
-            {
-               $text_keys[] = $r['Field'];
-               $found = TRUE;
-               break;
-            }
-         }
-         if ( $found )
-         {
-            continue;
-         }
-         throw new \Exception( 'could not determine key type : ' . $r['Field'] . ' -> ' . $r['Type'] );
+
+         $keys[$this->_table] = array(
+            'all' => $this->_keys_all,
+            'int' => $this->_keys_int,
+            'float' => $this->_keys_float,
+            'text' => $this->_keys_text,
+            'pkey' => $this->_pkey
+         );
       }
-
-      if ( \is_null( $pkey ) )
-      {
-         throw new \Exception( 'no primary key found: ' . $table );
-      }
-
-      return array(
-         'all' => \array_merge( $int_keys, $float_keys, $text_keys ),
-         'int' => $int_keys,
-         'float' => $float_keys,
-         'text' => $text_keys,
-         'pkey' => $pkey
-      );
    }
 
 }
