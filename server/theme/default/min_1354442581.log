@@ -1,0 +1,732 @@
+
+[WARNING] Try to use a single 'var' statement per scope.
+-2).join("."); ---> var  <--- curCookie=name+"="+escape(value)
+
+[WARNING] Try to use a single 'var' statement per scope.
+){var dc=document.cookie; ---> var  <--- cname=name+"=";if(dc.
+
+[WARNING] Try to use a single 'var' statement per scope.
+);rootjQuery=jQuery(document); ---> var  <--- optionsCache={};functioncreateOptions(options)
+
+[WARNING] Try to use a single 'var' statement per scope.
+;returnsupport;})(); ---> var  <--- rbrace=/(?:\{[\s\S]*\}|\[[\s\S]*\])$/,rmultiDash=/([A-Z])/g;jQuery.
+
+[WARNING] Try to use a single 'var' statement per scope.
+promise(obj);}}); ---> var  <--- nodeHook,boolHook,fixSpecified,rclass=/[\t\r\n]/g,
+
+[WARNING] Try to use a single 'var' statement per scope.
+;}}});}); ---> var  <--- rformElems=/^(?:textarea|input|select)$/i,rtypenamespace=/^([^\.]*|)(?:\.(.+)|)$/,rhoverHack=
+
+[WARNING] Try to use a single 'var' statement per scope.
+);if(tag==="*"){ ---> var  <--- elem,tmp=[],i=0
+
+[WARNING] Try to use a single 'var' statement per scope.
+;bl=bp.length;for( ---> var  <--- i=0;i<al&&i<
+
+[WARNING] Try to use a single 'var' statement per scope.
+.contains;})(window); ---> var  <--- runtil=/Until$/,rparentsprev=/^(?:parents|prev(?:Until|All))/,isSimple=
+
+[WARNING] Try to use a single 'var' statement per scope.
+));}}returnsafeFrag;} ---> var  <--- nodeNames="abbr|article|aside|audio|bdi|canvas|data|datalist|details|figcaption|figure|footer|header|hgroup|mark|meter|nav|output|progress|section|summary|time|video",rinlinejQuery=/ jQuery\d+="(?:null|\d+)"/g,rleadingWhitespace=
+
+[WARNING] Try to use a single 'var' statement per scope.
+jQuerySub;};})(); ---> var  <--- curCSS,iframe,iframeDoc,ralpha=/alpha\([^)]*\)/i,
+
+[WARNING] Try to use a single 'var' statement per scope.
+.set=setPositiveNumber;}}); ---> var  <--- r20=/%20/g,rbracket=/\[\]$/,rCRLF=
+
+[WARNING] Try to use a single 'var' statement per scope.
+(prefix,obj);}}} ---> var  <--- ajaxLocParts,ajaxLocation,rhash=/#.*$/,rheaders=
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(s.cache===false){ ---> var  <--- ts=jQuery.now(),ret=
+
+[WARNING] Try to use a single 'var' statement per scope.
+:"success",data:response};} ---> var  <--- oldCallbacks=[],rquestion=/\?/,rjsonp
+
+[WARNING] Try to use a single 'var' statement per scope.
+;}}};}}); ---> var  <--- xhrCallbacks,xhrOnUnloadAbort=window.ActiveXObject?function(
+
+[WARNING] Try to use a single 'var' statement per scope.
+}}};}});} ---> var  <--- fxNow,timerId,rfxtypes=/^(?:toggle|show|hide)$/,rfxnum=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;}).length;};} ---> var  <--- rroot=/^(?:body|html)$/i;jQuery.fn.offset=
+
+[WARNING] Try to use a single 'var' statement per scope.
+elem.style.position="relative";} ---> var  <--- curElem=jQuery(elem),curOffset=curElem
+
+[WARNING] Using 'eval' is not recommended. Moreover, using 'eval' reduces the level of compression!
+break;case"json":data=window. ---> eval <--- ("("+data+")");break;
+
+[WARNING] Using 'eval' is not recommended. Moreover, using 'eval' reduces the level of compression!
+){if(button.call){ ---> eval <--- (button.call)();}setTimeout
+
+[WARNING] Try to use a single 'var' statement per scope.
+openWith=prepare(clicked.openWith); ---> var  <--- placeHolder=prepare(clicked.placeHolder);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+placeHolder=prepare(clicked.placeHolder); ---> var  <--- replaceWith=prepare(clicked.replaceWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+replaceWith=prepare(clicked.replaceWith); ---> var  <--- closeWith=prepare(clicked.closeWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+closeWith=prepare(clicked.closeWith); ---> var  <--- openBlockWith=prepare(clicked.openBlockWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+openBlockWith=prepare(clicked.openBlockWith); ---> var  <--- closeBlockWith=prepare(clicked.closeBlockWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+closeBlockWith=prepare(clicked.closeBlockWith); ---> var  <--- multiline=clicked.multiline;if(replaceWith!==
+
+[WARNING] Try to use a single 'var' statement per scope.
+}else{string=string||selection; ---> var  <--- lines=[string],blocks=[]
+
+[WARNING] Try to use a single 'var' statement per scope.
+.split(/\r?\n/);}for( ---> var  <--- l=0;l<lines.length;
+
+[WARNING] Try to use a single 'var' statement per scope.
+){line=lines[l]; ---> var  <--- trailingSpaces;if(trailingSpaces=line.match(
+
+[WARNING] Try to use a single 'var' statement per scope.
+&&typeofoptions.previewParser==="function"){ ---> var  <--- data=options.previewParser($$.val(
+
+[WARNING] Try to use a single 'var' statement per scope.
+.serial=sf.o.length; ---> var  <--- o=$.extend({},sf
+
+[WARNING] Try to use a single 'var' statement per scope.
+c.bcClass).hideSuperfishUl(); ---> var  <--- $a=$("a",this);$a
+
+[WARNING] Try to use a single 'var' statement per scope.
+:"";o.retainPath=false; ---> var  <--- $ul=$(["li.",o.hoverClass
+
+[WARNING] Try to use a single 'var' statement per scope.
+$){var params=new Array; ---> var  <--- order=new Array;var images=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var order=new Array; ---> var  <--- images=new Array;var links=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var images=new Array; ---> var  <--- links=new Array;var linksTarget=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var links=new Array; ---> var  <--- linksTarget=new Array;var titles=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var linksTarget=new Array; ---> var  <--- titles=new Array;var interval=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var titles=new Array; ---> var  <--- interval=new Array;var imagePos=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var interval=new Array; ---> var  <--- imagePos=new Array;var appInterval=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var imagePos=new Array; ---> var  <--- appInterval=new Array;var squarePos=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var appInterval=new Array; ---> var  <--- squarePos=new Array;var reverse=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var squarePos=new Array; ---> var  <--- reverse=new Array;$.fn.coinslider
+
+[WARNING] Try to use a single 'var' statement per scope.
+false;}while(--i){ ---> var  <--- j=Math.floor(Math.random(
+
+[WARNING] Try to use a single 'var' statement per scope.
+)*(i+1)); ---> var  <--- tempi=arr[i];var tempj=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var tempi=arr[i]; ---> var  <--- tempj=arr[j];arr[i
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].sph; ---> var  <--- m=params[el.id].spw
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].spw; ---> var  <--- x=1;var y=1;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+].spw;var x=1; ---> var  <--- y=1;var going=0;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+x=1;var y=1; ---> var  <--- going=0;var num=0;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+y=1;var going=0; ---> var  <--- num=0;var c=0;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+going=0;var num=0; ---> var  <--- c=0;var dowhile=true;while
+
+[WARNING] Try to use a single 'var' statement per scope.
+num=0;var c=0; ---> var  <--- dowhile=true;while(dowhile){num
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].sph; ---> var  <--- m=params[el.id].spw
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].spw; ---> var  <--- c=0;var to=to2=from
+
+[WARNING] Try to use a single 'var' statement per scope.
+].spw;var c=0; ---> var  <--- to=to2=from=1;var dowhile
+
+[WARNING] Try to use a single 'var' statement per scope.
+var to=to2=from=1; ---> var  <--- dowhile=true;while(dowhile){for
+
+[WARNING] Try to use a single 'var' statement per scope.
+){settings.single="metadata";} ---> var  <--- data=$.data(elem,settings.
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(settings.type=="class"){ ---> var  <--- m=settings.cre.exec(elem.
+
+[WARNING] Try to use a single 'var' statement per scope.
+!elem.getElementsByTagName){return;} ---> var  <--- e=elem.getElementsByTagName(settings.name)
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(elem.getAttribute!=undefined){ ---> var  <--- attr=elem.getAttribute(settings.name)
+
+[WARNING] Using 'eval' is not recommended. Moreover, using 'eval' reduces the level of compression!
+"{"+data+"}";}data= ---> eval <--- ("("+data+")");$.
+
+[WARNING] Try to use a single 'var' statement per scope.
+||[]);returnthis;} ---> var  <--- options=$.extend({},$
+
+[WARNING] The variable options has already been declared in the same scope...
+[]);returnthis;}var  ---> options <--- =$.extend({},$.
+
+[WARNING] Try to use a single 'var' statement per scope.
+control,input=$(this); ---> var  <--- eid=(this.name||"unnamed-rating").
+
+[WARNING] Try to use a single 'var' statement per scope.
+).replace(/^\_+|\_+$/g,""); ---> var  <--- context=$(this.form||document.
+
+[WARNING] Try to use a single 'var' statement per scope.
+this.form||document.body); ---> var  <--- raters=context.data("rating");if
+
+[WARNING] Try to use a single 'var' statement per scope.
+.fn.rating.calls};} ---> var  <--- rater=raters[eid];if(rater
+
+[WARNING] Try to use a single 'var' statement per scope.
+data("rating",control));} ---> var  <--- star=$('<div class="star-rating rater-'+control.serial+
+
+[WARNING] Try to use a single 'var' statement per scope.
+"number"&&control.split>0){ ---> var  <--- stw=($.fn.width?star
+
+[WARNING] Try to use a single 'var' statement per scope.
+):0)||control.starWidth; ---> var  <--- spi=(control.count%control.split
+
+[WARNING] Try to use a single 'var' statement per scope.
+control.focus){returnthis;} ---> var  <--- input=$(this).data("rating.input"
+
+[WARNING] Try to use a single 'var' statement per scope.
+control.blur){returnthis;} ---> var  <--- input=$(this).data("rating.input"
+
+[WARNING] Try to use a single 'var' statement per scope.
+);this.rating("draw"); ---> var  <--- input=$(control.current?control.
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var BBEditor=$("#BBCodeEditor"); ---> var  <--- titleEditor=$("#edit-title");var editorDiv=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var titleEditor=$("#edit-title"); ---> var  <--- editorDiv=$("#editor-div");var editorForm=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var editorDiv=$("#editor-div"); ---> var  <--- editorForm=$("#editor-form");var fileTable=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var editorForm=$("#editor-form"); ---> var  <--- fileTable=$("#ajax-file-list");var fileTableBody=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var fileTable=$("#ajax-file-list"); ---> var  <--- fileTableBody=$("tbody",fileTable);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+fileTableBody=$("tbody",fileTable); ---> var  <--- TextEditor=$("#TextEditor");$("a.bb-quote"
+
+[WARNING] Try to use a single 'var' statement per scope.
+.replace("quote","raw")); ---> var  <--- author=data.find("span.username").html
+
+[WARNING] Try to use a single 'var' statement per scope.
+find("span.username").html(); ---> var  <--- quoteText='[quote="'+author+'"]'+data.
+
+[WARNING] Try to use a single 'var' statement per scope.
+top);BBEditor.focus(); ---> var  <--- data=$("#"+id.replace(
+
+[WARNING] Try to use a single 'var' statement per scope.
+.replace("edit","raw")); ---> var  <--- raw=data.find("pre.postbody").html
+
+[WARNING] Try to use a single 'var' statement per scope.
+markItUp({replaceWith:raw}); ---> var  <--- files=$.parseJSON(data.find(
+
+[WARNING] Try to use a single 'var' statement per scope.
+{fileTable.show();for( ---> var  <--- i=0;i<files.length;
+
+[WARNING] Try to use a single 'var' statement per scope.
+<files.length;i++){ ---> var  <--- fid=files[i].fid;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+fid=files[i].fid; ---> var  <--- path=files[i].path;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+path=files[i].path; ---> var  <--- imageExt=new Array("jpeg","gif","png"
+
+[WARNING] Try to use a single 'var' statement per scope.
+Array("jpeg","gif","png"); ---> var  <--- fileExt=path.split(".").pop
+
+[WARNING] Try to use a single 'var' statement per scope.
+split(".").pop(); ---> var  <--- bbcode;if(imageExt.indexOf(fileExt)
+
+[WARNING] Try to use a single 'var' statement per scope.
+[i].name+"[/file]";} ---> var  <--- row='<tr id="editfile-'+fid+'"><td><input type="text" maxlength="30" name="files['+fid+
+
+[WARNING] Try to use a single 'var' statement per scope.
+.error)==="[object Array]"){for( ---> var  <--- i=0;i<res.error.
+
+[WARNING] Try to use a single 'var' statement per scope.
+{fileTable.show();for( ---> var  <--- i=0;i<res.saved.
+
+[WARNING] The variable i has already been declared in the same scope...
+fileTable.show();for(var  ---> i <--- =0;i<res.saved.length
+
+[WARNING] Try to use a single 'var' statement per scope.
+.saved.length;i++){ ---> var  <--- path=res.saved[i].path
+
+[WARNING] Try to use a single 'var' statement per scope.
+res.saved[i].path; ---> var  <--- imageExt=new Array("jpeg","gif","png"
+
+[WARNING] Try to use a single 'var' statement per scope.
+Array("jpeg","gif","png"); ---> var  <--- fileExt=path.split(".").pop
+
+[WARNING] Try to use a single 'var' statement per scope.
+split(".").pop(); ---> var  <--- bbcode;if(imageExt.indexOf(fileExt)
+
+[WARNING] Try to use a single 'var' statement per scope.
+[i].name+"[/file]";} ---> var  <--- row='<tr id="editfile-'+path+'"><td><input type="text" maxlength="30" name="files['+path+
+
+[WARNING] Try to use a single 'var' statement per scope.
+var row=this.parentNode.parentNode; ---> var  <--- table=row.parentNode.parentNode;table.
+
+[WARNING] Try to use a single 'var' statement per scope.
+.hide();}}); ---> var  <--- uid=getCookie("uid");if(uid
+
+[WARNING] Try to use a single 'var' statement per scope.
+".hidden").show();}} ---> var  <--- pmCount=getCookie("pmCount");if(pmCount
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(view.length>0){ ---> var  <--- expDate=new Date();expDate.setFullYear
+
+[WARNING] Try to use a single 'var' statement per scope.
+editorDiv.offset().top); ---> var  <--- data=$("#"+$(this)
+
+[WARNING] The symbol ret is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,rootjQuery){var match,elem, ---> ret <--- ,doc;if(!selector){return
+
+[WARNING] The symbol related is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,matched,matches,handleObj,sel, ---> related <--- ,handlers=((jQuery._data(this
+
+[WARNING] The symbol selector is declared but is apparently never used.
+This code can probably be written in a more compact way.
+.relatedTarget,handleObj=event.handleObj, ---> selector <--- =handleObj.selector;if(!related||
+
+[WARNING] The symbol rnot is declared but is apparently never used.
+This code can probably be written in a more compact way.
+RegExp(pseudos),rquickExpr=/^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/, ---> rnot <--- =/^:not/,rsibling=/[\x20\t\r\n\f]*[+~]/,rendsWithNot=/:not\($/
+
+[WARNING] The symbol rendsWithNot is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,rnot=/^:not/,rsibling=/[\x20\t\r\n\f]*[+~]/, ---> rendsWithNot <--- =/:not\($/,rheader=/h\d/i,rinputs=/input|select|textarea|button/i
+
+[WARNING] The symbol j is declared but is apparently never used.
+This code can probably be written in a more compact way.
+find,match=tokenize(selector), ---> j <--- =match.length;if(!seed)
+
+[WARNING] The symbol len is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,depth,div,hasBody,tbody, ---> len <--- ,handleScript,jsTags,safe=context===document
+
+[WARNING] The symbol init is declared but is apparently never used.
+This code can probably be written in a more compact way.
+sub;jQuerySub.fn.init=function ---> init <--- (selector,context){if(context&&
+
+[WARNING] The symbol tweenerIndex is declared but is apparently never used.
+This code can probably be written in a more compact way.
+){var result,index=0, ---> tweenerIndex <--- =0,length=animationPrefilters.length,deferred
+
+[WARNING] The symbol preview is declared but is apparently never used.
+This code can probably be written in a more compact way.
+selectionEnd);}returnselection;}function ---> preview <--- (){return;if(typeofoptions.
+
+[WARNING] The symbol phtml is declared but is apparently never used.
+This code can probably be written in a more compact way.
+);}functionrenderPreview(){var  ---> phtml <--- ;if(options.previewHandler&&typeofoptions.
+
+[WARNING] The symbol sh is declared but is apparently never used.
+This code can probably be written in a more compact way.
+){var o=sf.op, ---> sh <--- =sf.c.shadowClass+"-off",$ul
+
+[WARNING] Try to use a single 'var' statement per scope.
+-2).join("."); ---> var  <--- curCookie=name+"="+escape(value)
+
+[WARNING] Try to use a single 'var' statement per scope.
+){var dc=document.cookie; ---> var  <--- cname=name+"=";if(dc.
+
+[WARNING] Try to use a single 'var' statement per scope.
+);rootjQuery=jQuery(document); ---> var  <--- optionsCache={};functioncreateOptions(options)
+
+[WARNING] Try to use a single 'var' statement per scope.
+;returnsupport;})(); ---> var  <--- rbrace=/(?:\{[\s\S]*\}|\[[\s\S]*\])$/,rmultiDash=/([A-Z])/g;jQuery.
+
+[WARNING] Try to use a single 'var' statement per scope.
+promise(obj);}}); ---> var  <--- nodeHook,boolHook,fixSpecified,rclass=/[\t\r\n]/g,
+
+[WARNING] Try to use a single 'var' statement per scope.
+;}}});}); ---> var  <--- rformElems=/^(?:textarea|input|select)$/i,rtypenamespace=/^([^\.]*|)(?:\.(.+)|)$/,rhoverHack=
+
+[WARNING] Try to use a single 'var' statement per scope.
+);if(tag==="*"){ ---> var  <--- elem,tmp=[],i=0
+
+[WARNING] Try to use a single 'var' statement per scope.
+;bl=bp.length;for( ---> var  <--- i=0;i<al&&i<
+
+[WARNING] Try to use a single 'var' statement per scope.
+.contains;})(window); ---> var  <--- runtil=/Until$/,rparentsprev=/^(?:parents|prev(?:Until|All))/,isSimple=
+
+[WARNING] Try to use a single 'var' statement per scope.
+));}}returnsafeFrag;} ---> var  <--- nodeNames="abbr|article|aside|audio|bdi|canvas|data|datalist|details|figcaption|figure|footer|header|hgroup|mark|meter|nav|output|progress|section|summary|time|video",rinlinejQuery=/ jQuery\d+="(?:null|\d+)"/g,rleadingWhitespace=
+
+[WARNING] Try to use a single 'var' statement per scope.
+jQuerySub;};})(); ---> var  <--- curCSS,iframe,iframeDoc,ralpha=/alpha\([^)]*\)/i,
+
+[WARNING] Try to use a single 'var' statement per scope.
+.set=setPositiveNumber;}}); ---> var  <--- r20=/%20/g,rbracket=/\[\]$/,rCRLF=
+
+[WARNING] Try to use a single 'var' statement per scope.
+(prefix,obj);}}} ---> var  <--- ajaxLocParts,ajaxLocation,rhash=/#.*$/,rheaders=
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(s.cache===false){ ---> var  <--- ts=jQuery.now(),ret=
+
+[WARNING] Try to use a single 'var' statement per scope.
+:"success",data:response};} ---> var  <--- oldCallbacks=[],rquestion=/\?/,rjsonp
+
+[WARNING] Try to use a single 'var' statement per scope.
+;}}};}}); ---> var  <--- xhrCallbacks,xhrOnUnloadAbort=window.ActiveXObject?function(
+
+[WARNING] Try to use a single 'var' statement per scope.
+}}};}});} ---> var  <--- fxNow,timerId,rfxtypes=/^(?:toggle|show|hide)$/,rfxnum=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;}).length;};} ---> var  <--- rroot=/^(?:body|html)$/i;jQuery.fn.offset=
+
+[WARNING] Try to use a single 'var' statement per scope.
+elem.style.position="relative";} ---> var  <--- curElem=jQuery(elem),curOffset=curElem
+
+[WARNING] Using 'eval' is not recommended. Moreover, using 'eval' reduces the level of compression!
+break;case"json":data=window. ---> eval <--- ("("+data+")");break;
+
+[WARNING] Using 'eval' is not recommended. Moreover, using 'eval' reduces the level of compression!
+){if(button.call){ ---> eval <--- (button.call)();}setTimeout
+
+[WARNING] Try to use a single 'var' statement per scope.
+openWith=prepare(clicked.openWith); ---> var  <--- placeHolder=prepare(clicked.placeHolder);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+placeHolder=prepare(clicked.placeHolder); ---> var  <--- replaceWith=prepare(clicked.replaceWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+replaceWith=prepare(clicked.replaceWith); ---> var  <--- closeWith=prepare(clicked.closeWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+closeWith=prepare(clicked.closeWith); ---> var  <--- openBlockWith=prepare(clicked.openBlockWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+openBlockWith=prepare(clicked.openBlockWith); ---> var  <--- closeBlockWith=prepare(clicked.closeBlockWith);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+closeBlockWith=prepare(clicked.closeBlockWith); ---> var  <--- multiline=clicked.multiline;if(replaceWith!==
+
+[WARNING] Try to use a single 'var' statement per scope.
+}else{string=string||selection; ---> var  <--- lines=[string],blocks=[]
+
+[WARNING] Try to use a single 'var' statement per scope.
+.split(/\r?\n/);}for( ---> var  <--- l=0;l<lines.length;
+
+[WARNING] Try to use a single 'var' statement per scope.
+){line=lines[l]; ---> var  <--- trailingSpaces;if(trailingSpaces=line.match(
+
+[WARNING] Try to use a single 'var' statement per scope.
+&&typeofoptions.previewParser==="function"){ ---> var  <--- data=options.previewParser($$.val(
+
+[WARNING] Try to use a single 'var' statement per scope.
+.serial=sf.o.length; ---> var  <--- o=$.extend({},sf
+
+[WARNING] Try to use a single 'var' statement per scope.
+c.bcClass).hideSuperfishUl(); ---> var  <--- $a=$("a",this);$a
+
+[WARNING] Try to use a single 'var' statement per scope.
+:"";o.retainPath=false; ---> var  <--- $ul=$(["li.",o.hoverClass
+
+[WARNING] Try to use a single 'var' statement per scope.
+$){var params=new Array; ---> var  <--- order=new Array;var images=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var order=new Array; ---> var  <--- images=new Array;var links=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var images=new Array; ---> var  <--- links=new Array;var linksTarget=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var links=new Array; ---> var  <--- linksTarget=new Array;var titles=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var linksTarget=new Array; ---> var  <--- titles=new Array;var interval=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var titles=new Array; ---> var  <--- interval=new Array;var imagePos=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var interval=new Array; ---> var  <--- imagePos=new Array;var appInterval=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var imagePos=new Array; ---> var  <--- appInterval=new Array;var squarePos=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var appInterval=new Array; ---> var  <--- squarePos=new Array;var reverse=new Array
+
+[WARNING] Try to use a single 'var' statement per scope.
+new Array;var squarePos=new Array; ---> var  <--- reverse=new Array;$.fn.coinslider
+
+[WARNING] Try to use a single 'var' statement per scope.
+false;}while(--i){ ---> var  <--- j=Math.floor(Math.random(
+
+[WARNING] Try to use a single 'var' statement per scope.
+)*(i+1)); ---> var  <--- tempi=arr[i];var tempj=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var tempi=arr[i]; ---> var  <--- tempj=arr[j];arr[i
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].sph; ---> var  <--- m=params[el.id].spw
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].spw; ---> var  <--- x=1;var y=1;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+].spw;var x=1; ---> var  <--- y=1;var going=0;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+x=1;var y=1; ---> var  <--- going=0;var num=0;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+y=1;var going=0; ---> var  <--- num=0;var c=0;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+going=0;var num=0; ---> var  <--- c=0;var dowhile=true;while
+
+[WARNING] Try to use a single 'var' statement per scope.
+num=0;var c=0; ---> var  <--- dowhile=true;while(dowhile){num
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].sph; ---> var  <--- m=params[el.id].spw
+
+[WARNING] Try to use a single 'var' statement per scope.
+params[el.id].spw; ---> var  <--- c=0;var to=to2=from
+
+[WARNING] Try to use a single 'var' statement per scope.
+].spw;var c=0; ---> var  <--- to=to2=from=1;var dowhile
+
+[WARNING] Try to use a single 'var' statement per scope.
+var to=to2=from=1; ---> var  <--- dowhile=true;while(dowhile){for
+
+[WARNING] Try to use a single 'var' statement per scope.
+){settings.single="metadata";} ---> var  <--- data=$.data(elem,settings.
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(settings.type=="class"){ ---> var  <--- m=settings.cre.exec(elem.
+
+[WARNING] Try to use a single 'var' statement per scope.
+!elem.getElementsByTagName){return;} ---> var  <--- e=elem.getElementsByTagName(settings.name)
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(elem.getAttribute!=undefined){ ---> var  <--- attr=elem.getAttribute(settings.name)
+
+[WARNING] Using 'eval' is not recommended. Moreover, using 'eval' reduces the level of compression!
+"{"+data+"}";}data= ---> eval <--- ("("+data+")");$.
+
+[WARNING] Try to use a single 'var' statement per scope.
+||[]);returnthis;} ---> var  <--- options=$.extend({},$
+
+[WARNING] The variable options has already been declared in the same scope...
+[]);returnthis;}var  ---> options <--- =$.extend({},$.
+
+[WARNING] Try to use a single 'var' statement per scope.
+control,input=$(this); ---> var  <--- eid=(this.name||"unnamed-rating").
+
+[WARNING] Try to use a single 'var' statement per scope.
+).replace(/^\_+|\_+$/g,""); ---> var  <--- context=$(this.form||document.
+
+[WARNING] Try to use a single 'var' statement per scope.
+this.form||document.body); ---> var  <--- raters=context.data("rating");if
+
+[WARNING] Try to use a single 'var' statement per scope.
+.fn.rating.calls};} ---> var  <--- rater=raters[eid];if(rater
+
+[WARNING] Try to use a single 'var' statement per scope.
+data("rating",control));} ---> var  <--- star=$('<div class="star-rating rater-'+control.serial+
+
+[WARNING] Try to use a single 'var' statement per scope.
+"number"&&control.split>0){ ---> var  <--- stw=($.fn.width?star
+
+[WARNING] Try to use a single 'var' statement per scope.
+):0)||control.starWidth; ---> var  <--- spi=(control.count%control.split
+
+[WARNING] Try to use a single 'var' statement per scope.
+control.focus){returnthis;} ---> var  <--- input=$(this).data("rating.input"
+
+[WARNING] Try to use a single 'var' statement per scope.
+control.blur){returnthis;} ---> var  <--- input=$(this).data("rating.input"
+
+[WARNING] Try to use a single 'var' statement per scope.
+);this.rating("draw"); ---> var  <--- input=$(control.current?control.
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var BBEditor=$("#BBCodeEditor"); ---> var  <--- titleEditor=$("#edit-title");var editorDiv=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var titleEditor=$("#edit-title"); ---> var  <--- editorDiv=$("#editor-div");var editorForm=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var editorDiv=$("#editor-div"); ---> var  <--- editorForm=$("#editor-form");var fileTable=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var editorForm=$("#editor-form"); ---> var  <--- fileTable=$("#ajax-file-list");var fileTableBody=
+
+[WARNING] Try to use a single 'var' statement per scope.
+;var fileTable=$("#ajax-file-list"); ---> var  <--- fileTableBody=$("tbody",fileTable);var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+fileTableBody=$("tbody",fileTable); ---> var  <--- TextEditor=$("#TextEditor");$("a.bb-quote"
+
+[WARNING] Try to use a single 'var' statement per scope.
+.replace("quote","raw")); ---> var  <--- author=data.find("span.username").html
+
+[WARNING] Try to use a single 'var' statement per scope.
+find("span.username").html(); ---> var  <--- quoteText='[quote="'+author+'"]'+data.
+
+[WARNING] Try to use a single 'var' statement per scope.
+top);BBEditor.focus(); ---> var  <--- data=$("#"+id.replace(
+
+[WARNING] Try to use a single 'var' statement per scope.
+.replace("edit","raw")); ---> var  <--- raw=data.find("pre.postbody").html
+
+[WARNING] Try to use a single 'var' statement per scope.
+markItUp({replaceWith:raw}); ---> var  <--- files=$.parseJSON(data.find(
+
+[WARNING] Try to use a single 'var' statement per scope.
+{fileTable.show();for( ---> var  <--- i=0;i<files.length;
+
+[WARNING] Try to use a single 'var' statement per scope.
+<files.length;i++){ ---> var  <--- fid=files[i].fid;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+fid=files[i].fid; ---> var  <--- path=files[i].path;var 
+
+[WARNING] Try to use a single 'var' statement per scope.
+path=files[i].path; ---> var  <--- imageExt=new Array("jpeg","gif","png"
+
+[WARNING] Try to use a single 'var' statement per scope.
+Array("jpeg","gif","png"); ---> var  <--- fileExt=path.split(".").pop
+
+[WARNING] Try to use a single 'var' statement per scope.
+split(".").pop(); ---> var  <--- bbcode;if(imageExt.indexOf(fileExt)
+
+[WARNING] Try to use a single 'var' statement per scope.
+[i].name+"[/file]";} ---> var  <--- row='<tr id="editfile-'+fid+'"><td><input type="text" maxlength="30" name="files['+fid+
+
+[WARNING] Try to use a single 'var' statement per scope.
+.error)==="[object Array]"){for( ---> var  <--- i=0;i<res.error.
+
+[WARNING] Try to use a single 'var' statement per scope.
+{fileTable.show();for( ---> var  <--- i=0;i<res.saved.
+
+[WARNING] The variable i has already been declared in the same scope...
+fileTable.show();for(var  ---> i <--- =0;i<res.saved.length
+
+[WARNING] Try to use a single 'var' statement per scope.
+.saved.length;i++){ ---> var  <--- path=res.saved[i].path
+
+[WARNING] Try to use a single 'var' statement per scope.
+res.saved[i].path; ---> var  <--- imageExt=new Array("jpeg","gif","png"
+
+[WARNING] Try to use a single 'var' statement per scope.
+Array("jpeg","gif","png"); ---> var  <--- fileExt=path.split(".").pop
+
+[WARNING] Try to use a single 'var' statement per scope.
+split(".").pop(); ---> var  <--- bbcode;if(imageExt.indexOf(fileExt)
+
+[WARNING] Try to use a single 'var' statement per scope.
+[i].name+"[/file]";} ---> var  <--- row='<tr id="editfile-'+path+'"><td><input type="text" maxlength="30" name="files['+path+
+
+[WARNING] Try to use a single 'var' statement per scope.
+var row=this.parentNode.parentNode; ---> var  <--- table=row.parentNode.parentNode;table.
+
+[WARNING] Try to use a single 'var' statement per scope.
+.hide();}}); ---> var  <--- uid=getCookie("uid");if(uid
+
+[WARNING] Try to use a single 'var' statement per scope.
+".hidden").show();}} ---> var  <--- pmCount=getCookie("pmCount");if(pmCount
+
+[WARNING] Try to use a single 'var' statement per scope.
+if(view.length>0){ ---> var  <--- expDate=new Date();expDate.setFullYear
+
+[WARNING] Try to use a single 'var' statement per scope.
+editorDiv.offset().top); ---> var  <--- data=$("#"+$(this)
+
+[WARNING] The symbol ret is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,rootjQuery){var match,elem, ---> ret <--- ,doc;if(!selector){return
+
+[WARNING] The symbol related is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,matched,matches,handleObj,sel, ---> related <--- ,handlers=((jQuery._data(this
+
+[WARNING] The symbol selector is declared but is apparently never used.
+This code can probably be written in a more compact way.
+.relatedTarget,handleObj=event.handleObj, ---> selector <--- =handleObj.selector;if(!related||
+
+[WARNING] The symbol rnot is declared but is apparently never used.
+This code can probably be written in a more compact way.
+RegExp(pseudos),rquickExpr=/^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/, ---> rnot <--- =/^:not/,rsibling=/[\x20\t\r\n\f]*[+~]/,rendsWithNot=/:not\($/
+
+[WARNING] The symbol rendsWithNot is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,rnot=/^:not/,rsibling=/[\x20\t\r\n\f]*[+~]/, ---> rendsWithNot <--- =/:not\($/,rheader=/h\d/i,rinputs=/input|select|textarea|button/i
+
+[WARNING] The symbol j is declared but is apparently never used.
+This code can probably be written in a more compact way.
+find,match=tokenize(selector), ---> j <--- =match.length;if(!seed)
+
+[WARNING] The symbol len is declared but is apparently never used.
+This code can probably be written in a more compact way.
+,depth,div,hasBody,tbody, ---> len <--- ,handleScript,jsTags,safe=context===document
+
+[WARNING] The symbol init is declared but is apparently never used.
+This code can probably be written in a more compact way.
+sub;jQuerySub.fn.init=function ---> init <--- (selector,context){if(context&&
+
+[WARNING] The symbol tweenerIndex is declared but is apparently never used.
+This code can probably be written in a more compact way.
+){var result,index=0, ---> tweenerIndex <--- =0,length=animationPrefilters.length,deferred
+
+[WARNING] The symbol preview is declared but is apparently never used.
+This code can probably be written in a more compact way.
+selectionEnd);}returnselection;}function ---> preview <--- (){return;if(typeofoptions.
+
+[WARNING] The symbol phtml is declared but is apparently never used.
+This code can probably be written in a more compact way.
+);}functionrenderPreview(){var  ---> phtml <--- ;if(options.previewHandler&&typeofoptions.
+
+[WARNING] The symbol sh is declared but is apparently never used.
+This code can probably be written in a more compact way.
+){var o=sf.op, ---> sh <--- =sf.c.shadowClass+"-off",$ul
