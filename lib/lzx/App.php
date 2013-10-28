@@ -20,7 +20,7 @@ abstract class App
    protected $config;
    protected $path;
 
-   public function __construct( $appNamespace, $configFile )
+   public function __construct( $configFile, Array $namespaces = array( ) )
    {
       try
       {
@@ -42,15 +42,17 @@ abstract class App
          $loader = ClassLoader::getInstance();
          $loader->registerNamespace( __NAMESPACE__, __DIR__ );
 
+         foreach ( $namespaces as $namespace => $path )
+         {
+            $loader->registerNamespace( $namespace, $path );
+         }
+
          // set ErrorHandler, convert error to ErrorException
          Handler::setErrorHandler();
 
          // load configuration
          $this->config = Config::getInstance( $configFile );
          $this->path = $this->config->path;
-
-         // register site namespace
-         $loader->registerNamespace( $appNamespace, $this->path['server'] );
 
          // create logger
          $this->logger = Logger::getInstance( $this->path['log'], array( ), TRUE );
