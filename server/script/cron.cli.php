@@ -3,7 +3,6 @@
 namespace site;
 
 use lzx\App;
-use lzx\core\Config;
 use lzx\core\MySQL;
 use lzx\core\Mailer;
 use lzx\html\Template;
@@ -265,7 +264,7 @@ class CronApp extends App
 
 }
 
-$app = new CronApp( __NAMESPACE__, $_SERVERDIR . '/config.php' );
+$app = new CronApp( $_SERVERDIR . '/config.php', array( __NAMESPACE__ => $_SERVERDIR ) );
 
 $app->run( $argc, $argv );
 
