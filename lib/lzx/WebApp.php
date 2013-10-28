@@ -3,17 +3,13 @@
 namespace lzx;
 
 use lzx\App;
-use lzx\core\ClassLoader;
 use lzx\core\Handler;
-use lzx\core\Config;
-use lzx\core\Logger;
 use lzx\core\MySQL;
 use lzx\core\Request;
 use lzx\core\Session;
 use lzx\core\Cookie;
 use lzx\core\Cache;
 use lzx\html\Template;
-use lzx\core\Mailer;
 
 /**
  *
@@ -32,9 +28,9 @@ require_once __DIR__ . '/App.php';
 class WebApp extends App
 {
 
-   public function __construct( $siteNamespace, $configFile )
+   public function __construct( $configFile, Array $namespaces = array( ) )
    {
-      parent::__construct( $siteNamespace, $configFile );
+      parent::__construct( $configFile, $namespaces );
 
       if ( \is_null( $this->config->cache ) )
       {
