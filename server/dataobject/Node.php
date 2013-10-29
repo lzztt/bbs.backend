@@ -46,8 +46,8 @@ class Node extends DataObject
 
       if ( $count > 0 )
       {
-         // limit 1 node within 1 minute
-         if ( $this->createTime - \intval( $nodes[0]['createTime'] ) < 60 )
+         // limit 1 node within 3 minute
+         if ( $this->createTime - \intval( $nodes[0]['createTime'] ) < 180 )
          {
             throw new \Exception( 'You are posting too fast. Please slow down.' );
          }
@@ -55,8 +55,8 @@ class Node extends DataObject
 
       if ( $count > 2 )
       {
-         // limit 3 nodes within 10 minutes
-         if ( $this->createTime - \intval( $nodes[2]['createTime'] ) < 600 )
+         // limit 3 nodes within 30 minutes
+         if ( $this->createTime - \intval( $nodes[2]['createTime'] ) < 1800 )
          {
             throw new \Exception( 'You are posting too fast. Please slow down.' );
          }
@@ -64,17 +64,11 @@ class Node extends DataObject
 
       if ( $count > 5 )
       {
-         // limit 6 nodes within 1 hours
-         if ( $this->createTime - \intval( $nodes[5]['createTime'] ) < 3600 )
+         // limit 6 nodes within 12 hours
+         if ( $this->createTime - \intval( $nodes[5]['createTime'] ) < 43200 )
          {
-            throw new \Exception( 'too many nodes posted within 1 hour' );
+            throw new \Exception( 'too many nodes posted within 12 hours' );
          }
-      }
-
-      if ( $count > 24 )
-      {
-         // limit 24 nodes within 24 hours
-         throw new \Exception( 'too many nodes posted within 24 hours' );
       }
 
       // check duplicate
