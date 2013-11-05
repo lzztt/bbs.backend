@@ -1,12 +1,14 @@
 <?php
 
-namespace lzx;
+namespace site;
 
 use lzx\App;
 use lzx\core\Handler;
 use lzx\core\MySQL;
 use lzx\core\Request;
 use lzx\core\Session;
+use lzx\core\SessionDB;
+use lzx\core\SessionNULL;
 use lzx\core\Cookie;
 use lzx\core\Cache;
 use lzx\html\Template;
@@ -23,7 +25,7 @@ use lzx\html\Template;
 // cookie->umode
 // session->uid
 // session->urole
-require_once __DIR__ . '/App.php';
+require_once $_LZXROOT . '/App.php';
 
 class WebApp extends App
 {
@@ -236,7 +238,7 @@ class WebApp extends App
 
          if ( $umode == Template::UMODE_ROBOT )
          {
-            Session::$isDummyInstance = TRUE;
+            Session::setInstance( new SessionNULL() );
          }
          else
          {
@@ -245,6 +247,7 @@ class WebApp extends App
             $domain = $this->config->cookie['domain'] ? $this->config->cookie['domain'] : $this->config->domain;
             \session_set_cookie_params( $lifetime, $path, $domain );
             \session_name( 'LZXSID' );
+            Session::setInstance( new SessionDB( MySQL::getInstance(), 'Session' ) );
          }
          $session = Session::getInstance();
 

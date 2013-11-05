@@ -23,8 +23,8 @@ class NodeYellowPage extends DataObject
    public function __construct($load_id = null, $fields = '')
    {
       $db = MySQL::getInstance();
-
-      parent::__construct($db, 'node_yellow_pages', $load_id, $fields);
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
 }

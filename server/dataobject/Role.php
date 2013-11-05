@@ -21,7 +21,8 @@ class Role extends DataObject
    public function __construct($load_id = null, $fields = '')
    {
       $db = MySQL::getInstance();
-      parent::__construct($db, 'roles', $load_id, $fields);
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
 }

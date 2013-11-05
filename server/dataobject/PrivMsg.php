@@ -28,14 +28,15 @@ class PrivMsg extends DataObject
    public function __construct($load_id = null, $fields = '')
    {
       $db = MySQL::getInstance();
-      parent::__construct($db, 'privmsgs', $load_id, $fields);
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
    public function add()
    {
       parent::add();
 
-      $sql = 'SELECT u.username, u.email, IFNULL(m.topicMID, m.mid) AS topicMID FROM privmsgs AS m JOIN users AS u ON m.toUID = u.uid WHERE m.mid = ' . $this->mid;
+      $sql = 'SELECT u.username, u.email, IFNULL(m.topicMID, m.mid) AS topicMID FROM PrivMsg AS m JOIN User AS u ON m.toUID = u.uid WHERE m.mid = ' . $this->mid;
       $msg = $this->_db->row($sql);
       $mailer = new Mailer();
       $mailer->to = $msg['email'];
@@ -52,15 +53,15 @@ class PrivMsg extends DataObject
      public function getUserPMs($uid)
      {
      $sql = 'SELECT m.mid, m.time, m.subject,'
-     . ' (SELECT username FROM users WHERE uid = m.fromUID) AS fromName,'
-     . ' (SELECT username FROM users WHERE uid = m.toUID) AS toName, '
+     . ' (SELECT username FROM User WHERE uid = m.fromUID) AS fromName,'
+     . ' (SELECT username FROM User WHERE uid = m.toUID) AS toName, '
      . ' IF('
      . ' m.fromUID = ' . $uid . ','
-     . ' (SELECT isNew FROM privmsgs WHERE topicMID = m.mid AND toUID = ' . $uid . ' ORDER BY time DESC LIMIT 1),' // FROM UID BUT HAS REPLYS
-     . ' IFNULL((SELECT isNew FROM privmsgs WHERE topicMID = m.mid AND toUID = ' . $uid . ' ORDER BY time DESC LIMIT 1), m.isNew )' // TO UID, CHECK REPLYS FIRST
+     . ' (SELECT isNew FROM PrivMsg WHERE topicMID = m.mid AND toUID = ' . $uid . ' ORDER BY time DESC LIMIT 1),' // FROM UID BUT HAS REPLYS
+     . ' IFNULL((SELECT isNew FROM PrivMsg WHERE topicMID = m.mid AND toUID = ' . $uid . ' ORDER BY time DESC LIMIT 1), m.isNew )' // TO UID, CHECK REPLYS FIRST
      . ') AS isNew'
      . ' FROM ('
-     . 'SELECT IFNULL( topicMID, mid ) AS tid FROM privmsgs WHERE toUID = ' . $uid . ' GROUP BY tid ORDER BY time DESC' // TOPIC MID TO UID / FROM UID BUT HAS REPLYS
+     . 'SELECT IFNULL( topicMID, mid ) AS tid FROM PrivMsg WHERE toUID = ' . $uid . ' GROUP BY tid ORDER BY time DESC' // TOPIC MID TO UID / FROM UID BUT HAS REPLYS
      . ') AS idTable'
      . ' LEFT JOIN privmsgs AS m ON idTable.tid = m.mid'
      . ' WHERE (m.fromUID = ' . $uid . ' AND m.isDeleted < 2) OR (m.toUID = ' . $uid . ' AND m.isDeleted%2 = 0)'; // isDeleted = FALSE
@@ -73,7 +74,7 @@ class PrivMsg extends DataObject
       $db = $this->_db;
 
       $sql = 'SELECT m.mid,m.time,m.body,u.uid,u.username, u.avatar'
-         . ' FROM privmsgs AS m JOIN users AS u ON m.fromUID = u.uid'
+         . ' FROM PrivMsg AS m JOIN User AS u ON m.fromUID = u.uid'
          . ' WHERE m.topicMID = ' . $mid
          . ' AND ((m.fromUID = ' . $uid . ' AND m.isDeleted < 2) OR (m.toUID = ' . $uid . ' AND m.isDeleted%2 = 0))'
          . ' ORDER BY m.time';
@@ -81,7 +82,7 @@ class PrivMsg extends DataObject
 
       if ($markRead)
       {
-         $db->query('UPDATE privmsgs SET isNew = 0 WHERE topicMID=' . $mid . ' AND toUID=' . $uid . ' AND isNew = 1');
+         $db->query('UPDATE PrivMsg SET isNew = 0 WHERE topicMID=' . $mid . ' AND toUID=' . $uid . ' AND isNew = 1');
       }
 
       return $pm;
@@ -89,8 +90,8 @@ class PrivMsg extends DataObject
 
    public function getReplyTo($topicMID, $uid)
    {
-      $sql_uids = 'SELECT fromUID, toUID FROM privmsgs WHERE topicMID = ' . $topicMID . ' LIMIT 1';
-      $sql = 'SELECT uid, username FROM users, (' . $sql_uids . ') AS uids WHERE (uid = uids.fromUID OR uid = uids.toUID) AND uid != ' . $uid;
+      $sql_uids = 'SELECT fromUID, toUID FROM PrivMsg WHERE topicMID = ' . $topicMID . ' LIMIT 1';
+      $sql = 'SELECT uid, username FROM User, (' . $sql_uids . ') AS uids WHERE (uid = uids.fromUID OR uid = uids.toUID) AND uid != ' . $uid;
       return $this->_db->row($sql);
    }
 
@@ -104,8 +105,8 @@ class PrivMsg extends DataObject
       }
       if ($this->mid == $this->topicMID)
       {
-         $this->_db->query('UPDATE privmsgs SET isDeleted = isDeleted + 2 WHERE isDeleted < 2 AND fromUID = ' . $this->fromUID . ' AND topicMID = ' . $this->topicMID);
-         $this->_db->query('UPDATE privmsgs SET isDeleted = isDeleted + 1 WHERE isDeleted % 2 = 0 AND toUID = ' . $this->fromUID . ' AND topicMID = ' . $this->topicMID);
+         $this->_db->query('UPDATE PrivMsg SET isDeleted = isDeleted + 2 WHERE isDeleted < 2 AND fromUID = ' . $this->fromUID . ' AND topicMID = ' . $this->topicMID);
+         $this->_db->query('UPDATE PrivMsg SET isDeleted = isDeleted + 1 WHERE isDeleted % 2 = 0 AND toUID = ' . $this->fromUID . ' AND topicMID = ' . $this->topicMID);
       }
    }
 
@@ -119,8 +120,8 @@ class PrivMsg extends DataObject
       }
       if ($this->mid == $this->topicMID)
       {
-         $this->_db->query('UPDATE privmsgs SET isDeleted = isDeleted + 2 WHERE isDeleted < 2 AND fromUID = ' . $this->toUID . ' AND topicMID = ' . $this->topicMID);
-         $this->_db->query('UPDATE privmsgs SET isDeleted = isDeleted + 1 WHERE isDeleted % 2 = 0 AND toUID = ' . $this->toUID . ' AND topicMID = ' . $this->topicMID);
+         $this->_db->query('UPDATE PrivMsg SET isDeleted = isDeleted + 2 WHERE isDeleted < 2 AND fromUID = ' . $this->toUID . ' AND topicMID = ' . $this->topicMID);
+         $this->_db->query('UPDATE PrivMsg SET isDeleted = isDeleted + 1 WHERE isDeleted % 2 = 0 AND toUID = ' . $this->toUID . ' AND topicMID = ' . $this->topicMID);
       }
    }
 

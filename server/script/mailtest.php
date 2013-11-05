@@ -116,7 +116,7 @@ function do_activity($path, $logger, $config)
    $db = MySQL::getInstance($config->database, TRUE);
    $db->setLogger($logger);
 
-   $activities = $db->select('SELECT a.startTime, n.nid, n.title, u.username, u.email FROM activities AS a JOIN nodes AS n ON a.nid = n.nid JOIN users AS u ON n.uid = u.uid WHERE a.status IS NULL');
+   $activities = $db->select('SELECT a.startTime, n.nid, n.title, u.username, u.email FROM Activity AS a JOIN nodes AS n ON a.nid = n.nid JOIN users AS u ON n.uid = u.uid WHERE a.status IS NULL');
    if (\sizeof($activities) > 0)
    {
       $mailer = new Mailer($config->mail->domain);
@@ -176,7 +176,7 @@ function do_activity($path, $logger, $config)
 function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime)
 {
    $nextRefreshTime = $currentTime + 604800;
-   $sql = 'SELECT startTime, endTime FROM activities WHERE status = 1 AND (startTime > ' . $currentTime . ' OR endTime > ' . $currentTime . ')';
+   $sql = 'SELECT startTime, endTime FROM Activity WHERE status = 1 AND (startTime > ' . $currentTime . ' OR endTime > ' . $currentTime . ')';
    foreach ($db->select($sql) as $r)
    {
       if ($r['startTime'] < $currentTime)
@@ -228,8 +228,8 @@ function do_session($path, $logger, $config)
    $db = MySQL::getInstance($config->database, TRUE);
    $db->setLogger($logger);
    $currentTime = \intval($_SERVER['REQUEST_TIME']);
-   $db->query('DELETE FROM sessions WHERE uid = 0 AND mtime < ' . ($currentTime - 21600));
-   $db->query('DELETE FROM sessions WHERE mtime < ' . ($currentTime - $config->cookie->lifetime));
+   $db->query('DELETE FROM Session WHERE uid = 0 AND mtime < ' . ($currentTime - 21600));
+   $db->query('DELETE FROM Session WHERE mtime < ' . ($currentTime - $config->cookie->lifetime));
 }
 
 // daily

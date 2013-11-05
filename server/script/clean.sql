@@ -40,12 +40,12 @@ DELETE FROM users WHERE uid IN (SELECT uid FROM userTmp);
 DELETE FROM nodes WHERE nid IN (SELECT nid FROM nodeTmp);
 DELETE FROM comments WHERE cid IN (SELECT cid FROM commentTmp);
 DELETE FROM pm USING privmsgs AS pm JOIN userTmp AS u ON pm.fromUID = u.uid OR pm.toUID = u.uid;
-DELETE FROM sessions WHERE uid IN (SELECT uid FROM userTmp);
+DELETE FROM Session WHERE uid IN (SELECT uid FROM userTmp);
 DELETE FROM yp_rating WHERE uid IN (SELECT uid FROM userTmp);
 
 INSERT INTO files_deleted (fid, path) SELECT fid, path FROM files WHERE nid IN (SELECT nid FROM nodeTmp) OR cid IN (SELECT cid FROM commentTmp);
 DELETE FROM files WHERE nid IN (SELECT nid FROM nodeTmp) OR cid IN (SELECT cid FROM commentTmp);
-DELETE FROM activities WHERE nid IN (SELECT nid FROM nodeTmp);
+DELETE FROM Activity WHERE nid IN (SELECT nid FROM nodeTmp);
 DELETE FROM yp_rating WHERE nid IN (SELECT nid FROM nodeTmp);
 UPDATE users AS u JOIN nodePointTmp AS p ON u.uid = p.uid SET u.points = IF(u.points > p.point, u.points - p.point, 0);
 UPDATE users AS u JOIN commentPointTmp AS p ON u.uid = p.uid SET u.points = IF(u.points > p.point, u.points - p.point, 0);
