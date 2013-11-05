@@ -23,10 +23,11 @@ use lzx\core\MySQL;
 class FFAttendee extends DataObject
 {
 
-   public function __construct($load_id = NULL, $fields = '')
+   public function __construct( $load_id = NULL, $fields = '' )
    {
-     $db = MySQL::getInstance();
-      parent::__construct($db, 'fyfm_attendees', $load_id, $fields);
+      $db = MySQL::getInstance();
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
 }

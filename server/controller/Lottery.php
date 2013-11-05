@@ -215,7 +215,7 @@ class Lottery extends Controller
          $lastLotteryTime = $_COOKIE['lastLotteryTime'];
          if ($lastLotteryTime <= 0)
          {
-            $lastLotteryTime = $db->val('SELECT time FROM lotteryResults WHERE uid = ' . $user->uid . ' ORDER BY time DESC LIMIT 1');
+            $lastLotteryTime = $db->val('SELECT time FROM LotteryResult WHERE uid = ' . $user->uid . ' ORDER BY time DESC LIMIT 1');
          }
 
          IF ($this->request->timestamp - $lastLotteryTime < 60)
@@ -232,15 +232,15 @@ class Lottery extends Controller
          switch ($round)
          {
             case 5:
-               $aPoints[5] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1);
+               $aPoints[5] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1);
             case 4:
-               $aPoints[4] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2);
+               $aPoints[4] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2);
             case 3:
-               $aPoints[3] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4);
+               $aPoints[3] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4);
             case 2:
-               $aPoints[2] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8);
+               $aPoints[2] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8);
             case 1:
-               $aPoints[1] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16);
+               $aPoints[1] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16);
          }
 
          $average = 0;
@@ -257,12 +257,12 @@ class Lottery extends Controller
          {
             $keys[] = 'points' . $i;
          }
-         $db->query('REPLACE lotteryUsers (uid, username, points, ' . implode(', ', $keys) . ') VALUES (' . $user->uid . ',"' . $user->username . '",' . $average . ', ' . implode(', ', $aPoints) . ')');
+         $db->query('REPLACE INTO LotteryUser (uid, username, points, ' . implode(', ', $keys) . ') VALUES (' . $user->uid . ',"' . $user->username . '",' . $average . ', ' . implode(', ', $aPoints) . ')');
       }
 
       if (!isset($aPoints))
       {
-         $points = $db->row('SELECT points, points1, points2, points3, points4, points5 FROM lotteryUsers WHERE uid = ' . $user->uid);
+         $points = $db->row('SELECT points, points1, points2, points3, points4, points5 FROM LotteryUser WHERE uid = ' . $user->uid);
          $average = $points['points'];
          $aPoints = array();
          for ($i = 1; $i < sizeof($points); $i++)
@@ -280,15 +280,15 @@ class Lottery extends Controller
       switch ($round)
       {
          case 5:
-            $results[5] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 . ' ORDER BY time DESC');
+            $results[5] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 . ' ORDER BY time DESC');
          case 4:
-            $results[4] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 . ' ORDER BY time DESC');
+            $results[4] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 . ' ORDER BY time DESC');
          case 3:
-            $results[3] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 . ' ORDER BY time DESC');
+            $results[3] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 . ' ORDER BY time DESC');
          case 2:
-            $results[2] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 . ' ORDER BY time DESC');
+            $results[2] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 . ' ORDER BY time DESC');
          case 1:
-            $results[1] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 . ' ORDER BY time DESC');
+            $results[1] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 . ' ORDER BY time DESC');
       }
 
       foreach ($aPoints as $k => $v)
@@ -322,7 +322,7 @@ class Lottery extends Controller
 
 
 
-      $users = $db->select('SELECT uid FROM lotteryUsers');
+      $users = $db->select('SELECT uid FROM LotteryUser');
       $fixed_uids = '';
       foreach ($users as $u)
       {
@@ -332,15 +332,15 @@ class Lottery extends Controller
          switch ($round)
          {
             case 5:
-               $aPoints[5] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1);
+               $aPoints[5] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1);
             case 4:
-               $aPoints[4] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2);
+               $aPoints[4] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2);
             case 3:
-               $aPoints[3] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4);
+               $aPoints[3] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4);
             case 2:
-               $aPoints[2] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8);
+               $aPoints[2] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8);
             case 1:
-               $aPoints[1] = $db->val('SELECT SUM(points)/COUNT(*) FROM lotteryResults WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16);
+               $aPoints[1] = $db->val('SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16);
          }
 
          $average = 0;
@@ -359,7 +359,7 @@ class Lottery extends Controller
          {
             $keys[] = 'points' . $i;
          }
-         $db->query('REPLACE lotteryUsers (uid, username, points, ' . implode(', ', $keys) . ') VALUES (' . $user->uid . ',"' . $user->username . '",' . $average . ', ' . implode(', ', $aPoints) . ')');
+         $db->query('REPLACE INTO LotteryUser (uid, username, points, ' . implode(', ', $keys) . ') VALUES (' . $user->uid . ',"' . $user->username . '",' . $average . ', ' . implode(', ', $aPoints) . ')');
          $fixed_uids .= $user->uid . ' : ' . $user->username . '<br />';
       }
       return $fixed_uids;
@@ -415,7 +415,7 @@ class Lottery extends Controller
 
          $uid = (int) $this->request->args[3];
 
-         $points = $db->row('SELECT username, points, points1, points2, points3, points4, points5 FROM lotteryUsers WHERE uid = ' . $uid);
+         $points = $db->row('SELECT username, points, points1, points2, points3, points4, points5 FROM LotteryUser WHERE uid = ' . $uid);
          $username = $points['username'];
          $average = $points['points'];
          $aPoints = array();
@@ -434,15 +434,15 @@ class Lottery extends Controller
          switch ($round)
          {
             case 5:
-               $results[5] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 . ' ORDER BY time DESC');
+               $results[5] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 . ' ORDER BY time DESC');
             case 4:
-               $results[4] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 . ' ORDER BY time DESC');
+               $results[4] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 . ' ORDER BY time DESC');
             case 3:
-               $results[3] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 . ' ORDER BY time DESC');
+               $results[3] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 . ' ORDER BY time DESC');
             case 2:
-               $results[2] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 . ' ORDER BY time DESC');
+               $results[2] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 . ' ORDER BY time DESC');
             case 1:
-               $results[1] = $db->select('SELECT points, time, code FROM lotteryResults WHERE uid = ' . $uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 . ' ORDER BY time DESC');
+               $results[1] = $db->select('SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 . ' ORDER BY time DESC');
          }
 
          foreach ($aPoints as $k => $v)
@@ -470,9 +470,9 @@ class Lottery extends Controller
          }
       }
 
-      $rank = $db->select('SELECT uid, username, points, points1, points2, points3, points4, points5 FROM lotteryUsers ORDER BY points DESC');
+      $rank = $db->select('SELECT uid, username, points, points1, points2, points3, points4, points5 FROM LotteryUser ORDER BY points DESC');
       $userCount = sizeof($rank);
-      $recordCount = $db->val('SELECT COUNT(*) FROM lotteryResults');
+      $recordCount = $db->val('SELECT COUNT(*) FROM LotteryResult');
       return new Template('lotteryRank', array('userCount' => $userCount, 'recordCount' => $recordCount, 'rank' => $rank));
    }
 

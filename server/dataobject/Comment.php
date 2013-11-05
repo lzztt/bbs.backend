@@ -24,14 +24,14 @@ class Comment extends DataObject
    public function __construct( $load_id = null, $fields = '' )
    {
       $db = MySQL::getInstance();
-
-      parent::__construct( $db, 'comments', $load_id, $fields );
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
    public function delete()
    {
-      $this->_db->query( 'INSERT INTO files_deleted (fid, path) SELECT fid, path FROM files AS f WHERE f.cid = ' . $this->cid );
-      $this->_db->query( 'DELETE c, f FROM comments AS c LEFT JOIN files AS f ON c.cid = f.cid WHERE c.cid = ' . $this->cid );
+      $this->_db->query( 'INSERT INTO ImageDeleted (fid, path) SELECT fid, path FROM Image AS f WHERE f.cid = ' . $this->cid );
+      $this->_db->query( 'DELETE c, f FROM Comment AS c LEFT JOIN Image AS f ON c.cid = f.cid WHERE c.cid = ' . $this->cid );
       /*
         if (\is_null($this->uid))
         {
@@ -39,7 +39,7 @@ class Comment extends DataObject
         }
         if (isset($this->uid))
         {
-        $this->_db->query('UPDATE users SET points = points - 1 WHERE uid = ' . $this->uid);
+        $this->_db->query('UPDATE User SET points = points - 1 WHERE uid = ' . $this->uid);
         }
        */
    }

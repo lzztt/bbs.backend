@@ -42,12 +42,12 @@ use lzx\core\PasswordHash;
  */
 class User extends DataObject
 {
-
+   
    public function __construct($load_id = null, $fields = '')
    {
       $db = MySQL::getInstance();
-
-      parent::__construct($db, 'users', $load_id, $fields);
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
    public function hashPW($password)
@@ -120,10 +120,10 @@ class User extends DataObject
    {
       $this->status = 0;
       $this->update('status');
-      $this->_db->query('DELETE FROM sessions WHERE uid = ' . $this->uid);
-      $this->_db->query('UPDATE nodes SET status = 0 WHERE uid = ' . $this->uid);
-      $this->_db->query('INSERT INTO spammers (email, ipInt, time) SELECT email, lastAccessIPInt, UNIX_TIMESTAMP() FROM users WHERE uid = ' . $this->uid);
-      //$this->_db->query('DELETE FROM comments WHERE uid = ' . $this->uid);
+      $this->_db->query('DELETE FROM Session WHERE uid = ' . $this->uid);
+      $this->_db->query('UPDATE Node SET status = 0 WHERE uid = ' . $this->uid);
+      $this->_db->query('INSERT INTO Spammer (email, ipInt, time) SELECT email, lastAccessIPInt, UNIX_TIMESTAMP() FROM User WHERE uid = ' . $this->uid);
+      //$this->_db->query('DELETE FROM Comment WHERE uid = ' . $this->uid);
    }
 
    public function getAllNodeIDs()
@@ -131,7 +131,7 @@ class User extends DataObject
       $nids = array();
       if ($this->uid > 1)
       {
-         foreach ($this->_db->select('SELECT nid FROM nodes WHERE uid = ' . $this->uid) as $n)
+         foreach ($this->_db->select('SELECT nid FROM Node WHERE uid = ' . $this->uid) as $n)
          {
             $nids[] = $n['nid'];
          }
@@ -141,23 +141,23 @@ class User extends DataObject
 
    public function checkSpamEmail($email)
    {
-      $count = $this->_db->val('SELECT COUNT(*) FROM spammers WHERE email = ' . $this->_db->str($email));
+      $count = $this->_db->val('SELECT COUNT(*) FROM Spammer WHERE email = ' . $this->_db->str($email));
       return ($count > 0 ? FALSE : TRUE);
    }
 
    public function getRecentNodes($limit)
    {
-      return $this->_db->select('SELECT nid, title, createTime FROM nodes WHERE uid = ' . $this->uid . ' ORDER BY createTime DESC LIMIT ' . $limit);
+      return $this->_db->select('SELECT nid, title, createTime FROM Node WHERE uid = ' . $this->uid . ' ORDER BY createTime DESC LIMIT ' . $limit);
    }
 
    public function getRecentComments($limit)
    {
-      return $this->_db->select('SELECT c.nid, n.title, c.createTime FROM comments AS c JOIN nodes AS n ON c.nid = n.nid WHERE c.uid = ' . $this->uid . ' GROUP BY c.nid ORDER BY c.createTime DESC LIMIT ' . $limit);
+      return $this->_db->select('SELECT c.nid, n.title, c.createTime FROM Comment AS c JOIN Node AS n ON c.nid = n.nid WHERE c.uid = ' . $this->uid . ' GROUP BY c.nid ORDER BY c.createTime DESC LIMIT ' . $limit);
    }
 
    public function getNewPrivMsgsCount()
    {
-      return $this->_db->val('SELECT count(*) FROM privmsgs WHERE isNew = 1 AND toUID = ' . $this->uid);
+      return $this->_db->val('SELECT count(*) FROM PrivMsg WHERE isNew = 1 AND toUID = ' . $this->uid);
    }
 
    public function getPrivMsgsCount($type = 'inbox')
@@ -165,12 +165,12 @@ class User extends DataObject
       if ($type == 'sent')
       {
 // sent box
-         return $this->_db->val('SELECT count(DISTINCT topicMID) FROM privmsgs WHERE mid = topicMID AND fromUid = ' . $this->uid);
+         return $this->_db->val('SELECT count(DISTINCT topicMID) FROM PrivMsg WHERE mid = topicMID AND fromUid = ' . $this->uid);
       }
       else
       {
 // inbox
-         return $this->_db->val('SELECT count(DISTINCT topicMID) FROM privmsgs WHERE toUid = ' . $this->uid);
+         return $this->_db->val('SELECT count(DISTINCT topicMID) FROM PrivMsg WHERE toUid = ' . $this->uid);
       }
    }
 
@@ -179,16 +179,16 @@ class User extends DataObject
       if ($type == 'sent')
       {
          // sent box
-         $sql_topic = 'SELECT topicMID, MAX(time) AS lastMessageTime FROM privmsgs'
+         $sql_topic = 'SELECT topicMID, MAX(time) AS lastMessageTime FROM PrivMsg'
             . ' WHERE mid = topicMID AND fromUID = ' . $this->uid . ' AND isDeleted < 2' // isDeleted = FALSE and as sender
             . ' GROUP BY topicMID ORDER BY lastMessageTime DESC LIMIT ' . $limit . ' OFFSET ' . $offset;
       }
       else
       {
          // inbox
-         $sql_topic = 'SELECT pm.topicMID, MAX(pm.time) AS lastMessageTime FROM privmsgs AS pm'
+         $sql_topic = 'SELECT pm.topicMID, MAX(pm.time) AS lastMessageTime FROM PrivMsg AS pm'
             . ' WHERE (pm.toUID = ' . $this->uid . ' AND pm.isDeleted%2 = 0)'  // isDeleted = FALSE and as recipient
-            . ' OR (pm.fromUID = ' . $this->uid . ' AND pm.isDeleted < 2 AND (SELECT COUNT(*) > 0 FROM privmsgs AS tmp WHERE tmp.topicMID = pm.topicMID and tmp.toUID = ' . $this->uid . ') = 1)' // isDeleted = FALSE
+            . ' OR (pm.fromUID = ' . $this->uid . ' AND pm.isDeleted < 2 AND (SELECT COUNT(*) > 0 FROM PrivMsg AS tmp WHERE tmp.topicMID = pm.topicMID and tmp.toUID = ' . $this->uid . ') = 1)' // isDeleted = FALSE
             . ' GROUP BY topicMID ORDER BY lastMessageTime DESC LIMIT ' . $limit . ' OFFSET ' . $offset;
       }
       $topics = $this->_db->select($sql_topic);
@@ -201,10 +201,10 @@ class User extends DataObject
          }
 
          $sql_message = 'SELECT m.mid, m.topicMID, m.fromUID, m.toUID, m.body, m.time, MAX(m.time) AS lastMessageTime,'
-            . ' (SELECT username FROM users WHERE uid = m.fromUID) AS fromName,'
-            . ' (SELECT username FROM users WHERE uid = m.toUID) AS toName,'
-            . ' (SELECT count(*) > 0 FROM privmsgs AS tpm WHERE tpm.topicMID = m.topicMID AND tpm.isNew = 1 AND tpm.toUID = ' . $this->uid . ') AS isNew'
-            . ' FROM privmsgs AS m WHERE m.topicMID IN (' . \implode(',', $tids) . ') GROUP BY m.topicMID ORDER BY lastMessageTime DESC';
+            . ' (SELECT username FROM User WHERE uid = m.fromUID) AS fromName,'
+            . ' (SELECT username FROM User WHERE uid = m.toUID) AS toName,'
+            . ' (SELECT count(*) > 0 FROM PrivMsg AS tpm WHERE tpm.topicMID = m.topicMID AND tpm.isNew = 1 AND tpm.toUID = ' . $this->uid . ') AS isNew'
+            . ' FROM PrivMsg AS m WHERE m.topicMID IN (' . \implode(',', $tids) . ') GROUP BY m.topicMID ORDER BY lastMessageTime DESC';
 
          return $this->_db->select($sql_message);
       }
@@ -216,12 +216,12 @@ class User extends DataObject
 
    public function getPrivMsgsSentCount()
    {
-      return $this->_db->val('SELECT count(DISTINCT topicMID) FROM privmsgs WHERE fromUid = ' . $this->uid);
+      return $this->_db->val('SELECT count(DISTINCT topicMID) FROM PrivMsg WHERE fromUid = ' . $this->uid);
    }
 
    public function getPrivMsgsSent($limit, $offset = 0)
    {
-      $sql_topic = 'SELECT topicMID FROM privmsgs'
+      $sql_topic = 'SELECT topicMID FROM PrivMsg'
          . ' WHERE fromUID = ' . $this->uid . ' AND isDeleted < 2' // isDeleted = FALSE and as sender
 //. ' WHERE (fromUID = ' . $this->uid . ' AND isDeleted < 2) OR (toUID = ' . $this->uid . ' AND isDeleted%2 = 0)' // isDeleted = FALSE
          . ' GROUP BY topicMID ORDER BY time DESC LIMIT ' . $limit . ' OFFSET ' . $offset;
@@ -231,12 +231,12 @@ class User extends DataObject
    public function getUserStat($timestamp)
    {
       $sql = 'SELECT'
-         . ' (SELECT count(*) FROM users) as userCount,'
-         . ' (SELECT count(*) FROM users WHERE createTime >= ' . \strtotime(\date("m/d/Y")) . ' ) as userTodayCount,'
-         . ' (SELECT username FROM users WHERE status = 1 ORDER BY uid DESC LIMIT 1) AS latestUser';
+         . ' (SELECT count(*) FROM User) as userCount,'
+         . ' (SELECT count(*) FROM User WHERE createTime >= ' . \strtotime(\date("m/d/Y")) . ' ) as userTodayCount,'
+         . ' (SELECT username FROM User WHERE status = 1 ORDER BY uid DESC LIMIT 1) AS latestUser';
       $r = $this->_db->row($sql);
 
-      $sql = 'SELECT s.uid, u.username FROM sessions AS s LEFT JOIN users AS u ON s.uid = u.uid WHERE s.mtime > ' . $timestamp . ' OR s.sid = ' . $this->_db->str(\session_id());
+      $sql = 'SELECT s.uid, u.username FROM Session AS s LEFT JOIN User AS u ON s.uid = u.uid WHERE s.mtime > ' . $timestamp . ' OR s.sid = ' . $this->_db->str(\session_id());
       $arr = $this->_db->select($sql);
 
       $users = array();

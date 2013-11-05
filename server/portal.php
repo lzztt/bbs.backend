@@ -2,7 +2,7 @@
 
 namespace site;
 
-use lzx\WebApp;
+use site\WebApp;
 
 if ( \PHP_SAPI === 'cli' )
 {
@@ -11,7 +11,9 @@ if ( \PHP_SAPI === 'cli' )
    $_SERVER['REQUEST_URI'] = $opts['l'] ? $opts['l'] : '/';
 }
 
-require_once \dirname( __DIR__ ) . '/lib/lzx/WebApp.php';
+$_LZXROOT = \dirname( __DIR__ ) . '/lib/lzx';
+require_once __DIR__ . '/WebApp.php';
+
 $app = new WebApp( __DIR__ . '/config.php', array( __NAMESPACE__ => __DIR__ ) );
 $app->run();
 
