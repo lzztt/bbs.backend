@@ -7,7 +7,7 @@ use lzx\html\Template;
 use site\dataobject\Tag;
 use site\dataobject\Node;
 use site\dataobject\NodeYellowPage;
-use site\dataobject\File;
+use site\dataobject\Image;
 
 class YP extends Controller
 {
@@ -196,8 +196,8 @@ class YP extends Controller
 
          if ( isset( $this->request->post['files'] ) )
          {
-            $file = new File();
-            $file->updateFileList( $this->request->post['files'], $node->nid );
+            $file = new Image();
+            $file->updateFileList( $this->request->post['files'], $this->path['file'], $node->nid );
          }
 
          $this->cache->delete( '/yp/' . $tid );

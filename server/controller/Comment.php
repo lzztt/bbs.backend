@@ -6,7 +6,7 @@ use lzx\core\Controller;
 use site\dataobject\Tag;
 use site\dataobject\Comment as CommentObject;
 use site\dataobject\Node;
-use site\dataobject\File;
+use site\dataobject\Image;
 use site\dataobject\User;
 
 class Comment extends Controller
@@ -50,8 +50,8 @@ class Comment extends Controller
       }
 
       $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : array( );
-      $file = new File();
-      $file->updateFileList( $files, $comment->nid, $cid );
+      $file = new Image();
+      $file->updateFileList( $files, $this->path['file'], $comment->nid, $cid );
       $this->cache->delete( 'imageSlider' );
 
       if ( isset( $this->request->post['star'] ) && \is_numeric( $this->request->post['star'] ) )

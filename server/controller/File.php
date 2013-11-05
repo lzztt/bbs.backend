@@ -3,7 +3,7 @@
 namespace site\controller;
 
 use lzx\core\Controller;
-use site\dataobject\File as FileObject;
+use site\dataobject\Image;
 
 class File extends Controller
 {
@@ -34,7 +34,7 @@ class File extends Controller
       }
       else
       {
-         $fobj = new FileObject();
+         $fobj = new Image();
          $res = $fobj->saveFile($this->request->files, $this->path['file'], $this->request->timestamp, $this->request->uid);
       }
 

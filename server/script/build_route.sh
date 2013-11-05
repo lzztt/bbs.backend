@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sitedir=/home/web/www.houstonbbs.com
+serverdir=/home/web/www.houstonbbs.com/server
 
 tmp_file=/tmp/route.php
 
@@ -23,7 +23,7 @@ cat > $tmp_file <<'EOF'
 $route = array(
 EOF
 
-for i in $sitedir/controller/*.php; do
+for i in $serverdir/controller/*.php; do
     ctrler=$(basename $i .php)
     uri="$(echo $ctrler | tr '[A-Z]' '[a-z]')"
 
@@ -36,8 +36,8 @@ cat >> $tmp_file <<'EOF'
 //__END_OF_FILE__
 EOF
 
-if [[ ! -z "$(diff $tmp_file $sitedir/route.php)" ]]; then
-    mv -f $sitedir/route.php $sitedir/route.php.backup && mv -f $tmp_file $sitedir/route.php
+if [[ ! -z "$(diff $tmp_file $serverdir/route.php)" ]]; then
+    mv -f $serverdir/route.php $serverdir/route.php.backup && mv -f $tmp_file $serverdir/route.php
 else
     echo "route.php file not changed, skip updating"
     rm -rf $tmp_file

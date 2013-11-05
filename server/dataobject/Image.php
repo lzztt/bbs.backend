@@ -8,7 +8,6 @@ namespace site\dataobject;
 
 use lzx\core\DataObject;
 use lzx\core\MySQL;
-use lzx\core\Request;
 use lzx\core\Logger;
 
 /**
@@ -19,18 +18,18 @@ use lzx\core\Logger;
  * @property $path
  * @property $list
  */
-class File extends DataObject
+class Image extends DataObject
 {
 
    public function __construct( $load_id = null, $fields = '' )
    {
       $db = MySQL::getInstance();
-
-      parent::__construct( $db, 'files', $load_id, $fields );
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
    // will always assuming multiple file array
-   public function saveFile( $files, $filePath, $timestamp, $uid, $size = 5120000, $maxWidth = 600, $maxHeight = 960 )
+   public function saveFile( array $files, $filePath, $timestamp, $uid, $size = 5120000, $maxWidth = 600, $maxHeight = 960 )
    {
       $errmsg = array(
          \UPLOAD_ERR_INI_SIZE => 'upload_err_ini_size',
@@ -134,7 +133,7 @@ class File extends DataObject
       return array( 'error' => $errorFile, 'saved' => $savedFile );
    }
 
-   public function updateFileList( array $files, $nid, $cid = NULL )
+   public function updateFileList( array $files, $filePath, $nid, $cid = NULL )
    {
       $nid = \intval( $nid );
       if ( isset( $cid ) ) // comment
@@ -158,91 +157,41 @@ class File extends DataObject
          {
             $fid = \intval( $fid );
             // saved files
-            $db->query( 'UPDATE files SET name=' . $db->str( $file['name'] ) . ' WHERE fid=' . $fid );
+            $db->query( 'UPDATE Image SET name=' . $db->str( $file['name'] ) . ' WHERE fid=' . $fid );
             $fids[] = $fid;
          }
          else
          {
             // new uploaded files
-            $insert[] = '(' . $nid . ',' . $cid . ',' . $db->str( $file['name'] ) . ',' . $db->str( $file['path'] ) . ')';
+            try
+            {
+               $info = \getimagesize( $filePath . $file['path'] );
+               $width = $info[0];
+               $height = $info[1];
+               $insert[] = '(' . $nid . ',' . $cid . ',' . $db->str( $file['name'] ) . ',' . $db->str( $file['path'] ) . ',' . $height . ',' . $width . ')';
+            }
+            catch ( \Exception $e )
+            {
+               $this->logger->error( $e->getMessage() );
+               continue;
+            }
          }
       }
       // delete old saved files are not in new version
-      $db->query( 'INSERT INTO files_deleted (fid, path) SELECT fid, path FROM files WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
-      $db->query( 'DELETE FROM files WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
+      $db->query( 'INSERT INTO ImageDeleted (fid, path) SELECT fid, path FROM Image WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
+      $db->query( 'DELETE FROM Image WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
       // insert new files
       if ( \sizeof( $insert ) > 0 )
       {
-         $db->query( 'INSERT INTO files (nid,cid,name,path) VALUES ' . \implode( ',', $insert ) );
+         $db->query( 'INSERT INTO Image (nid,cid,name,path,height,width) VALUES ' . \implode( ',', $insert ) );
       }
    }
 
-   public function getRecentImages( $file_path )
+   public function getRecentImages()
    {
-      $arr0 = $this->_db->select( 'SELECT f.nid, f.name, f.path, n.title FROM files AS f JOIN nodes AS n ON f.nid = n.nid WHERE (n.tid = 18 AND n.status = 1) ORDER BY f.fid DESC LIMIT 15' );
-      $arr1 = $this->_db->select( 'SELECT f.nid, f.name, f.path, n.title FROM files AS f JOIN nodes AS n ON f.nid = n.nid WHERE (n.tid != 18 AND n.status = 1) ORDER BY f.fid DESC LIMIT 30' );
-      $images0 = $this->_image( $arr0, $file_path, 5 );
-      $images1 = $this->_image( $arr1, $file_path, 5 );
-      // YING
-      $found = array();
-      foreach ( $images1 as $i )
-      {
-         $k = \array_search( $i['nid'], $found );
-         if ( $k !== FALSE )
-         {
-            unset( $found[$k] );
-         }
-      }
-      $n = 4;
-      foreach ( $found as $nid )
-      {
-         $arr2 = $this->_db->select( 'SELECT f.nid, f.name, f.path, n.title FROM files AS f JOIN nodes AS n ON f.nid = n.nid WHERE f.nid = ' . $nid );
-         \shuffle( $arr2 );
-         $images2 = $this->_image( $arr2, $file_path, 1 );
-         if ( \sizeof( $images2 ) > 0 )
-         {
-            $images1[$n] = $images2[0];
-            $n--;
-         }
-      }
-
-      $images = \array_merge( $images0, $images1 );
-
-      return $images;
-   }
-
-   private function _image( array $files, $file_path, $count )
-   {
-      $images = array( );
-      $failed = array( );
-      $_count = 0;
-      foreach ( $files as $f )
-      {
-         try
-         {
-            $info = getimagesize( $file_path . $f['path'] );
-            if ( $info[0] >= 600 && $info[1] >= 300 )
-            {
-               $images[] = $f;
-               $_count++;
-            }
-         }
-         catch ( \Exception $e )
-         {
-            $failed[] = $file_path . $f['path'];
-         }
-
-         if ( $_count >= $count )
-         {
-            break;
-         }
-      }
-
-      if ( \sizeof( $failed ) > 0 )
-      {
-         throw new \Exception( 'failed to check image file : ' . PHP_EOL . implode( PHP_EOL, $failed ) );
-      }
-      return $images;
+      $arr0 = $this->_db->select( 'SELECT f.nid, f.name, f.path, n.title FROM Image AS f JOIN Node AS n ON f.nid = n.nid WHERE (n.tid = 18 AND n.status = 1) AND f.width >= 600 AND f.height >=300 ORDER BY f.fid DESC LIMIT 5' );
+      $arr1 = $this->_db->select( 'SELECT f.nid, f.name, f.path, n.title FROM Image AS f JOIN Node AS n ON f.nid = n.nid WHERE (n.tid != 18 AND n.status = 1) AND f.width >= 600 AND f.height >=300 ORDER BY f.fid DESC LIMIT 5' );
+      return \array_merge( $arr0, $arr1 );
    }
 
 }

@@ -26,7 +26,6 @@ $route = array(
    'search' => 'site\\controller\\Search',
    'single' => 'site\\controller\\Single',
    'term' => 'site\\controller\\Term',
-   'test' => 'site\\controller\\Test',
    'user' => 'site\\controller\\User',
    'weather' => 'site\\controller\\Weather',
    'yp' => 'site\\controller\\YP',
