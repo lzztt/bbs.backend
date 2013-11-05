@@ -10,7 +10,7 @@ use lzx\core\MySQL;
 use site\dataobject\Node as NodeObject;
 use site\dataobject\NodeYellowPage;
 use site\dataobject\Comment;
-use site\dataobject\File;
+use site\dataobject\Image;
 use site\dataobject\User;
 use site\dataobject\Activity;
 

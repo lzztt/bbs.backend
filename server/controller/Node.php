@@ -10,7 +10,7 @@ use lzx\core\Mailer;
 use site\dataobject\Node as NodeObject;
 use site\dataobject\NodeYellowPage;
 use site\dataobject\Comment;
-use site\dataobject\File;
+use site\dataobject\Image;
 use site\dataobject\User;
 use site\dataobject\Activity;
 
@@ -94,6 +94,31 @@ class Node extends Controller
       }
 
       return $viewCount;
+   }
+
+   public function tagForumTopicAction()
+   {
+      $nid = \intval( $this->request->args[1] );
+      $newTagID = \intval( $this->request->args[3] );
+
+      $nodeObj = new NodeObject( $nid, 'uid,tid' );
+      if ( $this->request->uid == 1 || $this->request->uid = $nodeObj->uid )
+      {
+         $oldTagID = $nodeObj->tid;
+         $nodeObj->tid = $newTagID;
+         $nodeObj->update( 'tid' );
+
+         $this->cache->delete( '/forum/' . $oldTagID );
+         $this->cache->delete( '/forum/' . $newTagID );
+         $this->cache->delete( '/node/' . $nid );
+
+         $this->request->redirect( '/node/' . $nid );
+      }
+      else
+      {
+         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
+         $this->request->pageForbidden();
+      }
    }
 
    public function displayForumTopicAction()
@@ -329,8 +354,8 @@ class Node extends Controller
       }
 
       $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : array( );
-      $file = new File();
-      $file->updateFileList( $files, $nid );
+      $file = new Image();
+      $file->updateFileList( $files, $this->path['file'], $nid );
       $this->cache->delete( 'imageSlider' );
 
       $this->cache->delete( '/node/' . $nid );
@@ -403,8 +428,8 @@ class Node extends Controller
 
       if ( $this->request->post['files'] )
       {
-         $file = new File();
-         $file->updateFileList( $this->request->post['files'], $nid, $comment->cid );
+         $file = new Image();
+         $file->updateFileList( $this->request->post['files'], $this->path['file'], $nid, $comment->cid );
          $this->cache->delete( 'imageSlider' );
       }
 
@@ -545,8 +570,8 @@ class Node extends Controller
          }
 
          $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : array( );
-         $file = new File();
-         $file->updateFileList( $files, $nid );
+         $file = new Image();
+         $file->updateFileList( $files, $this->path['file'], $nid );
 
          $this->cache->delete( '/node/' . $node->nid );
          $this->cache->delete( '/yp/' . $node->tid );

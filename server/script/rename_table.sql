@@ -1,0 +1,28 @@
+rename table activities to Activity;
+rename table ad_payments to ADPayment;
+rename table ad_types to ADType;
+rename table ads to AD;
+rename table comments to Comment;
+rename table files to Image;
+rename table files_deleted to FileDeleted;
+rename table fyfm_attendees to FFAttendee;
+rename table fyfm_comments to FFComment;
+rename table fyfm_counts to FFCount;
+rename table fyfm_subscribers to FFSubscriber;
+rename table lotteryResults to LotteryResult;
+rename table lotteryUsers to LotteryUser;
+rename table mails to Mail;
+rename table moderators to Moderator;
+rename table node_yellow_pages to NodeYellowPage;
+rename table nodes to Node;
+rename table poll_voting to PollVote;
+rename table privmsgs to PrivMsg;
+rename table sessions to Session;
+rename table spam_emails to SpamEmail;
+rename table spam_words to SpamWord;
+rename table spammers to Spammer;
+rename table tags to Tag;
+rename table users to User;
+rename table yp_rating to YpRating;
+
+ALTER TABLE  `Image` ADD  `height` SMALLINT UNSIGNED NOT NULL COMMENT  'height in pixels' AFTER  `path` , ADD  `width` SMALLINT UNSIGNED NOT NULL COMMENT  'width in pixels' AFTER  `height` ;

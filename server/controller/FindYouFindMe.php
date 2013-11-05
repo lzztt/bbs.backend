@@ -74,13 +74,13 @@ class FindYouFindMe extends Controller
       );
       $this->html->var['content'] = new Template( 'FFhome', $content );
       $db = $this->db;
-      if ( $db->val( 'SELECT count FROM fyfm_counts WHERE sid = ' . $db->str( session_id() ) ) == 0 )
+      if ( $db->val( 'SELECT count FROM FFCount WHERE sid = ' . $db->str( session_id() ) ) == 0 )
       {
-         $db->query( 'REPLACE fyfm_counts (sid, count) VALUES (' . $db->str( session_id() ) . ', 1)' );
+         $db->query( 'REPLACE INTO FFCount (sid, count) VALUES (' . $db->str( session_id() ) . ', 1)' );
       }
       else
       {
-         $db->query( 'UPDATE fyfm_counts SET count = count + 1 WHERE sid = ' . $db->str( session_id() ) );
+         $db->query( 'UPDATE FFCount SET count = count + 1 WHERE sid = ' . $db->str( session_id() ) );
       }
    }
 
@@ -157,8 +157,8 @@ class FindYouFindMe extends Controller
 
       $contents = array(
          'name' => $attendee->name,
-         'male' => $this->db->val( 'SELECT count(*) FROM fyfm_attendees WHERE sex = 1 AND time > ' . $this->thirty_two_start ),
-         'female' => $this->db->val( 'SELECT count(*) FROM fyfm_attendees WHERE sex = 0 AND time > ' . $this->thirty_two_start )
+         'male' => $this->db->val( 'SELECT count(*) FROM FFAttendee WHERE sex = 1 AND time > ' . $this->thirty_two_start ),
+         'female' => $this->db->val( 'SELECT count(*) FROM FFAttendee WHERE sex = 0 AND time > ' . $this->thirty_two_start )
       );
 
 
@@ -221,11 +221,11 @@ class FindYouFindMe extends Controller
    public function viewComment()
    {
       $db = $this->db;
-      $comments = $db->select( 'SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->thirty_two_start . ' ORDER BY cid ASC' );
-      $comments_thirty = $db->select( 'SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->thirty_start . ' AND time < ' . $this->thirty_two_start . ' ORDER BY cid ASC' );
-      $comments_rich = $db->select( 'SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->rich_start . ' AND time < ' . $this->thirty_start . ' ORDER BY cid ASC' );
-      $comments_tea = $db->select( 'SELECT name, body, time FROM fyfm_comments WHERE time > ' . $this->tea_start . ' AND time < ' . $this->rich_start . ' ORDER BY cid ASC' );
-      $comments_qixi = $db->select( 'SELECT name, body, time FROM fyfm_comments WHERE time < ' . $this->tea_start . ' ORDER BY cid ASC' );
+      $comments = $db->select( 'SELECT name, body, time FROM FFComment WHERE time > ' . $this->thirty_two_start . ' ORDER BY cid ASC' );
+      $comments_thirty = $db->select( 'SELECT name, body, time FROM FFComment WHERE time > ' . $this->thirty_start . ' AND time < ' . $this->thirty_two_start . ' ORDER BY cid ASC' );
+      $comments_rich = $db->select( 'SELECT name, body, time FROM FFComment WHERE time > ' . $this->rich_start . ' AND time < ' . $this->thirty_start . ' ORDER BY cid ASC' );
+      $comments_tea = $db->select( 'SELECT name, body, time FROM FFComment WHERE time > ' . $this->tea_start . ' AND time < ' . $this->rich_start . ' ORDER BY cid ASC' );
+      $comments_qixi = $db->select( 'SELECT name, body, time FROM FFComment WHERE time < ' . $this->tea_start . ' ORDER BY cid ASC' );
 
       return new Template( 'FFview_comment', array( 'comments' => $comments, 'comments_thirty' => $comments_thirty, 'comments_rich' => $comments_rich, 'comments_tea' => $comments_tea, 'comments_qixi' => $comments_qixi ) );
    }
@@ -237,7 +237,7 @@ class FindYouFindMe extends Controller
       {
          $db = $this->db;
          $content = array(
-            'attendees' => $db->select( 'SELECT a.name, a.sex, a.email, a.time, c.body FROM fyfm_attendees as a left join fyfm_comments as c on a.cid = c.cid WHERE a.time > ' . $this->thirty_two_start . ' and status = 1 order by a.aid' )
+            'attendees' => $db->select( 'SELECT a.name, a.sex, a.email, a.time, c.body FROM FFAttendee AS a LEFT JOIN FFComment AS c ON a.cid = c.cid WHERE a.time > ' . $this->thirty_two_start . ' and status = 1 order by a.aid' )
          );
 
          $this->html->var['content'] = new Template( 'FFattendee', $content );
@@ -287,7 +287,7 @@ class FindYouFindMe extends Controller
    private function getAgeStatJSON( $startTime, $endTime )
    {
       $db = $this->db;
-      $counts = $db->select( 'SELECT sex, age, count(aid) AS count FROM `fyfm_attendees` WHERE time >= ' . $startTime . ' AND time <= ' . $endTime . ' GROUP BY sex, age' );
+      $counts = $db->select( 'SELECT sex, age, count(aid) AS count FROM FFAttendee WHERE time >= ' . $startTime . ' AND time <= ' . $endTime . ' GROUP BY sex, age' );
       $ages = array(
          '<=22' => 0,
          '23~25' => 0,
@@ -449,13 +449,13 @@ class FindYouFindMe extends Controller
    public function footerAction( $return = FALSE )
    {
       $sql = 'SELECT'
-            . ' (SELECT count(*) FROM fyfm_counts) AS visitorCount,'
-            . ' (SELECT sum(count) FROM fyfm_counts) AS hitCount,'
-            . ' (SELECT count(*) FROM fyfm_comments) AS commentCount,'
-            . ' (SELECT count(*) FROM fyfm_attendees WHERE time > 1376629987) as attendeeCount,'
-            . ' (SELECT count(*) FROM fyfm_attendees WHERE sex = 1 and time > 1376629987) as maleCount,'
-            . ' (SELECT count(*) FROM fyfm_attendees WHERE sex = 0 and time > 1376629987) as femaleCount,'
-            . ' (SELECT count(*) FROM fyfm_subscribers) as subscriberCount';
+            . ' (SELECT count(*) FROM FFCount) AS visitorCount,'
+            . ' (SELECT sum(count) FROM FFCount) AS hitCount,'
+            . ' (SELECT count(*) FROM FFComment) AS commentCount,'
+            . ' (SELECT count(*) FROM FFAttendee WHERE time > 1376629987) as attendeeCount,'
+            . ' (SELECT count(*) FROM FFAttendee WHERE sex = 1 and time > 1376629987) as maleCount,'
+            . ' (SELECT count(*) FROM FFAttendee WHERE sex = 0 and time > 1376629987) as femaleCount,'
+            . ' (SELECT count(*) FROM FFSubscriber) as subscriberCount';
       $r = $this->db->row( $sql );
       $r['attendeeCount_prev'] = 193;
       $r['maleCount_prev'] = 110;

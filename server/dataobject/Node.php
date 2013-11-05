@@ -29,8 +29,8 @@ class Node extends DataObject
    public function __construct( $load_id = null, $fields = '' )
    {
       $db = MySQL::getInstance();
-
-      parent::__construct( $db, 'nodes', $load_id, $fields );
+      $table = \array_pop( \explode( '\\', __CLASS__ ) );
+      parent::__construct( $db, $table, $load_id, $fields );
    }
 
    public function getHash()
@@ -132,8 +132,8 @@ class Node extends DataObject
       $offset = ($offset > 0) ? 'OFFSET ' . $offset : '';
 
       $sql = 'SELECT n.nid, n.title, n.weight, n.viewCount, n.createTime, n.uid AS createrUID, u.username AS createrName, '
-            . 'IFNULL((SELECT c.createTime FROM comments AS c WHERE c.nid = n.nid ORDER BY c.createTime DESC LIMIT 1), n.createTime) AS lastUpdateTime '
-            . 'FROM nodes AS n JOIN users AS u ON n.uid = u.uid '
+            . 'IFNULL((SELECT c.createTime FROM Comment AS c WHERE c.nid = n.nid ORDER BY c.createTime DESC LIMIT 1), n.createTime) AS lastUpdateTime '
+            . 'FROM Node AS n JOIN User AS u ON n.uid = u.uid '
             . 'WHERE (n.status > 0 AND n.tid = ' . (int) $tid . ') OR n.nid IN (22860, 23200, 25295) '
             . 'ORDER BY n.weight DESC, lastUpdateTime DESC ' . $limit . ' ' . $offset;
 // YING
@@ -142,8 +142,8 @@ class Node extends DataObject
       foreach ( $list as $i => $n )
       {
          $sql = 'SELECT c.uid AS lastCommenterUID, u.username AS lastCommenterName, c.createTime AS lastCommentTime, '
-               . '(SELECT count(*) FROM comments WHERE nid =' . $n['nid'] . ') AS commentCount '
-               . 'FROM comments AS c JOIN users AS u ON c.uid = u.uid '
+               . '(SELECT count(*) FROM Comment WHERE nid =' . $n['nid'] . ') AS commentCount '
+               . 'FROM Comment AS c JOIN User AS u ON c.uid = u.uid '
                . 'WHERE c.nid = ' . $n['nid'] . ' ORDER BY c.createTime DESC LIMIT 1';
          $comment = $this->_db->row( $sql );
          $list[$i] = \array_merge( $list[$i], $comment );
@@ -155,7 +155,7 @@ class Node extends DataObject
    public function getForumNode( $nid )
    {
       /* we are using the last one
-        mysql> explain SELECT n.*, author.* from nodes AS n LEFT JOIN (SELECT u.uid, u.username, u.sex, u.signature, u.createTime, u.avatar, u.badge, u.points, uo.time AS lastAccessTime FROM users AS u LEFT JOIN user_online AS uo ON u.uid = uo.uid) as author on n.uid = author.uid WHERE n.nid = 1;
+        mysql> explain SELECT n.*, author.* FROM Node AS n LEFT JOIN (SELECT u.uid, u.username, u.sex, u.signature, u.createTime, u.avatar, u.badge, u.points, uo.time AS lastAccessTime FROM User AS u LEFT JOIN UserOnline AS uo ON u.uid = uo.uid) as author on n.uid = author.uid WHERE n.nid = 1;
         +----+-------------+------------+-------+---------------+---------+---------+------------+------+-------+
         | id | select_type | table      | type  | possible_keys | key     | key_len | ref        | rows | Extra |
         +----+-------------+------------+-------+---------------+---------+---------+------------+------+-------+
@@ -166,7 +166,7 @@ class Node extends DataObject
         +----+-------------+------------+-------+---------------+---------+---------+------------+------+-------+
         4 rows in set (0.08 sec)
 
-        mysql> explain SELECT na.*, uo.time AS lastAccessTime FROM (SELECT n.*, u.sex, u.signature, u.createTime as uCreateTime, u.avatar, u.badge, u.points FROM nodes AS n LEFT JOIN users AS u ON n.uid = u.uid WHERE n.nid = 1) as na LEFT JOIN user_online AS uo ON na.uid = uo.uid;
+        mysql> explain SELECT na.*, uo.time AS lastAccessTime FROM (SELECT n.*, u.sex, u.signature, u.createTime as uCreateTime, u.avatar, u.badge, u.points FROM Node AS n LEFT JOIN User AS u ON n.uid = u.uid WHERE n.nid = 1) as na LEFT JOIN UserOnline AS uo ON na.uid = uo.uid;
         +----+-------------+------------+--------+---------------+---------+---------+-------+------+-------+
         | id | select_type | table      | type   | possible_keys | key     | key_len | ref   | rows | Extra |
         +----+-------------+------------+--------+---------------+---------+---------+-------+------+-------+
@@ -179,15 +179,15 @@ class Node extends DataObject
        */
 
       $sql = 'SELECT n.*,'
-            . ' (SELECT COUNT(*) FROM comments AS c WHERE c.nid = ' . $nid . ') AS commentCount,'
+            . ' (SELECT COUNT(*) FROM Comment AS c WHERE c.nid = ' . $nid . ') AS commentCount,'
             . ' u.username, u.sex, u.signature, u.createTime as joinTime, u.lastAccessIPInt as accessIP, u.avatar, u.badge, u.points'
-            . ' FROM nodes AS n JOIN users AS u ON n.uid = u.uid'
+            . ' FROM Node AS n JOIN User AS u ON n.uid = u.uid'
             . ' WHERE n.status > 0 AND u.status > 0 AND n.nid = ' . $nid;
       $arr = $this->_db->row( $sql );
 
       if ( \sizeof( $arr ) > 0 )
       {
-         $arr['files'] = $this->_db->select( 'SELECT fid, name, path FROM files WHERE cid IS NULL AND nid = ' . $nid . ' ORDER BY fid ASC' );
+         $arr['files'] = $this->_db->select( 'SELECT fid, name, path FROM Image WHERE cid IS NULL AND nid = ' . $nid . ' ORDER BY fid ASC' );
          return $arr;
       }
       else
@@ -199,7 +199,7 @@ class Node extends DataObject
    public function getForumNodeComments( $nid, $limit = false, $offset = false )
    {
       /* we are using the first one, WILL ORDER BY CID IMPLICITLY
-        mysql> explain SELECT cu.*, uo.time AS lastAccessTime FROM (SELECT c.*, u.sex, u.signature, u.createTime as uCreateTime, u.avatar, u.badge, u.points FROM comments AS c LEFT JOIN users AS u ON c.uid = u.uid WHERE c.nid = 1 limit 3) as cu LEFT JOIN user_online AS uo ON cu.uid = uo.uid;
+        mysql> explain SELECT cu.*, uo.time AS lastAccessTime FROM (SELECT c.*, u.sex, u.signature, u.createTime as uCreateTime, u.avatar, u.badge, u.points FROM Comment AS c LEFT JOIN User AS u ON c.uid = u.uid WHERE c.nid = 1 limit 3) as cu LEFT JOIN UserOnline AS uo ON cu.uid = uo.uid;
         +----+-------------+------------+--------+---------------+---------+---------+------------+-------+-------------+
         | id | select_type | table      | type   | possible_keys | key     | key_len | ref        | rows  | Extra       |
         +----+-------------+------------+--------+---------------+---------+---------+------------+-------+-------------+
@@ -210,7 +210,7 @@ class Node extends DataObject
         +----+-------------+------------+--------+---------------+---------+---------+------------+-------+-------------+
         4 rows in set (0.00 sec)
 
-        mysql> explain SELECT c.*, cu.* from comments AS c LEFT JOIN (SELECT u.uid, u.username, u.sex, u.signature, u.createTime, u.avatar, u.badge, u.points, uo.time AS lastAccessTime FROM users AS u LEFT JOIN user_online AS uo ON u.uid = uo.uid) as cu on c.uid = cu.uid WHERE c.nid = 1 limit 3;
+        mysql> explain SELECT c.*, cu.* from comments AS c LEFT JOIN (SELECT u.uid, u.username, u.sex, u.signature, u.createTime, u.avatar, u.badge, u.points, uo.time AS lastAccessTime FROM User AS u LEFT JOIN UserOnline AS uo ON u.uid = uo.uid) as cu on c.uid = cu.uid WHERE c.nid = 1 limit 3;
         +----+-------------+------------+------+---------------+------+---------+------------+-------+-------------+
         | id | select_type | table      | type | possible_keys | key  | key_len | ref        | rows  | Extra       |
         +----+-------------+------------+------+---------------+------+---------+------------+-------+-------------+
@@ -227,13 +227,13 @@ class Node extends DataObject
 
       $sql = 'SELECT c.*,'
             . ' u.username, u.sex, u.signature, u.createTime as joinTime, u.lastAccessIPInt as accessIP, u.avatar, u.badge, u.points'
-            . ' FROM comments AS c LEFT JOIN users AS u ON c.uid = u.uid'
+            . ' FROM Comment AS c LEFT JOIN User AS u ON c.uid = u.uid'
             . ' WHERE c.nid = ' . $nid . ' ORDER BY c.createTime ASC ' . $limit . ' ' . $offset;
       $arr = $this->_db->select( $sql );
 
       foreach ( $arr as $i => $r )
       {
-         $arr[$i]['files'] = $this->_db->select( 'SELECT fid, name, path FROM files WHERE cid = ' . $r['cid'] . ' ORDER BY fid ASC' );
+         $arr[$i]['files'] = $this->_db->select( 'SELECT fid, name, path FROM Image WHERE cid = ' . $r['cid'] . ' ORDER BY fid ASC' );
       }
 
       return $arr;
@@ -254,9 +254,9 @@ class Node extends DataObject
       $offset = ($offset > 0) ? 'OFFSET ' . $offset : '';
 
       $sql = 'SELECT n.title, n.viewCount, yp.*,'
-            . ' (SELECT COUNT(*) FROM comments AS c WHERE c.nid = n.nid) AS commentCount,'
-            . ' IFNULL((SELECT c.createTime FROM comments AS c WHERE c.nid = n.nid ORDER BY c.createTime DESC LIMIT 1), n.createTime) AS lastUpdateTime'
-            . ' FROM nodes AS n JOIN node_yellow_pages AS yp ON n.nid = yp.nid'
+            . ' (SELECT COUNT(*) FROM Comment AS c WHERE c.nid = n.nid) AS commentCount,'
+            . ' IFNULL((SELECT c.createTime FROM Comment AS c WHERE c.nid = n.nid ORDER BY c.createTime DESC LIMIT 1), n.createTime) AS lastUpdateTime'
+            . ' FROM Node AS n JOIN NodeYellowPage AS yp ON n.nid = yp.nid'
             . ' WHERE n.status > 0 AND n.tid ' . $where
             . ' ORDER BY n.weight DESC, lastUpdateTime DESC ' . $limit . ' ' . $offset;
 
@@ -264,7 +264,7 @@ class Node extends DataObject
 
       foreach ( $list as $i => $n )
       {
-         $sql = 'SELECT avg(rating) AS ratingAvg, count(*) AS ratingCount FROM yp_rating WHERE nid = ' . $n['nid'];
+         $sql = 'SELECT avg(rating) AS ratingAvg, count(*) AS ratingCount FROM YPRating WHERE nid = ' . $n['nid'];
          $list[$i] = \array_merge( $n, $this->_db->row( $sql ) );
       }
 
@@ -274,17 +274,17 @@ class Node extends DataObject
    public function getYellowPageNode( $nid )
    {
       $sql = 'SELECT n.title, n.viewCount, n.body, yp.*, r.ratingAvg, r.ratingCount,'
-            . ' (SELECT COUNT(*) FROM comments AS c WHERE c.nid = n.nid) AS commentCount,'
-            . ' IFNULL((SELECT c.createTime FROM comments AS c WHERE c.nid = n.nid ORDER BY c.createTime DESC LIMIT 1), n.createTime) AS lastUpdateTime'
-            . ' FROM nodes AS n JOIN node_yellow_pages AS yp ON n.nid = yp.nid,'
-            . ' (SELECT avg(rating) AS ratingAvg, count(*) AS ratingCount FROM yp_rating WHERE nid = ' . $nid . ') AS r'
+            . ' (SELECT COUNT(*) FROM Comment AS c WHERE c.nid = n.nid) AS commentCount,'
+            . ' IFNULL((SELECT c.createTime FROM Comment AS c WHERE c.nid = n.nid ORDER BY c.createTime DESC LIMIT 1), n.createTime) AS lastUpdateTime'
+            . ' FROM Node AS n JOIN NodeYellowPage AS yp ON n.nid = yp.nid,'
+            . ' (SELECT avg(rating) AS ratingAvg, count(*) AS ratingCount FROM YPRating WHERE nid = ' . $nid . ') AS r'
             . ' WHERE n.status > 0 AND n.nid = ' . $nid;
 
       $arr = $this->_db->row( $sql );
 
       if ( \sizeof( $arr ) > 0 )
       {
-         $arr['files'] = $this->_db->select( 'SELECT fid, name, path FROM files WHERE cid IS NULL AND nid = ' . $nid . ' ORDER BY fid ASC' );
+         $arr['files'] = $this->_db->select( 'SELECT fid, name, path FROM Image WHERE cid IS NULL AND nid = ' . $nid . ' ORDER BY fid ASC' );
          return $arr;
       }
       else
@@ -299,8 +299,8 @@ class Node extends DataObject
       $offset = ($offset > 0) ? 'OFFSET ' . $offset : '';
 
       $sql = 'SELECT c.*, u.username,'
-            . ' (SELECT rating FROM yp_rating WHERE nid = c.nid AND uid = c.uid) AS rating'
-            . ' FROM comments AS c JOIN users AS u ON c.uid = u.uid'
+            . ' (SELECT rating FROM YPRating WHERE nid = c.nid AND uid = c.uid) AS rating'
+            . ' FROM Comment AS c JOIN User AS u ON c.uid = u.uid'
             . ' WHERE c.nid = ' . $nid . ' ORDER BY c.createTime ASC ' . $limit . ' ' . $offset;
       return $this->_db->select( $sql );
    }
@@ -317,7 +317,7 @@ class Node extends DataObject
 
       if ( !\array_key_exists( $nid, $tags ) )
       {
-         $sql = 'SELECT t.* FROM tags AS t JOIN nodes AS n ON n.tid = t.tid WHERE n.nid = ' . (int) $nid;
+         $sql = 'SELECT t.* FROM Tag AS t JOIN Node AS n ON n.tid = t.tid WHERE n.nid = ' . (int) $nid;
          $tag = $this->_db->row( $sql );
 
          if ( !empty( $tag ) )
@@ -328,12 +328,12 @@ class Node extends DataObject
             }
             elseif ( $tag['parent'] == $tag['root'] ) // 1 level child
             {
-               $root = $this->_db->row( 'SELECT t.* FROM tags AS t WHERE t.tid = ' . $tag['root'] );
+               $root = $this->_db->row( 'SELECT t.* FROM Tag AS t WHERE t.tid = ' . $tag['root'] );
                $tags[$nid] = array( $root, $tag );
             }
             else // 2 level child
             {
-               $arr = $this->_db->select( 'SELECT t.* FROM tags AS t WHERE t.tid IN (' . $tag['parent'] . ', ' . $tag['root'] . ')' );
+               $arr = $this->_db->select( 'SELECT t.* FROM Tag AS t WHERE t.tid IN (' . $tag['parent'] . ', ' . $tag['root'] . ')' );
                foreach ( $arr as $t )
                {
                   if ( $t['tid'] == $tag['root'] )
@@ -354,14 +354,14 @@ class Node extends DataObject
 
    public function getLatestForumTopics()
    {
-      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid IN (' . implode( ',', Tag::getLeafTIDs( 1 ) ) . ') AND status = 1 ORDER BY createTime DESC LIMIT 15';
+      $sql = 'SELECT nid, title, createTime FROM Node WHERE tid IN (' . implode( ',', Tag::getLeafTIDs( 1 ) ) . ') AND status = 1 ORDER BY createTime DESC LIMIT 15';
       return $this->_db->select( $sql );
    }
 
    public function getHotForumTopics( $timestamp )
    {
-      $sql = 'SELECT n.nid, n.title, (SELECT count(*) FROM comments AS c WHERE c.nid = n.nid) AS commentCount '
-            . 'FROM nodes AS n WHERE n.createTime > ' . $timestamp . ' AND n.tid IN (' . implode( ',', Tag::getLeafTIDs( 1 ) ) . ') AND n.status = 1 ORDER BY commentCount DESC LIMIT 15';
+      $sql = 'SELECT n.nid, n.title, (SELECT count(*) FROM Comment AS c WHERE c.nid = n.nid) AS commentCount '
+            . 'FROM Node AS n WHERE n.createTime > ' . $timestamp . ' AND n.tid IN (' . implode( ',', Tag::getLeafTIDs( 1 ) ) . ') AND n.status = 1 ORDER BY commentCount DESC LIMIT 15';
       return $this->_db->select( $sql );
    }
 
@@ -377,20 +377,20 @@ class Node extends DataObject
 
    public function getLatestYellowPages()
    {
-      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid IN (' . implode( ',', Tag::getLeafTIDs( 2 ) ) . ') AND status = 1 ORDER BY createTime DESC LIMIT 15';
+      $sql = 'SELECT nid, title, createTime FROM Node WHERE tid IN (' . implode( ',', Tag::getLeafTIDs( 2 ) ) . ') AND status = 1 ORDER BY createTime DESC LIMIT 15';
       return $this->_db->select( $sql );
    }
 
    public function getLatestImmigrationPosts()
    {
-      $sql = 'SELECT nid, title, createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 13';
+      $sql = 'SELECT nid, title, createTime FROM Node WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 13';
       return $this->_db->select( $sql );
    }
 
    public function getLatestForumTopicReplies()
    {
-      $sql = 'SELECT c.nid, max(c.cid) AS lastCID, n.title, (SELECT count(*) FROM comments AS c1 WHERE c1.nid = c.nid) AS commentCount '
-            . 'FROM comments AS c JOIN nodes AS n ON c.nid = n.nid WHERE n.tid IN (' . implode( ',', Tag::getLeafTIDs( 1 ) ) . ') AND n.status = 1 GROUP BY c.nid ORDER BY lastCID DESC LIMIT 15';
+      $sql = 'SELECT c.nid, max(c.cid) AS lastCID, n.title, (SELECT count(*) FROM Comment AS c1 WHERE c1.nid = c.nid) AS commentCount '
+            . 'FROM Comment AS c JOIN Node AS n ON c.nid = n.nid WHERE n.tid IN (' . implode( ',', Tag::getLeafTIDs( 1 ) ) . ') AND n.status = 1 GROUP BY c.nid ORDER BY lastCID DESC LIMIT 15';
       $arr = $this->_db->select( $sql );
       // YING
       $found = array();
@@ -405,7 +405,7 @@ class Node extends DataObject
       $n = \sizeof( $found );
       if ( $n > 0 )
       {
-         $arr2 = $this->_db->select( 'SELECT c.nid, max(c.cid) AS lastCID, n.title, (SELECT count(*) FROM comments AS c1 WHERE c1.nid = c.nid) AS commentCount FROM comments AS c JOIN nodes AS n ON c.nid = n.nid WHERE n.nid IN (' . \implode( ', ', $found ) . ')' );
+         $arr2 = $this->_db->select( 'SELECT c.nid, max(c.cid) AS lastCID, n.title, (SELECT count(*) FROM Comment AS c1 WHERE c1.nid = c.nid) AS commentCount FROM Comment AS c JOIN Node AS n ON c.nid = n.nid WHERE n.nid IN (' . \implode( ', ', $found ) . ')' );
 
          $n = \sizeof( $arr2 );
          for ( $i = 0; $i < $n; $i++ )
@@ -419,8 +419,8 @@ class Node extends DataObject
 
    public function getLatestYellowPageReplies()
    {
-      $sql = 'SELECT c.nid, max(c.cid) AS lastCID, n.title, (SELECT count(*) FROM comments AS c1 WHERE c1.nid = c.nid) AS commentCount '
-            . 'FROM comments AS c JOIN nodes AS n ON c.nid = n.nid WHERE n.tid IN (' . implode( ',', Tag::getLeafTIDs( 2 ) ) . ') AND n.status = 1 GROUP BY c.nid ORDER BY lastCID DESC LIMIT 15';
+      $sql = 'SELECT c.nid, max(c.cid) AS lastCID, n.title, (SELECT count(*) FROM Comment AS c1 WHERE c1.nid = c.nid) AS commentCount '
+            . 'FROM Comment AS c JOIN Node AS n ON c.nid = n.nid WHERE n.tid IN (' . implode( ',', Tag::getLeafTIDs( 2 ) ) . ') AND n.status = 1 GROUP BY c.nid ORDER BY lastCID DESC LIMIT 15';
       return $this->_db->select( $sql );
    }
 
@@ -435,17 +435,17 @@ class Node extends DataObject
          $where = '= ' . (int) $tid;
       }
 
-      return $this->_db->val( 'SELECT count(*) FROM nodes WHERE tid ' . $where );
+      return $this->_db->val( 'SELECT count(*) FROM Node WHERE tid ' . $where );
    }
 
    public function getNodeStat()
    {
       $today = \strtotime( \date( "m/d/Y" ) );
       $sql = 'SELECT'
-            . ' (SELECT count(*) FROM nodes) AS nodeCount,'
-            . ' (SELECT count(*) FROM comments) AS commentCount,'
-            . ' (SELECT count(*) FROM nodes WHERE status = 1 AND createTime >= ' . $today . ' ) as nodeTodayCount,'
-            . ' (SELECT count(*) FROM comments WHERE createTime >= ' . $today . ' ) as commentTodayCount';
+            . ' (SELECT count(*) FROM Node) AS nodeCount,'
+            . ' (SELECT count(*) FROM Comment) AS commentCount,'
+            . ' (SELECT count(*) FROM Node WHERE status = 1 AND createTime >= ' . $today . ' ) as nodeTodayCount,'
+            . ' (SELECT count(*) FROM Comment WHERE createTime >= ' . $today . ' ) as commentTodayCount';
       $r = $this->_db->row( $sql );
       $r['postCount'] = $r['nodeCount'] + $r['commentCount'];
       unset( $r['commentCount'] );
@@ -455,12 +455,12 @@ class Node extends DataObject
 
    public function updateRating( $nid, $uid, $rating, $time )
    {
-      $this->_db->query( 'REPLACE INTO yp_rating (nid,uid,rating,time) VALUES (' . $nid . ',' . $uid . ',' . $rating . ',' . $time . ')' );
+      $this->_db->query( 'REPLACE INTO YPRating (nid,uid,rating,time) VALUES (' . $nid . ',' . $uid . ',' . $rating . ',' . $time . ')' );
    }
 
    public function deleteRating( $nid, $uid )
    {
-      $this->_db->query( 'DELETE FROM yp_rating WHERE nid = ' . $nid . ' AND uid = ' . $uid );
+      $this->_db->query( 'DELETE FROM YPRating WHERE nid = ' . $nid . ' AND uid = ' . $uid );
    }
 
    /**
@@ -471,7 +471,7 @@ class Node extends DataObject
       return TRUE;
 
       //$request->uid;
-      $nodeCount = $this->_db->val( 'SELECT COUNT(*) FROM nodes WHERE uid = ' . $request->uid );
+      $nodeCount = $this->_db->val( 'SELECT COUNT(*) FROM Node WHERE uid = ' . $request->uid );
       if ( $nodeCount > 3 )
       {
          return TRUE;
@@ -486,7 +486,7 @@ class Node extends DataObject
       // check against previous 2 nodes
       if ( $nodeCount > 1 )
       {
-         $arr = $this->_db->query( 'SELECT title, body FROM nodes WHERE uid = ' . $request->uid . 'ORDER BY nid DESC LIMIT 2' );
+         $arr = $this->_db->query( 'SELECT title, body FROM Node WHERE uid = ' . $request->uid . 'ORDER BY nid DESC LIMIT 2' );
          foreach ( $arr as $data )
          {
             // check title
@@ -499,7 +499,7 @@ class Node extends DataObject
          }
       }
       // check against previous 2 comments
-      $arr = $this->_db->query( 'SELECT body FROM comments WHERE uid = ' . $request->uid . 'ORDER BY cid DESC LIMIT 2' );
+      $arr = $this->_db->query( 'SELECT body FROM Comment WHERE uid = ' . $request->uid . 'ORDER BY cid DESC LIMIT 2' );
       foreach ( $arr as $body )
       {
          // check body
@@ -510,7 +510,7 @@ class Node extends DataObject
       }
 
       // check against example spam posts (body only)
-      $words = $this->_db->query( 'SELECT word FROM spam_words' );
+      $words = $this->_db->query( 'SELECT word FROM SpamWord' );
       foreach ( $words as $w )
       {
          if ( FALSE )
