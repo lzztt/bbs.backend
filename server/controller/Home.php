@@ -60,17 +60,9 @@ class Home extends Controller
       {
          // try 3 times 10 images first
          $img = new Image();
-         try
-         {
-            $images = $img->getRecentImages();
+         $images = $img->getRecentImages();
+         \shuffle( $images );
 
-            shuffle( $images );
-         }
-         catch ( \Exception $e )
-         {
-            $this->logger->error( $e->getMessage() );
-            $images = array( );
-         }
          $content['images'] = $images;
          $ul = new Template( 'image_slider', $content );
 
