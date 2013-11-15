@@ -242,6 +242,7 @@ class Forum extends Controller
       }
       catch ( \Exception $e )
       {
+         $this->logger->error( ' --node-- ' . $node->title . PHP_EOL . $node->body );
          $this->error( $e->getMessage(), TRUE );
       }
 
