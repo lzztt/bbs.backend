@@ -189,23 +189,23 @@ class Image extends DataObject
 
    public function getRecentImages()
    {
-      return $this->_db->select( 'SELECT nid, name, path, title 
+      return $this->_db->select( '( SELECT nid, name, path, title 
                                    FROM (
                                       SELECT f.nid, f.name, f.path, n.title, @rn := IF( @nid = f.nid, @rn := @rn + 1, 1 ) as rn, @nid := f.nid 
                                       FROM Image AS f 
                                       JOIN Node AS n ON f.nid = n.nid 
                                       WHERE (n.tid = 18 AND n.status = 1) AND f.width >= 600 AND f.height >=300 ORDER BY f.fid DESC
                                    ) AS t
-                                   WHERE rn < 3 LIMIT 5
+                                   WHERE rn < 3 LIMIT 5 )
                                    UNION
-                                   SELECT nid, name, path, title 
+                                   ( SELECT nid, name, path, title 
                                    FROM (
                                       SELECT f.nid, f.name, f.path, n.title, @rn := IF( @nid = f.nid, @rn := @rn + 1, 1 ) as rn, @nid := f.nid 
                                       FROM Image AS f 
                                       JOIN Node AS n ON f.nid = n.nid 
                                       WHERE (n.tid != 18 AND n.status = 1) AND f.width >= 600 AND f.height >=300 ORDER BY f.fid DESC
                                    ) AS t
-                                   WHERE rn < 3 LIMIT 5' );
+                                   WHERE rn < 3 LIMIT 5 )' );
    }
 
 }

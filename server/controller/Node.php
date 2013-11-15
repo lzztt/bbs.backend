@@ -423,6 +423,7 @@ class Node extends Controller
       }
       catch ( \Exception $e )
       {
+         $this->logger->error( ' --comment-- ' . $comment->body );
          $this->error( $e->getMessage(), TRUE );
       }
 
