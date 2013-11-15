@@ -51,8 +51,36 @@ class Comment extends DataObject
 
    public function add()
    {
+      // CHECK USER
+      $userInfo = $this->_db->row( 'SELECT createTime, lastAccessIPInt, status FROM User WHERE uid = ' . $this->uid );
+      if ( \intval( $userInfo['status'] ) != 1 )
+      {
+         throw new \Exception( 'This User account cannot post message.' );
+      }
+      $days = \intval( ($this->createTime - $userInfo['createTime']) / 86400 );
+      // registered less than 1 month
+      if ( $days < 30 )
+      {
+         $geo = \geoip_record_by_name( \long2ip( $userInfo['lastAccessIPInt'] ) );
+         // not from Texas
+         if ( !$geo || $geo['region'] != 'TX' )
+         {
+            //select (select count(*) from Node where uid = 126 and createTime > unix_timestamp() - 86400) + ( select count(*) from Comment where uid = 126 and createTime > unix_timestamp() - 86400) AS count
+            $oneday = \intval( $this->createTime - 86400 );
+            $count = $this->_db->val(
+                  'SELECT 
+                  ( SELECT count(*) FROM Node WHERE uid = ' . $this->uid . ' AND createTime > ' . $oneday . ' ) +
+                  ( SELECT count(*) FROM Comment WHERE uid = ' . $this->uid . ' AND createTime > ' . $oneday . ' ) AS c'
+            );
+            if ( $count >= $days )
+            {
+               throw new \Exception( 'Quota limitation reached!<br />Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours. <br /> You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.' );
+            }
+         }
+      }
+
       // check spam
-      $nodes = $this->_db->select( 'select createTime from ' . $this->_table . ' where uid = ' . $this->uid . ' and createTime > ' . (\intval( $this->createTime ) - 600) . ' order by createTime DESC' );
+      $nodes = $this->_db->select( 'SELECT createTime FROM ' . $this->_table . ' WHERE uid = ' . $this->uid . ' AND createTime > ' . (\intval( $this->createTime ) - 600) . ' ORDER BY createTime DESC' );
 
       $count = \sizeof( $nodes );
       if ( $count > 0 )
@@ -73,7 +101,7 @@ class Comment extends DataObject
       // check duplicate
       $this->hash = $this->getHash();
 
-      $count = $this->_db->val( 'select count(*) from ' . $this->_table . ' where hash = ' . $this->_db->str( $this->hash ) . ' and createTime > ' . (\intval( $this->createTime ) - 30) );
+      $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->_db->str( $this->hash ) . ' AND createTime > ' . (\intval( $this->createTime ) - 30) );
       if ( $count > 0 )
       {
          throw new \Exception( 'duplicate comment found' );
@@ -103,7 +131,7 @@ class Comment extends DataObject
 
       if ( isset( $this->hash ) )
       {
-         $count = $this->_db->val( 'select count(*) from ' . $this->_table . ' where hash = ' . $this->_db->str( $this->hash ) . ' and createTime > ' . (\intval( $this->lastModifiedTime ) - 30) . ' and cid != ' . $this->cid );
+         $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->_db->str( $this->hash ) . ' AND createTime > ' . (\intval( $this->lastModifiedTime ) - 30) . ' AND cid != ' . $this->cid );
          if ( $count > 0 )
          {
             throw new \Exception( 'duplicate comment found' );
