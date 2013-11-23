@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\Template;
 use site\dataobject\Tag;
 use site\dataobject\Node;
@@ -16,10 +16,8 @@ class Forum extends Controller
 
    public function run()
    {
-      $page = $this->loadController( 'Page' );
-      $page->updateInfo();
+      parent::run();
       $this->checkAJAX();
-      $page->setPage();
 
       if ( $this->request->args[1] == 'help' )
       {
@@ -223,7 +221,7 @@ class Forum extends Controller
       {
          $this->error( 'Please login first' );
       }
-      
+
       if ( \strlen( $this->request->post['body'] ) < 5 || \strlen( $this->request->post['title'] ) < 5 )
       {
          $this->error( 'Topic title or body is too short.' );

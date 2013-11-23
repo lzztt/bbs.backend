@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\core\BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
@@ -21,10 +21,8 @@ class Node extends Controller
 
    public function run()
    {
-      $page = $this->loadController( 'Page' );
-      $page->updateInfo();
+      parent::run();
       $this->checkAJAX();
-      $page->setPage();
 
       $nid = is_numeric( $this->request->args[1] ) ? \intval( $this->request->args[1] ) : 0;
       if ( $nid <= 0 )
@@ -65,15 +63,15 @@ class Node extends Controller
 
       $action = $action . $types[$rootTagID];
 // public function name based on node type and action
-      try
-      {
+      //try
+      //{
          $this->runAction( $action );
-      }
-      catch ( \Exception $e )
-      {
-         $this->logger->error( $e->getMessage() );
-         $this->request->pageNotFound( $e->getMessage() );
-      }
+      //}
+      //catch ( \Exception $e )
+      //{
+         //$this->logger->error( $e->getMessage() );
+         //$this->request->pageNotFound( $e->getMessage() );
+      //}
    }
 
    public function ajax()

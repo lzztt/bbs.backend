@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use site\dataobject\FFAttendee;
 use site\dataobject\FFComment;
 use site\dataobject\FFSubscriber;

@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 
@@ -22,10 +22,7 @@ class AD extends Controller
    public function run()
    {
       //$this->request->pageNotFound();
-      $page = $this->loadController('Page');
-      $page->updateInfo();
-      $page->setPage();
-
+      parent::run();
       $this->cache->setStatus(FALSE);
 
       $func = $this->request->args[1] ? $this->request->args[1] : 'yp';

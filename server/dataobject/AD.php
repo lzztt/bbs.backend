@@ -28,10 +28,15 @@ class AD extends DataObject
       return $this->_db->select( 'SELECT * FROM AD ' . $where . ' ORDER BY exp_time' );
    }
 
-   public function getAllAdPayment( $from_time = 0 )
+   public function getAllAdPayments( $from_time = 0 )
    {
-      $where = 'WHERE adp.id in ( SELECT max(adp.id) FROM ADPayment adp JOIN AD on adp.ad_id = ads.id ' . ( $from_time > 0 ? ('WHERE ads.exp_time > ' . $from_time) : '' )  . ' GROUP BY ad_id )';
-      return $this->_db->select( 'SELECT adp.id, ads.name, adp.amount, adp.time AS pay_time, ads.exp_time, adp.comment FROM ADPayment adp LEFT JOIN AD ON adp.ad_id = ads.id ' . $where . ' ORDER BY adp.time DESC' );
+      $where = 'WHERE adp.id in ( SELECT max(adp.id) FROM ADPayment adp JOIN AD ad ON adp.ad_id = ad.id ' . ( $from_time > 0 ? ('WHERE ad.exp_time > ' . $from_time) : '' )  . ' GROUP BY ad_id )';
+      return $this->_db->select( 'SELECT adp.id, ad.name, adp.amount, adp.time AS pay_time, ad.exp_time, adp.comment FROM ADPayment adp LEFT JOIN AD ad ON adp.ad_id = ad.id ' . $where . ' ORDER BY adp.time DESC' );
+   }
+   
+   public function getAllAdTypes()
+   {
+      return $this->_db->select('SELECT id, name FROM ADType');
    }
 
 }

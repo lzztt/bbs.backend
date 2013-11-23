@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use site\dataobject\User as UserObject;
 use site\dataobject\PrivMsg;
 use lzx\html\HTMLElement;
@@ -21,9 +21,7 @@ class User extends Controller
 
    public function run()
    {
-      $page = $this->loadController( 'Page' );
-      $page->updateInfo();
-      $page->setPage();
+      parent::run();
 
       $args = $this->request->args;
 // Anonymous user
