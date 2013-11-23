@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use site\dataobject\Image;
 
 class File extends Controller

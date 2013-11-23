@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use site\dataobject\PrivMsg;
 use lzx\html\HTMLElement;
 use lzx\html\Form;
@@ -18,10 +18,7 @@ class PM extends Controller
 
    public function run()
    {
-      $page = $this->loadController('Page');
-      $page->updateInfo();
-      $page->setPage();
-
+      parent::run();
       $this->cache->setStatus(FALSE);
 
       if ($this->request->uid == 0)

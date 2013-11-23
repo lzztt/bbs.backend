@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\Template;
 use site\dataobject\Activity as ActivityObject;
 
@@ -12,10 +12,7 @@ class Activity extends Controller
 
    public function run()
    {
-      $page = $this->loadController('Page');
-      $page->updateInfo();
-      $page->setPage();
-
+      parent::run();
       $this->listActivity();
    }
 
