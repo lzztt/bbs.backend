@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\Template;
 use site\dataobject\Tag;
 use site\dataobject\Node;
@@ -17,12 +17,8 @@ class YP extends Controller
 
    public function run()
    {
+      parent::run();
       $this->checkAJAX();
-
-      $page = $this->loadController( 'Page' );
-      $page->updateInfo();
-      $this->checkAJAX();
-      $page->setPage();
 
       if ( is_null( $this->request->args[1] ) )
       {

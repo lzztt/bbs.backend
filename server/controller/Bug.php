@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 
 class Bug extends Controller
 {

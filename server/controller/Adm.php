@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\Template;
 use site\dataobject\AD as ADObject;
 
@@ -22,6 +22,9 @@ class Adm extends Controller
    public function run()
    {
       Template::$theme = $this->config->theme_adm;
+
+      parent::run();
+
       $this->cache->setStatus( FALSE );
       if ( $this->request->uid !== self::ADMIN_UID )
       {

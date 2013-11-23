@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\Template;
 
 class Search extends Controller
@@ -10,9 +10,7 @@ class Search extends Controller
 
    public function run()
    {
-      $page = $this->loadController('Page');
-      $page->updateInfo();
-      $page->setPage();
+      parent::run();
 
       $html = <<<HTML
 <div id="cse-search-form" style="width: 100%;">Loading</div>

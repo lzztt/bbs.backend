@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\Template;
 
 class Term extends Controller
@@ -10,16 +10,14 @@ class Term extends Controller
 
    public function run()
    {
-      $page = $this->loadController('Page');
-      $page->updateInfo();
-      $page->setPage();
+      parent::run();
 
       $sitename = array(
          'site_zh_cn' => '缤纷休斯顿华人网',
          'site_en_us' => 'HoustonBBS.com'
       );
 
-      $this->html->var['content'] = new Template('term', $sitename);
+      $this->html->var['content'] = new Template( 'term', $sitename );
    }
 
 }

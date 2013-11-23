@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\core\BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
@@ -20,11 +20,8 @@ class MultiPost extends Controller
    public function run()
    {
       $this->cache->setStatus(FALSE);
-
-      $page = $this->loadController('Page');
-      $page->updateInfo();
-      $page->setPage();
-
+      parent::run();
+      
       $n = new NodeObject();
       $n->uid = 9367;
       $nodes = $n->getList('title,body');
