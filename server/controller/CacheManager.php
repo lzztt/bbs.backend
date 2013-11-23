@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\Template;
 
 class CacheManager extends Controller
@@ -17,9 +17,7 @@ class CacheManager extends Controller
 // logged in user
       else
       {
-         $page = $this->loadController('Page');
-         $page->updateInfo();
-         $page->setPage();
+         parent::run();
          $this->cache->setStatus(FALSE);
          $this->listCache();
       }

@@ -2,7 +2,7 @@
 
 namespace site\controller;
 
-use lzx\core\Controller;
+use site\Controller;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dataobject\Node;
@@ -15,10 +15,8 @@ class Home extends Controller
 
    public function run()
    {
-      $page = $this->loadController( 'Page' );
-      $page->updateInfo();
+      parent::run();
       $this->checkAJAX();
-      $page->setPage();
 
       $content = array(
          'recentActivities' => $this->getRecentActivities(),
