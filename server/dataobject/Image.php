@@ -28,6 +28,19 @@ class Image extends DataObject
       parent::__construct( $db, $table, $load_id, $fields );
    }
 
+   private function rmTmpFile( $file )
+   {
+      try
+      {
+         \unlink( $file );
+      }
+      catch ( \Exception $e )
+      {
+         $logger = Logger::getInstance();
+         $logger->error( $e->getMessage() . ' : ' . $file );
+      }
+   }
+
    // will always assuming multiple file array
    public function saveFile( array $files, $filePath, $timestamp, $uid, $size = 5120000, $maxWidth = 600, $maxHeight = 960 )
    {
@@ -52,6 +65,7 @@ class Image extends DataObject
          foreach ( $fileList as $i => $f )
          {
             $fileName = $f['name'];
+            $tmpFile = $f['tmp_name'];
 
             // check upload error
             if ( $f['error'] !== \UPLOAD_ERR_OK ) // upload error
@@ -60,6 +74,10 @@ class Image extends DataObject
                   'name' => $fileName,
                   'error' => $errmsg[$f['error']],
                );
+               if ( $tmpFile )
+               {
+                  $this->rmTmpFile( $tmpFile );
+               }
                continue;
             }
 
@@ -70,10 +88,14 @@ class Image extends DataObject
                   'name' => $fileName,
                   'error' => $errmsg[\UPLOAD_ERR_INI_SIZE],
                );
+               if ( $tmpFile )
+               {
+                  $this->rmTmpFile( $tmpFile );
+               }
                continue;
             }
 
-            $tmpFile = $f['tmp_name'];
+
             $imageInfo = \getimagesize( $tmpFile ); // not requiring GD
             // check image type
             if ( $imageInfo === FALSE || $imageInfo[2] > \IMAGETYPE_PNG ) // Image Type: 1 = IMAGETYPE_GIF, 2 = IMAGETYPE_JPEG, 3 = IMAGETYPE_PNG
@@ -82,6 +104,10 @@ class Image extends DataObject
                   'name' => $fileName,
                   'error' => $errmsg[102],
                );
+               if ( $tmpFile )
+               {
+                  $this->rmTmpFile( $tmpFile );
+               }
                continue;
             }
 
@@ -98,7 +124,11 @@ class Image extends DataObject
                   $im = new \Imagick( $tmpFile );
                   $im->resizeImage( $maxWidth, $maxHeight, \Imagick::FILTER_LANCZOS, 1, TRUE );
                   $im->writeImage( $savePath );
-                  $im->destroy();
+                  $im->clear();
+                  if ( $tmpFile )
+                  {
+                     $this->rmTmpFile( $tmpFile );
+                  }
                }
                else
                {
@@ -110,7 +140,12 @@ class Image extends DataObject
             {
                if ( isset( $im ) )
                {
+                  $im->clear();
                   unset( $im );
+               }
+               if ( $tmpFile )
+               {
+                  $this->rmTmpFile( $tmpFile );
                }
                $logger = Logger::getInstance();
                $logger->error( $e->getMessage() );
@@ -172,7 +207,8 @@ class Image extends DataObject
             }
             catch ( \Exception $e )
             {
-               $this->logger->error( $e->getMessage() );
+               $logger = Logger::getInstance();
+               $logger->error( $e->getMessage() );
                continue;
             }
          }

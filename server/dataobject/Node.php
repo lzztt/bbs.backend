@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package lzx\core\DataObject
  */
@@ -35,7 +34,7 @@ class Node extends DataObject
 
    public function getHash()
    {
-      return \md5( $this->uid . '_' . $this->title . '_' . $this->body, TRUE );
+      return \crc32( $this->body );
    }
 
    public function add()
@@ -102,7 +101,7 @@ class Node extends DataObject
       // check duplicate
       $this->hash = $this->getHash();
 
-      $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->_db->str( $this->hash ) . ' AND createTime > ' . (\intval( $this->createTime ) - 86400) );
+      $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->hash . ' AND uid = ' . $this->uid . ' AND createTime > ' . (\intval( $this->createTime ) - 86400) );
       if ( $count > 0 )
       {
          throw new \Exception( 'duplicate node found' );
@@ -135,7 +134,7 @@ class Node extends DataObject
 
       if ( isset( $this->hash ) )
       {
-         $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->_db->str( $this->hash ) . ' AND createTime > ' . (\intval( $this->lastModifiedTime ) - 86400) . ' AND nid != ' . $this->nid );
+         $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->hash . ' AND uid = ' . $this->uid . ' AND createTime > ' . (\intval( $this->createTime ) - 86400) . ' AND nid != ' . $this->nid );
          if ( $count > 0 )
          {
             throw new \Exception( 'duplicate node found' );
@@ -411,7 +410,7 @@ class Node extends DataObject
 
    public function getLatestImmigrationPosts()
    {
-      $sql = 'SELECT nid, title, createTime FROM Node WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 13';
+      $sql = 'SELECT nid, title, createTime FROM Node WHERE tid = 15 AND status = 1 ORDER BY createTime DESC LIMIT 12';
       return $this->_db->select( $sql );
    }
 
