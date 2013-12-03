@@ -47,7 +47,6 @@ class WebApp extends App
       if ( $this->config->offline )
       {
          $offline_file = $this->config->path['file'] . '/' . $this->config->offline;
-         echo $offline_file;
          $output = \is_file( $offline_file ) ? \file_get_contents( $offline_file ) : 'Website is currently offline. Please visit later.';
          // page exit
          \header( 'Content-Type: text/html; charset=UTF-8' );
