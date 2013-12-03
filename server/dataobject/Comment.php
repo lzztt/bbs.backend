@@ -46,7 +46,7 @@ class Comment extends DataObject
 
    public function getHash()
    {
-      return \md5( $this->uid . '_' . $this->body, TRUE );
+      return \crc32( $this->body );
    }
 
    public function add()
@@ -101,7 +101,7 @@ class Comment extends DataObject
       // check duplicate
       $this->hash = $this->getHash();
 
-      $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->_db->str( $this->hash ) . ' AND createTime > ' . (\intval( $this->createTime ) - 30) );
+      $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->hash . ' AND uid = ' . $this->uid . ' AND createTime > ' . (\intval( $this->createTime ) - 30) );
       if ( $count > 0 )
       {
          throw new \Exception( 'duplicate comment found' );
@@ -131,7 +131,7 @@ class Comment extends DataObject
 
       if ( isset( $this->hash ) )
       {
-         $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->_db->str( $this->hash ) . ' AND createTime > ' . (\intval( $this->lastModifiedTime ) - 30) . ' AND cid != ' . $this->cid );
+         $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->hash . ' AND uid = ' . $this->uid . ' AND createTime > ' . (\intval( $this->lastModifiedTime ) - 30) . ' AND cid != ' . $this->cid );
          if ( $count > 0 )
          {
             throw new \Exception( 'duplicate comment found' );

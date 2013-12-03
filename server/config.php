@@ -3,10 +3,12 @@
 $_SITEDIR = \dirname( __DIR__ );
 
 $config = array(
-   //'offline' => 'offline.txt',
    'stage' => 'development',
    //'stage' => 'testing',
    //'stage' => 'production',
+   //'mode' => 'offline',
+   //'mode' => 'readonly',
+   'mode' => 'full',   
    //'cache' => TRUE,
    'cache' => FALSE,
    'path' => array(
@@ -22,7 +24,7 @@ $config = array(
       'host' => 'p:localhost',
       'username' => 'web',
       'passwd' => 'Ab663067',
-      'dbname' => 'houstonbbs'
+      'dbname' => 'hbbs'
    ),
    'cache_path' => '/cache/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
    /*
