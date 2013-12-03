@@ -21,15 +21,22 @@ class Logger
    private $_time;
    private $_mailer = NULL;
 
-   private function __construct()
+   private function __construct( $logDir, array $logFiles )
    {
-      $this->_file = array(
+      $file_default = array(
          self::INFO => 'php_info.log',
          self::DEBUG => 'php_debug.log',
          self::WARNING => 'php_warning.log',
          self::ERROR => 'php_error.log',
       );
+      $this->_dir = $logDir;
       $this->_time = \date( 'Y-m-d H:i:s T', (int) $_SERVER['REQUEST_TIME'] );
+      $files = \array_merge( $file_default, $logFiles );
+
+      foreach ( \array_keys( $file_default ) as $logLevel )
+      {
+         $this->_file[$logLevel] = $logDir . '/' . $files[$logLevel];
+      }
    }
 
    /**
@@ -41,7 +48,7 @@ class Logger
     * @return Logger
     * @throws \InvalidArgumentException
     */
-   public static function getInstance( $setAsDefault = FALSE )
+   public static function getInstance( $logDir = NULL, array $logFiles = array( ), $setAsDefault = FALSE )
    {
       static $instances = array( );
 
@@ -76,30 +83,6 @@ class Logger
       return $this->_dir;
    }
 
-   // only set Dir once
-   public function setLogDir( $dir )
-   {
-      if ( !isset( $this->_dir ) )
-      {
-         if ( \is_dir( $logDir ) && \is_writable( $logDir ) )
-         {
-            foreach ( $this->_file as $l => $f )
-            {
-               $this->_file[$l] = $dir . '/' . $f;
-            }
-            $this->_dir = $dir;
-         }
-         else
-         {
-            throw new \InvalidArgumentException( 'Log dir is not an readable directory : ' . $dir );
-         }
-      }
-      else
-      {
-         throw new Exception( 'Logger dir has already been set, and could only be set once' );
-      }
-   }
-
    public function setUserInfo( $userinfo )
    {
       $this->_userinfo = $userinfo;
@@ -117,12 +100,12 @@ class Logger
 
    public function debug( $var )
    {
-      \ob_start();
-      \var_dump( $var );
-      $str = \ob_get_contents();   // Get the contents of the buffer
-      \ob_end_clean();
+      ob_start();
+      var_dump( $var );
+      $str = ob_get_contents();   // Get the contents of the buffer
+      ob_end_clean();
 
-      $this->_log( \trim( $str ), self::DEBUG );
+      $this->_log( trim( $str ), self::DEBUG );
    }
 
    public function warn( $str )
@@ -153,14 +136,7 @@ class Logger
          $this->_mailer->send();
       }
 
-      if ( $this->_dir )
-      {
-         \file_put_contents( $this->_file[$type], $log, \FILE_APPEND | \LOCK_EX );
-      }
-      else
-      {
-         \error_log( $log );
-      }
+      file_put_contents( $this->_file[$type], $log, \FILE_APPEND | \LOCK_EX );
    }
 
    private function _get_debug_print_backtrace( $traces_to_ignore )
