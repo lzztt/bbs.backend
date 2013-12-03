@@ -187,7 +187,7 @@ class CronApp extends App
       $db = MySQL::getInstance( $this->config->database, TRUE );
       $currentTime = \intval( $_SERVER['REQUEST_TIME'] );
       $db->query( 'DELETE FROM Session WHERE uid = 0 AND mtime < ' . ($currentTime - 21600) );
-      $db->query( 'DELETE FROM Session WHERE mtime < ' . ($currentTime - $this->config->cookie->lifetime) );
+      $db->query( 'DELETE FROM Session WHERE mtime < ' . ($currentTime - $this->config->cookie['lifetime']) );
    }
 
 // daily

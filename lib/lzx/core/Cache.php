@@ -231,8 +231,16 @@ class Cache
    {
       $fn = $this->_getMapFileName( $key, $childMap );
 
-      $lines = \trim( $this->_read( $fn ) );
-      return ($lines ? \explode( \PHP_EOL, $lines ) : array( ));
+      try
+      {
+         // read only if exist!!
+         return \is_file( $fn ) ? \file( $fn, \FILE_IGNORE_NEW_LINES | \FILE_SKIP_EMPTY_LINES ) : array( );
+      }
+      catch ( \Exception $e )
+      {
+         $this->logger->warn( 'Could not read map [' . $fn . ']: ' . $e->getMessage() );
+         return array( );
+      }
    }
 
    public function clearAllCache()
@@ -240,7 +248,7 @@ class Cache
       $this->_rm( $this->map_zone );
       $this->_rm( $this->private_zone );
       $this->_rm( $this->public_zone );
-      $this->logger->info( "clear all cache\n[CMD] " . $cmd );
+      $this->logger->info( 'clear all cache' );
    }
 
    private function _rm( $path, $reportError = TRUE )
@@ -261,7 +269,7 @@ class Cache
                {
                   continue;
                }
-               _rm( $path . '/' . $child );
+               $this->_rm( $path . '/' . $child );
             }
 
             // remove dir
@@ -310,7 +318,7 @@ class Cache
       }
       catch ( \Exception $e )
       {
-         $this->logger->warn( 'Could not read cache file: ' . $e->getMessage() );
+         $this->logger->warn( 'Could not read from file [' . $file . ']: ' . $e->getMessage() );
          return FALSE;
       }
    }
@@ -329,7 +337,7 @@ class Cache
             $this->logger->info( "no free space left" );
             $this->clearAllCache();
          }
-         $this->logger->warn( 'Could not write to cache file: ' . $e->getMessage() );
+         $this->logger->warn( 'Could not write to file [' . $file . ']: ' . $e->getMessage() );
          return FALSE;
       }
    }
