@@ -4,7 +4,7 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\html\Template;
-use site\dataobject\Activity as ActivityObject;
+use site\dbobject\Activity as ActivityObject;
 
 class Activity extends Controller
 {

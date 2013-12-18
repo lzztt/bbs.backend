@@ -4,10 +4,10 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\html\Template;
-use site\dataobject\Tag;
-use site\dataobject\Node;
-use site\dataobject\NodeYellowPage;
-use site\dataobject\Image;
+use site\dbobject\Tag;
+use site\dbobject\Node;
+use site\dbobject\NodeYellowPage;
+use site\dbobject\Image;
 
 class YP extends Controller
 {

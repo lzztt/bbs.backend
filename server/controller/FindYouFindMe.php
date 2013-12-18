@@ -3,9 +3,9 @@
 namespace site\controller;
 
 use site\Controller;
-use site\dataobject\FFAttendee;
-use site\dataobject\FFComment;
-use site\dataobject\FFSubscriber;
+use site\dbobject\FFAttendee;
+use site\dbobject\FFComment;
+use site\dbobject\FFSubscriber;
 use lzx\html\Template;
 use lzx\core\MySQL;
 use lzx\core\Mailer;

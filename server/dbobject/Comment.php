@@ -4,34 +4,45 @@
  * @package lzx\core\DataObject
  */
 
-namespace site\dataobject;
+namespace site\dbobject;
 
-use lzx\core\DataObject;
-use lzx\core\MySQL;
+use lzx\db\DBObject;
+use lzx\db\DB;
 
 /**
- * @property $cid
+ * @property $id
  * @property $nid
  * @property $uid
+ * @property $tid
  * @property $body
  * @property $hash
  * @property $createTime
  * @property $lastModifiedTime
  */
-class Comment extends DataObject
+class Comment extends DBObject
 {
 
-   public function __construct( $load_id = null, $fields = '' )
+   public function __construct( $id = null, $fields = '' )
    {
-      $db = MySQL::getInstance();
-      $table = \array_pop( \explode( '\\', __CLASS__ ) );
-      parent::__construct( $db, $table, $load_id, $fields );
+      $db = DB::getInstance();
+      $table = 'comments';
+      $feilds = [
+         'id' => 'id',
+         'nid' => 'nid',
+         'uid' => 'uid',
+         'tid' => 'tid',
+         'body' => 'body',
+         'hash' => 'hash',
+         'createTime' => 'create_time',
+         'lastModifiedTime' => 'last_modified_time'
+      ];
+      parent::__construct( $db, $table, $feilds, $id, $fields );
    }
 
    public function delete()
    {
-      $this->_db->query( 'INSERT INTO ImageDeleted (fid, path) SELECT fid, path FROM Image AS f WHERE f.cid = ' . $this->cid );
-      $this->_db->query( 'DELETE c, f FROM Comment AS c LEFT JOIN Image AS f ON c.cid = f.cid WHERE c.cid = ' . $this->cid );
+      $this->_db->query( 'INSERT INTO images_deleted (fid, path) SELECT fid, path FROM images AS f WHERE f.cid = ' . $this->cid );
+      $this->_db->query( 'DELETE c, f FROM comments AS c LEFT JOIN images AS f ON c.cid = f.cid WHERE c.cid = ' . $this->cid );
       /*
         if (\is_null($this->uid))
         {
@@ -52,7 +63,7 @@ class Comment extends DataObject
    public function add()
    {
       // CHECK USER
-      $userInfo = $this->_db->row( 'SELECT createTime, lastAccessIPInt, status FROM User WHERE uid = ' . $this->uid );
+      $userInfo = $this->_db->row( 'SELECT createTime, lastAccessIPInt, status FROM users WHERE uid = ' . $this->uid );
       if ( \intval( $userInfo['status'] ) != 1 )
       {
          throw new \Exception( 'This User account cannot post message.' );
@@ -69,8 +80,8 @@ class Comment extends DataObject
             $oneday = \intval( $this->createTime - 86400 );
             $count = $this->_db->val(
                   'SELECT 
-                  ( SELECT count(*) FROM Node WHERE uid = ' . $this->uid . ' AND createTime > ' . $oneday . ' ) +
-                  ( SELECT count(*) FROM Comment WHERE uid = ' . $this->uid . ' AND createTime > ' . $oneday . ' ) AS c'
+                  ( SELECT count(*) FROM nodes WHERE uid = ' . $this->uid . ' AND createTime > ' . $oneday . ' ) +
+                  ( SELECT count(*) FROM comments WHERE uid = ' . $this->uid . ' AND createTime > ' . $oneday . ' ) AS c'
             );
             if ( $count >= $days )
             {

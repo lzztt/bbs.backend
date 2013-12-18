@@ -4,7 +4,7 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\html\Template;
-use site\dataobject\AD as ADObject;
+use site\dbobject\AD as ADObject;
 
 /*
  * To change this template, choose Tools | Templates

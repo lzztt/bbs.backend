@@ -4,30 +4,37 @@
  * @package lzx\core\DataObject
  */
 
-namespace site\dataobject;
+namespace site\dbobject;
 
-use lzx\core\DataObject;
+use lzx\db\DBObject;
 use lzx\core\Cache;
-use lzx\core\MySQL;
+use lzx\db\DB;
 
 /**
  * two level tag system
- * @property $tid
+ * @property $id
  * @property $name
  * @property $description
  * @property $parent
  * @property $root
  * @property $weight
- * @property $tmp_cid
  */
-class Tag extends DataObject
+class Tag extends DBObject
 {
 
-   public function __construct( $load_id = null, $fields = '' )
+   public function __construct( $id = null, $fields = '' )
    {
-      $db = MySQL::getInstance();
-      $table = \array_pop( \explode( '\\', __CLASS__ ) );
-      parent::__construct( $db, $table, $load_id, $fields );
+      $db = DB::getInstance();
+      $table = 'tags';
+      $feilds = [
+         'id' => 'id',
+         'name' => 'name',
+         'description' => 'description',
+         'parent' => 'parent',
+         'root' => 'root',
+         'weight' => 'weight'
+      ];
+      parent::__construct( $db, $table, $feilds, $id, $fields );
    }
 
    /*
@@ -88,7 +95,7 @@ class Tag extends DataObject
    public function getTagTree( $fields = '' )
    {
       $tag = new Tag();
-      $tag->tid = $this->tid;
+      $tag->id = $this->id;
       $tagtree = $tag->getList( $fields, 1 );
 
       if ( \sizeof( $tagtree ) == 0 )
@@ -143,7 +150,7 @@ class Tag extends DataObject
       else
       {
          $tag = new Tag();
-         $tag->tid = $this->parent;
+         $tag->id = $this->parent;
          $parent = $tag->getList( $fields, 1 );
          return \array_pop( $parent );
       }
@@ -156,7 +163,7 @@ class Tag extends DataObject
    public function getChildren( $fields = '' )
    {
       $tag = new Tag();
-      $tag->parent = $this->tid;
+      $tag->parent = $this->id;
       $tag->order( 'weight' );
       return $tag->getList( $fields );
    }
@@ -164,21 +171,21 @@ class Tag extends DataObject
    // get the information for the latest updated node
    public function getNodeInfo()
    {
-      $tag = new Tag( $this->tid, 'tid' );
+      $tag = new Tag( $this->id, 'tid' );
       if ( $tag->exists() )
       {
-         $sql = 'SELECT (SELECT count(*) FROM Node WHERE tid = ' . $this->tid . ') AS nodeCount,'
-               . ' (SELECT count(*) FROM Comment WHERE tid = ' . $this->tid . ') AS commentCount';
+         $sql = 'SELECT (SELECT count(*) FROM nodes WHERE tid = ' . $this->id . ') AS nodeCount,'
+               . ' (SELECT count(*) FROM comments WHERE tid = ' . $this->id . ') AS commentCount';
          $info = $this->_db->row( $sql );
          $sql = 'SELECT n.nid, n.title, n.uid, u.username, n.createTime '
-               . 'FROM Node AS n JOIN User AS u ON n.uid = u.uid '
-               . 'WHERE n.tid = ' . $this->tid . ' AND n.status > 0 AND u.status > 0 '
+               . 'FROM Node AS n JOIN users AS u ON n.uid = u.uid '
+               . 'WHERE n.tid = ' . $this->id . ' AND n.status > 0 AND u.status > 0 '
                . 'ORDER BY n.createTime DESC '
                . 'LIMIT 1';
          $node = $this->_db->row( $sql );
          $sql = 'SELECT c.nid, n.title, c.uid, u.username, c.createTime '
-               . 'FROM Comment AS c JOIN Node AS n ON c.nid = n.nid JOIN User AS u ON c.uid = u.uid '
-               . 'WHERE c.tid = ' . $this->tid . ' AND n.status > 0 AND u.status > 0 '
+               . 'FROM Comment AS c JOIN nodes AS n ON c.nid = n.nid JOIN users AS u ON c.uid = u.uid '
+               . 'WHERE c.tid = ' . $this->id . ' AND n.status > 0 AND u.status > 0 '
                . 'ORDER BY c.createTime DESC '
                . 'LIMIT 1';
          $comment = $this->_db->row( $sql );
@@ -196,11 +203,11 @@ class Tag extends DataObject
       $tag = new Tag();
       if ( $type == 'forum' )
       {
-         $tag->tid = 1;
+         $tag->id = 1;
       }
       elseif ( $type == 'yp' )
       {
-         $tag->tid = 2;
+         $tag->id = 2;
       }
       else
       {
