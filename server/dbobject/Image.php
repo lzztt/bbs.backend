@@ -4,28 +4,38 @@
  * @package lzx\core\DataObject
  */
 
-namespace site\dataobject;
+namespace site\dbobject;
 
-use lzx\core\DataObject;
-use lzx\core\MySQL;
+use lzx\db\DBObject;
+use lzx\db\DB;
 use lzx\core\Logger;
 
 /**
- * @property $fid
+ * @property $id
  * @property $nid //null for comment attachments
  * @property $cid //commentID, null for node attachments
  * @property $name
  * @property $path
- * @property $list
+ * @property $height
+ * @property $width
  */
-class Image extends DataObject
+class Image extends DBObject
 {
 
-   public function __construct( $load_id = null, $fields = '' )
+   public function __construct( $id = null, $fields = '' )
    {
-      $db = MySQL::getInstance();
-      $table = \array_pop( \explode( '\\', __CLASS__ ) );
-      parent::__construct( $db, $table, $load_id, $fields );
+      $db = DB::getInstance();
+      $table = 'images';
+      $feilds = [
+         'id' => 'id',
+         'nid' => 'nid',
+         'cid' => 'cid',
+         'name' => 'name',
+         'path' => 'path',
+         'height' => 'height',
+         'width' => 'width'
+      ];
+      parent::__construct( $db, $table, $feilds, $id, $fields );
    }
 
    private function rmTmpFile( $file )
@@ -214,12 +224,12 @@ class Image extends DataObject
          }
       }
       // delete old saved files are not in new version
-      $db->query( 'INSERT INTO ImageDeleted (fid, path) SELECT fid, path FROM Image WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
-      $db->query( 'DELETE FROM Image WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
+      $db->query( 'INSERT INTO images_deleted (fid, path) SELECT fid, path FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
+      $db->query( 'DELETE FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
       // insert new files
       if ( \sizeof( $insert ) > 0 )
       {
-         $db->query( 'INSERT INTO Image (nid,cid,name,path,height,width) VALUES ' . \implode( ',', $insert ) );
+         $db->query( 'INSERT INTO images (nid,cid,name,path,height,width) VALUES ' . \implode( ',', $insert ) );
       }
    }
 
@@ -228,8 +238,8 @@ class Image extends DataObject
       return $this->_db->select( '( SELECT nid, name, path, title 
                                    FROM (
                                       SELECT f.nid, f.name, f.path, n.title, @rn := IF( @nid = f.nid, @rn := @rn + 1, 1 ) as rn, @nid := f.nid 
-                                      FROM Image AS f 
-                                      JOIN Node AS n ON f.nid = n.nid 
+                                      FROM images AS f 
+                                      JOIN nodes AS n ON f.nid = n.nid 
                                       WHERE (n.tid = 18 AND n.status = 1) AND f.width >= 600 AND f.height >=300 ORDER BY f.fid DESC
                                    ) AS t
                                    WHERE rn < 3 LIMIT 5 )
@@ -237,8 +247,8 @@ class Image extends DataObject
                                    ( SELECT nid, name, path, title 
                                    FROM (
                                       SELECT f.nid, f.name, f.path, n.title, @rn := IF( @nid = f.nid, @rn := @rn + 1, 1 ) as rn, @nid := f.nid 
-                                      FROM Image AS f 
-                                      JOIN Node AS n ON f.nid = n.nid 
+                                      FROM images AS f 
+                                      JOIN nodes AS n ON f.nid = n.nid 
                                       WHERE (n.tid != 18 AND n.status = 1) AND f.width >= 600 AND f.height >=300 ORDER BY f.fid DESC
                                    ) AS t
                                    WHERE rn < 3 LIMIT 5 )' );

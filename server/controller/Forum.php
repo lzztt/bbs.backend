@@ -4,10 +4,10 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\html\Template;
-use site\dataobject\Tag;
-use site\dataobject\Node;
-use site\dataobject\Image;
-use site\dataobject\User;
+use site\dbobject\Tag;
+use site\dbobject\Node;
+use site\dbobject\Image;
+use site\dbobject\User;
 
 class Forum extends Controller
 {

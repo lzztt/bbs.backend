@@ -8,8 +8,8 @@ namespace site;
 // WebApp object will call Theme to display the content
 use lzx\core\Controller as LzxCtrler;
 use lzx\html\Template;
-use site\dataobject\User;
-use site\dataobject\Tag;
+use site\dbobject\User;
+use site\dbobject\Tag;
 
 /**
  *

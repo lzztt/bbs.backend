@@ -3,8 +3,8 @@
 namespace site\controller;
 
 use site\Controller;
-use site\dataobject\User as UserObject;
-use site\dataobject\PrivMsg;
+use site\dbobject\User as UserObject;
+use site\dbobject\PrivMsg;
 use lzx\html\HTMLElement;
 use lzx\html\Form;
 use lzx\html\Input;

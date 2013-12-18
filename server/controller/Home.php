@@ -5,10 +5,10 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
-use site\dataobject\Node;
-use site\dataobject\Activity;
-use site\dataobject\Image;
-use site\dataobject\User;
+use site\dbobject\Node;
+use site\dbobject\Activity;
+use site\dbobject\Image;
+use site\dbobject\User;
 
 class Home extends Controller
 {
