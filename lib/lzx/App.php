@@ -4,7 +4,6 @@ namespace lzx;
 
 use lzx\core\ClassLoader;
 use lzx\core\Handler;
-use lzx\core\Config;
 use lzx\core\Logger;
 use lzx\core\Mailer;
 
@@ -16,76 +15,80 @@ use lzx\core\Mailer;
 abstract class App
 {
 
-   protected $logger;
-   protected $config;
-   protected $path;
+    public $domain;
+    protected $logger;
+    protected $loader;
 
-   public function __construct( $configFile, Array $namespaces = array( ) )
-   {
-      try
-      {
-         if ( \mb_internal_encoding( "UTF-8" ) === FALSE )
-         {
-            throw new \Exception( 'failed to set utf-8 encoding' );
-         }
+    public function __construct()
+    {
+        try
+        {
+            if ( \mb_internal_encoding( "UTF-8" ) === FALSE )
+            {
+                throw new \Exception( 'failed to set utf-8 encoding' );
+            }
 
-         // start auto loader
-         $_file = __DIR__ . '/core/ClassLoader.php';
-         if ( \is_file( $_file ) && \is_readable( $_file ) )
-         {
-            require_once $_file;
-         }
-         else
-         {
-            throw new \Exception( 'cannot load autoloader class' );
-         }
-         $loader = ClassLoader::getInstance();
-         $loader->registerNamespace( __NAMESPACE__, __DIR__ );
+            // start auto loader
+            $_file = __DIR__ . '/core/ClassLoader.php';
+            if ( \is_file( $_file ) && \is_readable( $_file ) )
+            {
+                require_once $_file;
+            }
+            else
+            {
+                throw new \Exception( 'cannot load autoloader class' );
+            }
 
-         foreach ( $namespaces as $namespace => $path )
-         {
-            $loader->registerNamespace( $namespace, $path );
-         }
+            // register namespaces
+            $this->loader = ClassLoader::getInstance();
+            $this->loader->registerNamespace( __NAMESPACE__, __DIR__ );
 
-         // set ErrorHandler, convert error to ErrorException
-         Handler::setErrorHandler();
+            // set ErrorHandler, all error would be convert to ErrorException from now on
+            Handler::setErrorHandler();
 
-         // load configuration
-         $this->config = Config::getInstance( $configFile );
-         $this->path = $this->config->path;
+            // create logger
+            $this->logger = Logger::getInstance();
+            // set logger for Handler
+            Handler::$logger = $this->logger;
+            // set ExceptionHandler
+            Handler::setExceptionHandler();
+        }
+        catch ( \Exception $e )
+        {
+            $msg = '[longzox] App initialization error: ' . $e->getMessage();
+            if ( $this->logger instanceof Logger )
+            {
+                $this->logger->error( $msg . \PHP_EOL . $e->getTraceAsString(), FALSE );
+            }
+            else
+            {
+                \error_log( $msg . \PHP_EOL . $e->getTraceAsString() );
+            }
+            exit( $msg );
+        }
+    }
 
-         // create logger
-         $this->logger = Logger::getInstance( $this->path['log'], array( ), TRUE );
+    abstract public function run( $argc, Array $argv );
 
-         // set logger before set the Exception Handler
-         Handler::$logger = $this->logger;
-         // set ExceptionHandler
-         Handler::setExceptionHandler();
+    public function setLogDir( $dir )
+    {
+        $this->logger->setLogDir( $dir );
+    }
 
-         $webmaster = $this->config->webmaster;
-         if ( \filter_var( $webmaster, \FILTER_VALIDATE_EMAIL ) )
-         {
-            $mailer = new Mailer( $this->config->domain, 'logger' );
-            $mailer->to = $webmaster;
+    public function setLogMailer( $email )
+    {
+        if ( \filter_var( $email, \FILTER_VALIDATE_EMAIL ) )
+        {
+            $mailer = new Mailer( 'logger' );
+            $mailer->to = $email;
             $this->logger->setMailer( $mailer );
-         }
-      }
-      catch ( \Exception $e )
-      {
-         $msg = '[longzox] App initialization error: ' . $e->getMessage();
-         if ( $this->logger instanceof Logger )
-         {
-            $this->logger->error( $msg . \PHP_EOL . $e->getTraceAsString(), FALSE );
-         }
-         else
-         {
-            \error_log( $msg . \PHP_EOL . $e->getTraceAsString() );
-         }
-         exit( $msg );
-      }
-   }
+        }
+        else
+        {
+            throw new \Exception( 'Invalid email address: ' . $email );
+        }
+    }
 
-   abstract public function run( $argc, Array $argv );
 }
 
 //_END_OF_FILE

@@ -12,7 +12,7 @@ class Mailer
    public $body;
    public $signature = "\n\n-----------------\nThe HoustonBBS Team";
 
-   public function __construct($domain = NULL, $from = 'noreply')
+   public function __construct($from = 'noreply', $domain = NULL)
    {
       if ($domain)
       {

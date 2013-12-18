@@ -3,11 +3,11 @@
 namespace site\controller;
 
 use site\Controller;
-use site\dataobject\Tag;
-use site\dataobject\Comment as CommentObject;
-use site\dataobject\Node;
-use site\dataobject\Image;
-use site\dataobject\User;
+use site\dbobject\Tag;
+use site\dbobject\Comment as CommentObject;
+use site\dbobject\Node;
+use site\dbobject\Image;
+use site\dbobject\User;
 
 class Comment extends Controller
 {

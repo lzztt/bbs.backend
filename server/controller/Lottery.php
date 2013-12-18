@@ -4,7 +4,7 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\html\Template;
-use site\dataobject\User;
+use site\dbobject\User;
 
 class Lottery extends Controller
 {

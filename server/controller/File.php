@@ -3,7 +3,7 @@
 namespace site\controller;
 
 use site\Controller;
-use site\dataobject\Image;
+use site\dbobject\Image;
 
 class File extends Controller
 {

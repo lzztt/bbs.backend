@@ -7,12 +7,12 @@ use lzx\core\BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 use lzx\core\Mailer;
-use site\dataobject\Node as NodeObject;
-use site\dataobject\NodeYellowPage;
-use site\dataobject\Comment;
-use site\dataobject\Image;
-use site\dataobject\User;
-use site\dataobject\Activity;
+use site\dbobject\Node as NodeObject;
+use site\dbobject\NodeYellowPage;
+use site\dbobject\Comment;
+use site\dbobject\Image;
+use site\dbobject\User;
+use site\dbobject\Activity;
 
 class Node extends Controller
 {

@@ -4,8 +4,8 @@ namespace site\controller\Adm;
 
 use lzx\core\ControllerAction;
 use lzx\html\Template;
-use site\dataobject\AD as ADObject;
-use site\dataobject\ADPayment;
+use site\dbobject\AD as ADObject;
+use site\dbobject\ADPayment;
 use lzx\html\Form;
 use lzx\html\Input;
 use lzx\html\Select;
