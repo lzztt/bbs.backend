@@ -26,6 +26,9 @@ abstract class DB
         throw new DBException( $msg, $sql );
     }
 
+    /*
+     * @return lzx\db\DB $instance
+     */
     // Singleton methord for each database
     public static final function getInstance( $tag = self::DEFAULT_TAG, array $config = array() )
     {
@@ -98,8 +101,9 @@ abstract class DB
 
     abstract public function affected_rows();
 
-    abstract public function str( $str );
+    abstract public function escape( $str );
 
+    abstract public function str( $str );
 }
 
 //__END_OF_FILE__

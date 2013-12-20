@@ -94,7 +94,7 @@ class Logger
 
     public function info( $str )
     {
-        $this->_log( $str, self::INFO, FALSE );
+        $this->_log( $str, self::INFO );
     }
 
     public function debug( $var )
@@ -107,25 +107,25 @@ class Logger
         $this->_log( \trim( $str ), self::DEBUG );
     }
 
-    public function warn( $str )
+    public function warn( $str, array $traces = [] )
     {
-        $this->_log( $str, self::WARNING );
+        $this->_log( $str, self::WARNING, $traces );
     }
 
-    public function error( $str, $trace = TRUE )
+    public function error( $str, array $traces = [] )
     {
-        $this->_log( $str, self::ERROR, $trace );
+        $this->_log( $str, self::ERROR, $traces );
     }
 
-    private function _log( $str, $type, $trace = TRUE, $traces_to_ignore = 2 )
+    private function _log( $str, $type, array $traces = NULL )
     {
         $log = '[' . $this->_time . '] [' . $this->_userinfo . ']' . \PHP_EOL
             . '[URI] ' . $_SERVER['REQUEST_URI'] . ' <' . $_SERVER['REMOTE_ADDR'] . '> ' . $_SERVER['HTTP_USER_AGENT'] . \PHP_EOL
             . '[' . $type . '] ' . $str . \PHP_EOL;
 
-        if ( $trace )
+        if ( $traces !== NULL )
         {
-            $log .= $this->_get_debug_print_backtrace( $traces_to_ignore ) . \PHP_EOL;
+            $log .= $this->_get_debug_print_backtrace( $traces ) . \PHP_EOL;
         }
 
         if ( $type == self::ERROR && isset( $this->_mailer ) )
@@ -145,22 +145,20 @@ class Logger
         }
     }
 
-    private function _get_debug_print_backtrace( $traces_to_ignore )
+    private function _get_debug_print_backtrace( array $traces )
     {
-        $traces = \debug_backtrace();
+        if ( empty( $traces ) )
+        {
+            $traces = \array_slice( \debug_backtrace(), 2 );
+        }
         $ret = array();
 
-        if ( \sizeof( $traces ) > $traces_to_ignore )
+        foreach ( $traces as $i => $call )
         {
-            $traces = \array_slice( $traces, $traces_to_ignore );
-
-            foreach ( $traces as $i => $call )
-            {
-                $object = isset( $call['class'] ) ? $call['class'] . $call['type'] : '';
-                $ret[] = '#' . \str_pad( $i, 3, ' ' )
-                    . '[' . $object . $call['function'] . ']'
-                    . ' called at [' . $call['file'] . ': ' . $call['line'] . ']';
-            }
+            $object = isset( $call['class'] ) ? $call['class'] . $call['type'] : '';
+            $ret[] = '#' . \str_pad( $i, 3, ' ' )
+                . '[' . $object . $call['function'] . ']'
+                . ' called at [' . $call['file'] . ': ' . $call['line'] . ']';
         }
 
         return \implode( \PHP_EOL, $ret );
@@ -168,4 +166,4 @@ class Logger
 
 }
 
-//__END_OF_FILE__
+//__END_OF_FILE__    

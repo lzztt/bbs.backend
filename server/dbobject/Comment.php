@@ -22,11 +22,11 @@ use lzx\db\DB;
 class Comment extends DBObject
 {
 
-   public function __construct( $id = null, $fields = '' )
+   public function __construct( $id = null, $properties = '' )
    {
       $db = DB::getInstance();
       $table = 'comments';
-      $feilds = [
+      $fields = [
          'id' => 'id',
          'nid' => 'nid',
          'uid' => 'uid',
@@ -36,7 +36,7 @@ class Comment extends DBObject
          'createTime' => 'create_time',
          'lastModifiedTime' => 'last_modified_time'
       ];
-      parent::__construct( $db, $table, $feilds, $id, $fields );
+      parent::__construct( $db, $table, $fields, $id, $properties );
    }
 
    public function delete()
@@ -50,7 +50,7 @@ class Comment extends DBObject
         }
         if (isset($this->uid))
         {
-        $this->_db->query('UPDATE User SET points = points - 1 WHERE uid = ' . $this->uid);
+        $this->_db->query('UPDATE users SET points = points - 1 WHERE uid = ' . $this->uid);
         }
        */
    }
@@ -121,21 +121,21 @@ class Comment extends DBObject
       parent::add();
    }
 
-   public function update( $fields = '' )
+   public function update( $properties = '' )
    {
-      if ( $fields == '' )
+      if ( $properties == '' )
       {
          $this->hash = $this->getHash();
       }
       else
       {
-         $f = \explode( ',', $fields );
+         $f = \explode( ',', $properties );
          if ( \in_array( 'body', $f ) )
          {
             $this->hash = $this->getHash();
             if ( !\in_array( 'hash', $f ) )
             {
-               $fields .=',hash';
+               $properties .=',hash';
             }
          }
       }
@@ -149,7 +149,7 @@ class Comment extends DBObject
          }
       }
 
-      parent::update( $fields );
+      parent::update( $properties );
    }
 
 }

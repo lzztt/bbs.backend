@@ -37,10 +37,10 @@
           <ul style="padding-left: 1.5em;">
             <?php foreach ($yp['children'] as $group): ?>
               <li class="l1">
-                <a title="<?php echo $group['description']; ?>" href="/yp/<?php echo $group['tid']; ?>"><?php echo $group['name']; ?></a>
+                <a title="<?php echo $group['description']; ?>" href="/yp/<?php echo $group['id']; ?>"><?php echo $group['name']; ?></a>
                 <ul>
                   <?php foreach ($group['children'] as $tag): ?>
-                    <li class="l2"><a title="<?php echo $tag['description']; ?>" href="/yp/<?php echo $tag['tid']; ?>"><?php echo $tag['name']; ?></a></li>
+                    <li class="l2"><a title="<?php echo $tag['description']; ?>" href="/yp/<?php echo $tag['id']; ?>"><?php echo $tag['name']; ?></a></li>
                     <?php endforeach; ?>
                 </ul>
               </li>

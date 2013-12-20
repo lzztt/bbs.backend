@@ -340,9 +340,9 @@ class User extends Controller
          $user = new UserObject();
          if ( $user->login( $this->request->post['username'], $this->request->post['password'] ) )
          {
-            $this->session->uid = $user->uid;
-            $this->cookie->uid = $user->uid;
-            $this->cookie->urole = ($user->uid == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
+            $this->session->uid = $user->id;
+            $this->cookie->uid = $user->id;
+            $this->cookie->urole = ($user->id == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
             $referer = '/';
             if ( $this->cookie->loginReferer )
             {
@@ -351,7 +351,7 @@ class User extends Controller
             }
             $this->request->redirect( $referer );
          }
-         elseif ( isset( $user->uid ) )
+         elseif ( isset( $user->id ) )
          {
             $this->logger->info( 'Login Fail: ' . $user->username . ' @ ' . $this->request->ip );
             if ( $user->status == 1 )
@@ -423,11 +423,11 @@ class User extends Controller
             $user = new UserObject( $this->request->args[3], 'username' );
             if ( $user->exists() )
             {
-               $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->uid . '[' . $user->username . ']' );
+               $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
                $this->session->suid = $this->session->uid;
-               $this->session->uid = $user->uid;
-               $this->cookie->uid = $user->uid;
-               $this->cookie->urole = ($user->uid == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
+               $this->session->uid = $user->id;
+               $this->cookie->uid = $user->id;
+               $this->cookie->urole = ($user->id == self::ROOT_UID) ? Template::UROLE_ADM : Template::UROLE_USER;
                $this->html->var['content'] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
             }
             else
@@ -505,7 +505,7 @@ class User extends Controller
       if ( ( $this->request->uid == 1 || $this->request->uid == $uid ) && $uid > 2 )  // can not delete uid = 1
       {
          $user = new UserObject();
-         $user->uid = $uid;
+         $user->id = $uid;
          $user->delete();
          foreach ( $user->getAllNodeIDs() as $nid )
          {
@@ -634,7 +634,7 @@ class User extends Controller
       else
       {
          $user = new UserObject();
-         $user->uid = $uid;
+         $user->id = $uid;
 
          $file = $_FILES['avatar'];
          if ( $file['error'] == 0 && $file['size'] > 0 )
@@ -700,9 +700,9 @@ class User extends Controller
 
          $this->html->var['content'] = '您的最新资料已被保存。';
 
-         $this->cache->delete( 'authorPanel' . $user->uid );
-         $this->cache->delete( '/user/' . $user->uid );
-         $this->cache->delete( '/user/' . $user->uid . '/*' );
+         $this->cache->delete( 'authorPanel' . $user->id );
+         $this->cache->delete( '/user/' . $user->id );
+         $this->cache->delete( '/user/' . $user->id . '/*' );
       }
    }
 
@@ -749,7 +749,7 @@ class User extends Controller
       $info[] = array( 'dt' => '注册时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->createTime ) );
       $info[] = array( 'dt' => '上次登录时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->lastAccessTime ) );
 
-      $info[] = array( 'dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP( $user->lastAccessIPInt ) );
+      $info[] = array( 'dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP( $user->lastAccessIP ) );
 
       $dlist = $this->html->dlist( $info );
 
@@ -776,9 +776,9 @@ class User extends Controller
       $user = new UserObject( $uid );
       $this->cache->setStatus( FALSE );
 
-      if ( $user->uid == $this->request->uid )
+      if ( $user->id == $this->request->uid )
       {
-         $link_tabs = $this->_link_tabs( '/user/' . $user->uid . '/pm' );
+         $link_tabs = $this->_link_tabs( '/user/' . $user->id . '/pm' );
          // show pm mailbox
          $mailbox = \sizeof( $this->request->args ) > 3 ? $this->request->args[3] : 'inbox';
 
@@ -793,10 +793,10 @@ class User extends Controller
             $this->error( $mailbox == 'sent' ? '您的发件箱里还没有短信。' : '您的收件箱里还没有短信。'  );
          }
 
-         $activeLink = '/user/' . $user->uid . '/pm/' . $mailbox;
+         $activeLink = '/user/' . $user->id . '/pm/' . $mailbox;
          $mailboxList = $this->html->linkTabs( array(
-            '/user/' . $user->uid . '/pm/inbox' => '收件箱',
-            '/user/' . $user->uid . '/pm/sent' => '发件箱'
+            '/user/' . $user->id . '/pm/inbox' => '收件箱',
+            '/user/' . $user->id . '/pm/sent' => '发件箱'
                ), $activeLink
          );
 
@@ -814,7 +814,7 @@ class User extends Controller
          {
             $words = ($m['isNew'] == 1 ? '<span style="color:red;">new</span> ' : '') . $this->html->truncate( $m['body'] );
             $tbody[] = array( 'cells' => array(
-                  $this->html->link( $words, '/pm/' . $m['topicMID'] ),
+                  $this->html->link( $words, '/pm/' . $m['msg_id'] ),
                   $m['fromName'] . ' -> ' . $m['toName'],
                   \date( 'm/d/Y H:i', $m['time'] )
                ) );
@@ -839,10 +839,10 @@ class User extends Controller
                'form_handler' => '/user/' . $uid . '/pm',
             );
             $form = new Form( array(
-               'action' => '/user/' . $user->uid . '/pm',
+               'action' => '/user/' . $user->id . '/pm',
                'id' => 'user-pm-send'
                   ) );
-            $receipt = new HTMLElement( 'div', array( '收信人: ', $this->html->link( $user->username, '/user/' . $user->uid ) ) );
+            $receipt = new HTMLElement( 'div', array( '收信人: ', $this->html->link( $user->username, '/user/' . $user->id ) ) );
             $message = new TextArea( 'body', '短信正文', '最少5个字母或3个汉字', TRUE );
 
             $form->setData( array( $receipt, $message->toHTMLElement() ) );
@@ -860,7 +860,7 @@ class User extends Controller
 
             $pm = new PrivMsg();
             $pm->fromUID = $this->request->uid;
-            $pm->toUID = $user->uid;
+            $pm->toUID = $user->id;
             $pm->body = $this->request->post['body'];
             $pm->time = $this->request->timestamp;
             $pm->isNew = 1;

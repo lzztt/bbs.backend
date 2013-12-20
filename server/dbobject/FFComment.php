@@ -18,17 +18,17 @@ use lzx\db\DB;
 class FFComment extends DBObject
 {
 
-   public function __construct( $id = null, $fields = '' )
+   public function __construct( $id = null, $properties = '' )
    {
       $db = DB::getInstance();
       $table = 'ff_comments';
-      $feilds = [
+      $fields = [
          'id' => 'id',
          'name' => 'name',
          'body' => 'body',
          'time' => 'time'
       ];
-      parent::__construct( $db, $table, $feilds, $id, $fields );
+      parent::__construct( $db, $table, $fields, $id, $properties );
    }
 
 }
