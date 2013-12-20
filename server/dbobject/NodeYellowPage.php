@@ -20,11 +20,11 @@ use lzx\db\DBObject;
 class NodeYellowPage extends DBObject
 {
 
-   public function __construct( $id = null, $fields = '' )
+   public function __construct( $id = null, $properties = '' )
    {
       $db = DB::getInstance();
       $table = 'node_yellowpages';
-      $feilds = [
+      $fields = [
          'nid' => 'nid',
          'address' => 'address',
          'phone' => 'phone',
@@ -32,7 +32,7 @@ class NodeYellowPage extends DBObject
          'email' => 'email',
          'website' => 'website'
       ];
-      parent::__construct( $db, $table, $feilds, $id, $fields );
+      parent::__construct( $db, $table, $fields, $id, $properties );
    }
 
 }

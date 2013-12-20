@@ -1,5 +1,5 @@
 <div id="content">
-  <?php if ($forum['tid'] != 1): ?><div class="breadcrumb"><a href="/forum">Forum</a></div><?php endif; ?>
+  <?php if ($forum['id'] != 1): ?><div class="breadcrumb"><a href="/forum">Forum</a></div><?php endif; ?>
 
   <div id="forum">
     <div class="forum-top-links"></div>
@@ -10,7 +10,7 @@
             <td colspan="2" class="container">
               <div class="forum-details">
                 <div class="name">
-                  <a href="/forum/<?php echo $group['tid']; ?>"><?php echo $group['name']; ?></a>
+                  <a href="/forum/<?php echo $group['id']; ?>"><?php echo $group['name']; ?></a>
                 </div>
                 <div class="description"><?php echo $group['description']; ?></div>
               </div>
@@ -35,7 +35,7 @@
               <td>
                 <div class="forum-details">
 
-                  <div class="name"><a href="/forum/<?php echo $board['tid']; ?>"><?php echo $board['name']; ?></a></div>
+                  <div class="name"><a href="/forum/<?php echo $board['id']; ?>"><?php echo $board['name']; ?></a></div>
                   <div class="description"><?php echo $board['description']; ?></div>
                 </div>
               </td>

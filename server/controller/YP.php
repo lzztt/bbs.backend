@@ -58,18 +58,18 @@ class YP extends Controller
    public function showYellowPageHome()
    {
       $tag = new Tag();
-      $tag->tid = self::YP_ROOT_TID;
+      $tag->id = self::YP_ROOT_TID;
       $yp = $tag->getTagTree();
       $this->html->var['content'] = new Template( 'yp_home', array( 'yp' => $yp ) );
    }
 
    public function showYellowPageList( $tid )
    {
-      $tag = new Tag( $tid, 'tid,name,parent' );
+      $tag = new Tag( $tid, 'id,name,parent' );
       $tids = array( $tid );
-      foreach ( $tag->getChildren( 'tid' ) as $child )
+      foreach ( $tag->getChildren( 'id' ) as $child )
       {
-         $tids[] = $child['tid'];
+         $tids[] = $child['id'];
       }
 
       $node = new Node();
@@ -77,12 +77,12 @@ class YP extends Controller
 
       if ( $tag->parent != self::YP_ROOT_TID )
       {
-         $parent = new Tag( $tag->parent, 'tid,name,parent' );
+         $parent = new Tag( $tag->parent, 'id,name,parent' );
          if ( $parent->parent != self::YP_ROOT_TID )
          {
             $this->request->pageNotFound();
          }
-         $breadcrumb = '<a href="/yp">黄页</a> > <a href="/yp/' . $parent->tid . '">' . $parent->name . '</a>';
+         $breadcrumb = '<a href="/yp">黄页</a> > <a href="/yp/' . $parent->id . '">' . $parent->name . '</a>';
          $this->cache->storeMap( '/yp/' . $tid, '/yp/' . $tag->parent );
       }
       else

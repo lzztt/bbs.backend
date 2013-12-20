@@ -14,18 +14,18 @@ use lzx\db\DB;
  */
 class ADPayment extends DBObject
 {
-   public function __construct($id = null, $fields = '')
+   public function __construct($id = null, $properties = '')
    {
       $db = DB::getInstance();
       $table = 'ad_payments';
-      $feilds = [
+      $fields = [
          'id' => 'id',
          'adID' => 'ad_id',
          'amount' => 'amount',
          'time' => 'time',
          'comment' => 'comment'
       ];
-      parent::__construct( $db, $table, $feilds, $id, $fields );
+      parent::__construct( $db, $table, $fields, $id, $properties );
    }
 }
 
