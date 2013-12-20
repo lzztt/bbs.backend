@@ -37,7 +37,7 @@ class Node extends Controller
          $this->request->pageNotFound();
       }
 
-      $rootTagID = $tags[0]['tid'];
+      $rootTagID = $tags[0]['id'];
 
 //$tags[0]['cid'] values as the key:
       $types = array(
@@ -145,7 +145,7 @@ class Node extends Controller
       $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
 
       $contents = array(
-         'nid' => $node['nid'],
+         'nid' => $nid,
          'tid' => $tags[2]['tid'],
          'title' => $node['title'],
          'commentCount' => $node['commentCount'],
@@ -172,7 +172,6 @@ class Node extends Controller
       $timeFormat = 'l, m/d/Y - H:i T';
       if ( $pageNo == 1 )
       { // show node details as the first post
-         $node['id'] = $node['nid'];
          $node['type'] = 'node';
          $node['createTime'] = \date( $timeFormat, $node['createTime'] );
          if ( $node['lastModifiedTime'] )
@@ -191,7 +190,7 @@ class Node extends Controller
       }
 
       $nodeObj = new NodeObject();
-      $comments = $nodeObj->getForumNodeComments( $node['nid'], self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE );
+      $comments = $nodeObj->getForumNodeComments( $nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE );
 
       if ( sizeof( $comments ) > 0 )
       {

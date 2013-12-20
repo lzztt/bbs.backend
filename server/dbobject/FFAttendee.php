@@ -24,11 +24,11 @@ use lzx\db\DB;
 class FFAttendee extends DBObject
 {
 
-   public function __construct( $id = NULL, $fields = '' )
+   public function __construct( $id = NULL, $properties = '' )
    {
       $db = DB::getInstance();
       $table = 'ff_attendees';
-      $feilds = [
+      $fields = [
          'id' => 'id',
          'name' => 'name',
          'sex' => 'sex',
@@ -40,7 +40,7 @@ class FFAttendee extends DBObject
          'cid' => 'cid',
          'status' => 'status'
       ];
-      parent::__construct( $db, $table, $feilds, $id, $fields );
+      parent::__construct( $db, $table, $fields, $id, $properties );
    }
 
 }

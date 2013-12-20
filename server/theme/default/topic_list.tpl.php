@@ -43,14 +43,14 @@
 
                         <td class="title">
                            <?php // YING ?>
-                           <?php echo ($node['weight'] >= 2) ? '置顶: ' : '' ?><a href="/node/<?php echo $node['nid']; ?>"><?php echo $node['title']; ?></a>            </td>
+                           <?php echo ($node['weight'] >= 2) ? '置顶: ' : '' ?><a href="/node/<?php echo $node['id']; ?>"><?php echo $node['title']; ?></a>            </td>
 
                         <td class="replies">
                            <div class="num num-replies"><?php echo $node['commentCount']; ?></div>
                         </td>
 
                         <td class="replies">
-                           <div class="num num-view" id="ajax_viewCount_<?php echo $node['nid']; ?>"></div>
+                           <div class="num num-view" id="ajax_viewCount_<?php echo $node['id']; ?>"></div>
                         </td>
 
 
