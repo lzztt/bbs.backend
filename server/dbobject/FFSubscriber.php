@@ -17,16 +17,16 @@ use lzx\db\DB;
 class FFSubscriber extends DBObject
 {
 
-   public function __construct($id = null, $fields = '')
+   public function __construct($id = null, $properties = '')
    {
       $db = DB::getInstance();
       $table = 'ff_subscribers';
-      $feilds = [
+      $fields = [
          'id' => 'id',
          'email' => 'email',
          'time' => 'time'
       ];
-      parent::__construct( $db, $table, $feilds, $id, $fields );
+      parent::__construct( $db, $table, $fields, $id, $properties );
    }
 
 }

@@ -61,7 +61,7 @@ class Handler
         $msg = '[longzox] Uncaught exception: [' . $type . '] ' . $e->getMessage();
         if ( self::$logger instanceof Logger )
         {
-            self::$logger->error( $msg . \PHP_EOL . $e->getTraceAsString(), FALSE );
+            self::$logger->error( $msg, $e->getTrace() );
         }
         else
         {

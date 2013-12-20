@@ -88,7 +88,7 @@ class Home extends Controller
          foreach ( $arr as $i => $n )
          {
             $arr[$i][$rightTagKey] = \date( 'H:i', $n['createTime'] );
-            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['uri'] = '/node/' . $n['id'];
             $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
          }
          $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
@@ -111,7 +111,7 @@ class Home extends Controller
          foreach ( $arr as $i => $n )
          {
             $arr[$i][$rightTagKey] = $n['commentCount'];
-            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['uri'] = '/node/' . $n['id'];
             $arr[$i]['title'] = $this->html->truncate( $n['title'], 36 );
          }
          $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
@@ -134,7 +134,7 @@ class Home extends Controller
          foreach ( $arr as $i => $n )
          {
             $arr[$i][$rightTagKey] = \date( 'm/d', $n['createTime'] );
-            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['uri'] = '/node/' . $n['id'];
             $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
          }
          $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
@@ -157,7 +157,7 @@ class Home extends Controller
          foreach ( $arr as $i => $n )
          {
             $arr[$i][$rightTagKey] = \date( 'm/d', $n['createTime'] );
-            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['uri'] = '/node/' . $n['id'];
             $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
          }
          $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );

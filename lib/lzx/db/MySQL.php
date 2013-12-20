@@ -85,7 +85,7 @@ class MySQL extends DB
         }
         else
         {
-            throw new Exception( 'wrong sql type' );
+            throw new \Exception( 'wrong sql type' );
         }
     }
 
@@ -103,7 +103,7 @@ class MySQL extends DB
         }
         else
         {
-            throw new Exception( 'wrong sql type' );
+            throw new \Exception( 'wrong sql type' );
         }
     }
 
@@ -121,7 +121,7 @@ class MySQL extends DB
         }
         else
         {
-            throw new Exception( 'wrong sql type' );
+            throw new \Exception( 'wrong sql type' );
         }
     }
 
@@ -133,13 +133,19 @@ class MySQL extends DB
         }
         else
         {
-            throw new Exception( 'wrong sql type' );
+            throw new \Exception( 'wrong sql type' );
         }
     }
 
     public function call( $proc )
     {
         $status = $this->query( 'CALL ' . $this->db->real_escape_string( $proc ) );
+
+        if ( $status === FALSE )
+        {
+            $this->dbError( $this->db->error );
+        }
+
         if ( $this->db->field_count )
         {
             $res = $this->db->store_result();
@@ -148,11 +154,15 @@ class MySQL extends DB
             {
                 $arr[] = $r;
             }
+            $res->free();
+            // clean additional result from stored procedure
+            $this->db->next_result();
             return $arr;
         }
         else
         {
-            return $status;
+            $this->db->next_result();
+            $return = $status;
         }
     }
 
@@ -247,6 +257,23 @@ class MySQL extends DB
         }
 
         return $val;
+    }
+
+    public function escape( $str )
+    {
+        if ( !\is_array( $str ) )
+        {
+            return $this->db->real_escape_string( $str );
+        }
+        else
+        {
+            $arr = array();
+            foreach ( $str as $k => $v )
+            {
+                $arr[$k] = $this->escape( $v );
+            }
+            return $arr;
+        }
     }
 
     public function str( $str )

@@ -40,7 +40,7 @@ class Forum extends Controller
       }
 
       $tag = new Tag();
-      $tag->tid = $tid;
+      $tag->id = $tid;
       $forum = $tag->getTagTree();
 
       if ( empty( $forum ) )
@@ -87,12 +87,12 @@ class Forum extends Controller
          {
             $node = new Node();
             //$node->tid = $tid;
-            $node->where( 'nid', $nids, '=' );
-            $arr = $node->getList( 'nid,viewCount' );
+            $node->where( 'id', $nids, '=' );
+            $arr = $node->getList( 'id,viewCount' );
 
             foreach ( $arr as $r )
             {
-               $viewCount['viewCount_' . $r['nid']] = (int) $r['viewCount'];
+               $viewCount['viewCount_' . $r['id']] = (int) $r['viewCount'];
             }
          }
       }
@@ -108,7 +108,7 @@ class Forum extends Controller
    public function nodeInfo( $tid )
    {
       $tag = new Tag();
-      $tag->tid = $tid;
+      $tag->id = $tid;
       $nodeInfo = $tag->getNodeInfo();
 
       $nodeInfo['title'] = $this->html->truncate( $nodeInfo['title'], 35 );
@@ -127,20 +127,20 @@ class Forum extends Controller
          {
             foreach ( $child['children'] as $j => $grandchild )
             {
-               $nodeInfo = $this->nodeInfo( $grandchild['tid'] );
+               $nodeInfo = $this->nodeInfo( $grandchild['id'] );
                $forum['children'][$i]['children'][$j]['nodeInfo'] = $nodeInfo;
                $this->cache->storeMap( '/forum/' . $grandchild['tid'], '/forum/' . $child['tid'] );
             }
          }
          else
          {
-            $nodeInfo = $this->nodeInfo( $child['tid'] );
+            $nodeInfo = $this->nodeInfo( $child['id'] );
             $forum['children'][$i]['nodeInfo'] = $nodeInfo;
          }
 
-         $this->cache->storeMap( '/forum/' . $child['tid'], '/forum' );
+         $this->cache->storeMap( '/forum/' . $child['id'], '/forum' );
 
-         $nids[] = $nodeInfo['nid'];
+         $nids[] = $nodeInfo['id'];
       }
 
       // build node forum cache map
@@ -149,7 +149,7 @@ class Forum extends Controller
          $this->cache->storeMap( '/node/' . $nid, '/forum/' . $forum['tid'] );
       }
 
-      if ( $forum['tid'] != 1 ) // subgroup
+      if ( $forum['id'] != 1 ) // subgroup
       {
          $forum['children'] = array( $forum ); // as root forum
       }
@@ -164,7 +164,7 @@ class Forum extends Controller
       $nodeCount = $node->getNodeCount( $forum['tid'] );
 
       $tag = new Tag();
-      $tag->tid = $forum['tid'];
+      $tag->id = $forum['tid'];
       $parent = $tag->getParent( 'tid,name' );
       $breadcrumb = '<a href="/forum">Forum</a> > <a href="/forum/' . $parent['tid'] . '">' . $parent['name'] . '</a>';
 
@@ -174,12 +174,12 @@ class Forum extends Controller
 
 
       $node = new Node();
-      $nodes = $node->getForumNodeList( $forum['tid'], self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
+      $nodes = $node->getForumNodeList( $forum['id'], self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
 
       $nids = array( );
       foreach ( $nodes as $i => $n )
       {
-         $nids[] = $n['nid'];
+         $nids[] = $n['id'];
          $nodes[$i]['title'] = $this->html->truncate( $n['title'], 45 );
          $nodes[$i]['createTime'] = date( 'm/d/Y H:i', $n['createTime'] );
          $nodes[$i]['lastCommentTime'] = date( 'm/d/Y H:i', $n['lastCommentTime'] );

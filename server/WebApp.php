@@ -109,7 +109,7 @@ class WebApp extends App
 
         // start template
         Template::setLogger( $this->logger );
-        Template::$theme = $this->config->theme;
+        Template::$theme = $this->config->theme['default'];
         Template::$path = $this->config->path['theme'];
         $html = new Template( 'html' );
         $html->var['domain'] = $this->config->domain;
