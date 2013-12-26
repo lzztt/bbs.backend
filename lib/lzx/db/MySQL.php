@@ -139,7 +139,7 @@ class MySQL extends DB
 
     public function call( $proc )
     {
-        $status = $this->query( 'CALL ' . $this->db->real_escape_string( $proc ) );
+        $status = $this->query( 'CALL ' . $proc );
 
         if ( $status === FALSE )
         {
