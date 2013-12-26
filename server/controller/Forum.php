@@ -12,259 +12,260 @@ use site\dbobject\User;
 class Forum extends Controller
 {
 
-   const NODES_PER_PAGE = 25;
+    const NODES_PER_PAGE = 25;
 
-   public function run()
-   {
-      parent::run();
-      $this->checkAJAX();
+    public function run()
+    {
+        parent::run();
+        $this->checkAJAX();
 
-      if ( $this->request->args[1] == 'help' )
-      {
-         $this->showForumHelp();
-         return;
-      }
+        if ( $this->request->args[1] == 'help' )
+        {
+            $this->showForumHelp();
+            return;
+        }
 
-      if ( is_numeric( $this->request->args[1] ) )
-      {
-         $tid = (int) $this->request->args[1];
-         $tag = new Tag( $tid );
-         if ( $tag->root != 1 )
-         {
-            $this->request->pageNotFound();
-         }
-      }
-      else
-      {
-         $tid = 1;
-      }
-
-      $tag = new Tag();
-      $tag->id = $tid;
-      $forum = $tag->getTagTree();
-
-      if ( empty( $forum ) )
-      {
-         $this->request->pageNotFound();
-      }
-      else
-      {
-         if ( $this->request->args[2] == 'node' )
-         {
-            isset( $forum['children'] ) ? $this->error( 'Could not post topic in this forum' ) : $this->createForumTopic( $forum );
-         }
-         else
-         {
-            $this->html->var['head_title'] = $forum['name'] . ' - ' . $this->html->var['head_title'];
-            $this->html->var['head_description'] = $forum['name'] . ', ' . $this->html->var['head_description'];
-
-            isset( $forum['children'] ) ? $this->showForum( $forum ) : $this->showForumTopic( $forum );
-         }
-      }
-   }
-
-   public function ajax()
-   {
-      // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
-
-      $viewCount = array( );
-      if ( $this->request->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
-      {
-         $tid = \intval( $this->request->get['tid'] );
-         $nids = \explode( '_', $this->request->get['nids'] );
-         foreach ( $nids as $i => $nid )
-         {
-            if ( \strlen( $nid ) > 0 )
+        $tag = new Tag();
+        if ( \is_numeric( $this->request->args[1] ) )
+        {
+            $tid = \intval( $this->request->args[1] );
+            $tag->id = $tid;
+            $tag->load( 'id' );
+            if ( $tag->exists() === FALSE )
             {
-               $nids[$i] = \intval( $nid );
+                $this->request->pageNotFound();
             }
-            else
+            $tagRoot = $tag->getTagRoot();
+            if ( !\array_key_exists( Tag::FORUM_ID, $tagRoot ) )
             {
-               unset( $nids[$i] );
+                $this->request->pageNotFound();
             }
-         }
-         if ( \sizeof( $nids ) > 0 )
-         {
-            $node = new Node();
-            //$node->tid = $tid;
-            $node->where( 'id', $nids, '=' );
-            $arr = $node->getList( 'id,viewCount' );
+        }
+        else
+        {
+            $tid = Tag::FORUM_ID;
+            $tag->id = $tid;
+            $tagRoot = $tag->getTagRoot();
+        }
 
-            foreach ( $arr as $r )
+        $tagTree = $tag->getTagTree();
+
+        if ( $this->request->args[2] == 'node' )
+        {
+            \sizeof( $tagTree[$tid]['children'] ) ? $this->error( 'Could not post topic in this forum' ) : $this->createForumTopic( $tid );
+        }
+        else
+        {
+            $this->html->var['head_title'] = $tagTree[$tid]['name'] . ' - ' . $this->html->var['head_title'];
+            $this->html->var['head_description'] = $tagTree[$tid]['name'] . ', ' . $this->html->var['head_description'];
+
+            \sizeof( $tagTree[$tid]['children'] ) ? $this->showForum( $tid, $tagRoot, $tagTree ) : $this->showForumTopic( $tid, $tagRoot );
+        }
+    }
+
+    public function ajax()
+    {
+        // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
+
+        $viewCount = array();
+        if ( $this->request->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
+        {
+            $tid = \intval( $this->request->get['tid'] );
+            $nids = \explode( '_', $this->request->get['nids'] );
+            foreach ( $nids as $i => $nid )
             {
-               $viewCount['viewCount_' . $r['id']] = (int) $r['viewCount'];
+                if ( \strlen( $nid ) > 0 )
+                {
+                    $nids[$i] = \intval( $nid );
+                }
+                else
+                {
+                    unset( $nids[$i] );
+                }
             }
-         }
-      }
+            if ( \sizeof( $nids ) > 0 )
+            {
+                $node = new Node();
+                //$node->tid = $tid;
+                $node->where( 'id', $nids, '=' );
+                $arr = $node->getList( 'id,viewCount' );
 
-      return $viewCount;
-   }
+                foreach ( $arr as $r )
+                {
+                    $viewCount['viewCount_' . $r['id']] = (int) $r['viewCount'];
+                }
+            }
+        }
 
-   public function showForumHelp()
-   {
-      $this->request->redirect( '/help' );
-   }
+        return $viewCount;
+    }
 
-   public function nodeInfo( $tid )
-   {
-      $tag = new Tag();
-      $tag->id = $tid;
-      $nodeInfo = $tag->getNodeInfo();
+    public function showForumHelp()
+    {
+        $this->request->redirect( '/help' );
+    }
 
-      $nodeInfo['title'] = $this->html->truncate( $nodeInfo['title'], 35 );
-      $nodeInfo['createTime'] = date( 'm/d/Y H:i', $nodeInfo['createTime'] );
-      return $nodeInfo;
-   }
+    public function nodeInfo( $tid )
+    {
+        $tag = new Tag( $tid, NULL );
+        $nodeInfo = $tag->getNodeInfo();
+
+        $nodeInfo['title'] = $this->html->truncate( $nodeInfo['title'], 35 );
+        $nodeInfo['create_time'] = \date( 'm/d/Y H:i', $nodeInfo['create_time'] );
+        return $nodeInfo;
+    }
 
 // $forum, $groups, $boards are arrays of category id
-   public function showForum( $forum )
-   {
-      $nids = array( );
-
-      foreach ( $forum['children'] as $i => $child )
-      {
-         if ( \array_key_exists( 'children', $child ) )
-         {
-            foreach ( $child['children'] as $j => $grandchild )
-            {
-               $nodeInfo = $this->nodeInfo( $grandchild['id'] );
-               $forum['children'][$i]['children'][$j]['nodeInfo'] = $nodeInfo;
-               $this->cache->storeMap( '/forum/' . $grandchild['tid'], '/forum/' . $child['tid'] );
-            }
-         }
-         else
-         {
-            $nodeInfo = $this->nodeInfo( $child['id'] );
-            $forum['children'][$i]['nodeInfo'] = $nodeInfo;
-         }
-
-         $this->cache->storeMap( '/forum/' . $child['id'], '/forum' );
-
-         $nids[] = $nodeInfo['id'];
-      }
-
-      // build node forum cache map
-      foreach ( $nids as $nid )
-      {
-         $this->cache->storeMap( '/node/' . $nid, '/forum/' . $forum['tid'] );
-      }
-
-      if ( $forum['id'] != 1 ) // subgroup
-      {
-         $forum['children'] = array( $forum ); // as root forum
-      }
-
-      $this->html->var['content'] = new Template( 'forum_list', array( 'forum' => $forum ) );
-   }
-
-   public function showForumTopic( $forum )
-   {
-
-      $node = new Node();
-      $nodeCount = $node->getNodeCount( $forum['tid'] );
-
-      $tag = new Tag();
-      $tag->id = $forum['tid'];
-      $parent = $tag->getParent( 'tid,name' );
-      $breadcrumb = '<a href="/forum">Forum</a> > <a href="/forum/' . $parent['tid'] . '">' . $parent['name'] . '</a>';
-
-      $pageNo = $this->request->get['page'];
-      $pageCount = ceil( $nodeCount / self::NODES_PER_PAGE );
-      list($pageNo, $pager) = $this->html->generatePager( $pageNo, $pageCount, '/forum/' . $forum['tid'] );
-
-
-      $node = new Node();
-      $nodes = $node->getForumNodeList( $forum['id'], self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
-
-      $nids = array( );
-      foreach ( $nodes as $i => $n )
-      {
-         $nids[] = $n['id'];
-         $nodes[$i]['title'] = $this->html->truncate( $n['title'], 45 );
-         $nodes[$i]['createTime'] = date( 'm/d/Y H:i', $n['createTime'] );
-         $nodes[$i]['lastCommentTime'] = date( 'm/d/Y H:i', $n['lastCommentTime'] );
-      }
-
-      $editor_contents = array(
-         'display' => FALSE,
-         'title_display' => TRUE,
-         'node_title' => '',
-         'form_handler' => '/forum/' . $forum['tid'] . '/node',
-      );
-      $editor = new Template( 'editor_bbcode', $editor_contents );
-
-      // build node forum cache map
-      /*
-       * would be too many nodes point to forum, too big map
-        foreach ($nids as $nid)
+    public function showForum( $tid, $tagRoot, $tagTree )
+    {
+        $breadcrumb = [];
+        foreach ( $tagRoot as $i => $t )
         {
-        $this->cache->storeMap('/node/' . $nid, '/forum/' . $forum['tid']);
+            $breadcrumb[] = [
+                'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
+                'title' => $t['description'],
+                'name' => $t['name']
+            ];
         }
-       */
 
-      $contents = array(
-         'tid' => $forum['tid'],
-         'boardName' => $board['name'],
-         'boardDescription' => $board['description'],
-         'breadcrumb' => $breadcrumb,
-         'pager' => $pager,
-         'nodes' => (empty( $nodes ) ? NULL : $nodes),
-         'editor' => $editor,
-         'ajaxURI' => '/forum/ajax/viewcount?type=json&tid=' . $forum['tid'] . '&nids=' . \implode( '_', $nids ),
-      );
-      $this->html->var['content'] = new Template( 'topic_list', $contents );
-   }
+        $nodeInfo = [];
+        $groupTrees = [];
+        if ( $tid == Tag::FORUM_ID )
+        {
+            foreach ( $tagTree[$tid]['children'] as $group_id )
+            {
+                $groupTrees[$group_id] = [];
+                $group = $tagTree[$group_id];
+                $groupTrees[$group_id][$group_id] = $group;
+                foreach ( $group['children'] as $board_id )
+                {
+                    $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
+                    $nodeInfo[$board_id] = $this->nodeInfo( $board_id );
+                    $this->cache->storeMap( '/forum/' . $board_id, '/forum/' . $group_id );
+                }
+            }
+            $this->cache->storeMap( '/forum/' . $group_id, '/forum' );
+        }
+        else
+        {
+            $group_id = $tid;
+            $groupTrees[$group_id] = [];
+            $group = $tagTree[$group_id];
+            $groupTrees[$group_id][$group_id] = $group;
+            foreach ( $group['children'] as $board_id )
+            {
+                $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
+                $nodeInfo[$board_id] = $this->nodeInfo( $board_id );
+                $this->cache->storeMap( '/forum/' . $board_id, '/forum/' . $group_id );
+            }
+        }
+        $this->html->var['content'] = new Template( 'forum_list', array('breadcrumb' => $breadcrumb, 'groups' => $groupTrees, 'nodeInfo' => $nodeInfo) );
+    }
 
-   public function createForumTopic( $forum )
-   {
-      if ( $this->request->uid <= 0 )
-      {
-         $this->error( 'Please login first' );
-      }
+    public function showForumTopic( $tid, $tagRoot )
+    {
+        $node = new Node();
+        $nodeCount = $node->getNodeCount( $tid );
 
-      if ( \strlen( $this->request->post['body'] ) < 5 || \strlen( $this->request->post['title'] ) < 5 )
-      {
-         $this->error( 'Topic title or body is too short.' );
-      }
+        $breadcrumb = [];
+        foreach ( $tagRoot as $i => $t )
+        {
+            $breadcrumb[] = [
+                'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
+                'title' => $t['description'],
+                'name' => $t['name']
+            ];
+        }
 
-      $node = new Node();
-      $node->tid = $forum['tid'];
-      $node->uid = $this->request->uid;
-      $node->title = $this->request->post['title'];
-      $node->body = $this->request->post['body'];
-      $node->createTime = $this->request->timestamp;
-      $node->status = 1;
-      try
-      {
-         $node->add();
-      }
-      catch ( \Exception $e )
-      {
-         $this->logger->error( ' --node-- ' . $node->title . PHP_EOL . $node->body );
-         $this->error( $e->getMessage(), TRUE );
-      }
+        $pageNo = $this->request->get['page'];
+        $pageCount = \ceil( $nodeCount / self::NODES_PER_PAGE );
+        list($pageNo, $pager) = $this->html->generatePager( $pageNo, $pageCount, '/forum/' . $tid );
+
+        $node = new Node();
+        $nodes = $node->getForumNodeList( $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
+
+        $nids = [];
+        foreach ( $nodes as $i => $n )
+        {
+            $nids[] = $n['id'];
+            $nodes[$i]['title'] = $this->html->truncate( $n['title'], 45 );
+            $nodes[$i]['create_time'] = \date( 'm/d/Y H:i', $n['create_time'] );
+            $nodes[$i]['comment_time'] = \date( 'm/d/Y H:i', $n['comment_time'] );
+        }
+
+        $editor_contents = array(
+            'display' => FALSE,
+            'title_display' => TRUE,
+            'node_title' => '',
+            'form_handler' => '/forum/' . $tid . '/node',
+        );
+        $editor = new Template( 'editor_bbcode', $editor_contents );
+
+        // will not build node-forum map, would be too many nodes point to forum, too big map
+
+        $contents = array(
+            'tid' => $tid,
+            'boardName' => $tagRoot[$tid]['name'],
+            'boardDescription' => $tagRoot[$tid]['description'],
+            'breadcrumb' => $breadcrumb,
+            'pager' => $pager,
+            'nodes' => (empty( $nodes ) ? NULL : $nodes),
+            'editor' => $editor,
+            'ajaxURI' => '/forum/ajax/viewcount?type=json&tid=' . $tid . '&nids=' . \implode( '_', $nids ),
+        );
+        $this->html->var['content'] = new Template( 'topic_list', $contents );
+    }
+
+    public function createForumTopic( $tid )
+    {
+        if ( $this->request->uid <= 0 )
+        {
+            $this->error( 'Please login first' );
+        }
+
+        if ( \strlen( $this->request->post['body'] ) < 5 || \strlen( $this->request->post['title'] ) < 5 )
+        {
+            $this->error( 'Topic title or body is too short.' );
+        }
+
+        $node = new Node();
+        $node->tid = $tid;
+        $node->uid = $this->request->uid;
+        $node->title = $this->request->post['title'];
+        $node->body = $this->request->post['body'];
+        $node->createTime = $this->request->timestamp;
+        $node->status = 1;
+        try
+        {
+            $node->add();
+        }
+        catch ( \Exception $e )
+        {
+            $this->logger->error( ' --node-- ' . $node->title . PHP_EOL . $node->body );
+            $this->error( $e->getMessage(), TRUE );
+        }
 
 
-      if ( isset( $this->request->post['files'] ) )
-      {
-         $file = new Image();
-         $file->updateFileList( $this->request->post['files'], $this->path['file'], $node->nid );
-         $this->cache->delete( 'imageSlider' );
-      }
+        if ( isset( $this->request->post['files'] ) )
+        {
+            $file = new Image();
+            $file->updateFileList( $this->request->post['files'], $this->path['file'], $node->nid );
+            $this->cache->delete( 'imageSlider' );
+        }
 
-      $user = new User( $node->uid, 'points' );
-      $user->points += 3;
-      $user->update( 'points' );
+        $user = new User( $node->uid, 'points' );
+        $user->points += 3;
+        $user->update( 'points' );
 
-      $this->cache->delete( '/forum/' . $forum['tid'] );
-      $this->cache->delete( 'latestForumTopics' );
-      if ( $node->tid == 15 )
-      {
-         $this->cache->delete( 'latestImmigrationPosts' );
-      }
+        $this->cache->delete( '/forum/' . $tid );
+        $this->cache->delete( 'latestForumTopics' );
+        if ( $node->tid == 15 )
+        {
+            $this->cache->delete( 'latestImmigrationPosts' );
+        }
 
-      $this->request->redirect( '/node/' . $node->nid );
-   }
+        $this->request->redirect( '/node/' . $node->nid );
+    }
 
 }
 

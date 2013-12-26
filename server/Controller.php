@@ -147,8 +147,8 @@ abstract class Controller extends LzxCtrler
         if ( $navbar === FALSE )
         {
             $vars = array(
-                'forumMenu' => Tag::createMenu( 'forum' ),
-                'ypMenu' => Tag::createMenu( 'yp' ),
+                'forumMenu' => $this->createMenu( Tag::FORUM_ID ),
+                'ypMenu' => $this->createMenu( Tag::YP_ID ),
                 'uid' => $this->request->uid
             );
             $navbar = new Template( 'page_navbar', $vars );
@@ -161,6 +161,39 @@ abstract class Controller extends LzxCtrler
     {
         $this->html->var['head_description'] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
         $this->html->var['head_title'] = '缤纷休斯顿华人网';
+    }
+
+    /*
+     * create menu tree for root tags
+     */
+
+    public function createMenu( $tid )
+    {
+        $tag = new Tag( $tid, NULL );
+        $tree = $tag->getTagTree();
+        $liMenu = '';
+
+        if ( \sizeof( $tree ) > 0 )
+        {
+            foreach ( $tree[$tid]['children'] as $branch_id )
+            {
+                $branch = $tree[$branch_id];
+                $liMenu .= '<li><a title="' . $branch['name'] . '" href="/' . $type . '/' . $branch['id'] . '">' . $branch['name'] . '</a>';
+                if ( \sizeof( $branch['children'] ) )
+                {
+                    $liMenu .= '<ul style="display: none;">';
+                    foreach ( $branch['children'] as $leaf_id )
+                    {
+                        $leaf = $tree[$leaf_id];
+                        $liMenu .= '<li><a title="' . $leaf['name'] . '" href="/' . $type . '/' . $leaf['id'] . '">' . $leaf['name'] . '</a></li>';
+                    }
+                    $liMenu .= '</ul>';
+                }
+                $liMenu .= '</li>';
+            }
+        }
+
+        return $liMenu;
     }
 
 }

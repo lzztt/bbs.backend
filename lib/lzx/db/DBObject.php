@@ -47,7 +47,10 @@ abstract class DBObject
             if ( $this->_pkey_property )
             {
                 $this->_values[$this->_pkey_property] = $id;
-                $this->load( $properties );
+                if ( !\is_null( $properties ) )
+                {
+                    $this->load( $properties );
+                }
             }
             else
             {
@@ -151,15 +154,19 @@ abstract class DBObject
         $this->_where = array();
         $this->_order = array();
 
-        $n = 1;
-        $arr = $this->getList( $properties, $n );
+        $arr = $this->getList( $properties, 1 );
 
-        if ( \sizeof( $arr ) == $n )
+        if ( \sizeof( $arr ) == 1 )
         {
             foreach ( $arr[0] as $prop => $val )
             {
                 $this->_values[$prop] = $val;
             }
+
+            // clean and undirty properties
+            $properties = \array_keys( $arr[0] );
+            $this->_clean( $properties );
+            $this->_properties_dirty = \array_diff( $this->_properties_dirty, $properties );
 
             $this->_exists = TRUE;
         }

@@ -22,6 +22,9 @@ use lzx\db\DB;
 class Tag extends DBObject
 {
 
+    const FORUM_ID = 1;
+    const YP_ID = 2;
+
     public function __construct( $id = null, $properties = '' )
     {
         $db = DB::getInstance();
@@ -38,21 +41,10 @@ class Tag extends DBObject
     }
 
     /*
-     * rarely used, only get root tags (forum / yellow page)
-     */
-
-    public static function getRootTags()
-    {
-        $tag = new Tag();
-        $tag->where( 'parent', NULL, 'IS' );
-        return $tag->getList();
-    }
-
-    /*
      * rarely used, only get leaves for a root id (forum / yellow page)
      */
 
-    public static function getLeafTags( $id, $properties = '' )
+    public function getLeafTags( $id, $properties = '' )
     {
         static $leafTags = array();
 
@@ -71,69 +63,104 @@ class Tag extends DBObject
      * rarely used, only get leaves for a root id (forum / yellow page)
      */
 
-    public static function getLeafTIDs( $id )
+    public function getLeafTIDs()
     {
         static $leafTIDs = array();
 
-        if ( !\array_key_exists( $id, $leafTIDs ) )
+        if ( $this->id )
         {
-            $tags = self::getLeafTags( $id, 'id' );
-            $ids = array();
-            foreach ( $tags as $t )
+            $ids = [];
+            $tree = $this->getTagTree();
+            foreach ( $tree as $i => $t )
             {
-                $ids[] = $t['id'];
+                if ( !\array_key_exists( 'children', $t ) )
+                {
+                    $ids[] = $i;
+                }
             }
-            $leafTIDs[$id] = $ids;
+            return $ids;
         }
-        return $leafTIDs[$id];
     }
 
     /*
      * get the tag tree, upto 2 levels
      */
 
-    public function getTagTree( $properties = '' )
+    public function getTagRoot()
     {
-        $tag = new Tag();
-        $tag->id = $this->id;
-        $tagtree = $tag->getList( $fields, 1 );
+        static $root = [];
 
-        if ( \sizeof( $tagtree ) == 0 )
+        if ( isset( $this->id ) )
         {
-            return NULL;
+            if ( !\array_key_exists( $this->id, $root ) )
+            {
+                $arr = \array_reverse( $this->call( 'get_tag_root(' . $this->id . ')' ) );
+
+                $tags = [];
+                foreach ( $arr as $r )
+                {
+                    $id = \intval( $r['id'] );
+                    $parent = \is_null( $r['parent'] ) ? NULL : \intval( $r['parent'] );
+                    $tags[$id] = [
+                        'id' => $id,
+                        'name' => $r['name'],
+                        'description' => $r['description'],
+                        'parent' => $parent
+                    ];
+                }
+                $root[$this->id] = $tags;
+            }
+            return $root[$this->id];
         }
         else
         {
-            $tagtree = $tagtree[0];
+            throw new \Exception( 'no tag id set' );
         }
+    }
 
-        if ( \is_null( $tagtree['parent'] ) ) // root tag, has 0/1/2 children level
+    public function getTagTree()
+    {
+        static $tree = [];
+
+        if ( isset( $this->id ) )
         {
-            $children = $tag->getChildren( $fields );
-            if ( \sizeof( $children ) > 0 )
+            if ( !\array_key_exists( $this->id, $tree ) )
             {
-                foreach ( $children as $i => $t )
+                $arr = $this->call( 'get_tag_tree(' . $this->id . ')' );
+
+                $tags = [];
+                $children = [];
+                foreach ( $arr as $r )
                 {
-                    $child_tag = new Tag( $t['id'] );
-                    $grandchildren = $child_tag->getChildren( $fields );
-                    if ( \sizeof( $grandchildren ) > 0 )
+                    $id = \intval( $r['id'] );
+                    $parent = \is_null( $r['parent'] ) ? NULL : \intval( $r['parent'] );
+
+                    $tags[$id] = [
+                        'id' => $id,
+                        'name' => $r['name'],
+                        'description' => $r['description'],
+                        'parent' => $parent,
+                    ];
+                    if ( !\is_null( $parent ) )
                     {
-                        $children[$i]['children'] = $grandchildren;
+                        $children[$parent][] = $id;
                     }
                 }
-                $tagtree['children'] = $children;
-            }
-        }
-        else // non root tag, only has 0/1 children level
-        {
-            $children = $tag->getChildren( $fields );
-            if ( \sizeof( $children ) > 0 )
-            {
-                $tagtree['children'] = $children;
-            }
-        }
 
-        return $tagtree;
+                foreach ( $children as $p => $c )
+                {
+                    $tags[$p]['children'] = $c;
+                }
+
+                $tree[$this->id] = $tags;
+            }
+
+            return $tree[$this->id];
+        }
+        else
+        {
+            throw new \Exception( 'no tag id set' );
+        }
     }
 
     /*
@@ -171,68 +198,8 @@ class Tag extends DBObject
     // get the information for the latest updated node
     public function getNodeInfo()
     {
-        $tag = new Tag( $this->id, 'id' );
-        if ( $tag->exists() )
-        {
-            $sql = 'SELECT (SELECT count(*) FROM nodes WHERE tid = ' . $this->id . ') AS nodeCount,'
-                . ' (SELECT count(*) FROM comments WHERE tid = ' . $this->id . ') AS commentCount';
-            $info = $this->_db->row( $sql );
-            $sql = 'SELECT n.id AS nid, n.title, n.uid, u.username, n.create_time AS createTime '
-                . 'FROM nodes AS n JOIN users AS u ON n.uid = u.id '
-                . 'WHERE n.tid = ' . $this->id . ' AND n.status > 0 AND u.status > 0 '
-                . 'ORDER BY n.create_time DESC '
-                . 'LIMIT 1';
-            $node = $this->_db->row( $sql );
-            $sql = 'SELECT c.nid, n.title, c.uid, u.username, c.create_time AS createTime '
-                . 'FROM comments AS c JOIN nodes AS n ON c.nid = n.id JOIN users AS u ON c.uid = u.id '
-                . 'WHERE c.tid = ' . $this->id . ' AND n.status > 0 AND u.status > 0 '
-                . 'ORDER BY c.create_time DESC '
-                . 'LIMIT 1';
-            $comment = $this->_db->row( $sql );
-            $info = \array_merge( $info, $node['createTime'] > $comment['createTime'] ? $node : $comment  );
-            return $info;
-        }
-    }
-
-    /*
-     * create menu tree for root tags
-     */
-
-    public static function createMenu( $type )
-    {
-        $tag = new Tag();
-        if ( $type == 'forum' )
-        {
-            $tag->id = 1;
-        }
-        elseif ( $type == 'yp' )
-        {
-            $tag->id = 2;
-        }
-        else
-        {
-            return;
-        }
-
-        $tree = $tag->getTagTree();
-
-        $liMenu = '';
-
-        foreach ( $tree['children'] as $branch )
-        {
-            $liMenu .= '<li><a title="' . $branch['name'] . '" href="/' . $type . '/' . $branch['id'] . '">' . $branch['name'] . '</a>';
-            $liMenu .= '<ul style="display: none;">';
-            foreach ( $branch['children'] as $leaf )
-            {
-                $liMenu .= '<li><a title="' . $leaf['name'] . '" href="/' . $type . '/' . $leaf['id'] . '">' . $leaf['name'] . '</a></li>';
-            }
-            $liMenu .= '</ul>';
-            $liMenu .= '</li>';
-        }
-
-        return $liMenu;
+        return \array_pop( $this->call( 'get_tag_node_info(' . $this->id . ')' ) );
     }
 
 }
-
 ?>
