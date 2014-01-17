@@ -3,9 +3,9 @@
 namespace site\controller;
 
 use site\Controller;
-use site\dbobject\ff_attendees;
-use site\dbobject\ff_comments;
-use site\dbobject\ff_subscribers;
+use site\dbobject\FFAttendee;
+use site\dbobject\FFComment;
+use site\dbobject\FFSubscriber;
 use lzx\html\Template;
 use lzx\db\DB;
 use lzx\core\Mailer;
@@ -66,12 +66,12 @@ class Single extends Controller
    // show activity details
    public function showAction()
    {
-      $vids = array( "fhFadSF2vrM", "eBXpRXt-5a8" );
+      $vids = [ "fhFadSF2vrM", "eBXpRXt-5a8" ];
       $vid = \mt_rand( 0, 100 ) % sizeof( $vids );
-      $content = array(
+      $content = [
          'imageSlider' => $this->getImageSlider(),
          'vid' => $vids[$vid],
-      );
+      ];
       $this->html->var['content'] = new Template( 'FFhome', $content );
       $db = $this->db;
       if ( $db->val( 'SELECT count FROM ff_counts WHERE sid = ' . $db->str( session_id() ) ) == 0 )
@@ -86,24 +86,24 @@ class Single extends Controller
 
    public function getImageSlider()
    {
-      $images = array(
-         0 => array(
+      $images = [
+         [
             'path' => '/data/fyfm/13118198981266.png',
             'name' => '薄荷'
-         ),
-         1 => array(
+         ],
+         [
             'path' => '/data/fyfm/13118268141266.png',
             'name' => '七夕'
-         ),
-         2 => array(
+         ],
+         [
             'path' => '/data/fyfm/13118224061268.png',
             'name' => '吉娃莲'
-         ),
-         3 => array(
+         ],
+         [
             'path' => '/data/fyfm/13119630681266.png',
             'name' => '凡凡觅友'
-         ),
-      );
+         ],
+      ];
 
       \shuffle( $images );
 
@@ -127,7 +127,7 @@ class Single extends Controller
       }
 
 
-      $attendee = new ff_attendees();
+      $attendee = new FFAttendee();
 
       $attendee->name = $this->request->post['name'];
       $attendee->sex = $this->request->post['sex'];
@@ -138,7 +138,7 @@ class Single extends Controller
       if ( $this->request->post['comment'] )
       {
 
-         $comment = new ff_comments();
+         $comment = new FFComment();
          $comment->name = $this->request->post['anonymous'] ? $this->request->ip : $this->request->post['name'];
          $comment->body = $this->request->post['comment'];
          $comment->time = $this->request->timestamp;
@@ -155,12 +155,11 @@ class Single extends Controller
       $mailer->to = $attendee->email;
       $mailer->subject = $attendee->name . '，您的单身活动报名已经收到';
 
-      $contents = array(
+      $contents = [
          'name' => $attendee->name,
          'male' => $this->db->val( 'SELECT count(*) FROM ff_attendees WHERE sex = 1 AND time > ' . $this->thirty_two_start ),
          'female' => $this->db->val( 'SELECT count(*) FROM ff_attendees WHERE sex = 0 AND time > ' . $this->thirty_two_start )
-      );
-
+      ];
 
       $mailer->body = new Template( 'mail/attendee', $contents );
 
@@ -198,7 +197,7 @@ class Single extends Controller
       }
 
 
-      $comment = new ff_comments();
+      $comment = new FFComment();
 
       if ( $this->request->post['anonymous'] || empty( $this->request->post['name'] ) )
       {
@@ -227,7 +226,7 @@ class Single extends Controller
       $comments_tea = $db->select( 'SELECT name, body, time FROM ff_comments WHERE time > ' . $this->tea_start . ' AND time < ' . $this->rich_start . ' ORDER BY id ASC' );
       $comments_qixi = $db->select( 'SELECT name, body, time FROM ff_comments WHERE time < ' . $this->tea_start . ' ORDER BY id ASC' );
 
-      return new Template( 'FFview_comment', array( 'comments' => $comments, 'comments_thirty' => $comments_thirty, 'comments_rich' => $comments_rich, 'comments_tea' => $comments_tea, 'comments_qixi' => $comments_qixi ) );
+      return new Template( 'FFview_comment', [ 'comments' => $comments, 'comments_thirty' => $comments_thirty, 'comments_rich' => $comments_rich, 'comments_tea' => $comments_tea, 'comments_qixi' => $comments_qixi ] );
    }
 
    // private attendee info
@@ -236,9 +235,9 @@ class Single extends Controller
       if ( $this->request->timestamp < strtotime( "09/16/2013 22:00:00 CDT" ) )
       {
          $db = $this->db;
-         $content = array(
+         $content = [
             'attendees' => $db->select( 'SELECT a.name, a.sex, a.email, a.time, c.body FROM ff_attendees AS a LEFT JOIN ff_comments AS c ON a.cid = c.id WHERE a.time > ' . $this->thirty_two_start . ' and status = 1 order by a.id' )
-         );
+         ];
 
          $this->html->var['content'] = new Template( 'FFattendee', $content );
       }
@@ -257,7 +256,7 @@ class Single extends Controller
       }
 
 
-      $subscriber = new ff_subscribers();
+      $subscriber = new FFSubscriber();
 
       $subscriber->email = $this->request->post['email'];
       $subscriber->time = $this->request->timestamp;
@@ -288,26 +287,26 @@ class Single extends Controller
    {
       $db = $this->db;
       $counts = $db->select( 'SELECT sex, age, count(id) AS count FROM ff_attendees WHERE time >= ' . $startTime . ' AND time <= ' . $endTime . ' GROUP BY sex, age' );
-      $ages = array(
+      $ages = [
          '<=22' => 0,
          '23~25' => 0,
          '26~28' => 0,
          '29~31' => 0,
          '32~34' => 0,
          '>=35' => 0
-      );
-      $dist = array(
+      ];
+      $dist = [
          0 => $ages,
          1 => $ages
-      );
-      $stat = array(
-         0 => array( ),
-         1 => array( )
-      );
-      $total = array(
+      ];
+      $stat = [
+         0 => [ ],
+         1 => [ ]
+      ];
+      $total = [
          0 => 0,
          1 => 0
-      );
+      ];
 
 
       foreach ( $counts as $c )
@@ -346,16 +345,16 @@ class Single extends Controller
       {
          foreach ( $counts as $ages => $count )
          {
-            $stat[$sex][] = array( $ages, $count );
+            $stat[$sex][] = [ $ages, $count ];
          }
       }
 
       foreach ( $stat as $sex => $counts )
       {
-         $stat[$sex] = array(
+         $stat[$sex] = [
             'total' => $total[$sex],
             'json' => \json_encode( $counts )
-         );
+         ];
       }
 
       return $stat;
@@ -363,86 +362,86 @@ class Single extends Controller
 
    public function chartAction()
    {
-      $stat = array(
+      $stat = [
          '七夕' => $this->getAgeStatJSON( 1312350024, 1313607290 ),
          '得闲饮茶' => $this->getAgeStatJSON( 1313941540, 1315549125 ),
          '有钱人' => $this->getAgeStatJSON( 1331521805, 1332011793 ),
          '三十看从前' => $this->getAgeStatJSON( 1363746005, 1376629987 ),
-      );
+      ];
 
-      $stat = array( );
+      $stat = [];
 
       $sanshi_two = $this->getAgeStatJSON( 1376629987, 1463746005 );
-      $stat[] = array(
-         array(
+      $stat[] = [
+         [
             'title' => '三十看从前聚会(二) 女生 (' . $sanshi_two[0]['total'] . ')人',
             'data' => $sanshi_two[0]['json'],
             'div_id' => 'div_sanshi_two_female'
-         ),
-         array(
+         ],
+         [
             'title' => '三十看从前聚会(二) 男生 (' . $sanshi_two[1]['total'] . ')人',
             'data' => $sanshi_two[1]['json'],
             'div_id' => 'div_sanshi_two_male'
-         ),
-      );
+         ],
+      ];
 
       $sanshi = $this->getAgeStatJSON( 1363746005, 1376629987 );
-      $stat[] = array(
-         array(
+      $stat[] = [
+         [
             'title' => '三十看从前聚会 女生 (' . $sanshi[0]['total'] . ')人',
             'data' => $sanshi[0]['json'],
             'div_id' => 'div_sanshi_female'
-         ),
-         array(
+         ],
+         [
             'title' => '三十看从前聚会 男生 (' . $sanshi[1]['total'] . ')人',
             'data' => $sanshi[1]['json'],
             'div_id' => 'div_sanshi_male'
-         ),
-      );
+         ],
+      ];
 
       $youqianren = $this->getAgeStatJSON( 1331521805, 1332011793 );
-      $stat[] = array(
-         array(
+      $stat[] = [
+         [
             'title' => '有钱人聚会 女生 (' . $youqianren[0]['total'] . ')人',
             'data' => $youqianren[0]['json'],
             'div_id' => 'div_youqianren_female'
-         ),
-         array(
+         ],
+         [
             'title' => '有钱人聚会 男生 (' . $youqianren[1]['total'] . ')人',
             'data' => $youqianren[1]['json'],
             'div_id' => 'div_youqianren_male'
-         ),
-      );
+         ],
+      ];
 
       $yincha = $this->getAgeStatJSON( 1313941540, 1315549125 );
-      $stat[] = array(
-         array(
+      $stat[] = [
+         [
             'title' => '得闲饮茶聚会 女生 (' . $yincha[0]['total'] . ')人',
             'data' => $yincha[0]['json'],
             'div_id' => 'div_yincha_female'
-         ),
-         array(
+         ],
+         [
             'title' => '得闲饮茶聚会 男生 (' . $yincha[1]['total'] . ')人',
             'data' => $yincha[1]['json'],
             'div_id' => 'div_yincha_male'
-         ),
-      );
+         ],
+      ];
 
       $qixi = $this->getAgeStatJSON( 1312350024, 1313607290 );
-      $stat[] = array(
-         array(
+      $stat[] = [
+         [
             'title' => '七夕聚会 女生 (' . $qixi[0]['total'] . ')人',
             'data' => $qixi[0]['json'],
             'div_id' => 'div_qixi_female'
-         ),
-         array(
+         ],
+         [
             'title' => '七夕聚会 男生 (' . $qixi[1]['total'] . ')人',
             'data' => $qixi[1]['json'],
             'div_id' => 'div_qixi_male'
-         ),
-      );
+         ],
+      ];
 
-      echo new Template( 'FFchart', array( 'stat' => $stat ) );
+      echo new Template( 'FFchart', [ 'stat' => $stat ] );
       exit;
    }
 

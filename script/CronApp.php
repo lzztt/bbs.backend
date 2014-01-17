@@ -60,12 +60,12 @@ class CronApp extends App
 
             $mailer->to = $u['email'];
             $mailer->subject = $u['username'] . ' 的帐户详情（已批准）';
-            $contents = array(
+            $contents = [
                'username' => $u['username'],
                'password' => $password,
                'sitename' => 'HoustonBBS',
                'lang' => $this->config->lang_default // should get from the user record in DB
-            );
+            ];
             $mailer->body = new Template( 'mail/activation', $contents );
 
             if ( $mailer->send() === FALSE )
@@ -108,12 +108,12 @@ class CronApp extends App
          {
             $mailer->to = $a['email'];
             $mailer->subject = $a['username'] . ' 的活动详情（已激活）';
-            $contents = array(
+            $contents = [
                'nid' => $a['nid'],
                'title' => $a['title'],
                'username' => $a['username'],
                'sitename' => 'HoustonBBS'
-            );
+            ];
             $mailer->body = new Template( 'mail/activity', $contents );
 
             if ( $mailer->send() === FALSE )
@@ -221,13 +221,12 @@ class CronApp extends App
 
          $mailer->to = $this->config->webmaster;
          $mailer->subject = '[ ' . $count . ' ] 七天内过期广告';
-         $contents = array( 'ads' => $ads );
+         $contents = [ 'ads' => $ads ];
          $mailer->body = new Template( 'mail/ads', $contents );
 
          if ( $mailer->send() === FALSE )
          {
             $this->logger->info( 'sending expiring ads email error.' );
-            continue;
          }
       }
    }
@@ -236,11 +235,11 @@ class CronApp extends App
    protected function do_alexa()
    {
       $c = \curl_init( 'http://data.alexa.com/data?cli=10&dat=s&url=http://www.houstonbbs.com' );
-      \curl_setopt_array( $c, array(
+      \curl_setopt_array( $c, [
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_CONNECTTIMEOUT => 2,
          CURLOPT_TIMEOUT => 3
-      ) );
+      ] );
       $contents = \curl_exec( $c );
       \curl_close( $c );
 

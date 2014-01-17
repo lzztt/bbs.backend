@@ -18,7 +18,7 @@ class Home extends Controller
       parent::run();
       $this->checkAJAX();
 
-      $content = array(
+      $content = [
          'recentActivities' => $this->getRecentActivities(),
          'latestForumTopics' => $this->getLatestForumTopics(),
          'hotForumTopics' => $this->getHotForumTopics(),
@@ -27,11 +27,8 @@ class Home extends Controller
          'latestForumTopicReplies' => $this->getLatestForumTopicReplies(),
          'latestYellowPageReplies' => $this->getLatestYellowPageReplies(),
          'recentActivities' => $this->getRecentActivities(),
-      );
-
-      $content += array(
          'imageSlider' => $this->getImageSlider(),
-      );
+      ];
 
       $this->html->var['content'] = new Template( 'home', $content );
    }
@@ -133,7 +130,7 @@ class Home extends Controller
          $rightTagKey = 'rightTag';
          foreach ( $arr as $i => $n )
          {
-            $arr[$i][$rightTagKey] = \date( 'm/d', $n['create_time'] );
+            $arr[$i][$rightTagKey] = \date( 'm/d', $n['exp_time'] );
             $arr[$i]['uri'] = '/node/' . $n['id'];
             $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
          }
@@ -236,12 +233,12 @@ class Home extends Controller
 
    private function _linkNodeList( $arr, $cache_key, $rightTagKey = NULL )
    {
-      $links = array( );
+      $links = [];
       if ( $rightTagKey )
       {
          foreach ( $arr as $n )
          {
-            $rightTag = new HTMLElement( 'span', $n[$rightTagKey], array( 'class' => "li_right" ) );
+            $rightTag = new HTMLElement( 'span', $n[$rightTagKey], [ 'class' => "li_right" ] );
             $links[] = $rightTag . $this->html->link( $n['title'], $n['uri'] );
          }
       }

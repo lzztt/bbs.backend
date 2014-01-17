@@ -41,20 +41,29 @@ class MySQL extends DB
 
     public function __destruct()
     {
-        if ( $this->hasError == FALSE )
+        //if ( $this->hasError == FALSE )
+        //{
+        if ( $this->db->commit() === FALSE )
         {
-            if ( $this->db->commit() === FALSE )
+            $error = 'Failed commit: ' . $this->db->error;
+            if ( $this->db->rollback() === TRUE )
             {
-                $this->dbError( 'Failed commit: ' . $this->error );
+                $error = $error . PHP_EOL . 'Rolled back successfully';
             }
-        }
-        else
-        {
-            if ( $this->db->rollback() === FALSE )
+            else
             {
-                $this->dbError( 'Failed rollback: ' . $this->error );
+                $error = $error . PHP_EOL . 'Failed rollback: ' . $this->db->error;
             }
+            $this->dbError( $error );
         }
+        //}
+        //else
+        //{
+        //    if ( $this->db->rollback() === FALSE )
+        //    {
+        //        $this->dbError( 'Failed rollback: ' . $this->error );
+        //    }
+        //}
         $this->db->autocommit( TRUE );
         // do not close! otherwise session handler won't work!
         //$this->close();
@@ -64,7 +73,7 @@ class MySQL extends DB
      * Returns full result (assoc array) from given query
      *
      * @param string $sql
-     * @return array()
+     * @return []
      */
     public function select( $sql )
     {
@@ -73,7 +82,7 @@ class MySQL extends DB
             $this->query( $sql );
 
             $res = $this->db->store_result();
-            $arr = array();
+            $arr = [];
             foreach ( $res as $r )
             {
                 $arr[] = $r;
@@ -149,7 +158,7 @@ class MySQL extends DB
         if ( $this->db->field_count )
         {
             $res = $this->db->store_result();
-            $arr = array();
+            $arr = [];
             foreach ( $res as $r )
             {
                 $arr[] = $r;
@@ -172,7 +181,7 @@ class MySQL extends DB
 
         $res = $this->db->store_result();
 
-        $arr = array();
+        $arr = [];
         foreach ( $res as $r )
         {
             $arr[] = $r;
@@ -225,7 +234,7 @@ class MySQL extends DB
      * Returns a single row from given query
      *
      * @param string $sql
-     * @return array()
+     * @return []
      */
     public function row( $sql )
     {
@@ -267,7 +276,7 @@ class MySQL extends DB
         }
         else
         {
-            $arr = array();
+            $arr = [];
             foreach ( $str as $k => $v )
             {
                 $arr[$k] = $this->escape( $v );

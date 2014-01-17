@@ -12,196 +12,196 @@ use site\dbobject\Image;
 class YP extends Controller
 {
 
-   const YP_ROOT_TID = 2;
-   const NODES_PER_PAGE = 25;
+    const YP_ROOT_TID = 2;
+    const NODES_PER_PAGE = 25;
 
-   public function run()
-   {
-      parent::run();
-      $this->checkAJAX();
+    public function run()
+    {
+        parent::run();
+        $this->checkAJAX();
 
-      if ( is_null( $this->request->args[1] ) )
-      {
-         $this->showYellowPageHome();
-      }
-      elseif ( is_numeric( $this->request->args[1] ) )
-      {
-         $tid = (int) $this->request->args[1];
-         if ( $this->request->args[2] == 'node' )
-         {
-            $this->createYellowPageNode( $tid );
-         }
-         else
-         {
-            $this->showYellowPageList( $tid );
-         }
-      }
-      else
-      {
-         if ( $this->request->args[1] == 'join' )
-         {
-            $this->showYellowPageJoin();
-         }
-         else
-         {
-            $this->request->pageNotFound();
-         }
-      }
-   }
-
-   public function showYellowPageJoin()
-   {
-      $this->html->var['content'] = new Template( 'yp_join' );
-   }
-
-// $yp, $groups, $boards are arrays of category id
-   public function showYellowPageHome()
-   {
-      $tag = new Tag();
-      $tag->id = self::YP_ROOT_TID;
-      $yp = $tag->getTagTree();
-      $this->html->var['content'] = new Template( 'yp_home', array( 'yp' => $yp ) );
-   }
-
-   public function showYellowPageList( $tid )
-   {
-      $tag = new Tag( $tid, 'id,name,parent' );
-      $tids = array( $tid );
-      foreach ( $tag->getChildren( 'id' ) as $child )
-      {
-         $tids[] = $child['id'];
-      }
-
-      $node = new Node();
-      $nodeCount = $node->getNodeCount( $tids );
-
-      if ( $tag->parent != self::YP_ROOT_TID )
-      {
-         $parent = new Tag( $tag->parent, 'id,name,parent' );
-         if ( $parent->parent != self::YP_ROOT_TID )
-         {
-            $this->request->pageNotFound();
-         }
-         $breadcrumb = '<a href="/yp">黄页</a> > <a href="/yp/' . $parent->id . '">' . $parent->name . '</a>';
-         $this->cache->storeMap( '/yp/' . $tid, '/yp/' . $tag->parent );
-      }
-      else
-      {
-         $breadcrumb = '<a href="/yp">黄页</a>';
-      }
-
-      $pageNo = $this->request->get['page'];
-      $pageCount = \ceil( $nodeCount / self::NODES_PER_PAGE );
-      list($pageNo, $pager) = $this->html->generatePager( $pageNo, $pageCount, '/yp/' . $tid );
-
-      $node = new Node();
-      $nodes = $node->getYellowPageNodeList( $tids, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
-
-      $nids = array( );
-      foreach ( $nodes as $i => $n )
-      {
-         $nids[] = $n['nid'];
-         $nodes[$i]['title'] = $this->html->truncate( $n['title'], 45 );
-      }
-
-      $contents = array(
-         'tid' => $tid,
-         'cateName' => $tags[$tid]['name'],
-         'cateDescription' => $tags[$tid]['description'],
-         'breadcrumb' => $breadcrumb,
-         'pager' => $pager,
-         'nodes' => (empty( $nodes ) ? NULL : $nodes),
-         'ajaxURI' => '/yp/ajax/viewcount?type=json&tid=' . $tid . '&nids=' . \implode( '_', $nids ),
-      );
-      $this->html->var['content'] = new Template( 'yp_list', $contents );
-   }
-
-   public function ajax()
-   {
-      // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
-
-      $viewCount = array( );
-      if ( $this->request->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
-      {
-         //$tid = \intval($this->request->get['tid']);
-         $nids = \explode( '_', $this->request->get['nids'] );
-         foreach ( $nids as $i => $nid )
-         {
-            if ( \strlen( $nid ) > 0 )
+        if ( is_null( $this->request->args[1] ) )
+        {
+            $this->showYellowPageHome();
+        }
+        elseif ( is_numeric( $this->request->args[1] ) )
+        {
+            $tid = (int) $this->request->args[1];
+            if ( $this->request->args[2] == 'node' )
             {
-               $nids[$i] = \intval( $nid );
+                $this->createYellowPageNode( $tid );
             }
             else
             {
-               unset( $nids[$i] );
+                $this->showYellowPageList( $tid );
             }
-         }
-         if ( \sizeof( $nids ) > 0 )
-         {
-            $node = new Node();
-            //$node->tid = $tid;
-            $node->where( 'nid', $nids, '=' );
-            $arr = $node->getList( 'nid,viewCount' );
-
-            foreach ( $arr as $r )
+        }
+        else
+        {
+            if ( $this->request->args[1] == 'join' )
             {
-               $viewCount['viewCount_' . $r['nid']] = (int) $r['viewCount'];
+                $this->showYellowPageJoin();
             }
-         }
-      }
+            else
+            {
+                $this->request->pageNotFound();
+            }
+        }
+    }
 
-      return $viewCount;
-   }
+    public function showYellowPageJoin()
+    {
+        $this->html->var['content'] = new Template( 'yp_join' );
+    }
 
-   public function createYellowPageNode( $tid )
-   {
-      if ( $this->request->uid != 1 )
-      {
-         $this->request->pageForbidden();
-      }
+// $yp, $groups, $boards are arrays of category id
+    public function showYellowPageHome()
+    {
+        $tag = new Tag();
+        $tag->id = self::YP_ROOT_TID;
+        $yp = $tag->getTagTree();
+        $this->html->var['content'] = new Template( 'yp_home', ['yp' => $yp] );
+    }
 
-      $tag = new Tag();
-      $tag->parent = $tid;
-      if ( $tag->getCount() > 0 )
-      {
-         $this->error( '错误：您不能在该类别中添加黄页，请到它的子类别中添加。' );
-      }
+    public function showYellowPageList( $tid )
+    {
+        $tag = new Tag( $tid, 'id,name,parent' );
+        $tids = \implode( ',', $tag->getLeafTIDs() );
 
-      if ( empty( $this->request->post ) )
-      {
-         $this->html->var['content'] = new Template( 'editor_bbcode_yp' );
-      }
-      else
-      {
-         $node = new Node();
-         $node->tid = $tid;
-         $node->uid = $this->request->uid;
-         $node->title = $this->request->post['title'];
-         $node->body = $this->request->post['body'];
-         $node->createTime = $this->request->timestamp;
-         $node->status = 1;
-         $node->add();
+        $node = new Node();
+        $nodeCount = $node->getNodeCount( $tids );
 
-         $nodeYP = new NodeYellowPage();
-         $nodeYP->nid = $node->nid;
-         foreach ( \array_diff( $nodeYP->getKeys(), array( 'nid' ) ) as $key )
-         {
-            $nodeYP->$key = $this->request->post[$key];
-         }
-         $nodeYP->add();
+        if ( $tag->parent != self::YP_ROOT_TID )
+        {
+            $parent = new Tag( $tag->parent, 'id,name,parent' );
+            if ( $parent->parent != self::YP_ROOT_TID )
+            {
+                $this->request->pageNotFound();
+            }
+            $breadcrumb = '<a href="/yp">黄页</a> > <a href="/yp/' . $parent->id . '">' . $parent->name . '</a>';
+            $this->cache->storeMap( '/yp/' . $tid, '/yp/' . $tag->parent );
+        }
+        else
+        {
+            $breadcrumb = '<a href="/yp">黄页</a>';
+        }
 
-         if ( isset( $this->request->post['files'] ) )
-         {
-            $file = new Image();
-            $file->updateFileList( $this->request->post['files'], $this->path['file'], $node->nid );
-         }
+        $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
+        $pageCount = \ceil( $nodeCount / self::NODES_PER_PAGE );
+        if ( $pageNo < 1 || $pageNo > $pageCount )
+        {
+            $pageNo = $pageCount;
+        }
+        $pager = $this->html->pager( $pageNo, $pageCount, '/yp/' . $tid );
 
-         $this->cache->delete( '/yp/' . $tid );
-         $this->cache->delete( 'latestYellowPages' );
+        $node = new Node();
+        $nodes = $node->getYellowPageNodeList( $tids, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
 
-         $this->request->redirect( '/node/' . $node->nid );
-      }
-   }
+        $nids = [];
+        foreach ( $nodes as $i => $n )
+        {
+            $nids[] = $n['nid'];
+            $nodes[$i]['title'] = $this->html->truncate( $n['title'], 45 );
+        }
+
+        $contents = [
+            'tid' => $tid,
+            'cateName' => $tags[$tid]['name'],
+            'cateDescription' => $tags[$tid]['description'],
+            'breadcrumb' => $breadcrumb,
+            'pager' => $pager,
+            'nodes' => (empty( $nodes ) ? NULL : $nodes),
+            'ajaxURI' => '/yp/ajax/viewcount?type=json&tid=' . $tid . '&nids=' . \implode( '_', $nids ),
+        ];
+        $this->html->var['content'] = new Template( 'yp_list', $contents );
+    }
+
+    public function ajax()
+    {
+        // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
+
+        $viewCount = [];
+        if ( $this->request->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
+        {
+            //$tid = \intval($this->request->get['tid']);
+            $nids = \explode( '_', $this->request->get['nids'] );
+            foreach ( $nids as $i => $nid )
+            {
+                if ( \strlen( $nid ) > 0 )
+                {
+                    $nids[$i] = \intval( $nid );
+                }
+                else
+                {
+                    unset( $nids[$i] );
+                }
+            }
+            if ( \sizeof( $nids ) > 0 )
+            {
+                $node = new Node();
+                //$node->tid = $tid;
+                $node->where( 'nid', $nids, '=' );
+                $arr = $node->getList( 'nid,viewCount' );
+
+                foreach ( $arr as $r )
+                {
+                    $viewCount['viewCount_' . $r['nid']] = (int) $r['viewCount'];
+                }
+            }
+        }
+
+        return $viewCount;
+    }
+
+    public function createYellowPageNode( $tid )
+    {
+        if ( $this->request->uid != 1 )
+        {
+            $this->request->pageForbidden();
+        }
+
+        $tag = new Tag();
+        $tag->parent = $tid;
+        if ( $tag->getCount() > 0 )
+        {
+            $this->error( '错误：您不能在该类别中添加黄页，请到它的子类别中添加。' );
+        }
+
+        if ( empty( $this->request->post ) )
+        {
+            $this->html->var['content'] = new Template( 'editor_bbcode_yp' );
+        }
+        else
+        {
+            $node = new Node();
+            $node->tid = $tid;
+            $node->uid = $this->request->uid;
+            $node->title = $this->request->post['title'];
+            $node->body = $this->request->post['body'];
+            $node->createTime = $this->request->timestamp;
+            $node->status = 1;
+            $node->add();
+
+            $nodeYP = new NodeYellowPage();
+            $nodeYP->nid = $node->nid;
+            foreach ( \array_diff( $nodeYP->getKeys(), ['nid'] ) as $key )
+            {
+                $nodeYP->$key = $this->request->post[$key];
+            }
+            $nodeYP->add();
+
+            if ( isset( $this->request->post['files'] ) )
+            {
+                $file = new Image();
+                $file->updateFileList( $this->request->post['files'], $this->path['file'], $node->nid );
+            }
+
+            $this->cache->delete( '/yp/' . $tid );
+            $this->cache->delete( 'latestYellowPages' );
+
+            $this->request->redirect( '/node/' . $node->nid );
+        }
+    }
 
 }
 

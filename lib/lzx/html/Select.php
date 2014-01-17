@@ -20,12 +20,12 @@ class Select extends FormElement
 
    //put your code here
    public $style = 'dropdown'; // list or dropdown
-   public $options = array();
+   public $options = [];
    public $multiple = FALSE;
 
    public function __construct($name, $label = '', $help = '', $required = FALSE)
    {
-      $value = array();
+      $value = [];
       parent::__construct($name, $label, $value, $help, $required);
    }
 
@@ -39,7 +39,7 @@ class Select extends FormElement
          }
          else
          {
-            $this->_value = array($value);
+            $this->_value = [$value];
          }
       }
       return $this;
@@ -52,7 +52,7 @@ class Select extends FormElement
     */
    public function toHTMLElement()
    {
-      $attr = array('class' => self::ELEMENT_CLASS);
+      $attr = ['class' => self::ELEMENT_CLASS];
       if ($this->_inline)
       {
          $attr['style'] = 'display:inline';
@@ -62,26 +62,26 @@ class Select extends FormElement
       if ($this->style == 'list')
       {
          $type = $this->multiple ? 'checkbox' : 'radio';
-         $list = new HTMLElement('ul', NULL, array('class' => 'select_options'));
+         $list = new HTMLElement('ul', NULL, ['class' => 'select_options']);
          $i = 0;
          foreach ($this->options as $value => $text)
          {
             $i++;
             $option = new HTMLElement('li');
-            $option_id = \implode('_', array($type, $this->name, $i));
-            $option_attr = array(
+            $option_id = \implode('_', [$type, $this->name, $i]);
+            $option_attr = [
                'id' => $option_id,
                'type' => $type,
                'name' => $this->name,
                'value' => $value
-            );
+            ];
             if (\in_array($value, $this->_value))
             {
                $option_attr['checked'] = 'checked';
             }
-            $option->addElements(new HTMLElement('option', NULL, array_merge($this->attributes, $option_attr)));
-            $option->addElements(new HTMLElement('label', $text, array('for' => $option_id)));
-            $list->addElements($option);
+            $option->addElement(new HTMLElement('option', NULL, \array_merge($this->attributes, $option_attr)));
+            $option->addElement(new HTMLElement('label', $text, ['for' => $option_id]));
+            $list->addElement($option);
          }
       }
       elseif ($this->style == 'dropdown')
@@ -94,13 +94,13 @@ class Select extends FormElement
          $list = new HTMLElement('select', NULL, \array_merge($this->attributes, $attr));
          foreach ($this->options as $value => $text)
          {
-            $option_attr = array('value' => $value);
+            $option_attr = ['value' => $value];
             if (\in_array($value, $this->_value))
             {
                $option_attr['selected'] = 'selected';
             }
             $option = new HTMLElement('option', $text, $option_attr);
-            $list->addElements($option);
+            $list->addElement($option);
          }
       }
       else
@@ -110,11 +110,11 @@ class Select extends FormElement
 
       if ($this->_inline)
       {
-         $div->addElements($list);
+         $div->addElement($list);
       }
       else
       {
-         $div->addElements(new HTMLElement('div', $list, array('class' => self::INPUT_CLASS)));
+         $div->addElement(new HTMLElement('div', $list, ['class' => self::INPUT_CLASS]));
       }
 
       return $div;

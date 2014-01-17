@@ -8,12 +8,11 @@ use lzx\db\DB;
 use lzx\db\MySQL;
 use lzx\core\Request;
 use lzx\core\Session;
-use lzx\core\SessionDB;
-use lzx\core\SessionNULL;
 use lzx\core\Cookie;
 use lzx\core\Cache;
 use lzx\html\Template;
 use site\Config;
+use site\SessionHandler;
 
 /**
  *
@@ -71,7 +70,7 @@ class WebApp extends App
     // other classes will report status to controller
     // controller set status back the WebApp object
     // WebApp object will call Theme to display the content
-    public function run( $argc = 0, Array $argv = array() )
+    public function run( $argc = 0, Array $argv = [] )
     {
         $request = $this->getRequest();
 
@@ -132,6 +131,7 @@ class WebApp extends App
         $ctrler->cookie = $cookie;
         $ctrler->config = $this->config;
         $ctrler->run();
+        $session->close();
 
         $html = (string) $html;
 
@@ -192,7 +192,7 @@ class WebApp extends App
         {
             $umode = $cookie->umode;
 
-            if ( !\in_array( $umode, array(Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT) ) )
+            if ( !\in_array( $umode, [Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT] ) )
             {
                 $agent = $_SERVER['HTTP_USER_AGENT'];
                 if ( \preg_match( '/(http|Yahoo|bot)/i', $agent ) )
@@ -244,7 +244,7 @@ class WebApp extends App
 
             if ( $umode == Template::UMODE_ROBOT )
             {
-                Session::setInstance( new SessionNULL() );
+                $handler = NULL;
             }
             else
             {
@@ -253,9 +253,9 @@ class WebApp extends App
                 $domain = $this->config->cookie['domain'] ? $this->config->cookie['domain'] : $this->config->domain;
                 \session_set_cookie_params( $lifetime, $path, $domain );
                 \session_name( 'LZXSID' );
-                Session::setInstance( new SessionDB( DB::getInstance(), 'sessions' ) );
+                $handler = new SessionHandler( DB::getInstance() );
             }
-            $session = Session::getInstance();
+            $session = Session::getInstance( $handler );
 
             if ( $cookie->uid != $session->uid )
             {

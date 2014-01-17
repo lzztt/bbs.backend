@@ -10,7 +10,7 @@ class Config
      *
      * @var array
      */
-    private static $_loaded = array();
+    private static $_loaded = [];
 
     // disable public initialization
     private function __construct()

@@ -48,7 +48,7 @@ abstract class Controller
       // validate $args types
 
       $eventName = 'post_' . get_class($this) . '::' . __FUNCTION__;
-      $return = $this->_hook($eventName, array($return));
+      $return = $this->_hook($eventName, [$return]);
 
       // validate $return types
 

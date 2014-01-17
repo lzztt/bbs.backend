@@ -10,6 +10,7 @@ use lzx\core\Controller as LzxCtrler;
 use lzx\html\Template;
 use site\dbobject\User;
 use site\dbobject\Tag;
+use site\dbobject\PrivMsg;
 
 /**
  *
@@ -37,7 +38,7 @@ abstract class Controller extends LzxCtrler
             {
                 include $lang_file;
             }
-            self::$l[$this->class] = isset( $language ) ? $language : array();
+            self::$l[$this->class] = isset( $language ) ? $language : [];
         }
     }
 
@@ -58,7 +59,7 @@ abstract class Controller extends LzxCtrler
         if ( \sizeof( $args ) > 1 && $args[1] == $action )
         {
             $ref_args = $this->request->getURIargs( $this->request->referer );
-            if ( !\in_array( $args[0], array($ref_args[0], 'file') ) )
+            if ( !\in_array( $args[0], [$ref_args[0], 'file'] ) )
             {
                 $this->request->pageForbidden( $this->l( 'ajax_access_error' ) );
             }
@@ -75,7 +76,7 @@ abstract class Controller extends LzxCtrler
 
             // set default response data type
             $type = $this->request->get['type'];
-            if ( !\in_array( $type, array('json', 'html', 'text') ) )
+            if ( !\in_array( $type, ['json', 'html', 'text'] ) )
             {
                 $type = 'json';
             }
@@ -85,7 +86,7 @@ abstract class Controller extends LzxCtrler
                 $return = \json_encode( $return );
                 if ( $return === FALSE )
                 {
-                    $return = array('error' => $this->l( 'ajax_json_encode_error' ));
+                    $return = ['error' => $this->l( 'ajax_json_encode_error' )];
                     $return = \json_encode( $return );
                 }
             }
@@ -134,10 +135,8 @@ abstract class Controller extends LzxCtrler
     {
         if ( $this->request->uid > 0 )
         {
-            $user = new User();
-            $user->id = $this->request->uid;
-            $pmCount = \intval( $user->getNewPrivMsgsCount() );
-            $this->cookie->pmCount = $pmCount;
+            $user = new User( $this->request->uid, NULL );
+            $this->cookie->pmCount = \intval( $user->getPrivMsgsCount( 'new' ) );
         }
     }
 
@@ -146,11 +145,11 @@ abstract class Controller extends LzxCtrler
         $navbar = $this->cache->fetch( 'page_navbar' );
         if ( $navbar === FALSE )
         {
-            $vars = array(
+            $vars = [
                 'forumMenu' => $this->createMenu( Tag::FORUM_ID ),
                 'ypMenu' => $this->createMenu( Tag::YP_ID ),
                 'uid' => $this->request->uid
-            );
+            ];
             $navbar = new Template( 'page_navbar', $vars );
             $this->cache->store( 'page_navbar', $navbar );
         }
@@ -171,6 +170,16 @@ abstract class Controller extends LzxCtrler
     {
         $tag = new Tag( $tid, NULL );
         $tree = $tag->getTagTree();
+        $type = 'tag';
+        $root_id = \array_shift( \array_keys( $tag->getTagRoot() ) );
+        if ( Tag::FORUM_ID == $root_id )
+        {
+            $type = 'forum';
+        }
+        else if ( Tag::YP_ID == $root_id )
+        {
+            $type = 'yp';
+        }
         $liMenu = '';
 
         if ( \sizeof( $tree ) > 0 )

@@ -11,7 +11,7 @@ class BBCode
    private static function _bbcode_escape($s)
    { // all input should has already been processed by htmlentity() function before stored, to prevent html injunction
       $code = $s[1];
-      $code = str_replace(array('[', ']'), array('&#91;', '&#93;'), $code);
+      $code = str_replace(['[', ']'], ['&#91;', '&#93;'], $code);
       return '<code class="code">' . $code . '</code>';
    }
 
@@ -31,7 +31,7 @@ class BBCode
       }
 
       // BBCode [code]
-      $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', array(self, '_bbcode_escape'), $text);
+      $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [self, '_bbcode_escape'], $text);
 
       // Smileys to find...
       // Add closing tags to prevent users from disruping your site's HTML
@@ -50,10 +50,10 @@ class BBCode
         }
        */
 
-      $text = str_replace(array('[quote]', '[/quote]'), array('<div class="quote">Quote:<blockquote class="quote-body">', '</blockquote></div>'), $text);
+      $text = str_replace(['[quote]', '[/quote]'], ['<div class="quote">Quote:<blockquote class="quote-body">', '</blockquote></div>'], $text);
 
       // BBCode to find...
-      $bbcode = array(
+      $bbcode = [
          '/\[b\](.*?)\[\/b\]/ms'
          => '<strong>\1</strong>',
          '/\[i\](.*?)\[\/i\]/ms'
@@ -88,7 +88,7 @@ class BBCode
          => '<iframe width="480" height="360" src="http://www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>',
          '/\[tudou\](.*?)\[\/tudou\]/ms'
          => '<embed src="http://www.tudou.com/v/\1/v.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" wmode="opaque" width="480" height="400"></embed>',
-      );
+      ];
 
       $text = preg_replace(array_keys($bbcode), array_values($bbcode), $text);
 
@@ -98,10 +98,10 @@ class BBCode
       $text = nl2br($text);
 
 
-      $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', array(self, '_bbcode_removeBr'), $text);
+      $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [self, '_bbcode_removeBr'], $text);
       //$text = preg_replace('/<p><pre>(.*?)<\/pre><\/p>/ms', "<pre>\\1</pre>", $text);
 
-      $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', array(self, '_bbcode_removeBr'), $text);
+      $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [self, '_bbcode_removeBr'], $text);
       //$text = preg_replace('/<p><ul>(.*?)<\/ul><\/p>/ms', "<ul>\\1</ul>", $text);
       // matches an "xxxx://yyyy" URL at the start of a line, or after a space.
       // xxxx can only be alpha characters.

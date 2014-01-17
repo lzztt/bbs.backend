@@ -122,7 +122,7 @@ class Weather extends Controller
       foreach ( $table->getElementsByTagName( 'tr' ) as $tr )
       {
          $i = 0;
-         $arr = array( );
+         $arr = [];
          foreach ( $tr->getElementsByTagName( 'td' ) as $td )
          {
             $i++;
@@ -150,7 +150,7 @@ class Weather extends Controller
          $day[] = $arr;
       }
 
-      return array( $title, $day );
+      return [ $title, $day ];
    }
 
 }

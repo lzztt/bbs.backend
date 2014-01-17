@@ -8,50 +8,53 @@ use site\dbobject\Activity as ActivityObject;
 
 class Activity extends Controller
 {
-   const NODES_PER_PAGE = 25;
 
-   public function run()
-   {
-      parent::run();
-      $this->listActivity();
-   }
+    const NODES_PER_PAGE = 25;
 
-   public function listActivity()
-   {
-      $act = new ActivityObject();
-      $act->status = 1;
-      $total = $act->getCount();
+    public function run()
+    {
+        parent::run();
+        $this->listActivity();
+    }
 
-      if ($total == 0)
-      {
-         $this->error('目前没有活动。');
-         return;
-      }
+    public function listActivity()
+    {
+        $act = new ActivityObject();
+        $act->status = 1;
+        $total = $act->getCount();
 
-      $pageNo = (int) $this->request->get['page'];
-      $pageCount = ceil($total / self::NODES_PER_PAGE);
-      if ($pageCount > 1)
-      {
-         list($pageNo, $pager) = $this->html->generatePager($pageNo, $pageCount, '/activity');
-      }
+        if ( $total == 0 )
+        {
+            $this->error( '目前没有活动。' );
+            return;
+        }
 
-      $limit = self::NODES_PER_PAGE;
-      $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
-      $actList = $act->getActivityList($limit, $offset);
+        $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
+        $pageCount = \ceil( $total / self::NODES_PER_PAGE );
 
-      foreach ($actList as $k => $n)
-      {
-         $type = ($n['startTime'] < $this->request->timestamp) ? (($n['endTime'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
-         $data .= '<li class="' . (($k % 2 == 0) ? 'even' : 'odd') . '"><a href="/node/' . $n['nid'] . '"><span class="' . $type . '">[' . date('m/d', $n['startTime']) . ']</span> ' . $this->html->truncate($n['title'], 80) . '</a></li>';
-      }
+        if ( $pageNo < 1 || $pageNo > $pageCount )
+        {
+            $pageNo = $pageCount;
+        }
+        $pager = $this->html->pager( $pageNo, $pageCount, '/activity' );
 
-      $contents = array(
-         'pager' => $pager,
-         'data' => $data
-      );
+        $limit = self::NODES_PER_PAGE;
+        $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
+        $actList = $act->getActivityList( $limit, $offset );
 
-      $this->html->var['content'] = new Template('activity_list', $contents);
-   }
+        foreach ( $actList as $k => $n )
+        {
+            $type = ($n['startTime'] < $this->request->timestamp) ? (($n['endTime'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
+            $data .= '<li class="' . (($k % 2 == 0) ? 'even' : 'odd') . '"><a href="/node/' . $n['nid'] . '"><span class="' . $type . '">[' . date( 'm/d', $n['startTime'] ) . ']</span> ' . $this->html->truncate( $n['title'], 80 ) . '</a></li>';
+        }
+
+        $contents = [
+            'pager' => $pager,
+            'data' => $data
+        ];
+
+        $this->html->var['content'] = new Template( 'activity_list', $contents );
+    }
 
 }
 

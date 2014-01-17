@@ -19,13 +19,13 @@ $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 
 $domain = 'houstonbbs.com';
 $siteDir = \dirname(__DIR__);
-$path = array(
+$path = [
    'lzx' => $siteDir . '/lzx',
    'root' => $siteDir,
    'log' => $siteDir . '/logs',
    'theme' => $siteDir . '/themes',
    'backup' => $siteDir . '/backup',
-);
+];
 
 require_once $path['lzx'] . '/Core/ClassLoader.php';
 $loader = ClassLoader::getInstance();

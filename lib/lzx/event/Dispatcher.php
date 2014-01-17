@@ -32,8 +32,8 @@ namespace lzx\event;
 class Dispatcher implements DispatcherInterface
 {
 
-   private $listeners = array();
-   private $sorted = array();
+   private $listeners = [];
+   private $sorted = [];
 
    /**
     * @see EventDispatcherInterface::dispatch
@@ -128,9 +128,9 @@ class Dispatcher implements DispatcherInterface
 //IKKI     {
 //IKKI         foreach ($subscriber->getSubscribedEvents() as $eventName => $params) {
 //IKKI             if (is_string($params)) {
-//IKKI                 $this->addListener($eventName, array($subscriber, $params));
+//IKKI                 $this->addListener($eventName, [$subscriber, $params));
 //IKKI             } else {
-//IKKI                 $this->addListener($eventName, array($subscriber, $params[0]), isset($params[1]) ? $params[1] : 0);
+//IKKI                 $this->addListener($eventName, [$subscriber, $params[0]), isset($params[1]) ? $params[1] : 0);
 //IKKI             }
 //IKKI         }
 //IKKI     }
@@ -141,7 +141,7 @@ class Dispatcher implements DispatcherInterface
 //IKKI     public function removeSubscriber(EventSubscriberInterface $subscriber)
 //IKKI     {
 //IKKI         foreach ($subscriber->getSubscribedEvents() as $eventName => $params) {
-//IKKI             $this->removeListener($eventName, array($subscriber, is_string($params) ? $params : $params[0]));
+//IKKI             $this->removeListener($eventName, [$subscriber, is_string($params) ? $params : $params[0]));
 //IKKI         }
 //IKKI     }
 
@@ -153,7 +153,7 @@ class Dispatcher implements DispatcherInterface
     */
    private function sortListeners($eventName)
    {
-      $this->sorted[$eventName] = array();
+      $this->sorted[$eventName] = [];
 
       if (isset($this->listeners[$eventName]))
       {

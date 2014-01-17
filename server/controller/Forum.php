@@ -67,7 +67,7 @@ class Forum extends Controller
     {
         // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
 
-        $viewCount = array();
+        $viewCount = [];
         if ( $this->request->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
         {
             $tid = \intval( $this->request->get['tid'] );
@@ -159,7 +159,7 @@ class Forum extends Controller
                 $this->cache->storeMap( '/forum/' . $board_id, '/forum/' . $group_id );
             }
         }
-        $this->html->var['content'] = new Template( 'forum_list', array('breadcrumb' => $breadcrumb, 'groups' => $groupTrees, 'nodeInfo' => $nodeInfo) );
+        $this->html->var['content'] = new Template( 'forum_list', ['breadcrumb' => $this->html->breadcrumb( $breadcrumb ), 'groups' => $groupTrees, 'nodeInfo' => $nodeInfo] );
     }
 
     public function showForumTopic( $tid, $tagRoot )
@@ -177,9 +177,13 @@ class Forum extends Controller
             ];
         }
 
-        $pageNo = $this->request->get['page'];
+        $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
         $pageCount = \ceil( $nodeCount / self::NODES_PER_PAGE );
-        list($pageNo, $pager) = $this->html->generatePager( $pageNo, $pageCount, '/forum/' . $tid );
+        if ( $pageNo < 1 || $pageNo > $pageCount )
+        {
+            $pageNo = $pageCount;
+        }
+        $pager = $this->html->pager( $pageNo, $pageCount, '/forum/' . $tid );
 
         $node = new Node();
         $nodes = $node->getForumNodeList( $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
@@ -193,26 +197,26 @@ class Forum extends Controller
             $nodes[$i]['comment_time'] = \date( 'm/d/Y H:i', $n['comment_time'] );
         }
 
-        $editor_contents = array(
+        $editor_contents = [
             'display' => FALSE,
             'title_display' => TRUE,
             'node_title' => '',
             'form_handler' => '/forum/' . $tid . '/node',
-        );
+        ];
         $editor = new Template( 'editor_bbcode', $editor_contents );
 
         // will not build node-forum map, would be too many nodes point to forum, too big map
 
-        $contents = array(
+        $contents = [
             'tid' => $tid,
             'boardName' => $tagRoot[$tid]['name'],
             'boardDescription' => $tagRoot[$tid]['description'],
-            'breadcrumb' => $breadcrumb,
+            'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
             'pager' => $pager,
             'nodes' => (empty( $nodes ) ? NULL : $nodes),
             'editor' => $editor,
             'ajaxURI' => '/forum/ajax/viewcount?type=json&tid=' . $tid . '&nids=' . \implode( '_', $nids ),
-        );
+        ];
         $this->html->var['content'] = new Template( 'topic_list', $contents );
     }
 
@@ -249,7 +253,7 @@ class Forum extends Controller
         if ( isset( $this->request->post['files'] ) )
         {
             $file = new Image();
-            $file->updateFileList( $this->request->post['files'], $this->path['file'], $node->nid );
+            $file->updateFileList( $this->request->post['files'], $this->path['file'], $node->id );
             $this->cache->delete( 'imageSlider' );
         }
 
@@ -264,7 +268,7 @@ class Forum extends Controller
             $this->cache->delete( 'latestImmigrationPosts' );
         }
 
-        $this->request->redirect( '/node/' . $node->nid );
+        $this->request->redirect( '/node/' . $node->id );
     }
 
 }
