@@ -5,11 +5,11 @@ namespace lzx\core;
 class ClassLoader
 {
 
-    private $namespaces = array();
+    private $namespaces = [];
 
     private function __construct()
     {
-        if ( \spl_autoload_register( array($this, 'loadClass') ) === FALSE )
+        if ( \spl_autoload_register( [$this, 'loadClass'] ) === FALSE )
         {
             throw new \Exception( 'failed to register autoload function' );
         }

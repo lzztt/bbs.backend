@@ -1,11 +1,7 @@
 <div id="content">
 
     <div id="content-header">
-        <div class="breadcrumb">
-            <?php foreach ( $breadcrumb as $t ): ?>
-                <a href="<?php print $t['href']; ?>" title="<?php print $t['title']; ?>"><?php print $t['name']; ?></a> > 
-            <?php endforeach; ?>
-        </div>
+        <?php print $breadcrumb; ?>
         <h1 id="node-title" class="title"><?php echo $title; ?></h1>
         <div style="height: 5px;"></div>
     </div> <!-- /#content-header -->

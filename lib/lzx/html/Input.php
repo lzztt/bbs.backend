@@ -33,19 +33,19 @@ class Input extends FormElement
     */
    public function toHTMLElement()
    {
-      $attr = array('class' => self::ELEMENT_CLASS);
+      $attr = ['class' => self::ELEMENT_CLASS];
       if ($this->_inline)
       {
          $attr['style'] = 'display:inline';
       }
       $div = new HTMLElement('div', $this->_label(), $attr);
 
-      $this->attributes = array_merge(array('size' => ($this->_inline ? '10' : '22')), $this->attributes);
+      $this->attributes = array_merge(['size' => ($this->_inline ? '10' : '22')], $this->attributes);
 
-      $input_attr = array(
+      $input_attr = [
          'name' => $this->name,
          'type' => $this->type
-      );
+      ];
       if ($this->_value)
       {
          $input_attr['value'] = $this->_value;
@@ -58,11 +58,11 @@ class Input extends FormElement
 
       if ($this->_inline)
       {
-         $div->addElements($input);
+         $div->addElement($input);
       }
       else
       {
-         $div->addElements(new HTMLElement('div', $input, array('class' => self::INPUT_CLASS)));
+         $div->addElement(new HTMLElement('div', $input, ['class' => self::INPUT_CLASS]));
       }
 
       return $div;

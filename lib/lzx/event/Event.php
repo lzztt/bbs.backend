@@ -45,7 +45,7 @@ class Event
 
 // we don't handle exception here, just throw it.
 
-   public function __construct($name, $source, array $args = array())
+   public function __construct($name, $source, array $args = [])
    {
       if (!is_string($name))
       {

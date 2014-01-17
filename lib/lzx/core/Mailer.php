@@ -39,7 +39,7 @@ class Mailer
          return FALSE;
       }
 
-      $subject = "=?UTF-8?B?" . \base64_encode(trim(str_replace(array("\r", \PHP_EOL, "\r\n"), "", $this->subject))) . "?=";
+      $subject = "=?UTF-8?B?" . \base64_encode(trim(str_replace(["\r", \PHP_EOL, "\r\n"], "", $this->subject))) . "?=";
       $body = $this->body . $this->signature;
 
       if (\mail($this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain))

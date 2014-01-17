@@ -46,7 +46,7 @@ class Tag extends DBObject
 
     public function getLeafTags( $id, $properties = '' )
     {
-        static $leafTags = array();
+        static $leafTags = [];
 
         if ( !\array_key_exists( $id, $leafTags ) )
         {
@@ -65,7 +65,7 @@ class Tag extends DBObject
 
     public function getLeafTIDs()
     {
-        static $leafTIDs = array();
+        static $leafTIDs = [];
 
         if ( $this->id )
         {

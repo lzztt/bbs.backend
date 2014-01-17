@@ -54,7 +54,7 @@ class Node extends DBObject
     public function add()
     {
         // CHECK USER
-        $userInfo = $this->_db->row( 'SELECT create_time AS createTime, last_access_ip AS lastAccessIPInt, status FROM users WHERE uid = ' . $this->uid );
+        $userInfo = $this->_db->row( 'SELECT create_time AS createTime, last_access_ip AS lastAccessIPInt, status FROM users WHERE id = ' . $this->uid );
         if ( \intval( $userInfo['status'] ) != 1 )
         {
             throw new \Exception( 'This User account cannot post message.' );
@@ -80,47 +80,6 @@ class Node extends DBObject
                 }
             }
         }
-
-        // check spam
-        $nodes = $this->_db->select( 'SELECT create_time AS createTime FROM ' . $this->_table . ' WHERE uid = ' . $this->uid . ' AND create_time > ' . (\intval( $this->createTime ) - 86400) . ' ORDER BY create_time DESC' );
-        $count = \sizeof( $nodes );
-
-        if ( $count > 0 )
-        {
-            // limit 1 node within 3 minute
-            if ( $this->createTime - \intval( $nodes[0]['createTime'] ) < 180 )
-            {
-                throw new \Exception( 'You are posting too fast. Please slow down.' );
-            }
-        }
-
-        if ( $count > 2 )
-        {
-            // limit 3 nodes within 30 minutes
-            if ( $this->createTime - \intval( $nodes[2]['createTime'] ) < 1800 )
-            {
-                throw new \Exception( 'You are posting too fast. Please slow down.' );
-            }
-        }
-
-        if ( $count > 5 )
-        {
-            // limit 6 nodes within 12 hours
-            if ( $this->createTime - \intval( $nodes[5]['createTime'] ) < 43200 )
-            {
-                throw new \Exception( 'too many nodes posted within 12 hours' );
-            }
-        }
-
-        // check duplicate
-        $this->hash = $this->getHash();
-
-        $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->hash . ' AND uid = ' . $this->uid . ' AND create_time > ' . (\intval( $this->createTime ) - 86400) );
-        if ( $count > 0 )
-        {
-            throw new \Exception( 'duplicate node found' );
-        }
-
         parent::add();
     }
 
@@ -160,7 +119,7 @@ class Node extends DBObject
 
     public function getForumNodeList( $tid, $limit = 25, $offset = 0 )
     {
-        return $this->call( 'get_forum_nodes(' . $tid . ', ' . $limit . ', ' . $offset . ')' );
+        return $this->call( 'get_tag_nodes_forum(' . $tid . ', ' . $limit . ', ' . $offset . ')' );
     }
 
     public function getForumNode( $id )
@@ -264,7 +223,7 @@ class Node extends DBObject
      */
     public function getTags( $nid )
     {
-        static $tags = array();
+        static $tags = [];
 
         if ( !\array_key_exists( $nid, $tags ) )
         {
@@ -279,12 +238,12 @@ class Node extends DBObject
     {
         //$sql = 'SELECT id, title, create_time AS createTime FROM nodes WHERE tid IN (' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . ') AND status = 1 ORDER BY create_time DESC LIMIT 15';
         //return $this->_db->select( $sql );
-        return $this->call( 'get_recent_nodes("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
+        return $this->call( 'get_tag_recent_nodes("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
     }
 
     public function getHotForumTopics( $timestamp )
     {
-        return $this->call( 'get_hot_nodes("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", ' . $timestamp . ', 15)' );
+        return $this->call( 'get_tag_hot_nodes("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", ' . $timestamp . ', 15)' );
         //$sql = 'SELECT n.id, n.title, (SELECT count(*) FROM comments AS c WHERE c.nid = n.id) AS commentCount '
         //    . 'FROM nodes AS n WHERE n.create_time > ' . $timestamp . ' AND n.tid IN (' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . ') AND n.status = 1 ORDER BY commentCount DESC LIMIT 15';
         //return $this->_db->select( $sql );
@@ -292,7 +251,7 @@ class Node extends DBObject
 
     public function getHotForumTopicNIDs( $timestamp )
     {
-        $ids = array();
+        $ids = [];
         foreach ( $this->getHotForumTopics( $timestamp ) as $t )
         {
             $ids[] = $t['id'];
@@ -302,40 +261,31 @@ class Node extends DBObject
 
     public function getLatestYellowPages()
     {
-        return $this->call( 'get_recent_nodes("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
+        return $this->call( 'get_tag_recent_nodes_yp("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
         //$sql = 'SELECT id, title, create_time AS createTime FROM nodes WHERE tid IN (' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . ') AND status = 1 ORDER BY create_time DESC LIMIT 15';
         //return $this->_db->select( $sql );
     }
 
     public function getLatestImmigrationPosts()
     {
-        return $this->call( 'get_recent_nodes("15", 12)' );
+        return $this->call( 'get_tag_recent_nodes("15", 12)' );
         //$sql = 'SELECT id, title, create_time AS createTime FROM nodes WHERE tid = 15 AND status = 1 ORDER BY create_time DESC LIMIT 12';
         //return $this->_db->select( $sql );
     }
 
     public function getLatestForumTopicReplies()
     {
-        return $this->call( 'get_recent_comments("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
+        return $this->call( 'get_tag_recent_comments("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
     }
 
     public function getLatestYellowPageReplies()
     {
-        return $this->call( 'get_recent_comments("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
+        return $this->call( 'get_tag_recent_comments("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
     }
 
-    public function getNodeCount( $tid )
+    public function getNodeCount( $tids )
     {
-        if ( \is_array( $tid ) )
-        {
-            $where = 'IN (' . \implode( ',', $tid ) . ')';
-        }
-        else
-        {
-            $where = '= ' . (int) $tid;
-        }
-
-        return $this->_db->val( 'SELECT count(*) FROM nodes WHERE tid ' . $where );
+        return \intval( $this->call( 'get_tag_node_count(' . $tids . ')' ) );
     }
 
     public function getNodeStat()

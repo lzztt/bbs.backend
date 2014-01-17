@@ -75,10 +75,10 @@ class Request
 
       if ( !isset( $_files ) )
       {
-         $_files = array( );
+         $_files = [];
          foreach ( $_FILES as $type => $file )
          {
-            $_files[$type] = array( );
+            $_files[$type] = [];
             if ( \is_array( $file['error'] ) ) // file list
             {
                for ( $i = 0; $i < \sizeof( $file['error'] ); $i++ )
@@ -101,7 +101,7 @@ class Request
 
    public function getURIargs( $uri = NULL )
    {
-      static $_URIargs = array( );
+      static $_URIargs = [];
 
       if ( \is_null( $uri ) )
       {
@@ -122,9 +122,9 @@ class Request
       return $_URIargs[$uri];
    }
 
-   public function buildURI( array $args = array( ), array $get = array( ) )
+   public function buildURI( array $args = [], array $get = [] )
    {
-      $query = array( );
+      $query = [];
       foreach ( $get as $k => $v )
       {
          $query[] = $k . '=' . $v;
@@ -157,11 +157,11 @@ class Request
    public function curlGetData( $url )
    {
       $c = \curl_init( $url );
-      \curl_setopt_array( $c, array(
+      \curl_setopt_array( $c, [
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_CONNECTTIMEOUT => 2,
          CURLOPT_TIMEOUT => 3
-      ) );
+      ] );
       $data = \curl_exec( $c );
       \curl_close( $c );
 
@@ -210,7 +210,7 @@ class Request
             return $location;
          }
 
-         if ( \filter_var( $action, \FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0, 'max_range' => 4294967295 ) ) ) )
+         if ( \filter_var( $action, \FILTER_VALIDATE_INT, [ 'options' => [ 'min_range' => 0, 'max_range' => 4294967295 ] ] ) )
          {
             $ip = \long2ip( $ip );
          }
@@ -279,7 +279,7 @@ class Request
    {
       if ( \is_array( $in ) )
       {
-         $out = array( );
+         $out = [];
          foreach ( $in as $key => $value )
          {
             $out[$this->_toUTF8( $key )] = $this->_toUTF8( $value );
@@ -292,7 +292,7 @@ class Request
          return \utf8_encode( $in );
          //return utf8_encode(trim(preg_replace('/<[^>]*>/', '', $in)));
          //to trim all tags: preg_replace('/<[^>]*>/', '',  trim($in))
-         //to escape tags: str_replace(array('<', '>'), array('&lt;', '&gt;'), trim($in))
+         //to escape tags: str_replace(['<', '>'), ['&lt;', '&gt;'), trim($in))
       }
 
       return \trim( \preg_replace( '/<[^>]*>/', '', $in ) );
@@ -314,7 +314,7 @@ class Request
      if ($session->uid == 0)
      {
      if ($_URIargs[0] == 'pm' ||
-     ($_URIargs[0] == 'user' && (isset($_URIargs[1]) && !in_array($_URIargs[1], array('login', 'register', 'password'))))
+     ($_URIargs[0] == 'user' && (isset($_URIargs[1]) && !in_array($_URIargs[1], ['login', 'register', 'password'))))
      )
      {
      pageNotFound('ERROR: You need to login to view this page.');
@@ -326,7 +326,7 @@ class Request
      {
      if (!is_array($_SESSION['form_ttl']))
      {
-     $_SESSION['form_ttl'] = array();
+     $_SESSION['form_ttl'] = [];
      }
      $uri_hash = hashURI();
      $_SESSION['form_ttl'][$uri_hash] = TIMESTAMP + 7200;
@@ -351,7 +351,7 @@ class Request
    /*
      if (UA === 'robot')
      {
-     if (!in_array($_URIargs[0], array('node', 'forum', 'yp', 'home', 'activity', 'help')))
+     if (!in_array($_URIargs[0], ['node', 'forum', 'yp', 'home', 'activity', 'help')))
      {
      Log::info('BAN ROBOT ACCESS : ' . $_SERVER['REQUEST_URI']);
      pageNotFound();

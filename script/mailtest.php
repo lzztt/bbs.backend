@@ -19,13 +19,13 @@ $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 
 $domain = 'houstonbbs.com';
 $siteDir = \dirname(__DIR__);
-$path = array(
+$path = [
    'lzx' => $siteDir . '/lzx',
    'root' => $siteDir,
    'log' => $siteDir . '/logs',
    'theme' => $siteDir . '/themes',
    'backup' => $siteDir . '/backup',
-);
+];
 
 require_once $path['lzx'] . '/Core/ClassLoader.php';
 $loader = ClassLoader::getInstance();
@@ -76,12 +76,12 @@ function do_user($path, $logger, $config)
 
          $mailer->to = 'geekpush@gmail.com';
          $mailer->subject = $u['username'] . ' test';
-         $contents = array(
+         $contents = [
             'username' => $u['username'],
             'password' => $password,
             'sitename' => 'HoustonBBS',
             'lang' => $config->lang_default // should get from the user record in DB
-         );
+         ];
          $mailer->body = 'test email';
 
          if ($mailer->send() === FALSE)
@@ -126,12 +126,12 @@ function do_activity($path, $logger, $config)
       {
          $mailer->to = $a['email'];
          $mailer->subject = $a['username'] . ' 的活动详情（已激活）';
-         $contents = array(
+         $contents = [
             'nid' => $a['nid'],
             'title' => $a['title'],
             'username' => $a['username'],
             'sitename' => 'HoustonBBS'
-         );
+         ];
          $mailer->body = new Template('mail/activity', $contents);
 
          if ($mailer->send() === FALSE)
@@ -205,7 +205,7 @@ function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $cu
   {
   $date = date('Y-m-d', TIMESTAMP - 3600);
 
-  $logs = array(
+  $logs = [
   'info' => DATA_PATH . 'logs/info.log',
   'debug' => DATA_PATH . 'logs/debug.log',
   //'error' => ROOT . '/error_log',
@@ -248,7 +248,7 @@ function do_backup($path, $logger, $config)
 
      $db->query('CALL clean()');
      //get all of the tables
-     $tables = array();
+     $tables = [);
      $res = $db->select('SHOW TABLES');
      foreach ($res as $row)
      {
@@ -270,7 +270,7 @@ function do_backup($path, $logger, $config)
 
      $rows = $db->select('SELECT * FROM ' . $table);
      $num_fields = $db->num_fields();
-     $types = array();
+     $types = [);
      foreach ($db->field_type() as $k => $t)
      {
      $types[$k] = ($t == 'int' || $t == 'real') ? 'numeric' : 'string';
@@ -278,10 +278,10 @@ function do_backup($path, $logger, $config)
      $db->free();
 
      $bulk = 500;
-     $values = array();
+     $values = [);
      foreach ($rows as $i => $r)
      {
-     $vs = array();
+     $vs = [);
      foreach ($r as $k => $v)
      {
      $vs[] = isset($v) ? (($types[$k] == 'numeric') ? $v : $db->str($v)) : 'NULL';
@@ -292,7 +292,7 @@ function do_backup($path, $logger, $config)
      if (($i + 1) % $bulk == 0)
      {
      \gzwrite($f, 'INSERT INTO `' . $table . '` VALUES ' . \implode(',', $values) . ";\n");
-     $values = array();
+     $values = [);
      }
      }
 
@@ -304,7 +304,7 @@ function do_backup($path, $logger, $config)
      \gzwrite($f, "UNLOCK TABLES;\n\n\n");
      }
 
-     $procedures = array();
+     $procedures = [);
      $res = $db->select('SHOW PROCEDURE STATUS WHERE Db = DATABASE()');
      foreach ($res as $row)
      {
@@ -329,11 +329,11 @@ function do_backup($path, $logger, $config)
 function do_alexa($path, $logger, $config)
 {
    $c = \curl_init('http://data.alexa.com/data?cli=10&dat=s&url=http://www.houstonbbs.com');
-   \curl_setopt_array($c, array(
+   \curl_setopt_array($c, [
       CURLOPT_RETURNTRANSFER => TRUE,
       CURLOPT_CONNECTTIMEOUT => 2,
       CURLOPT_TIMEOUT => 3
-   ));
+   ]);
    $contents = \curl_exec($c);
    \curl_close($c);
 

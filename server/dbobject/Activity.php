@@ -37,12 +37,9 @@ class Activity extends DBObject
         return $this->call( 'get_recent_activities(' . $now . ',' . $count . ')' );
     }
 
-    public function getActivityList( $limit = NULL, $offset = NULL )
+    public function getActivityList( $limit = 25, $offset = 0 )
     {
-        $limit = ($limit > 0) ? 'LIMIT ' . $limit : '';
-        $offset = ($offset > 0) ? 'OFFSET ' . $offset : '';
-        $sql = 'SELECT a.nid, a.start_time AS startTime, a.end_time AS endTime, n.title, n.view_count AS viewCount FROM activities AS a JOIN nodes AS n ON a.nid = n.id WHERE a.status = 1 ORDER BY a.start_time DESC ' . $limit . ' ' . $offset;
-        return $this->_db->select( $sql );
+        return $this->call( 'get_activities(' . $limit . ',' . $offset . ')' );
     }
 
     public function addActivity( $nid, $startTime, $endTime )

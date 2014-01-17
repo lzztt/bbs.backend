@@ -14,15 +14,15 @@ abstract class DB
 
     const DEFAULT_TAG = 'DEFAULT';
 
-    public static $queries = array();
-    protected static $instances = array();
+    public static $queries = [];
+    protected static $instances = [];
     public $debugMode = FALSE;
-    protected $hasError = FALSE;
+    //protected $hasError = FALSE;
     protected $db;
 
     protected function dbError( $msg, $sql = NULL )
     {
-        $this->hasError = TRUE;
+        //$this->hasError = TRUE;
         throw new DBException( $msg, $sql );
     }
 
@@ -30,7 +30,7 @@ abstract class DB
      * @return lzx\db\DB $instance
      */
     // Singleton methord for each database
-    public static final function getInstance( $tag = self::DEFAULT_TAG, array $config = array() )
+    public static final function getInstance( $tag = self::DEFAULT_TAG, array $config = [] )
     {
         if ( \count( $config ) == 0 && \array_key_exists( $tag, self::$instances ) )
         {
@@ -45,7 +45,7 @@ abstract class DB
         }
 
         // check config keys
-        $required_config_keys = array('host', 'user', 'password', 'dbname');
+        $required_config_keys = ['host', 'user', 'password', 'dbname'];
         foreach ( $required_config_keys as $key )
         {
             if ( !\array_key_exists( $key, $config ) )
@@ -77,7 +77,7 @@ abstract class DB
      * Returns full result (assoc array) from given query
      *
      * @param string $sql
-     * @return array()
+     * @return []
      */
     abstract public function select( $sql );
 
@@ -85,7 +85,7 @@ abstract class DB
      * Returns a single row from given query
      *
      * @param string $sql
-     * @return array()
+     * @return []
      */
     abstract public function row( $sql );
 

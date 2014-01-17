@@ -1,10 +1,5 @@
 <div id="content">
-    <div class="breadcrumb">
-        <?php foreach ( $breadcrumb as $t ): ?>
-            <a href="<?php print $t['href']; ?>" title="<?php print $t['title']; ?>"><?php print $t['name']; ?></a> > 
-        <?php endforeach; ?>
-    </div>
-
+    <?php print $breadcrumb; ?>
     <div id="forum">
         <div class="forum-top-links"></div>
         <table id="forum-0" class="forum-table forums-overview">

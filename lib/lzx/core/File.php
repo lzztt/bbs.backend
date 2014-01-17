@@ -49,7 +49,7 @@ class File
       }
    }
 /*
-   public function saveUploadedFile($allowed_types = array())
+   public function saveUploadedFile($allowed_types = [])
    {
       if (empty($_FILES))
       {
@@ -61,7 +61,7 @@ class File
          if ($file['error'] !== UPLOAD_ERR_OK) // upload error
          {
             return $file['error'];
-            $errmsg = array(
+            $errmsg = [
                UPLOAD_ERR_INI_SIZE => 'The uploaded file size exceeds the upload_max_filesize',
                UPLOAD_ERR_FORM_SIZE => 'The uploaded file size exceeds the MAX_FILE_SIZE',
                UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded. Please try again',

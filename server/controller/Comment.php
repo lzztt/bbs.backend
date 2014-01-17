@@ -49,7 +49,7 @@ class Comment extends Controller
          $this->error( $e->getMessage(), TRUE );
       }
 
-      $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : array( );
+      $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : [ ];
       $file = new Image();
       $file->updateFileList( $files, $this->path['file'], $comment->nid, $cid );
       $this->cache->delete( 'imageSlider' );
