@@ -27,7 +27,7 @@ class Cookie
 
    public function __set($key, $val)
    {
-      if ($val === NULL || strlen($val) == 0)
+      if ($val === NULL || \strlen($val) == 0)
       {
          $this->__unset($key);
       }
@@ -61,11 +61,11 @@ class Cookie
 
    public static function getParams()
    {
-      return array(
+      return [
          'lifetime' => self::$lifetime,
          'path' => self::$path,
          'domain' => self::$domain,
-      );
+      ];
    }
 
    public function clear()
@@ -85,7 +85,7 @@ class Cookie
    }
 
    /**
-    * Return the Session object
+    * Return the Cookie object
     *
     * @return Cookie
     */

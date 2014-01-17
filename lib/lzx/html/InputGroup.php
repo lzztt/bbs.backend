@@ -18,43 +18,58 @@ use lzx\html\FormElement;
 class InputGroup extends FormElement
 {
 
-   protected $elements = array();
+    protected $elements = [];
 
-   public function __construct($label, $help = '', $required = FALSE)
-   {
-      parent::__construct('', $label, '', $help, $required);
-   }
+    public function __construct( $label, $help = '', $required = FALSE )
+    {
+        parent::__construct( '', $label, '', $help, $required );
+    }
 
-   public function addFormElemements()
-   {
-      $this->elements = \array_merge($this->elements, \func_get_args());
-   }
+    public function addFormElement( FormElement $e )
+    {
+        if ( $e instanceof FormElement )
+        {
+            $this->elements[] = $e;
+        }
+        else
+        {
+            throw new \ErrorException( 'wrong from element type (FormElement) : ' . \gettype( $e ) );
+        }
+    }
 
-   /**
-    *
-    * @return \lzx\html\HTMLElement
-    */
-   public function toHTMLElement()
-   {
-      $div = new HTMLElement('div', $this->_label(), array('class' => self::ELEMENT_CLASS));
+    public function addFormElements( array $elements )
+    {
+        foreach ( $elements as $e )
+        {
+            $this->addFormElement( $e );
+        }
+    }
 
-      $input = array();
-      foreach ($this->elements as $e)
-      {
-         $input[] = $e->toHTMLElement();
-      }
+    /**
+     *
+     * @return \lzx\html\HTMLElement
+     */
+    public function toHTMLElement()
+    {
+        $div = new HTMLElement( 'div', $this->_label(), ['class' => self::ELEMENT_CLASS] );
 
-      if ($this->_inline)
-      {
-         $div->setData($input);
-      }
-      else
-      {
-         $div->addElements(new HTMLElement('div', $input, array('class' => self::INPUT_CLASS)));
-      }
+        $input = [];
+        foreach ( $this->elements as $e )
+        {
+            $input[] = $e->toHTMLElement();
+        }
 
-      return $div;
-   }
+        if ( $this->_inline )
+        {
+            $div->setData( $input );
+        }
+        else
+        {
+            $div->addElement( new HTMLElement( 'div', $input, ['class' => self::INPUT_CLASS] ) );
+        }
+
+        return $div;
+    }
 
 }
 

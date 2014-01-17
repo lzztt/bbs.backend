@@ -44,9 +44,9 @@ function do_mail($db)
     {
       $mailer->to = $u['email'];
 
-      $contents = array(
+      $contents = [
           'username' => $u['username']
-      );
+      ];
       $mailer->body = Theme::render('mail/lottery', $contents);
       if ($mailer->send())
       {
@@ -74,7 +74,7 @@ class Language
    public function __construct($name, $lang=null)
    {
       $this->_name = empty($name) ? 'system' : $name;
-      $this->_lang = in_array($lang, array('en', 'zh-hans', 'zh-hant')) ? $lang : LANG_DEFAULT;
+      $this->_lang = in_array($lang, ['en', 'zh-hans', 'zh-hant']) ? $lang : LANG_DEFAULT;
    }
 
    public function s($key, $vars=array()) // get a language string

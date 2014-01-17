@@ -54,7 +54,7 @@ class Image extends DBObject
     // will always assuming multiple file array
     public function saveFile( array $files, $filePath, $timestamp, $uid, $size = 5120000, $maxWidth = 600, $maxHeight = 960 )
     {
-        $errmsg = array(
+        $errmsg = [
             \UPLOAD_ERR_INI_SIZE => 'upload_err_ini_size',
             \UPLOAD_ERR_FORM_SIZE => 'upload_err_form_size',
             \UPLOAD_ERR_PARTIAL => 'upload_err_partial',
@@ -63,10 +63,10 @@ class Image extends DBObject
             \UPLOAD_ERR_CANT_WRITE => 'upload_err_cant_write',
             102 => 'upload_err_invalid_type',
             103 => 'upload_err_cant_save',
-        );
+        ];
 
-        $errorFile = array();
-        $savedFile = array();
+        $errorFile = [];
+        $savedFile = [];
         // save files
         foreach ( $files as $type => $fileList )
         {
@@ -80,10 +80,10 @@ class Image extends DBObject
                 // check upload error
                 if ( $f['error'] !== \UPLOAD_ERR_OK ) // upload error
                 {
-                    $errorFile[] = array(
+                    $errorFile[] = [
                         'name' => $fileName,
                         'error' => $errmsg[$f['error']],
-                    );
+                    ];
                     if ( $tmpFile )
                     {
                         $this->rmTmpFile( $tmpFile );
@@ -94,10 +94,10 @@ class Image extends DBObject
                 // check image size
                 if ( $f['size'] > $size ) // File Size
                 {
-                    $errorFile[] = array(
+                    $errorFile[] = [
                         'name' => $fileName,
                         'error' => $errmsg[\UPLOAD_ERR_INI_SIZE],
-                    );
+                    ];
                     if ( $tmpFile )
                     {
                         $this->rmTmpFile( $tmpFile );
@@ -110,10 +110,10 @@ class Image extends DBObject
                 // check image type
                 if ( $imageInfo === FALSE || $imageInfo[2] > \IMAGETYPE_PNG ) // Image Type: 1 = IMAGETYPE_GIF, 2 = IMAGETYPE_JPEG, 3 = IMAGETYPE_PNG
                 {
-                    $errorFile[] = array(
+                    $errorFile[] = [
                         'name' => $fileName,
                         'error' => $errmsg[102],
-                    );
+                    ];
                     if ( $tmpFile )
                     {
                         $this->rmTmpFile( $tmpFile );
@@ -159,23 +159,23 @@ class Image extends DBObject
                     }
                     $logger = Logger::getInstance();
                     $logger->error( $e->getMessage() );
-                    $errorFile[] = array(
+                    $errorFile[] = [
                         'name' => $fileName,
                         'error' => $errmsg[103],
-                    );
+                    ];
                     continue;
                 }
 
                 $p = \strrpos( $fileName, '.' );
 
-                $savedFile[] = array(
+                $savedFile[] = [
                     'name' => $p > 0 ? \substr( $fileName, 0, $p ) : $fileName,
                     'path' => \substr( $savePath, \strlen( $filePath ) )
-                );
+                ];
             }
         }
 
-        return array('error' => $errorFile, 'saved' => $savedFile);
+        return ['error' => $errorFile, 'saved' => $savedFile];
     }
 
     public function updateFileList( array $files, $filePath, $nid, $cid = NULL )
@@ -193,8 +193,8 @@ class Image extends DBObject
         }
 
         $db = $this->_db;
-        $fids = array();
-        $insert = array();
+        $fids = [];
+        $insert = [];
 
         foreach ( $files as $fid => $file )
         {
@@ -202,7 +202,7 @@ class Image extends DBObject
             {
                 $fid = \intval( $fid );
                 // saved files
-                $db->query( 'UPDATE images SET name=' . $db->str( $file['name'] ) . ' WHERE fid=' . $fid );
+                $db->query( 'UPDATE images SET name=' . $db->str( $file['name'] ) . ' WHERE id=' . $fid );
                 $fids[] = $fid;
             }
             else
@@ -224,12 +224,12 @@ class Image extends DBObject
             }
         }
         // delete old saved files are not in new version
-        $db->query( 'INSERT INTO images_deleted (fid, path) SELECT fid, path FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
-        $db->query( 'DELETE FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND fid NOT IN (' . \implode( ',', $fids ) . ')' : '') );
+        $db->insert( 'INSERT INTO images_deleted (id, path) SELECT id, path FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND id NOT IN (' . \implode( ',', $fids ) . ')' : '') );
+        $db->delete( 'DELETE FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND id NOT IN (' . \implode( ',', $fids ) . ')' : '') );
         // insert new files
         if ( \sizeof( $insert ) > 0 )
         {
-            $db->query( 'INSERT INTO images (nid,cid,name,path,height,width) VALUES ' . \implode( ',', $insert ) );
+            $db->insert( 'INSERT INTO images (nid,cid,name,path,height,width) VALUES ' . \implode( ',', $insert ) );
         }
     }
 

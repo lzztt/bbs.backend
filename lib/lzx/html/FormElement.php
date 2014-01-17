@@ -32,7 +32,7 @@ abstract class FormElement
    public $label;
    public $help;
    public $required;
-   public $attributes = array();
+   public $attributes = [];
    protected $_value;
    protected $_inline = FALSE;
 
@@ -59,16 +59,16 @@ abstract class FormElement
       }
       else
       {
-         $label = new HTMLElement('div', new HTMLElement('label', $this->label), array('class' => self::LABEL_CLASS));
+         $label = new HTMLElement('div', new HTMLElement('label', $this->label), ['class' => self::LABEL_CLASS]);
       }
 
       if ($this->required)
       {
-         $label->setDataByIndex(NULL, new HTMLElement('span', ' * ', array('class' => self::REQUIRED_CLASS)));
+         $label->setDataByIndex(NULL, new HTMLElement('span', ' * ', ['class' => self::REQUIRED_CLASS]));
       }
       if (strlen($this->help) > 0)
       {
-         $label->setDataByIndex(NULL, new HTMLElement('span', ' ? ', array('class' => self::HELP_CLASS, 'title' => $this->help)));
+         $label->setDataByIndex(NULL, new HTMLElement('span', ' ? ', ['class' => self::HELP_CLASS, 'title' => $this->help]));
       }
       return $label;
    }

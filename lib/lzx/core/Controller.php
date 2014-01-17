@@ -35,7 +35,7 @@ abstract class Controller
    public $session;
    public $cookie;
    public $config;
-   protected static $l = array( );
+   protected static $l = [];
    protected $class;
 
    public function __construct()

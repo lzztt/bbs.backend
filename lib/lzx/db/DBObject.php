@@ -17,16 +17,17 @@ abstract class DBObject
     const T_STRING = 3;
 
     private $_properties;
-    private $_properties_dirty = array();
+    private $_properties_dirty = [];
     private $_pkey_property = NULL;
-    private $_values = array();
+    private $_values = [];
+    private $_db_values = [];
     protected $_db;
-    private $_table;
+    protected $_table;
     private $_fields;
-    private $_fields_type = array();
+    private $_fields_type = [];
     private $_exists = FALSE;
-    private $_where = array();
-    private $_order = array();
+    private $_where = [];
+    private $_order = [];
 
     /*
      * user input keys will not have alias
@@ -66,7 +67,7 @@ abstract class DBObject
     {
         if ( \in_array( $prop, $this->_properties ) )
         {
-            $this->_values[$prop] = $val;
+            $this->_setValue( $prop, $val );
             // mark property as dirty
             if ( !\in_array( $prop, $this->_properties_dirty ) )
             {
@@ -116,6 +117,31 @@ abstract class DBObject
         return $this->_properties_dirty;
     }
 
+    private function _setValue( $prop, $value )
+    {
+        if ( \is_null( $value ) )
+        {
+            $this->_values[$prop] = NULL;
+        }
+        else
+        {
+            switch ( $this->_fields_type[$this->_fields[$prop]] )
+            {
+                case self::T_INT:
+                    $this->_values[$prop] = \intval( $value );
+                    break;
+                case self::T_FLOAT:
+                    $this->_values[$prop] = \floatval( $value );
+                    break;
+                case self::T_STRING:
+                    $this->_values[$prop] = \strval( $value );
+                    break;
+                default:
+                    throw new Exception( 'non-supported field data type: ' . $this->_fields[$prop] . '(' . $this->_fields_type[$this->_fields[$prop]] . ')' );
+            }
+        }
+    }
+
     private function _isDirty( $prop )
     {
         return \in_array( $prop, $this->_properties_dirty );
@@ -151,8 +177,8 @@ abstract class DBObject
     public function load( $properties = '' )
     {
         $this->_exists = FALSE;
-        $this->_where = array();
-        $this->_order = array();
+        $this->_where = [];
+        $this->_order = [];
 
         $arr = $this->getList( $properties, 1 );
 
@@ -160,12 +186,11 @@ abstract class DBObject
         {
             foreach ( $arr[0] as $prop => $val )
             {
-                $this->_values[$prop] = $val;
+                $this->_setValue( $prop, $val );
             }
 
             // clean and undirty properties
             $properties = \array_keys( $arr[0] );
-            $this->_clean( $properties );
             $this->_properties_dirty = \array_diff( $this->_properties_dirty, $properties );
 
             $this->_exists = TRUE;
@@ -190,15 +215,15 @@ abstract class DBObject
     {
         if ( \array_key_exists( $this->_pkey_property, $this->_values ) )
         {
-            $this->_clean( $this->_pkey_property );
-            $return_status = $this->_db->delete( 'DELETE FROM ' . $this->_table . ' WHERE ' . $this->_fields[$this->_pkey_property] . ' = ' . $this->_values[$this->_pkey_property] );
+            $values = $this->_getSQLValues( $this->_pkey_property );
+            $return_status = $this->_db->delete( 'DELETE FROM ' . $this->_table . ' WHERE ' . $this->_fields[$this->_pkey_property] . ' = ' . $values[$this->_pkey_property] );
 
             $this->_exists = FALSE;
             return ($return_status !== FALSE);
         }
         else
         {
-            throw new \Exception( 'ERROR delete: invalid primary key value: [' . $this->_fields[$this->_pkey_property] . ':' . $this->_values[$this->_pkey_property] . ']' );
+            throw new \Exception( 'ERROR delete: invalid primary key value: [' . $this->_fields[$this->_pkey_property] . ':' . $values[$this->_pkey_property] . ']' );
         }
     }
 
@@ -214,17 +239,15 @@ abstract class DBObject
             throw new \Exception( 'adding an object with no dirty properties to database' );
         }
 
-        $this->_clean(); // clean data types
+        $sqlValues = $this->_getSQLValues(); // clean data types
 
         $fields = '';
         $values = '';
-
-        foreach ( $this->_properties_dirty as $prop )
+        foreach( $sqlValues as $p => $v )
         {
-            $fields = $fields . $this->_fields[$prop] . ', ';
-            $values = $values . (\is_null( $this->_values[$prop] ) ? 'NULL' : $this->_values[$prop]) . ', ';
+            $fields = $fields . $this->_fields[$p] . ', ';
+            $values = $values . $v . ', ';
         }
-
         $fields = \substr( $fields, 0, -2 );
         $values = \substr( $values, 0, -2 );
 
@@ -239,13 +262,13 @@ abstract class DBObject
             return FALSE;
         }
 
-        if ( !\array_field_exists( $this->_pkey_property, $this->_values ) )
+        if ( !\array_key_exists( $this->_pkey_property, $this->_values ) )
         {
             $this->_values[$this->_pkey_property] = $this->_db->insert_id();
         }
 
         // undirty all properties
-        $this->_properties_dirty = array();
+        $this->_properties_dirty = [];
         $this->_exists = TRUE;
         return TRUE;
     }
@@ -291,8 +314,6 @@ abstract class DBObject
             throw new \Exception( 'updating property set is empty' );
         }
 
-        $this->_clean( $properties );
-
         if ( \sizeof( $this->_where ) == 0 )
         {
             if ( \array_key_exists( $this->_pkey_property, $this->_values ) )
@@ -305,11 +326,12 @@ abstract class DBObject
             }
         }
 
+        $sqlValues = $this->_getSQLValues( $properties );
         $values = '';
 
         foreach ( $properties as $prop )
         {
-            $values = $values . $this->_fields[$prop] . '=' . (\is_null( $this->_values[$prop] ) ? 'NULL' : $this->_values[$prop]) . ', ';
+            $values = $values . $this->_fields[$prop] . '=' . $sqlValues[$prop] . ', ';
         }
 
         $values = \substr( $values, 0, -2 );
@@ -330,7 +352,7 @@ abstract class DBObject
     {
         $this->_set_where(); // automatically add a filter for values we already have
 
-        return $this->_select( 'count(*)' );
+        return $this->_select( 'COUNT(*)' );
     }
 
     /*
@@ -341,7 +363,7 @@ abstract class DBObject
 
     public function getIndexedList( $properties = '', $limit = FALSE, $offset = FALSE )
     {
-        $list = array();
+        $list = [];
 
         foreach ( $this->getList( $keys, $limit, $offset ) as $i )
         {
@@ -434,7 +456,7 @@ abstract class DBObject
         if ( $value === NULL )
         {
             $value = 'NULL';
-            $condition = \in_array( $condition, array('=', 'is', 'IS') ) ? 'IS' : 'IS NOT';
+            $condition = \in_array( $condition, ['=', 'is', 'IS'] ) ? 'IS' : 'IS NOT';
         }
         else
         {
@@ -451,7 +473,7 @@ abstract class DBObject
                     throw new \Exception( 'NULL provided in the value set. but NULL is not a value' );
                 }
 
-                $value_clean = array();
+                $value_clean = [];
                 switch ( $this->_fields_type[$this->_fields[$prop]] )
                 {
                     case self::T_INT:
@@ -476,7 +498,7 @@ abstract class DBObject
                         throw new Exception( 'non-supported field data type: ' . $this->_fields[$prop] . '(' . $this->_fields_type[$this->_fields[$prop]] . ')' );
                 }
                 $value = '(' . \implode( ', ', $value_clean ) . ')';
-                $condition = \in_array( $condition, array('=', 'in', 'IN') ) ? 'IN' : 'NOT IN';
+                $condition = \in_array( $condition, ['=', 'in', 'IN'] ) ? 'IN' : 'NOT IN';
             }
             else
             {
@@ -513,7 +535,7 @@ abstract class DBObject
     public function order( $prop, $order = 'ASC' )  //ASC or DESC
     {
         $order = \strtoupper( $order );
-        if ( !\in_array( $order, array('ASC', 'DESC') ) )
+        if ( !\in_array( $order, ['ASC', 'DESC'] ) )
         {
             throw new \Exception( 'wrong order : ' . $order );
         }
@@ -537,8 +559,9 @@ abstract class DBObject
         }
     }
 
-    private function _clean( array $properties = NULL )
+    private function _getSQLValues( array $properties = NULL )
     {
+        $values = [];
         if ( \is_null( $properties ) )
         {
             $properties = $this->_properties_dirty;
@@ -548,23 +571,26 @@ abstract class DBObject
         {
             if ( \is_null( $this->_values[$prop] ) )
             {
-                continue;
+                $values[$prop] = 'NULL';
             }
-            switch ( $this->_fields_type[$this->_fields[$prop]] )
+            else
             {
-                case self::T_INT:
-                    $this->_values[$prop] = \intval( $this->_values[$prop] );
-                    break;
-                case self::T_FLOAT:
-                    $this->_values[$prop] = \floatval( $this->_values[$prop] );
-                    break;
-                case self::T_STRING:
-                    $this->_values[$prop] = $this->_db->str( \strval( $this->_values[$prop] ) );
-                    break;
-                default:
-                    throw new Exception( 'non-supported field data type: ' . $this->_fields[$prop] . '(' . $this->_fields_type[$this->_fields[$prop]] . ')' );
+                switch ( $this->_fields_type[$this->_fields[$prop]] )
+                {
+                    case self::T_INT:
+                    case self::T_FLOAT:
+                        $values[$prop] = $this->_values[$prop];
+                        break;
+                    case self::T_STRING:
+                        $values[$prop] = $this->_db->str( $this->_values[$prop] );
+                        break;
+                    default:
+                        throw new Exception( 'non-supported field data type: ' . $this->_fields[$prop] . '(' . $this->_fields_type[$this->_fields[$prop]] . ')' );
+                }
             }
         }
+
+        return $values;
     }
 
     private function _select( $properties = '', $limit = FALSE, $offset = FALSE )
@@ -592,15 +618,15 @@ abstract class DBObject
             . $limit . ' '
             . $offset;
 
-        return ($properties == 'count(*)') ? $this->_db->val( $sql ) : $this->_db->select( $sql );
+        return ($properties == 'COUNT(*)') ? $this->_db->val( $sql ) : $this->_db->select( $sql );
     }
 
     private function _getFieldsTypeAndPKey()
     {
-        static $_fields = array();
-        static $_int_type = array('int', 'bool');
-        static $_float_type = array('float', 'double', 'real');
-        static $_text_type = array('char', 'text', 'binary', 'blob', 'date', 'time', 'year');
+        static $_fields = [];
+        static $_int_type = ['int', 'bool'];
+        static $_float_type = ['float', 'double', 'real'];
+        static $_text_type = ['char', 'text', 'binary', 'blob', 'date', 'time', 'year'];
 
         $table = $this->_table;
         if ( \array_key_exists( $table, $_fields ) )
@@ -696,10 +722,10 @@ abstract class DBObject
                 throw new \Exception( 'the following fields do not exist in db table: ' . \implode( ', ', \array_diff( \array_values( $this->_fields ), \array_keys( $this->field_types ) ) ) );
             }
 
-            $_fields[$table] = array(
-                'types' => $this->_fields_type,
-                'pkey' => $this->_pkey_property
-            );
+            $_fields[$table] = [
+            'types' => $this->_fields_type,
+            'pkey' => $this->_pkey_property
+            ];
         }
     }
 

@@ -20,7 +20,7 @@ class Handler
     {
         if ( !isset( self::$errorHandler ) )
         {
-            $handler = array(__CLASS__, 'errorHandler');
+            $handler = [__CLASS__, 'errorHandler'];
             if ( \is_callable( $handler ) )
             {
                 \set_error_handler( $handler, \error_reporting() );
@@ -42,7 +42,7 @@ class Handler
     {
         if ( !isset( self::$exceptionHandler ) )
         {
-            $handler = array(__CLASS__, 'exceptionHandler');
+            $handler = [__CLASS__, 'exceptionHandler'];
             if ( \is_callable( $handler ) )
             {
                 \set_exception_handler( $handler );

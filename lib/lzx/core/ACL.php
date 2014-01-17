@@ -12,8 +12,8 @@ class ACL
    const MODERATOR_ONLY = 4;
    const ROOT_ONLY = 5; // super user
 
-   public static $permission = array();
-   public static $action = array();
+   public static $permission = [];
+   public static $action = [];
 
    /*
     * @param int $id uid for SELF check and
