@@ -28,20 +28,20 @@ class Schools extends Controller
       //@$doc->loadHTML($this->curlGetData('http://www.har.com/school/dispExempSchools.cfm'));
       @$doc->loadHTML(\file_get_contents('/home/ikki/dispExempSchools.cfm'));
 
-      $schoolElements = array(
+      $schoolElements = [
          'Elementary' => $doc->getElementById('elemSchool'),
          'Middle' => $doc->getElementById('MiddleSchool'),
          'High' => $doc->getElementById('HighSchool'),
-      );
+      ];
 
-      $schools = array();
+      $schools = [];
 
       foreach ($schoolElements as $key => $xml)
       {
          $table = $xml->getElementsByTagName('table')->item(0);
          $i = 0;
 
-         $school = array();
+         $school = [];
          foreach ($table->getElementsByTagName('tr') as $tr)
          {
             //skip 2 header rows
@@ -91,11 +91,11 @@ class Schools extends Controller
    private function curlGetData($url)
    {
       $c = \curl_init($url);
-      \curl_setopt_array($c, array(
+      \curl_setopt_array($c, [
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_CONNECTTIMEOUT => 20,
          CURLOPT_TIMEOUT => 30
-      ));
+      ]);
       $data = \curl_exec($c);
       \curl_close($c);
 

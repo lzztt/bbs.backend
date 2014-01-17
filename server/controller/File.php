@@ -40,7 +40,7 @@ class File extends Controller
 
       if (\is_string($res))
       {
-         $res = array('error' => $this->l($res));
+         $res = ['error' => $this->l($res)];
       }
       elseif (\is_array($res))
       {

@@ -21,7 +21,7 @@ class Adm extends Controller
 
    public function run()
    {
-      Template::$theme = $this->config->theme_adm;
+      Template::$theme = $this->config->theme['adm'];
 
       parent::run();
 

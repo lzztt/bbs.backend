@@ -42,10 +42,10 @@ class ad extends ControllerAction
    {
       $ad = new ADObject();
       $a_month_ago = $this->request->timestamp - 2592000;
-      $contents = array(
+      $contents = [
          'ads' => $ad->getAllAds( $a_month_ago ),
          'payments' => $ad->getAllAdPayments( $a_month_ago )
-      );
+      ];
       return new Template( 'ads', $contents );
    }
 
@@ -55,10 +55,10 @@ class ad extends ControllerAction
       // show add form
       if ( \sizeof( $this->request->post ) == 0 )
       {
-         $form = new Form( array(
+         $form = new Form( [
             'action' => $this->request->uri,
             'id' => 'ad-add'
-               ) );
+               ] );
          $name = new Input( 'name', '名称', '广告名称', TRUE );
          $email = new Input( 'email', 'Email', '联系Email', TRUE );
          $type = new Select( 'type_id', '类别', '广告类别', TRUE );
@@ -67,8 +67,8 @@ class ad extends ControllerAction
          {
             $type->options[$at['id']] = $at['name'];
          }
-         $form->setData( array( $name->toHTMLElement(), $email->toHTMLElement(), $type->toHTMLElement() ) );
-         $form->setButton( array( 'submit' => '添加广告' ) );
+         $form->setData( [ $name->toHTMLElement(), $email->toHTMLElement(), $type->toHTMLElement() ] );
+         $form->setButton( [ 'submit' => '添加广告' ] );
 
          return $form;
       }
@@ -77,7 +77,8 @@ class ad extends ControllerAction
       {
          $ad->name = $this->request->post['name'];
          $ad->email = $this->request->post['email'];
-         $ad->type_id = $this->request->post['type_id'];
+         $ad->typeID = $this->request->post['type_id'];
+         $ad->expTime = $this->request->timestamp;
          $ad->add();
          return '广告添加成功: ' . $ad->name . ' : ' . $ad->email;
       }
@@ -89,10 +90,10 @@ class ad extends ControllerAction
       // show add form
       if ( \sizeof( $this->request->post ) == 0 )
       {
-         $form = new Form( array(
+         $form = new Form( [
             'action' => $this->request->uri,
             'id' => 'adpayment-add'
-               ) );
+               ] );
          $ad_id = new Select( 'ad_id', '广告名称', '广告名称', TRUE );
          $amount = new Input( 'amount', '金额 ($)', '付款金额，单位为美元', TRUE );
          $time = new Input( 'time', '付款时间', '付款时间', TRUE );
@@ -106,8 +107,8 @@ class ad extends ControllerAction
          {
             $ad_id->options[$a['id']] = $a['name'];
          }
-         $form->setData( array( $ad_id->toHTMLElement(), $amount->toHTMLElement(), $time->toHTMLElement(), $ad_time->toHTMLElement(), $comment->toHTMLElement() ) );
-         $form->setButton( array( 'submit' => '添加付款' ) );
+         $form->setData( [ $ad_id->toHTMLElement(), $amount->toHTMLElement(), $time->toHTMLElement(), $ad_time->toHTMLElement(), $comment->toHTMLElement() ] );
+         $form->setButton( [ 'submit' => '添加付款' ] );
 
          return $form;
       }
@@ -115,26 +116,26 @@ class ad extends ControllerAction
       else
       {
          $ap = new ADPayment();
-         $ap->ad_id = $this->request->post['ad_id'];
+         $ap->adID = $this->request->post['ad_id'];
          $ap->amount = $this->request->post['amount'];
          $ap->time = \strtotime( $this->request->post['time'] );
          $ap->comment = $this->request->post['comment'];
          $ap->add();
 
-         $ad->id = $ap->ad_id;
-         $ad->load( 'name,exp_time' );
-         if ( $ad->exp_time == 0 )
+         $ad->id = $ap->adID;
+         $ad->load( 'name,expTime' );
+         if ( $ad->expTime < $this->request->timestamp )
          {
             $exp_time = $this->request->post['time'];
          }
          else
          {
-            $exp_time = \date( 'm/d/Y', $ad->exp_time );
+            $exp_time = \date( 'm/d/Y', $ad->expTime );
          }
-         $ad->exp_time = \strtotime( $exp_time . ' +' . $this->request->post['ad_time'] . ' months' );
-         $ad->update( 'exp_time' );
+         $ad->expTime = \strtotime( $exp_time . ' +' . $this->request->post['ad_time'] . ' months' );
+         $ad->update( 'expTime' );
 
-         return '付款添加成功: ' . $ad->name . ' : $' . $ap->amount . '<br>广告有效期更新至: ' . \date( 'm/d/Y', $ad->exp_time );
+         return '付款添加成功: ' . $ad->name . ' : $' . $ap->amount . '<br>广告有效期更新至: ' . \date( 'm/d/Y', $ad->expTime );
       }
    }
 

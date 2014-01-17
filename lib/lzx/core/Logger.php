@@ -23,12 +23,12 @@ class Logger
 
     private function __construct()
     {
-        $this->_file = array(
+        $this->_file = [
             self::INFO => 'php_info.log',
             self::DEBUG => 'php_debug.log',
             self::WARNING => 'php_warning.log',
             self::ERROR => 'php_error.log',
-        );
+        ];
         $this->_time = \date( 'Y-m-d H:i:s T', (int) $_SERVER['REQUEST_TIME'] );
     }
 
@@ -151,7 +151,7 @@ class Logger
         {
             $traces = \array_slice( \debug_backtrace(), 2 );
         }
-        $ret = array();
+        $ret = [];
 
         foreach ( $traces as $i => $call )
         {

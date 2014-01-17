@@ -18,33 +18,33 @@ use lzx\html\FormElement;
 class Form extends HTMLElement
 {
 
-   public function __construct(array $attributes = array())
+   public function __construct(array $attributes = [])
    {
-      $_attr = array(
+      $_attr = [
          'accept-charset' => 'UTF-8',
          'autocomplete' => 'off',
          'method' => 'post',
-      );
+      ];
       $attributes = \array_merge($_attr, $attributes);
       parent::__construct('form', NULL, $attributes);
    }
 
    public function setButton(array $buttons)
    {
-      $types = array('submit', 'reset');
-      $_buttons = array();
+      $types = ['submit', 'reset'];
+      $_buttons = [];
       foreach ($buttons as $type => $text)
       {
          if (\in_array($type, $types))
          {
-            $_buttons[] = new HTMLElement('button', $text, array('type' => $type));
+            $_buttons[] = new HTMLElement('button', $text, ['type' => $type]);
          }
       }
       if (sizeof($_buttons) > 0)
       {
-         $div = new HTMLElement('div', NULL, array('class' => FormElement::ELEMENT_CLASS));
-         $div->addElements(new HTMLElement('div', $_buttons, array('class' => FormElement::INPUT_CLASS)));
-         $this->addElements($div);
+         $div = new HTMLElement('div', NULL, ['class' => FormElement::ELEMENT_CLASS]);
+         $div->addElement(new HTMLElement('div', $_buttons, ['class' => FormElement::INPUT_CLASS]));
+         $this->addElement($div);
       }
    }
 

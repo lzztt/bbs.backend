@@ -63,7 +63,7 @@ class Comment extends DBObject
    public function add()
    {
       // CHECK USER
-      $userInfo = $this->_db->row( 'SELECT createTime, lastAccessIPInt, status FROM users WHERE uid = ' . $this->uid );
+      $userInfo = $this->_db->row( 'SELECT create_time AS createTime, last_access_ip AS lastAccessIPInt, status FROM users WHERE id = ' . $this->uid );
       if ( \intval( $userInfo['status'] ) != 1 )
       {
          throw new \Exception( 'This User account cannot post message.' );
@@ -90,29 +90,10 @@ class Comment extends DBObject
          }
       }
 
-      // check spam
-      $nodes = $this->_db->select( 'SELECT createTime FROM ' . $this->_table . ' WHERE uid = ' . $this->uid . ' AND createTime > ' . (\intval( $this->createTime ) - 600) . ' ORDER BY createTime DESC' );
-
-      $count = \sizeof( $nodes );
-      if ( $count > 0 )
-      {
-         // limit 1 comments within 10 seconds
-         if ( $this->createTime - \intval( $nodes[0]['createTime'] ) < 10 )
-         {
-            throw new \Exception( 'You are posting too fast. Please slow down.' );
-         }
-      }
-
-      if ( $count > 29 )
-      {
-         // limit 30 comments within 10 minutes
-         throw new \Exception( 'too many comments posted within 10 minutes' );
-      }
-
       // check duplicate
       $this->hash = $this->getHash();
 
-      $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->hash . ' AND uid = ' . $this->uid . ' AND createTime > ' . (\intval( $this->createTime ) - 30) );
+      $count = $this->_db->val( 'SELECT count(*) FROM ' . $this->_table . ' WHERE hash = ' . $this->hash . ' AND uid = ' . $this->uid . ' AND create_time > ' . (\intval( $this->createTime ) - 30) );
       if ( $count > 0 )
       {
          throw new \Exception( 'duplicate comment found' );

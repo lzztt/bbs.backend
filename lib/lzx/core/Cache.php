@@ -214,7 +214,7 @@ class Cache
 
    public function fetchMap( $key, $childMap = TRUE )
    {
-      $keys = array( );
+      $keys = [];
       // get all possible keys
       foreach ( $this->_fetchRawMap( $key, $childMap ) as $k )
       {
@@ -234,12 +234,12 @@ class Cache
       try
       {
          // read only if exist!!
-         return \is_file( $fn ) ? \file( $fn, \FILE_IGNORE_NEW_LINES | \FILE_SKIP_EMPTY_LINES ) : array( );
+         return \is_file( $fn ) ? \file( $fn, \FILE_IGNORE_NEW_LINES | \FILE_SKIP_EMPTY_LINES ) : [];
       }
       catch ( \Exception $e )
       {
          $this->logger->warn( 'Could not read map [' . $fn . ']: ' . $e->getMessage() );
-         return array( );
+         return [];
       }
    }
 
@@ -287,7 +287,7 @@ class Cache
 
    private function _getMapFileName( $key, $childMap = TRUE )
    {
-      static $fileNames = array( );
+      static $fileNames = [];
 
       $cache_key = \trim( $key );
       if ( \strlen( $cache_key ) == 0 || \strpos( $cache_key, ' ' ) !== FALSE )
@@ -344,7 +344,7 @@ class Cache
 
    private function _getCacheFileName( $key, $public = FALSE )
    { // get private file name by default
-      static $fileNames = array( );
+      static $fileNames = [];
       $cache_key = ($public ? 'public_' : 'private_') . $key;
 
       if ( !\array_key_exists( $cache_key, $fileNames ) )
@@ -387,7 +387,7 @@ class Cache
 
    private function _cleanKey( $key )
    {
-      static $keys = array( );
+      static $keys = [];
 
       $_key = \trim( $key );
 
