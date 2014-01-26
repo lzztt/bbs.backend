@@ -55,24 +55,20 @@ class SessionHandler implements \SessionHandlerInterface
 
         if ( $data != $this->_data )
         {
-            $this->_db->call( 'write_session("' . $sid . '","' . $data . '",' . $_SESSION['uid'] . ')' );
+            $this->_db->call( 'write_session("' . $sid . '",' . $this->_db->str( $data ) . ',' . \intval( $_SESSION['uid'] ) . ')' );
         }
-        //$this->_db->insert( 'INSERT INTO ' . $this->_table . ' (id,data,mtime,uid) VALUES (' . $this->_db->str( $sid ) . ', ' . $this->_db->str( $data ) . ',' . $timestamp . ',' . $this->uid . ')' .
-        //' ON DUPLICATE KEY UPDATE data = VALUES(data), mtime = VALUES(mtime), uid = VALUES(uid)' );
         return TRUE;
     }
 
     public function destroy( $sid )
     {
         $this->_db->call( 'delete_session("' . $sid . '")' );
-        //$this->_db->delete( 'DELETE FROM ' . $this->_table . ' WHERE id = ' . $this->_db->str( $sid ) . ' LIMIT 1' );
         return TRUE;
     }
 
     public function gc( $maxlifetime )
     {
         // will do garbage collection through cron job
-        //$this->_db->query('DELETE FROM ' . $this->_table . ' WHERE mtime < ' . (TIMESTAMP - $maxlifetime));
         return TRUE;
     }
 

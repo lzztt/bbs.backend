@@ -517,7 +517,7 @@ abstract class DBObject
                     default:
                         throw new Exception( 'non-supported field data type: ' . $this->_fields[$prop] . '(' . $this->_fields_type[$this->_fields[$prop]] . ')' );
                 }
-                $condition = $this->_db->escape( $condition );
+                $condition = $this->_db->escape_string( $condition );
             }
         }
 

@@ -134,12 +134,7 @@ class Node extends Controller
             ];
         }
 
-        $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
-        $pageCount = \ceil( $node['comment_count'] / self::COMMENTS_PER_PAGE );
-        if ( $pageNo < 1 || $pageNo > $pageCount )
-        {
-            $pageNo = $pageCount;
-        }
+        list($pageNo, $pageCount) = $this->getPagerInfo( $node['comment_count'] );
         $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node['id'] );
 
         $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
@@ -408,13 +403,15 @@ class Node extends Controller
             $this->error( '错误：评论正文字数太少。' );
         }
 
-        $comment = new Comment();
-        $comment->nid = $nid;
-        $comment->uid = $this->request->uid;
-        $comment->body = $this->request->post['body'];
-        $comment->createTime = $this->request->timestamp;
+        $user = new User( $this->request->uid, 'createTime,points,status' );
         try
         {
+            $user->validatePost( $this->request->ip, $this->request->timestamp );
+            $comment = new Comment();
+            $comment->nid = $nid;
+            $comment->uid = $this->request->uid;
+            $comment->body = $this->request->post['body'];
+            $comment->createTime = $this->request->timestamp;
             $comment->add();
         }
         catch ( \Exception $e )
@@ -430,7 +427,6 @@ class Node extends Controller
             $this->cache->delete( 'imageSlider' );
         }
 
-        $user = new User( $comment->uid, 'points' );
         $user->points += 1;
         $user->update( 'points' );
 
@@ -445,6 +441,17 @@ class Node extends Controller
         //$pageNoLast = ceil(($node->commentCount + 1) / self::COMMENTS_PER_PAGE);
         $redirect_uri = '/node/' . $nid . '?page=last#comment' . $comment->id;
         $this->request->redirect( $redirect_uri );
+    }
+
+    private function getPagerInfo( $nComments )
+    {
+        $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
+        $pageCount = $nComments > 0 ? \ceil( $nComments / self::COMMENTS_PER_PAGE ) : 1;
+        if ( $pageNo < 1 || $pageNo > $pageCount )
+        {
+            $pageNo = $pageCount;
+        }
+        return [$pageNo, $pageCount];
     }
 
     public function displayYellowPageAction()
@@ -462,34 +469,33 @@ class Node extends Controller
             $this->request->pageNotFound();
         }
 
-        $breadcrumb = '<a href="/yp">黄页</a>'
-            . ' > <a href="/yp/' . $tags[1]['tid'] . '">' . $tags[1]['name'] . '</a>'
-            . ' > <a href="/yp/' . $tags[2]['tid'] . '">' . $tags[2]['name'] . '</a>';
-
-        $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
-        $pageCount = \ceil( $node['commentCount'] / self::COMMENTS_PER_PAGE );
-        if ( $pageNo < 1 || $pageNo > $pageCount )
+        $breadcrumb = [];
+        foreach ( $tags as $i => $t )
         {
-            $pageNo = $pageCount;
+            $breadcrumb[] = [
+                'href' => ($i === Tag::YP_ID ? '/yp' : ('/yp/' . $i)),
+                'title' => $t['description'],
+                'name' => $t['name']
+            ];
         }
-        $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node['nid'] );
+
+        list($pageNo, $pageCount) = $this->getPagerInfo( $node['comment_count'] );
+        $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $nid );
 
         $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
 
         $contents = [
-            'nid' => $node['nid'],
+            'nid' => $nid,
             'cid' => $tags[2]['cid'],
             'title' => $node['title'],
-            'commentCount' => $node['commentCount'],
+            'commentCount' => $node['comment_count'],
             'status' => $node['status'],
-            'breadcrumb' => $breadcrumb,
+            'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
             'pager' => $pager,
             'postNumStart' => $postNumStart,
             'ajaxURI' => '/node/ajax/viewcount?type=json&nid=' . $nid,
         ];
 
-
-        $node['id'] = $node['nid'];
         $node['type'] = 'node';
 
         if ( $pageNo == 1 )
@@ -500,19 +506,19 @@ class Node extends Controller
         }
 
         $nodeObj = new NodeObject();
-        $comments = $nodeObj->getYellowPageNodeComments( $node['nid'], self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE );
+        $comments = $nodeObj->getYellowPageNodeComments( $nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE );
 
         $cmts = [];
         if ( sizeof( $comments ) > 0 )
         {
             foreach ( $comments as $c )
             {
-                $c['id'] = $c['cid'];
+                $c['id'] = $c['id'];
                 $c['type'] = 'comment';
-                $c['createTime'] = \date( 'm/d/Y H:i', $c['createTime'] );
+                $c['createTime'] = \date( 'm/d/Y H:i', $c['create_time'] );
                 if ( $c['lastModifiedTime'] )
                 {
-                    $c['lastModifiedTime'] = \date( 'm/d/Y H:i', $c['lastModifiedTime'] );
+                    $c['lastModifiedTime'] = \date( 'm/d/Y H:i', $c['last_modified_time'] );
                 }
                 $c['HTMLbody'] = \nl2br( $c['body'] );
 
@@ -618,12 +624,22 @@ class Node extends Controller
             $this->error( '错误：评论正文字数太少。' );
         }
 
-        $comment = new Comment();
-        $comment->nid = $nid;
-        $comment->uid = $this->request->uid;
-        $comment->body = $this->request->post['body'];
-        $comment->createTime = $this->request->timestamp;
-        $comment->add();
+        $user = new User( $this->request->uid, 'createTime,points,status' );
+        try
+        {
+            $user->validatePost( $this->request->ip, $this->request->timestamp );
+            $comment = new Comment();
+            $comment->nid = $nid;
+            $comment->uid = $this->request->uid;
+            $comment->body = $this->request->post['body'];
+            $comment->createTime = $this->request->timestamp;
+            $comment->add();
+        }
+        catch ( \Exception $e )
+        {
+            $this->logger->error( ' --comment-- ' . $comment->body );
+            $this->error( $e->getMessage(), TRUE );
+        }
 
         if ( isset( $this->request->post['star'] ) && \is_numeric( $this->request->post['star'] ) )
         {
@@ -634,10 +650,8 @@ class Node extends Controller
             }
         }
 
-        $user = new User( $comment->uid, 'points' );
         $user->points += 1;
         $user->update( 'points' );
-        //$db->query('UPDATE users SET points = points + 1 WHERE uid = ' . $comment->uid);
 
         $this->cache->delete( '/node/' . $nid );
         $this->cache->delete( 'latestYellowPageReplies' );
