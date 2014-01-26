@@ -181,29 +181,35 @@ class Image extends DBObject
     public function updateFileList( array $files, $filePath, $nid, $cid = NULL )
     {
         $nid = \intval( $nid );
+        $isCommment = FALSE;
         if ( isset( $cid ) ) // comment
         {
+            $isComment = TRUE;
             $cid = \intval( $cid );
-            $where = 'cid = ' . $cid;
+            $arr = $this->call( 'get_comment_images(' . $cid . ')' );
         }
-        else // node
+        else
         {
             $cid = 'NULL';
-            $where = 'nid = ' . $nid . ' AND cid IS NULL';
+            $arr = $this->call( 'get_node_images(' . $nid . ')' );
         }
 
-        $db = $this->_db;
-        $fids = [];
-        $insert = [];
+        $images = [];
+        foreach ( $arr as $r )
+        {
+            $images[$r['id']] = $r;
+        }
 
         foreach ( $files as $fid => $file )
         {
             if ( \is_numeric( $fid ) )
             {
                 $fid = \intval( $fid );
-                // saved files
-                $db->query( 'UPDATE images SET name=' . $db->str( $file['name'] ) . ' WHERE id=' . $fid );
-                $fids[] = $fid;
+                if ( $file['name'] != $images[$fid]['name'] )
+                {
+                    $this->_db->call( 'update_image(' . $fid . ',"' . $file['name'] . '"' );
+                }
+                unset( $images[$fid] );
             }
             else
             {
@@ -213,7 +219,7 @@ class Image extends DBObject
                     $info = \getimagesize( $filePath . $file['path'] );
                     $width = $info[0];
                     $height = $info[1];
-                    $insert[] = '(' . $nid . ',' . $cid . ',' . $db->str( $file['name'] ) . ',' . $db->str( $file['path'] ) . ',' . $height . ',' . $width . ')';
+                    $insert[] = '(' . $nid . ',' . $cid . ',"' . $file['name'] . '","' . $file['path'] . '",' . $height . ',' . $width . ')';
                 }
                 catch ( \Exception $e )
                 {
@@ -224,12 +230,15 @@ class Image extends DBObject
             }
         }
         // delete old saved files are not in new version
-        $db->insert( 'INSERT INTO images_deleted (id, path) SELECT id, path FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND id NOT IN (' . \implode( ',', $fids ) . ')' : '') );
-        $db->delete( 'DELETE FROM images WHERE ' . $where . (\sizeof( $fids ) > 0 ? ' AND id NOT IN (' . \implode( ',', $fids ) . ')' : '') );
+        if ( $images )
+        {
+            $this->_db->call( 'delete_images("' . \implode( ',', \array_keys( $images ) ) . '")' );
+        }
+
         // insert new files
         if ( \sizeof( $insert ) > 0 )
         {
-            $db->insert( 'INSERT INTO images (nid,cid,name,path,height,width) VALUES ' . \implode( ',', $insert ) );
+            $this->_db->call( 'insert_images(' . $this->_db->str( \implode( ',', $insert ) ) . ')' );
         }
     }
 

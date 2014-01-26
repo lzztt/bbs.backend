@@ -77,15 +77,18 @@ abstract class App
 
     public function setLogMailer( $email )
     {
-        if ( \filter_var( $email, \FILTER_VALIDATE_EMAIL ) )
+        if ( $email )
         {
-            $mailer = new Mailer( 'logger' );
-            $mailer->to = $email;
-            $this->logger->setMailer( $mailer );
-        }
-        else
-        {
-            throw new \Exception( 'Invalid email address: ' . $email );
+            if ( \filter_var( $email, \FILTER_VALIDATE_EMAIL ) )
+            {
+                $mailer = new Mailer( 'logger' );
+                $mailer->to = $email;
+                $this->logger->setMailer( $mailer );
+            }
+            else
+            {
+                throw new \Exception( 'Invalid email address: ' . $email );
+            }
         }
     }
 

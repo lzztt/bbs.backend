@@ -29,6 +29,7 @@ abstract class DB
     /*
      * @return lzx\db\DB $instance
      */
+
     // Singleton methord for each database
     public static final function getInstance( $tag = self::DEFAULT_TAG, array $config = [] )
     {
@@ -101,9 +102,13 @@ abstract class DB
 
     abstract public function affected_rows();
 
-    abstract public function escape( $str );
+    abstract public function escape_string( $str );
 
-    abstract public function str( $str );
+    public function str( $str )
+    {
+        return '"' . $this->escape_string( $str ) . '"';
+    }
+
 }
 
 //__END_OF_FILE__

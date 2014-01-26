@@ -51,9 +51,7 @@ class PrivMsg extends DBObject
 
     public function getReplyTo( $msg_id, $uid )
     {
-        $sql_uids = 'SELECT from_uid, to_uid FROM priv_msgs WHERE msg_id = ' . $msg_id . ' LIMIT 1';
-        $sql = 'SELECT id, username FROM users, (' . $sql_uids . ') AS uids WHERE (id = uids.from_uid OR id = uids.to_uid) AND id != ' . $uid;
-        return $this->_db->row( $sql );
+        return \array_pop( $this->_db->call( 'get_pm_replyto(' . $msg_id . ',' . $uid . ')' ) );
     }
 
     public function deleteByUser( $uid )
