@@ -65,7 +65,7 @@ class Template
             \ob_end_clean();
             if ( isset( self::$logger ) )
             {
-                self::$logger->error( $e->getMessage() );
+                self::$logger->error( $e->getMessage(), $e->getTrace() );
             }
             $output = '[longzox template error]';
 

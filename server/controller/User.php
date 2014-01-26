@@ -93,8 +93,8 @@ class User extends Controller
 
             $fieldset = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '个人信息' ) );
             $name = new InputGroup( '姓名', '不会公开显示' );
-            $firstName = new Input( 'firstName', '名' );
-            $lastName = new Input( 'lastName', '姓' );
+            $firstName = new Input( 'firstname', '名' );
+            $lastName = new Input( 'lastname', '姓' );
             $name->addFormElements( [$firstName->inline(), $lastName->inline()] );
 
             $sex = new Select( 'sex', '性别' );
@@ -120,10 +120,10 @@ class User extends Controller
             $img = new HTMLElement( 'img', NULL, ['id' => 'captchaImage', 'title' => '图形验证', 'alt' => '图形验证未能正确显示，请刷新', 'src' => '/captcha'] );
             $changeImage = new HTMLElement( 'a', '看不清，换一张', ['onclick' => 'document.getElementById(\'captchaImage\').setAttribute(\'src\',\'/captcha/\' + Math.random().toString().slice(2)); event.preventDefault();', 'href' => '#'] );
             $captcha = new Input( 'captcha', '上面图片的内容是什么？', 'Enter the characters shown in the image', TRUE );
-            $fieldset->addElement( [$img, $changeImage, $captcha->toHTMLElement()] );
+            $fieldset->addElements( [$img, $changeImage, $captcha->toHTMLElement()] );
             $form->addElement( $fieldset );
             $terms = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '网站使用规范和免责声明' ) );
-            $terms->addElement( [new HTMLElement( 'a', '网站使用规范', ['href' => '/node/23200'] ), new HTMLElement( 'br' ), new HTMLElement( 'a', '免责声明', ['href' => '/term'] )] );
+            $terms->addElements( [new HTMLElement( 'a', '网站使用规范', ['href' => '/node/23200'] ), new HTMLElement( 'br' ), new HTMLElement( 'a', '免责声明', ['href' => '/term'] )] );
             $form->addElement( $terms );
             $form->setButton( ['submit' => '同意使用规范和免责声明，并创建新帐号'] );
 
@@ -156,24 +156,6 @@ class User extends Controller
             }
 
             $user = new UserObject();
-
-            if ( $user->checkSpamEmail( $this->request->post['email'] ) === FALSE )
-            {
-                $this->error( '您填写的电子邮箱不能通过论坛注册' );
-            }
-
-            $user->username = $this->request->post['username'];
-            if ( $user->getCount() > 0 )
-            {
-                $this->error( '您填写的用户名已被其他用户使用' );
-            }
-            $user = new UserObject();
-            $user->email = $this->request->post['email'];
-            if ( $user->getCount() > 0 )
-            {
-                $this->error( '您填写的电子邮箱已被其他用户使用' );
-            }
-
             $this->request->post['birthday'] = (int) ($this->request->post['byear'] . $this->request->post['bmonth'] . $this->request->post['bday']);
             unset( $this->request->post['byear'] );
             unset( $this->request->post['bmonth'] );
@@ -191,7 +173,7 @@ class User extends Controller
             $user->password = NULL; // will send generated password to email
             $user->status = NULL; // status NULL for new unactivated user
             $user->createTime = $this->request->timestamp;
-            $user->lastAccessIPInt = (int) \ip2long( $this->request->ip );
+            $user->lastAccessIP = (int) \ip2long( $this->request->ip );
             if ( isset( $user->birthday ) )
             {
                 $_timestamp = strtotime( $user->birthday );
@@ -277,7 +259,7 @@ class User extends Controller
             $user = new UserObject();
             $user->username = $this->request->post['username'];
             $user->email = $this->request->post['email'];
-            $user->load( 'uid,username,email,status' );
+            $user->load( 'id,username,email,status' );
             if ( $user->status === NULL )
             {
                 $this->error( '该帐号等待激活中，未激活前不能修改密码' );
@@ -900,7 +882,7 @@ class User extends Controller
         $tbody = [];
         foreach ( $posts as $n )
         {
-            $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n['title'] ), '/node/' . $n['nid'] ), \date( 'm/d/Y H:i', $n['create_time'] )]];
+            $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n['title'] ), '/node/' . $n['id'] ), \date( 'm/d/Y H:i', $n['create_time'] )]];
         }
 
         $recent_topics = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody] );
@@ -912,7 +894,7 @@ class User extends Controller
         $tbody = [];
         foreach ( $posts as $n )
         {
-            $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n['title'] ), '/node/' . $n['nid'] ), \date( 'm/d/Y H:i', $n['create_time'] )]];
+            $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n['title'] ), '/node/' . $n['id'] ), \date( 'm/d/Y H:i', $n['create_time'] )]];
         }
 
         $recent_comments = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody] );

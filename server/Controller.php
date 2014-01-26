@@ -10,7 +10,6 @@ use lzx\core\Controller as LzxCtrler;
 use lzx\html\Template;
 use site\dbobject\User;
 use site\dbobject\Tag;
-use site\dbobject\PrivMsg;
 
 /**
  *
