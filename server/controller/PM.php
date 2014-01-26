@@ -9,7 +9,6 @@ use lzx\html\Form;
 use lzx\html\Input;
 use lzx\html\Hidden;
 use lzx\html\TextArea;
-use lzx\html\Template;
 
 class PM extends Controller
 {

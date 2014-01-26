@@ -13,6 +13,7 @@
           <legend class="collapse-processed"><a href="#">文件附件</a></legend>
           <div class="fieldset-wrapper">
 
+            <input type="hidden" name='update_file' value='1' />
             <table id="ajax-file-list" style="display:none;">
               <thead class="tableHeader-processed">
                 <tr><th>文字描述</th><th>BBCode</th><th>删除</th></tr>

@@ -268,26 +268,9 @@ class MySQL extends DB
         return $val;
     }
 
-    public function escape( $str )
+    public function escape_string( $str )
     {
-        if ( !\is_array( $str ) )
-        {
-            return $this->db->real_escape_string( $str );
-        }
-        else
-        {
-            $arr = [];
-            foreach ( $str as $k => $v )
-            {
-                $arr[$k] = $this->escape( $v );
-            }
-            return $arr;
-        }
-    }
-
-    public function str( $str )
-    {
-        return '"' . $this->db->real_escape_string( $str ) . '"';
+        return $this->db->real_escape_string( $str );
     }
 
 }

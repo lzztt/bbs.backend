@@ -117,12 +117,10 @@ class User extends DBObject
 
     public function delete()
     {
-        $this->status = 0;
-        $this->update( 'status' );
-        $this->_db->query( 'DELETE FROM sessions WHERE uid = ' . $this->id );
-        $this->_db->query( 'UPDATE nodes SET status = 0 WHERE uid = ' . $this->id );
-        $this->_db->query( 'INSERT INTO spammers (email, ipInt, time) SELECT email, lastAccessIPInt, UNIX_TIMESTAMP() FROM users WHERE uid = ' . $this->id );
-        //$this->_db->query('DELETE FROM comments WHERE uid = ' . $this->id);
+        if ( $this->id > 1 )
+        {
+            $this->call( 'delete_user(' . $this->id . ')' );
+        }
     }
 
     public function getAllNodeIDs()
@@ -130,18 +128,12 @@ class User extends DBObject
         $nids = [];
         if ( $this->id > 1 )
         {
-            foreach ( $this->_db->select( 'SELECT nid FROM nodes WHERE uid = ' . $this->id ) as $n )
+            foreach ( $this->_db->call( 'get_user_node_ids(' . $this->id . ')' ) as $n )
             {
                 $nids[] = $n['nid'];
             }
         }
         return $nids;
-    }
-
-    public function checkSpamEmail( $email )
-    {
-        $count = $this->_db->val( 'SELECT COUNT(*) FROM spammers WHERE email = ' . $this->_db->str( $email ) );
-        return ($count > 0 ? FALSE : TRUE);
     }
 
     public function getRecentNodes( $limit )
@@ -160,7 +152,7 @@ class User extends DBObject
         {
             return \intval( \array_pop( \array_pop( $this->call( 'get_pm_count_new(' . $this->id . ')' ) ) ) );
         }
-        else if( $mailbox == 'inbox' )
+        else if ( $mailbox == 'inbox' )
         {
             return \intval( \array_pop( \array_pop( $this->call( 'get_pm_count_inbox(' . $this->id . ')' ) ) ) );
         }
@@ -178,43 +170,71 @@ class User extends DBObject
     {
         if ( $type == 'sent' )
         {
-            return $this->call('get_pm_list_sent(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+            return $this->call( 'get_pm_list_sent(' . $this->id . ',' . $limit . ',' . $offset . ')' );
         }
         else
         {
-            return $this->call('get_pm_list_inbox(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+            return $this->call( 'get_pm_list_inbox(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+        }
+    }
+
+    public function validatePost( $ip, $timestamp )
+    {
+        // CHECK USER
+        if ( $this->status != 1 )
+        {
+            throw new \Exception( 'This user account cannot post message.' );
+        }
+        $days = \intval( ($timestamp - $this->createTime) / 86400 );
+        // registered less than 10 days
+        if ( $days < 10 )
+        {
+            $geo = \geoip_record_by_name( \long2ip( $ip ) );
+            // not from Texas
+            if ( !$geo || $geo['region'] != 'TX' )
+            {
+                $oneday = \intval( $timestamp - 86400 );
+                $count = \array_pop( \array_pop( $this->_db->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
+                if ( $count >= $days )
+                {
+                    throw new \Exception( 'Quota limitation reached!<br />Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours. <br /> You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.' );
+                }
+            }
         }
     }
 
     public function getUserStat( $timestamp )
     {
-        $sql = 'SELECT'
-            . ' (SELECT count(*) FROM users) as userCount,'
-            . ' (SELECT count(*) FROM users WHERE create_time >= ' . \strtotime( \date( "m/d/Y" ) ) . ' ) as userTodayCount,'
-            . ' (SELECT username FROM users WHERE status = 1 ORDER BY id DESC LIMIT 1) AS latestUser';
-        $r = $this->_db->row( $sql );
+        $stats = \array_pop( $this->_db->call( 'get_user_stat(' . \strtotime( \date( "m/d/Y" ) ) . ')' ) );
 
-        $sql = 'SELECT s.uid, u.username FROM sessions AS s LEFT JOIN users AS u ON s.uid = u.id WHERE s.mtime > ' . $timestamp . ' OR s.id = ' . $this->_db->str( \session_id() );
-        $arr = $this->_db->select( $sql );
+        $onlines = $this->_db->call( 'get_user_online(' . $timestamp . ')' );
 
         $users = [];
         $guestCount = 0;
-        if ( isset( $arr ) )
+        if ( isset( $onlines ) )
         {
-            foreach ( $arr AS $u )
+            foreach ( $onlines AS $u )
             {
                 if ( $u['uid'] > 0 )
+                {
                     $users[] = $u['username'];
+                }
                 else
+                {
                     $guestCount++;
+                }
             }
         }
-        $r['onlineUsers'] = \implode( ', ', $users );
-        $r['onlineUserCount'] = \sizeof( $users );
-        $r['onlineGuestCount'] = $guestCount;
-        $r['onlineCount'] = $r['onlineUserCount'] + $r['onlineGuestCount'];
 
-        return $r;
+        return [
+            'userCount' => $stats['user_count_total'],
+            'userTodayCount' => $stats['user_count_recent'],
+            'latestUser' => $stats['latest_user'],
+            'onlineUsers' => \implode( ', ', $users ),
+            'onlineUserCount' => \sizeof( $users ),
+            'onlineGuestCount' => $guestCount,
+            'onlineCount' => \sizeof( $users ) + $guestCount
+        ];
     }
 
 }

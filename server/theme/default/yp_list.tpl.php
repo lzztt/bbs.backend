@@ -19,9 +19,9 @@
                   <div class="node-inner">
 
                      <h2 class="title">
-                        <a title="<?php echo $n['title']; ?>" href="/node/<?php echo $n['nid']; ?>"><?php echo $n['title']; ?></a>
+                        <a title="<?php echo $n['title']; ?>" href="/node/<?php echo $n['id']; ?>"><?php echo $n['title']; ?></a>
                      </h2>
-                     <span id="ajax_viewCount_<?php echo $n['nid']; ?>"></span>次浏览，<?php echo $n['ratingCount']; ?>人评分，<?php echo $n['commentCount']; ?>条评论
+                     <span id="ajax_viewCount_<?php echo $n['id']; ?>"></span>次浏览，<?php echo $n['rating_count']; ?>人评分，<?php echo $n['comment_count']; ?>条评论
                      <div class="bcard">
                         <table>
                            <tbody>

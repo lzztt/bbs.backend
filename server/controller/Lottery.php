@@ -16,7 +16,7 @@ class Lottery extends Controller
         $this->cache->setStatus( FALSE );
 
         $func = (isset( $this->request->args[1] ) ? $this->request->args[1] : 'rules') . 'Handler';
-        $content = method_exists( $this, $func ) ? $this->$func() : $this->pageNotFound();
+        $content = \method_exists( $this, $func ) ? $this->$func() : $this->pageNotFound();
 
         $links = [
             'rules' => '规则',
@@ -71,7 +71,7 @@ class Lottery extends Controller
             {
                 die( 'Please Slow Down<br /><a href="' . $this->request->referer . '">go back</a>' );
             }
-            $lottery[$this->request->timestamp] = mt_rand( 0, 100 );
+            $lottery[$this->request->timestamp] = \mt_rand( 0, 100 );
             $this->session->lottery = $lottery;
             $this->request->redirect();
         }
@@ -108,89 +108,21 @@ class Lottery extends Controller
                 . '<a class="bigbutton" href="/user/edit#personal">填写名字和出生月份日期信息</a></div>';
         }
 
-        $t_start = \strtotime( '2011/12/16 00:00:00' );
-        $t_16 = \strtotime( '2011/12/23 20:00:00' );
-        $t_8 = \strtotime( '2011/12/30 21:00:00' );
-        $t_4 = \strtotime( '2012/01/06 21:00:00' );
-        $t_2 = \strtotime( '2012/01/12 21:00:00' );
-        $t_1 = \strtotime( '2012/01/18 21:00:00' );
+        // DB GET rounds time and quota
 
         if ( $this->request->timestamp < $t_start )
         {
             $round = 0;
             $isActive = FALSE;
             $t = $t_start - $this->request->timestamp;
-            $days = floor( $t / (3600 * 24) );
+            $days = \floor( $t / (3600 * 24) );
             $t = $t % (3600 * 24);
-            $hours = floor( $t / 3600 );
+            $hours = \floor( $t / 3600 );
             $t = $t % (3600);
-            $minutes = floor( $t / 60 );
+            $minutes = \floor( $t / 60 );
             $seconds = $t % (60);
             return '<div class="messagebox">正式抽奖将从<span class="highlight">2011年12月16日 00点00分00秒</span>(美国中部时间)开始<br />'
                 . '距离开始还有<span class="highlight">' . $days . '</span>天<span class="highlight">' . $hours . '</span>小时<span class="highlight">' . $minutes . '</span>分<span class="highlight">' . $seconds . '</span>秒</div>';
-        }
-        elseif ( $this->request->timestamp < $t_16 )
-        {
-            $round = 1;
-            $isActive = TRUE;
-        }
-        elseif ( $this->request->timestamp < $t_8 )
-        {
-            $round = 2;
-            $uids = [
-                1428,
-                1000,
-                685,
-                1040,
-                789,
-                763,
-                330,
-                5139,
-                4694,
-                3665,
-                3712,
-                1055,
-                1894,
-                3222,
-                4829,
-                1065,
-            ];
-            $isActive = \in_array( $this->request->uid, $uids ) ? TRUE : FALSE;
-        }
-        elseif ( $this->request->timestamp < $t_4 )
-        {
-            $round = 3;
-            $uids = [
-                4829,
-                330,
-                3222,
-                3665,
-                1428,
-                763,
-                789,
-                5139,
-            ];
-            $isActive = \in_array( $this->request->uid, $uids ) ? TRUE : FALSE;
-        }
-        elseif ( $this->request->timestamp < $t_2 )
-        {
-            $round = 4;
-            $uids = [
-                789,
-                763,
-                4829,
-                3665,
-            ];
-            $isActive = \in_array( $this->request->uid, $uids ) ? TRUE : FALSE;
-        }
-        elseif ( $this->request->timestamp < $t_1 )
-        {
-            $round = 5;
-            $uids = [
-                4829,
-                3665,
-            ];
-            $isActive = \in_array( $this->request->uid, $uids ) ? TRUE : FALSE;
         }
         else
         {
@@ -211,7 +143,7 @@ class Lottery extends Controller
             $lastLotteryTime = $_COOKIE['lastLotteryTime'];
             if ( $lastLotteryTime <= 0 )
             {
-                $lastLotteryTime = $db->val( 'SELECT time FROM LotteryResult WHERE uid = ' . $user->uid . ' ORDER BY time DESC LIMIT 1' );
+                //DB GET last lottery time
             }
 
             IF ( $this->request->timestamp - $lastLotteryTime < 60 )
@@ -222,69 +154,19 @@ class Lottery extends Controller
             \setcookie( 'lastLotteryTime', $this->request->timestamp, COOKIE_LIFETIME, COOKIE_PATH, '.' . DOMAIN );
             $code = \strtolower( $user->firstName ) . '_' . \substr( $birthday, 4, 4 );
             $points = \mt_rand( 0, 100 );
-            $db->query( 'INSERT INTO lotteryResults VALUES (' . $user->uid . ',' . $points . ',' . $this->request->timestamp . ',"' . $code . '")' );
-
-            $aPoints = [];
-            switch ( $round )
-            {
-                case 5:
-                    $aPoints[5] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 );
-                case 4:
-                    $aPoints[4] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 );
-                case 3:
-                    $aPoints[3] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 );
-                case 2:
-                    $aPoints[2] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 );
-                case 1:
-                    $aPoints[1] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 );
-            }
-
-            $average = 0;
-            foreach ( $aPoints as $i => $v )
-            {
-                if ( $v < 0.0001 )
-                {
-                    $aPoints[$i] = 0;
-                }
-                $average += ($v * \pow( 10, ($i - 1 ) ));
-            }
-            ksort( $aPoints );
-            for ( $i = 1; $i <= \sizeof( $aPoints ); $i++ )
-            {
-                $keys[] = 'points' . $i;
-            }
-            $db->query( 'REPLACE INTO LotteryUser (uid, username, points, ' . \implode( ', ', $keys ) . ') VALUES (' . $user->uid . ',"' . $user->username . '",' . $average . ', ' . implode( ', ', $aPoints ) . ')' );
+            // DB ADD lottery points
         }
 
         if ( !isset( $aPoints ) )
         {
-            $points = $db->row( 'SELECT points, points1, points2, points3, points4, points5 FROM LotteryUser WHERE uid = ' . $user->uid );
-            $average = $points['points'];
-            $aPoints = [];
-            for ( $i = 1; $i < sizeof( $points ); $i++ )
-            {
-                $k = 'points' . $i;
-                if ( $points[$k] > 0.00001 )
-                {
-                    $aPoints[$i] = $points[$k];
-                }
-            }
+            // DB GET average points
         }
         krsort( $aPoints );
 
         $results = [];
         switch ( $round )
         {
-            case 5:
-                $results[5] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 . ' ORDER BY time DESC' );
-            case 4:
-                $results[4] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 . ' ORDER BY time DESC' );
-            case 3:
-                $results[3] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 . ' ORDER BY time DESC' );
-            case 2:
-                $results[2] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 . ' ORDER BY time DESC' );
-            case 1:
-                $results[1] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 . ' ORDER BY time DESC' );
+            // DB get detailed points
         }
 
         foreach ( $aPoints as $k => $v )
@@ -305,60 +187,6 @@ class Lottery extends Controller
         return new Template( 'lotteryStart', ['average' => $average, 'aPoints' => $aPoints, 'results' => $results] );
     }
 
-    public function fixHandlerDisabled()
-    {
-        $round = 3;
-        $db = DB::getInstance();
-        $t_start = \strtotime( '2011/12/16 00:00:00' );
-        $t_16 = \strtotime( '2011/12/23 20:00:00' );
-        $t_8 = \strtotime( '2011/12/30 21:00:00' );
-        $t_4 = \strtotime( '2012/01/06 21:00:00' );
-        $t_2 = \strtotime( '2012/01/12 21:00:00' );
-        $t_1 = \strtotime( '2012/01/18 21:00:00' );
-        
-        $users = $db->select( 'SELECT uid FROM LotteryUser' );
-        $fixed_uids = '';
-        foreach ( $users as $u )
-        {
-            $user = new User( $u['uid'], 'username' );
-
-            $aPoints = [];
-            switch ( $round )
-            {
-                case 5:
-                    $aPoints[5] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 );
-                case 4:
-                    $aPoints[4] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 );
-                case 3:
-                    $aPoints[3] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 );
-                case 2:
-                    $aPoints[2] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 );
-                case 1:
-                    $aPoints[1] = $db->val( 'SELECT SUM(points)/COUNT(*) FROM LotteryResult WHERE uid = ' . $user->uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 );
-            }
-
-            $average = 0;
-            foreach ( $aPoints as $i => $v )
-            {
-                if ( $v < 0.0001 )
-                {
-                    $aPoints[$i] = 0;
-                }
-                $average += ($v * \pow( 10, ($i - 1 ) ));
-            }
-            \ksort( $aPoints );
-
-            $keys = [];
-            for ( $i = 1; $i <= \sizeof( $aPoints ); $i++ )
-            {
-                $keys[] = 'points' . $i;
-            }
-            $db->query( 'REPLACE INTO LotteryUser (uid, username, points, ' . \implode( ', ', $keys ) . ') VALUES (' . $user->uid . ',"' . $user->username . '",' . $average . ', ' . implode( ', ', $aPoints ) . ')' );
-            $fixed_uids .= $user->uid . ' : ' . $user->username . '<br />';
-        }
-        return $fixed_uids;
-    }
-
     public function rankHandler()
     {
         if ( $this->request->uid == 0 )
@@ -371,103 +199,9 @@ class Lottery extends Controller
 
         if ( $this->request->args[2] === 'record' && \is_numeric( $this->request->args[3] ) )
         {
-            $t_start = \strtotime( '2011/12/16 00:00:00' );
-            $t_16 = \strtotime( '2011/12/23 20:00:00' );
-            $t_8 = \strtotime( '2011/12/30 21:00:00' );
-            $t_4 = \strtotime( '2012/01/06 21:00:00' );
-            $t_2 = \strtotime( '2012/01/12 21:00:00' );
-            $t_1 = \strtotime( '2012/01/18 21:00:00' );
-
-            if ( $this->request->timestamp < $t_start )
-            {
-                $round = 0;
-            }
-            elseif ( $this->request->timestamp < $t_16 )
-            {
-                $round = 1;
-            }
-            elseif ( $this->request->timestamp < $t_8 )
-            {
-                $round = 2;
-            }
-            elseif ( $this->request->timestamp < $t_4 )
-            {
-                $round = 3;
-            }
-            elseif ( $this->request->timestamp < $t_2 )
-            {
-                $round = 4;
-            }
-            elseif ( $this->request->timestamp < $t_1 )
-            {
-                $round = 5;
-            }
-            else
-            {
-                $round = 5;
-            }
-
-            $uid = (int) $this->request->args[3];
-
-            $points = $db->row( 'SELECT username, points, points1, points2, points3, points4, points5 FROM LotteryUser WHERE uid = ' . $uid );
-            $username = $points['username'];
-            $average = $points['points'];
-            $aPoints = [];
-            for ( $i = 1; $i <= 5; $i++ )
-            {
-                $k = 'points' . $i;
-                if ( $points[$k] > 0.00001 )
-                {
-                    $aPoints[$i] = $points[$k];
-                }
-            }
-
-            \krsort( $aPoints );
-
-            $results = [];
-            switch ( $round )
-            {
-                case 5:
-                    $results[5] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_2 . ' AND time < ' . $t_1 . ' ORDER BY time DESC' );
-                case 4:
-                    $results[4] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_4 . ' AND time < ' . $t_2 . ' ORDER BY time DESC' );
-                case 3:
-                    $results[3] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_8 . ' AND time < ' . $t_4 . ' ORDER BY time DESC' );
-                case 2:
-                    $results[2] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_16 . ' AND time < ' . $t_8 . ' ORDER BY time DESC' );
-                case 1:
-                    $results[1] = $db->select( 'SELECT points, time, code FROM LotteryResult WHERE uid = ' . $uid . ' AND time > ' . $t_start . ' AND time < ' . $t_16 . ' ORDER BY time DESC' );
-            }
-
-            foreach ( $aPoints as $k => $v )
-            {
-                if ( $v < 0.0001 )
-                {
-                    unset( $aPoints[$k] );
-                }
-            }
-            foreach ( $results as $k => $v )
-            {
-                if ( \sizeof( $v ) == 0 )
-                {
-                    unset( $results[$k] );
-                }
-            }
-
-            if ( \sizeof( $results ) > 0 )
-            {
-                return new Template( 'lotteryRecord', ['username' => $username, 'average' => $average, 'aPoints' => $aPoints, 'results' => $results] );
-            }
-            else
-            {
-                return '<div class="messagebox">该用户无抽奖记录</div>';
-            }
+            // DB GET round time
         }
-
-        $rank = $db->select( 'SELECT uid, username, points, points1, points2, points3, points4, points5 FROM LotteryUser ORDER BY points DESC' );
-        $userCount = \sizeof( $rank );
-        $recordCount = $db->val( 'SELECT COUNT(*) FROM LotteryResult' );
-        return new Template( 'lotteryRank', ['userCount' => $userCount, 'recordCount' => $recordCount, 'rank' => $rank] );
+        //return new Template( 'lotteryRank', ['userCount' => $userCount, 'recordCount' => $recordCount, 'rank' => $rank] );
     }
 
 }

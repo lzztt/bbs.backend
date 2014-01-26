@@ -60,12 +60,12 @@ class YP extends Controller
         $tag = new Tag();
         $tag->id = self::YP_ROOT_TID;
         $yp = $tag->getTagTree();
-        $this->html->var['content'] = new Template( 'yp_home', ['yp' => $yp] );
+        $this->html->var['content'] = new Template( 'yp_home', ['tid' => $tag->id, 'yp' => $yp] );
     }
 
     public function showYellowPageList( $tid )
     {
-        $tag = new Tag( $tid, 'id,name,parent' );
+        $tag = new Tag( $tid, 'id,name,description,parent' );
         $tids = \implode( ',', $tag->getLeafTIDs() );
 
         $node = new Node();
@@ -100,14 +100,14 @@ class YP extends Controller
         $nids = [];
         foreach ( $nodes as $i => $n )
         {
-            $nids[] = $n['nid'];
+            $nids[] = $n['id'];
             $nodes[$i]['title'] = $this->html->truncate( $n['title'], 45 );
         }
 
         $contents = [
             'tid' => $tid,
-            'cateName' => $tags[$tid]['name'],
-            'cateDescription' => $tags[$tid]['description'],
+            'cateName' => $tag->name,
+            'cateDescription' => $tag->description,
             'breadcrumb' => $breadcrumb,
             'pager' => $pager,
             'nodes' => (empty( $nodes ) ? NULL : $nodes),
@@ -140,12 +140,12 @@ class YP extends Controller
             {
                 $node = new Node();
                 //$node->tid = $tid;
-                $node->where( 'nid', $nids, '=' );
-                $arr = $node->getList( 'nid,viewCount' );
+                $node->where( 'id', $nids, '=' );
+                $arr = $node->getList( 'id,viewCount' );
 
                 foreach ( $arr as $r )
                 {
-                    $viewCount['viewCount_' . $r['nid']] = (int) $r['viewCount'];
+                    $viewCount['viewCount_' . $r['id']] = (int) $r['viewCount'];
                 }
             }
         }
