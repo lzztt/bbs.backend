@@ -574,7 +574,7 @@ class Node extends Controller
       {
          // save modification
          $nid = \intval( $this->request->args[1] );
-         $node = new NodeObject( $nid, 'nid,tid' );
+         $node = new NodeObject( $nid, 'tid' );
          if ( $node->exists() )
          {
             $node->title = $this->request->post['title'];
@@ -597,10 +597,10 @@ class Node extends Controller
          $file = new Image();
          $file->updateFileList( $files, $this->config->path['file'], $nid );
 
-         $this->cache->delete( '/node/' . $node->nid );
+         $this->cache->delete( '/node/' . $nid );
          $this->cache->delete( '/yp/' . $node->tid );
 
-         $this->request->redirect( '/node/' . $node->nid );
+         $this->request->redirect( '/node/' . $nid );
       }
 // refresh node content cache
    }
@@ -750,7 +750,7 @@ class Node extends Controller
 
             $mailer = new Mailer();
             $mailer->to = 'admin@houstonbbs.com';
-            $mailer->subject = '新活动 ' . $node->nid . ' 长于一天 (请检查)';
+            $mailer->subject = '新活动 ' . $nid . ' 长于一天 (请检查)';
             $mailer->body = $node->title . ' : ' . \date( 'm/d/Y H:i', $startTime ) . ' - ' . \date( 'm/d/Y H:i', $endTime );
             if ( $mailer->send() === FALSE )
             {
