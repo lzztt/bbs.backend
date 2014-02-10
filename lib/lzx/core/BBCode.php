@@ -8,107 +8,85 @@ namespace lzx\core;
 class BBCode
 {
 
-   private static function _bbcode_escape($s)
-   { // all input should has already been processed by htmlentity() function before stored, to prevent html injunction
-      $code = $s[1];
-      $code = str_replace(['[', ']'], ['&#91;', '&#93;'], $code);
-      return '<code class="code">' . $code . '</code>';
-   }
-
-   // clean some tags to remain strict
-   // not very elegant, but it works. No time to do better ;)
-   private static function _bbcode_removeBr($s)
+   public static function parse( $text )
    {
-      return str_replace('<br />', '', $s[0]);
-   }
-
-   public static function filter($text)
-   {
-      if (strpos($text, '[/') === FALSE)
-      {// if no colse tag, don't borther
-         $text = preg_replace('#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text);
-         return nl2br($text);
-      }
-
-      // BBCode [code]
-      $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [self, '_bbcode_escape'], $text);
-
-      // Smileys to find...
-      // Add closing tags to prevent users from disruping your site's HTML
-      // (required for nestable tags only: [list] and [quote])
-      $unclosed = ((int) preg_match_all('/\[quote\="?(.*?)"?\]/ms', $text, $matches)) + substr_count($text, '[quote]') - substr_count($text, '[/quote]');
-
-      if ($unclosed < 0)
-         $text = str_repeat('[quote]', (-$unclosed)) . $text;
-      if ($unclosed > 0)
-         $text = $text . str_repeat('[/quote]', $unclosed);
-
-      /*
-        for ($i = 0; $i < (substr_count($text, '[list') - substr_count($text, '[/list]')); $i++)
-        {
-        $text .= '[/list]';
-        }
-       */
-
-      $text = str_replace(['[quote]', '[/quote]'], ['<div class="quote">Quote:<blockquote class="quote-body">', '</blockquote></div>'], $text);
-
-      // BBCode to find...
-      $bbcode = [
-         '/\[b\](.*?)\[\/b\]/ms'
-         => '<strong>\1</strong>',
-         '/\[i\](.*?)\[\/i\]/ms'
-         => '<em>\1</em>',
-         '/\[u\](.*?)\[\/u\]/ms'
-         => '<span style="text-decoration:underline">\1</span>',
-         '/\[s\](.*?)\[\/s\]/ms'
-         => '<del>\1</del>',
-         '/\[img\="?(.*?)"?\](.*?)\[\/img\]/ms'
-         => '<div class="bb-image"><img src="\2" alt="\2" /></div>',
-         '/\[img\](.*?)\[\/img\]/ms'
-         => '<div class="bb-image"><img src="\1" alt="\1" /></div>',
-         '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms'
-         => '<a href="\1">\2</a>',
-         '/\[url](.*?)\[\/url\]/ms'
-         => '<a href="\1">\1</a>',
-         '/\[size\="?(.*?)"?\](.*?)\[\/size\]/ms'
-         => '<span style="font-size:\1">\2</span>',
-         '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms'
-         => '<span style="color:\1">\2</span>',
-         '/\[bgcolor\="?(.*?)"?\](.*?)\[\/bgcolor\]/ms'
-         => '<span style="background-color:\1">\2</span>',
-         '/\[quote\="?(.*?)"?\]/ms'
-         => '<div class="quote"><b>\1 wrote:</b><blockquote class="quote-body">',
-         '/\[list\=(.*?)\](.*?)\[\/list\]/ms'
-         => '<ol start="\1">\2</ol>',
-         '/\[list\](.*?)\[\/list\]/ms'
-         => '<ul>\1</ul>',
-         '/\[\*\]\s?(.*?)\n/ms'
-         => '<li>\1</li>',
-         '/\[youtube\](.*?)\[\/youtube\]/ms'
-         => '<iframe width="480" height="360" src="http://www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>',
-         '/\[tudou\](.*?)\[\/tudou\]/ms'
-         => '<embed src="http://www.tudou.com/v/\1/v.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" wmode="opaque" width="480" height="400"></embed>',
+      static $bbc = [
+         'code' => ['code' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<code class="code">', 'close_tag' => '</code>', 'content_handling' => [__CLASS__, '_escape']]],
+         'tags' => [
+            'b' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<strong>', 'close_tag' => '</strong>'],
+            'i' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<em>', 'close_tag' => '</em>'],
+            'u' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<span style="text-decoration:underline">', 'close_tag' => '</span>'],
+            's' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<del>', 'close_tag' => '</del>'],
+            'img' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '{CONTENT}', 'content_handling' => [__CLASS__, '_img']],
+            'url' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '<a href="{PARAM}">', 'close_tag' => '</a>', 'default_arg' => '{CONTENT}'],
+            'size' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="font-size:{PARAM}">', 'close_tag' => '</span>'],
+            'color' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="color:{PARAM}">', 'close_tag' => '</span>'],
+            'bgcolor' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="background-color:{PARAM}">', 'close_tag' => '</span>'],
+            'quote' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<div class="quote"><b>{PARAM} wrote:</b><blockquote class="quote-body">', 'close_tag' => '</blockquote></div>'],
+            'list' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '', 'content_handling' => [__CLASS__, '_list']],
+            'youtube' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_youtube']],
+            'tudou' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_tudou']],
+         ]
       ];
 
-      $text = preg_replace(array_keys($bbcode), array_values($bbcode), $text);
+      // only process bbcode when seeing a colse tag
+      if ( \strpos( $text, '[/' ) !== FALSE )
+      {
+         // process [code] tag
+         if ( \strpos( $text, '[code]' ) !== FALSE )
+         {
+            $text = \bbcode_parse( \bbcode_create( $bbc['code'] ), $text );
+         }
 
-      // paragraphs
-      //$text = str_replace("\r", "", $text);
-      //$text = "<p>" . preg_replace("/(\n){2,}/", "</p><p>", $text) . "</p>";
-      $text = nl2br($text);
+         // process other BBCode tags
+         $text = \bbcode_parse( \bbcode_create( $bbc['tags'] ), $text );
+      }
 
+      return \nl2br( $text );
+   }
 
-      $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [self, '_bbcode_removeBr'], $text);
-      //$text = preg_replace('/<p><pre>(.*?)<\/pre><\/p>/ms', "<pre>\\1</pre>", $text);
+   private static function _escape( $content, $param )
+   {
+      return \str_replace( ['[', ']'], ['&#91;', '&#93;'], $content );
+   }
 
-      $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [self, '_bbcode_removeBr'], $text);
-      //$text = preg_replace('/<p><ul>(.*?)<\/ul><\/p>/ms', "<ul>\\1</ul>", $text);
-      // matches an "xxxx://yyyy" URL at the start of a line, or after a space.
-      // xxxx can only be alpha characters.
-      // yyyy is anything up to the first space, newline, comma, double quote or <
-      $text = preg_replace('#(?<=^|[\t\r\n >\(\[\]\|])([a-z]+?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text);
+   private static function _img( $content, $param )
+   {
+      return '<div class="bb-image"><img src="' . $content . '" alt="' . ($param == '{CONTENT}' ? $content : $param) . '" /></div>';
+   }
 
-      return $text;
+   private static function _list( $content, $param )
+   {
+      $li = '';
+      foreach ( \explode( '[*]', $content ) as $i )
+      {
+         $t = \trim( $i );
+         if ( \strlen( $t ) )
+         {
+            $li = $li . '<li>' . $t . '</li>';
+         }
+      }
+
+      if ( empty( $param ) )
+      {
+         return '<ul>' . $li . '</ul>';
+      }
+      else
+      {
+         return '<ol start="' . $param . '">' . $li . '</ol>';
+      }
+   }
+
+   private static function _youtube( $content, $param )
+   {
+      return '<iframe width="480" height="360" src="http://www.youtube.com/embed/' . $content . '" frameborder="0" allowfullscreen></iframe>';
+   }
+
+   private static function _tudou( $content, $param )
+   {
+      return '<embed src="http://www.tudou.com/v/' . $content . '/v.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" wmode="opaque" width="480" height="400"></embed>';
    }
 
 }
+
+//__END_OF_FILE__

@@ -44,29 +44,8 @@ class Tag extends DBObject
      * rarely used, only get leaves for a root id (forum / yellow page)
      */
 
-    public function getLeafTags( $id, $properties = '' )
-    {
-        static $leafTags = [];
-
-        if ( !\array_key_exists( $id, $leafTags ) )
-        {
-            $tag = new Tag();
-            $tag->where( 'parent', NULL, 'IS NOT' );
-            $tag->where( 'root', $id, '=' );
-            $tag->order( 'weight' );
-            $leafTags[$id] = $tag->getList( $properties );
-        }
-        return $leafTags[$id];
-    }
-
-    /*
-     * rarely used, only get leaves for a root id (forum / yellow page)
-     */
-
     public function getLeafTIDs()
     {
-        static $leafTIDs = [];
-
         if ( $this->id )
         {
             $ids = [];
@@ -80,6 +59,7 @@ class Tag extends DBObject
             }
             return $ids;
         }
+        return [];
     }
 
     /*

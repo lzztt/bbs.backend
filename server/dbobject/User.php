@@ -128,7 +128,7 @@ class User extends DBObject
         $nids = [];
         if ( $this->id > 1 )
         {
-            foreach ( $this->_db->call( 'get_user_node_ids(' . $this->id . ')' ) as $n )
+            foreach ( $this->call( 'get_user_node_ids(' . $this->id . ')' ) as $n )
             {
                 $nids[] = $n['nid'];
             }
@@ -194,7 +194,7 @@ class User extends DBObject
             if ( !$geo || $geo['region'] != 'TX' )
             {
                 $oneday = \intval( $timestamp - 86400 );
-                $count = \array_pop( \array_pop( $this->_db->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
+                $count = \array_pop( \array_pop( $this->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
                 if ( $count >= $days )
                 {
                     throw new \Exception( 'Quota limitation reached!<br />Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours. <br /> You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.' );
@@ -205,9 +205,9 @@ class User extends DBObject
 
     public function getUserStat( $timestamp )
     {
-        $stats = \array_pop( $this->_db->call( 'get_user_stat(' . \strtotime( \date( "m/d/Y" ) ) . ')' ) );
+        $stats = \array_pop( $this->call( 'get_user_stat(' . \strtotime( \date( "m/d/Y" ) ) . ')' ) );
 
-        $onlines = $this->_db->call( 'get_user_online(' . $timestamp . ')' );
+        $onlines = $this->call( 'get_user_online(' . $timestamp . ')' );
 
         $users = [];
         $guestCount = 0;

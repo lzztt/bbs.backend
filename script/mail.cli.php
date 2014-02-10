@@ -1,101 +1,149 @@
 <?php
 
-require_once dirname(__DIR__) . '/apps/common.php';
+namespace site;
 
-define('TPL_PATH', ROOT . TPL_URL);
+use \lzx\App;
+use \lzx\core\MySQL;
+use \lzx\core\Mailer;
+use \lzx\html\Template;
+use \site\MailApp;
 
-$flag = ROOT . '/mail.finished.log';
+// note: cache path in php and nginx are using server_name
+$_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
+// $config->domain need http_host
+$_SERVER['HTTP_HOST'] = 'www.houstonbbs.com';
 
-if (!file_exists($flag))
-{
-  $timer = microtime(TRUE);
+$_SERVERDIR = \dirname( __DIR__ );
+$_LZXROOT = \dirname( $_SERVERDIR ) . '/lib/lzx';
 
-  $func = 'do_mail';
-  require_once ROOT . '/settings.php';
-  require_once CLS_PATH . 'Log.cls.php';
-  require_once CLS_PATH . 'MySQL.cls.php';
-  require_once CLS_PATH . 'Theme.cls.php';
+require_once $_LZXROOT . '/App.php';
 
-  $db = MySQL::getInstance();
-  if ($func($db))
-  {
-    Log::info('SEND MAIL AT ' . DATETIME . ', USING ' . round((microtime(TRUE) - $timer), 3) . ' Second');
-  }
-  else
-  {
-    touch($flag);
-    Log::info('MAIL QUEUE IS EMPTY AT ' . DATETIME);
-  }
-}
-
-
-function do_mail($db)
+class MailApp extends App
 {
 
-  $users = $db->select('SELECT uid, username, email FROM mails WHERE status IS NULL LIMIT 20');
-
-  if (sizeof($users) > 0)
-  {
-    require_once CLS_PATH . 'Mailer.cls.php';
-    $mailer = new Mailer();
-    $mailer->from = 'admin';
-    $mailer->subject = 'HoustonBBS Lottery 缤纷节日抽奖';
-    foreach ($users as $u)
+    public function run( $argc, Array $argv )
     {
-      $mailer->to = $u['email'];
+        $uid = $argc;
+        $db = MySQL::getInstance( $this->config->database, TRUE );
+        $users = $db->select( 'SELECT uid, username, email, createTime FROM User WHERE uid > ' . $uid . ' LIMIT 550' );
 
-      $contents = [
-          'username' => $u['username']
-      ];
-      $mailer->body = Theme::render('mail/lottery', $contents);
-      if ($mailer->send())
-      {
-        $db->query('UPDATE mails SET status = 1 WHERE uid = ' . $u['uid']);
-      }
-      else
-      {
-        $db->query('UPDATE mails SET status = 0 WHERE uid = ' . $u['uid']);
-        Log::info('News Letter Email Sending Error: ' . $u['uid']);
-      }
-      sleep(2);
+        if ( \sizeof( $users ) > 0 )
+        {
+            $mailer = new Mailer();
+            $mailer->from = 'care';
+            $mailer->subject = '缤纷休斯顿网 祝你新春快乐 马到成功';
+            $status = [];
+            foreach ( $users as $i => $u )
+            {
+                $mailer->to = $u['email'];
+                $contents = [
+                    'username' => $u['username'],
+                    'time' => $this->time( $u['createTime'] )
+                ];
+                Template::setLogger( $this->logger );
+                Template::$theme = $this->config->theme;
+                Template::$path = $this->path['theme'];
+                $mailer->body = new Template( 'mail/newyear', $contents );
+
+                if ( $mailer->send() )
+                {
+                    $status[] = '(' . $u['uid'] . ', 1)';
+                }
+                else
+                {
+                    $status[] = '(' . $u['uid'] . ', 0)';
+                    Log::info( 'News Letter Email Sending Error: ' . $u['uid'] );
+                }
+                if ( $i % 100 == 99 )
+                {
+                    $db->query( 'INSERT INTO Mail (uid, status) values ' . \implode( ',', $status ) );
+                    $status = [];
+                }
+                sleep( 6 );
+            }
+            if ( $status )
+            {
+                $db->query( 'INSERT INTO Mail (uid, status) values ' . \implode( ',', $status ) );
+            }
+            $last = \array_pop( $users );
+            return $last['uid'];
+        }
     }
-    return TRUE;
-  }
+
+    private function time( $timestamp )
+    {
+        $intv = \date_diff( new \DateTime( \date( 'now' ) ), new \DateTime( \date( 'Y-m-d H:i:s', $timestamp ) ) );
+        $days = $intv->days;
+        if ( $days / 365 > 4 )
+        {
+            return '四年多以来';
+        }
+        if ( $days / 365 > 3 )
+        {
+            return '三年多以来';
+        }
+        if ( $days / 365 > 2 )
+        {
+            return '两年多以来';
+        }
+        if ( $days / 365 > 1 )
+        {
+            return '一年多以来';
+        }
+        if ( $days / 365 > 0.5 )
+        {
+            return '半年多以来';
+        }
+        if ( $days / 30 > 5 )
+        {
+            return '五个多月来';
+        }
+        if ( $days / 30 > 4 )
+        {
+            return '四个多月来';
+        }
+        if ( $days / 30 > 3 )
+        {
+            return '三个多月来';
+        }
+        if ( $days / 30 > 2 )
+        {
+            return '两个多月来';
+        }
+        if ( $days / 30 > 1 )
+        {
+            return '一个多月来';
+        }
+
+        return '近期';
+    }
 
 }
 
-class Language
+$flag = '/run/mail/sending';
+$lock = '/run/mail/lock';
+if ( \file_exists( $flag ) )
 {
+    if( \file_exists( $lock ) )
+    {
+        echo 'unable to get mail sending lock, aborting';
+        exit(1);
+    }
+    else
+    {
+        \touch( $lock );
 
-   private $_pool;
-   private $_name;
-   private $_lang;
+        $uid = \intval( \file_get_contents( $flag ) );
+        $app = new MailApp( $_SERVERDIR . '/config.php', array(__NAMESPACE__ => $_SERVERDIR) );
+        $uid_new = \intval( $app->run( $uid, [] ) );
+        if ( $uid_new > $uid )
+        {
+            \file_put_contents( $flag, $uid_new );
+        }
 
-   public function __construct($name, $lang=null)
-   {
-      $this->_name = empty($name) ? 'system' : $name;
-      $this->_lang = in_array($lang, ['en', 'zh-hans', 'zh-hant']) ? $lang : LANG_DEFAULT;
-   }
-
-   public function s($key, $vars=array()) // get a language string
-   {
-      if (!isset($this->_pool))
-      {
-         include TPL_PATH . 'languages/' . $this->_lang . '/' . $this->_name . '.lang.php';
-         $this->_pool = $l;
-      }
-
-      if (isset($this->_pool[$key]) && is_string($this->_pool[$key]))
-      {
-         extract($vars, EXTR_SKIP);  // Extract the variables to a local namespace
-         $val = $this->_pool[$key];
-      }
-      else
-      {
-         $val = '[' . TPL . ':' . $this->_lang . ':' . $this->_name . ':' . $key . ']';
-      }
-      return $val;
-   }
-
+        \unlink( $lock );
+    }
 }
+
+
 //__END_OF_FILE__

@@ -80,7 +80,7 @@ class PM extends Controller
         $receipt->attributes = ['readonly' => 'readonly'];
         $receipt->setValue( $replyTo['username'] );
         $message = new TextArea( 'body', '回复内容', '最少5个字母或3个汉字', TRUE );
-        $toUID = new Hidden( 'toUID', $replyTo['uid'] );
+        $toUID = new Hidden( 'toUID', $replyTo['id'] );
         $fromUID = new Hidden( 'fromUID', $this->request->uid );
 
         $reply_form->setData( array(
