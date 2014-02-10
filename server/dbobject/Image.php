@@ -207,7 +207,7 @@ class Image extends DBObject
                 $fid = \intval( $fid );
                 if ( $file['name'] != $images[$fid]['name'] )
                 {
-                    $this->_db->call( 'update_image(' . $fid . ',"' . $file['name'] . '"' );
+                    $this->call( 'update_image(' . $fid . ',"' . $file['name'] . '"' );
                 }
                 unset( $images[$fid] );
             }
@@ -232,13 +232,13 @@ class Image extends DBObject
         // delete old saved files are not in new version
         if ( $images )
         {
-            $this->_db->call( 'delete_images("' . \implode( ',', \array_keys( $images ) ) . '")' );
+            $this->call( 'delete_images("' . \implode( ',', \array_keys( $images ) ) . '")' );
         }
 
         // insert new files
         if ( \sizeof( $insert ) > 0 )
         {
-            $this->_db->call( 'insert_images(' . $this->_db->str( \implode( ',', $insert ) ) . ')' );
+            $this->call( 'insert_images(:values)', [':values' => \implode( ',', $insert )] );
         }
     }
 

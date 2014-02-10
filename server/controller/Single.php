@@ -72,7 +72,7 @@ class Single extends Controller
         ];
         $this->html->var['content'] = new Template( 'FFhome', $content );
 
-        $this->db->call( 'update_view_count_single("' . \session_id() . '")' );
+        $this->db->query( 'CALL update_view_count_single("' . \session_id() . '")' );
     }
 
     public function getImageSlider()
@@ -105,9 +105,9 @@ class Single extends Controller
     // attend activity
     public function attendAction()
     {
-        if ( \file_exists( $this->path['file'] . '/ffmy.msg' ) )
+        if ( \file_exists( $this->config->path['file'] . '/ffmy.msg' ) )
         {
-            echo '<span style="color:#B22222">错误</span>: ' . \file_get_contents( $this->path['file'] . '/ffmy.msg' );
+            echo '<span style="color:#B22222">错误</span>: ' . \file_get_contents( $this->config->path['file'] . '/ffmy.msg' );
             exit;
         }
 
@@ -146,7 +146,7 @@ class Single extends Controller
         $mailer->to = $attendee->email;
         $mailer->subject = $attendee->name . '，您的单身活动报名已经收到';
 
-        $count = \array_pop( $this->db->call( 'get_attendee_count_single(' . $this->thirty_two_start . ')' ) );
+        $count = \array_pop( $this->db->query( 'CALL get_attendee_count_single(' . $this->thirty_two_start . ')' ) );
         $contents = [
             'name' => $attendee->name,
             'male' => $count['male'],
@@ -212,11 +212,11 @@ class Single extends Controller
     public function viewComment()
     {
         $db = $this->db;
-        $comments = $db->call( 'get_attendee_comments_single(' . $this->thirty_two_start . ',' . $this->request->timestamp . ')' );
-        $comments_thirty = $db->call( 'get_attendee_comments_single(' . $this->thirty_start . ',' . $this->thirty_two_start . ')' );
-        $comments_rich = $db->call( 'get_attendee_comments_single(' . $this->rich_start . ',' . $this->thirty_start . ')' );
-        $comments_tea = $db->call( 'get_attendee_comments_single(' . $this->tea_start . ',' . $this->rich_start . ')' );
-        $comments_qixi = $db->call( 'get_attendee_comments_single(0,' . $this->tea_start . ')' );
+        $comments = $db->query( 'CALL get_attendee_comments_single(' . $this->thirty_two_start . ',' . $this->request->timestamp . ')' );
+        $comments_thirty = $db->query( 'CALL get_attendee_comments_single(' . $this->thirty_start . ',' . $this->thirty_two_start . ')' );
+        $comments_rich = $db->query( 'CALL get_attendee_comments_single(' . $this->rich_start . ',' . $this->thirty_start . ')' );
+        $comments_tea = $db->query( 'CALL get_attendee_comments_single(' . $this->tea_start . ',' . $this->rich_start . ')' );
+        $comments_qixi = $db->query( 'CALL get_attendee_comments_single(0,' . $this->tea_start . ')' );
 
         return new Template( 'FFview_comment', [ 'comments' => $comments, 'comments_thirty' => $comments_thirty, 'comments_rich' => $comments_rich, 'comments_tea' => $comments_tea, 'comments_qixi' => $comments_qixi] );
     }
@@ -228,7 +228,7 @@ class Single extends Controller
         {
             $db = $this->db;
             $content = [
-                'attendees' => $db->call( 'get_attendees_single(' . $this->thirty_two_start . ')' )
+                'attendees' => $db->query( 'CALL get_attendees_single(' . $this->thirty_two_start . ')' )
             ];
 
             $this->html->var['content'] = new Template( 'FFattendee', $content );
@@ -278,7 +278,7 @@ class Single extends Controller
     private function getAgeStatJSON( $startTime, $endTime )
     {
         $db = $this->db;
-        $counts = $db->call( 'get_age_stat_single(' . $startTime . ',' . $endTime . ')' );
+        $counts = $db->query( 'CALL get_age_stat_single(' . $startTime . ',' . $endTime . ')' );
         $ages = [
             '<=22' => 0,
             '23~25' => 0,
@@ -439,7 +439,7 @@ class Single extends Controller
 
     public function footerAction( $return = FALSE )
     {
-        $c = \array_pop( $this->db->call( 'get_stat_single(' . $this->thirty_two_start . ')' ) );
+        $c = \array_pop( $this->db->query( 'CALL get_stat_single(' . $this->thirty_two_start . ')' ) );
         $r = [
             'visitorCount' => $c['visitor'],
             'hitCount' => $c['hit'],

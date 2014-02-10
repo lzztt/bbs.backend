@@ -4,6 +4,7 @@ namespace lzx\core;
 
 class Mailer
 {
+
    public $domain;
    public $from;
    public $to;
@@ -12,15 +13,15 @@ class Mailer
    public $body;
    public $signature = "\n\n-----------------\nThe HoustonBBS Team";
 
-   public function __construct($from = 'noreply', $domain = NULL)
+   public function __construct( $from = 'noreply', $domain = NULL )
    {
-      if ($domain)
+      if ( $domain )
       {
          $this->domain = $domain;
       }
       else
       {
-         $this->domain = \implode('.', \array_slice(\explode('.', $_SERVER['HTTP_HOST']), -2));
+         $this->domain = \implode( '.', \array_slice( \explode( '.', $_SERVER['HTTP_HOST'] ), -2 ) );
       }
       $this->from = $from;
    }
@@ -34,15 +35,15 @@ class Mailer
          'Content-Type: text/' . ($this->is_html ? 'html' : 'plain') . '; charset=utf-8; format=flowed; delsp=yes' . \PHP_EOL .
          'X-Mailer: HoustonBBSMailer';
 
-      if (!(isset($this->to) && isset($this->subject) && isset($this->body)))
+      if ( !(isset( $this->to ) && isset( $this->subject ) && isset( $this->body )) )
       {
          return FALSE;
       }
 
-      $subject = "=?UTF-8?B?" . \base64_encode(trim(str_replace(["\r", \PHP_EOL, "\r\n"], "", $this->subject))) . "?=";
+      $subject = "=?UTF-8?B?" . \base64_encode( trim( str_replace( ["\r", \PHP_EOL, "\r\n"], "", $this->subject ) ) ) . "?=";
       $body = $this->body . $this->signature;
 
-      if (\mail($this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain))
+      if ( \mail( $this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain ) )
       {
          return TRUE;
       }

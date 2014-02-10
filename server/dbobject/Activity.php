@@ -42,9 +42,9 @@ class Activity extends DBObject
         return $this->call( 'get_activities(' . $limit . ',' . $offset . ')' );
     }
 
-    public function addActivity( $nid, $startTime, $endTime )
+    public function addActivity( $nid, $beginTime, $endTime )
     {
-        $this->_db->query( 'REPLACE INTO activities (nid,start_time,end_time) VALUES (' . $nid . ',' . $startTime . ',' . $endTime . ')' );
+        $this->call( 'add_activity(' . $nid . ',' . $beginTime . ',' . $endTime . ')' );
     }
 
 }

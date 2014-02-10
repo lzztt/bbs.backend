@@ -3,11 +3,7 @@
       <div class="node-type-yp" id="node-2622">
          <div class="node-inner">
 
-            <div id="content-header">
-               <?php print $breadcrumb; ?>
-               <h1 id="node-title" class="title"><?php echo $title; ?></h1>
-               <div style="height: 5px;"></div>
-            </div>
+            <div id="content-header"><?php print $breadcrumb; ?></div>
 
             <div class="forum-top-links">
                <ul class="links forum-links">
