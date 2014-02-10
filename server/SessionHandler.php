@@ -37,7 +37,7 @@ class SessionHandler implements \SessionHandlerInterface
 
     public function read( $sid )
     {
-        $res = $this->_db->call( 'read_session("' . $sid . '",' . $_SERVER['REQUEST_TIME'] . ')' );
+        $res = $this->_db->query( 'CALL read_session(:sid, :time)', [':sid' => $sid, ':time' => $_SERVER['REQUEST_TIME']] );
         if ( \is_array( $res ) && \sizeof( $res ) == 1 )
         {
             $this->_data = \array_pop( \array_pop( $res ) );
@@ -55,14 +55,14 @@ class SessionHandler implements \SessionHandlerInterface
 
         if ( $data != $this->_data )
         {
-            $this->_db->call( 'write_session("' . $sid . '",' . $this->_db->str( $data ) . ',' . \intval( $_SESSION['uid'] ) . ')' );
+            $this->_db->query( 'CALL write_session(:sid, :data, :uid)', [':sid' => $sid, ':data' => $data, ':uid' => $_SESSION['uid']] );
         }
         return TRUE;
     }
 
     public function destroy( $sid )
     {
-        $this->_db->call( 'delete_session("' . $sid . '")' );
+        $this->_db->query( 'CALL delete_session(:sid)', [':sid' => $sid] );
         return TRUE;
     }
 

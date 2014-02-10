@@ -27,6 +27,7 @@ class Config
     public function __construct()
     {
         $this->stage = self::STAGE_DEVELOPMENT;
+        //$this->stage = self::STAGE_PRODUCTION;
         $this->mode = self::MODE_FULL;
         $this->cache = FALSE;
 
@@ -41,12 +42,11 @@ class Config
             'cache' => '/cache/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
         ];
         $this->db = [
-            'host' => 'p:localhost',
+            'dsn' => 'hbbs',
             'user' => 'web',
             'password' => 'Ab663067',
-            'dbname' => 'hbbs'
         ];
-        $this->getkeys = ['p', 'page', 'type', 'tid', 'nid', 'nids', 'mqq_source'];
+        $this->getkeys = ['p', 'page', 'type', 'tid', 'nid', 'nids', 'nosession'];
         $this->language = 'zh-cn';
         $this->theme = [
             'default' => 'default',

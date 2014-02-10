@@ -491,9 +491,9 @@ class Template
         {
             $list[] = $this->link( $i['name'], $i['href'], ['title' => $i['title']] );
         }
-        $list[] = $this->link( $current['name'], '#', ['title' => $i['title'], 'class' => 'active'] );
+        $list[] = $current['name'];
 
-        return new HTMLElement('div', $list, ['class' => 'breadcrumb'] );
+        return new HTMLElement( 'div', \implode( ' > ', $list ), ['class' => 'breadcrumb'] );
     }
 
     public function pager( $pageNo, $pageCount, $uri )

@@ -73,12 +73,12 @@ class Lottery extends Controller
             }
             $lottery[$this->request->timestamp] = \mt_rand( 0, 100 );
             $this->session->lottery = $lottery;
-            $this->request->redirect();
+            $this->request->redirect( $this->request->referer );
         }
         if ( $this->request->args[2] === 'clear' )
         {
             unset( $this->session->lottery );
-            $this->request->redirect();
+            $this->request->redirect( $this->request->referer );
         }
 
         \krsort( $lottery );

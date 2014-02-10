@@ -2,7 +2,6 @@
 
    <div id="content-header">
       <div class="breadcrumb"><?php echo $breadcrumb; ?></div>
-      <h1 class="title"><?php echo $cateName; ?></h1>
    </div> <!-- /#content-header -->
 
    <div id="content-area">

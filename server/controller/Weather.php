@@ -14,7 +14,6 @@ class Weather extends Controller
       $this->request->pageNotFound();
 
       parent::run();
-      $this->checkAJAX();
 
       if ( (strlen( $this->request->args[1] ) == 5) && is_numeric( $this->request->args[1] ) && ($this->request->args[1] > 0) )
       {

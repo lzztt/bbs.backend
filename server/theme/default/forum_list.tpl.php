@@ -8,9 +8,6 @@
                     <tr id="forum-list-1" class="first-row container container-1" >
                         <td colspan="2" class="container">
                             <div class="forum-details">
-                                <div class="name">
-                                    <a href="/forum/<?php echo $group_id; ?>"><?php echo $tags[$group_id]['name']; ?></a>
-                                </div>
                                 <div class="description"><?php echo $tags[$group_id]['description']; ?></div>
                             </div>
                         </td>
