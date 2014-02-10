@@ -36,6 +36,7 @@
                <legend class="collapse-processed"><a href="#">文件附件</a></legend>
                <div class="fieldset-wrapper">
 
+                  <input type="hidden" name='update_file' value='1' />
                   <table id="ajax-file-list" <?php if (!\is_array($files) || \sizeof($files) < 1): ?> style="display:none;" <?php endif; ?> >
                      <thead class="tableHeader-processed">
                         <tr><th>文字描述</th><th>BBCode</th><th>删除</th></tr>
@@ -44,10 +45,10 @@
                      <tbody>
                         <?php if (\is_array($files)): ?>
                            <?php foreach ($files as $f): ?>
-                              <tr id="editfile-<?php echo $f['fid']; ?>">
-                                 <td><input type="text" maxlength="30" name="files[<?php echo $f['fid']; ?>][name]" id="editfile-<?php echo $f['fid']; ?>-name" size="30" value="<?php echo $f['name']; ?>" class="form-text"></td>
-                                 <td style="padding: 0 10px;">[img]<?php echo $f['path']; ?>[/img]<input type="text" style="display:none;" name="files[<?php echo $f['fid']; ?>][path]" value="<?php echo $f['path']; ?>"></td>
-                                 <td style="text-align: center;"><a href="/file/delete?id=<?php echo $f['fid']; ?>" class="ajax-file-delete" id="editfile-<?php echo $f['fid']; ?>-delete">X</a></td>
+                              <tr id="editfile-<?php echo $f['id']; ?>">
+                                 <td><input type="text" maxlength="30" name="files[<?php echo $f['id']; ?>][name]" id="editfile-<?php echo $f['id']; ?>-name" size="30" value="<?php echo $f['name']; ?>" class="form-text"></td>
+                                 <td style="padding: 0 10px;">[img]<?php echo $f['path']; ?>[/img]<input type="text" style="display:none;" name="files[<?php echo $f['id']; ?>][path]" value="<?php echo $f['path']; ?>"></td>
+                                 <td style="text-align: center;"><a href="/file/delete?id=<?php echo $f['id']; ?>" class="ajax-file-delete" id="editfile-<?php echo $f['id']; ?>-delete">X</a></td>
                               </tr>
                            <?php endforeach; ?>
                         <?php endif; ?>
