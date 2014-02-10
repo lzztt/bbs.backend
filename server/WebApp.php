@@ -173,7 +173,7 @@ class WebApp extends App
          if ( !\in_array( $umode, [Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT] ) )
          {
             $agent = $_SERVER['HTTP_USER_AGENT'];
-            if ( \preg_match( '/(http|Yahoo|bot)/i', $agent ) )
+            if ( \preg_match( '/(http|Yahoo|bot|pider)/i', $agent ) )
             {
                $umode = Template::UMODE_ROBOT;
                //}if ($http_user_agent ~ '(http|Yahoo|bot)') {
