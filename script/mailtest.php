@@ -101,7 +101,7 @@ function do_node($path, $logger, $config)
 
      $db = MySQL::getInstance();
 
-     $nodes = $db->select('SELECT n.nid, n.title, u.username, u.email FROM nodes AS n JOIN users AS u ON n.uid = u.uid WHERE n.status IS NULL');
+     $nodes = $db->query('SELECT n.nid, n.title, u.username, u.email FROM nodes AS n JOIN users AS u ON n.uid = u.uid WHERE n.status IS NULL');
      $db->query('UPDATE nodes SET status = 1 WHERE status IS NULL');
     */
 }
@@ -116,7 +116,7 @@ function do_activity($path, $logger, $config)
    $db = MySQL::getInstance($config->database, TRUE);
    $db->setLogger($logger);
 
-   $activities = $db->select('SELECT a.startTime, n.nid, n.title, u.username, u.email FROM Activity AS a JOIN nodes AS n ON a.nid = n.nid JOIN users AS u ON n.uid = u.uid WHERE a.status IS NULL');
+   $activities = $db->query('SELECT a.startTime, n.nid, n.title, u.username, u.email FROM Activity AS a JOIN nodes AS n ON a.nid = n.nid JOIN users AS u ON n.uid = u.uid WHERE a.status IS NULL');
    if (\sizeof($activities) > 0)
    {
       $mailer = new Mailer($config->mail->domain);
@@ -177,7 +177,7 @@ function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $cu
 {
    $nextRefreshTime = $currentTime + 604800;
    $sql = 'SELECT startTime, endTime FROM Activity WHERE status = 1 AND (startTime > ' . $currentTime . ' OR endTime > ' . $currentTime . ')';
-   foreach ($db->select($sql) as $r)
+   foreach ($db->query($sql) as $r)
    {
       if ($r['startTime'] < $currentTime)
       {
@@ -249,7 +249,7 @@ function do_backup($path, $logger, $config)
      $db->query('CALL clean()');
      //get all of the tables
      $tables = [);
-     $res = $db->select('SHOW TABLES');
+     $res = $db->query('SHOW TABLES');
      foreach ($res as $row)
      {
      $tables[] = \array_pop($row);
@@ -268,7 +268,7 @@ function do_backup($path, $logger, $config)
      $sql .= "\n\n" . \array_pop($r) . ";\n\nLOCK TABLES `$table` WRITE;\n";
      \gzwrite($f, $sql);
 
-     $rows = $db->select('SELECT * FROM ' . $table);
+     $rows = $db->query('SELECT * FROM ' . $table);
      $num_fields = $db->num_fields();
      $types = [);
      foreach ($db->field_type() as $k => $t)
@@ -305,7 +305,7 @@ function do_backup($path, $logger, $config)
      }
 
      $procedures = [);
-     $res = $db->select('SHOW PROCEDURE STATUS WHERE Db = DATABASE()');
+     $res = $db->query('SHOW PROCEDURE STATUS WHERE Db = DATABASE()');
      foreach ($res as $row)
      {
      $procedures[] = $row['Name'];

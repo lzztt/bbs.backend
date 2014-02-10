@@ -1,10 +1,6 @@
 <div id="content">
 
-    <div id="content-header">
-        <?php print $breadcrumb; ?>
-        <h1 id="node-title" class="title"><?php echo $title; ?></h1>
-        <div style="height: 5px;"></div>
-    </div> <!-- /#content-header -->
+    <div id="content-header"><?php print $breadcrumb; ?></div> <!-- /#content-header -->
 
     <div id="content-area">
 

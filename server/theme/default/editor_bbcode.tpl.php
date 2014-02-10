@@ -1,5 +1,6 @@
 <div id="editor-div" data-urole='<?php echo $urole_user; ?>'>
   <form enctype="multipart/form-data" id="editor-form" method="post" accept-charset="UTF-8" action="<?php echo $form_handler; ?>">
+    <span id='node-title' style='display: none'><?php echo $title; ?></span>
     <div id="edit-title" class="form-item" style="display:<?php echo ($show_title ? 'block' : 'none'); ?>;">
       <label for="title">标题:<span title="此项必填。" class="form-required">*</span></label>
       <input type="text" class="form-text required" value="<?php echo $title; ?>" size="60" id="title" name="title" maxlength="50" placeholder="最少5个字母或3个汉字" />

@@ -28,7 +28,7 @@ function do_comment()
 
     $db = MySQL::getInstance();
 
-    $comments = $db->select( 'SELECT cid,body  FROM `comments` WHERE `body` LIKE \'%[quote="Silverdew"]%\'' );
+    $comments = $db->query( 'SELECT cid,body  FROM `comments` WHERE `body` LIKE \'%[quote="Silverdew"]%\'' );
     $nc = [];
 
     foreach ( $comments as $c )

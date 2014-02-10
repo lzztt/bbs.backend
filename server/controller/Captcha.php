@@ -21,6 +21,7 @@ class Captcha extends Controller
       $code_length = 5;
       $code = \substr(\str_shuffle($chars), 0, $code_length);
       $this->session->captcha = $code;
+      $this->session->close();
 
       // generate the image
       $image = $this->_generate_image(\str_split($code), 'jpeg');
@@ -51,7 +52,7 @@ class Captcha extends Controller
    private function _generate_image($code, $format)
    {
       // Get font.
-      $font = $this->path['file'] . '/themes/' . Template::$theme . '/images/Tuffy.ttf';
+      $font = $this->config->path['file'] . '/themes/' . Template::$theme . '/images/Tuffy.ttf';
 
       // get other settings
       $font_size = 36;

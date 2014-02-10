@@ -34,7 +34,7 @@
    </div>
    <script type="text/javascript">
       $(document).ready(function() {
-         $.getJSON('/home/ajax/stat?type=json', function(data) {
+         $.getJSON('/home/ajax/stat?type=json&nosession', function(data) {
             var stat = $('#ajax_statistics');
             for (var prop in data)
             {

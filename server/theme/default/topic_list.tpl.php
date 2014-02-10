@@ -1,7 +1,6 @@
 <div id="content">
     <div id="content-header">
         <?php print $breadcrumb; ?>
-        <h1 class="title"><?php echo $boardName; ?></h1>
     </div> <!-- /#content-header -->
 
     <div id="content-area">
