@@ -674,7 +674,7 @@ class Node extends Controller
       $this->cache->delete( '/node/' . $nid );
       $this->cache->delete( 'latestYellowPageReplies' );
 
-      $redirect_uri = '/node/' . $nid . '?page=last#comment' . $comment->cid;
+      $redirect_uri = '/node/' . $nid . '?page=last#comment' . $comment->id;
       $this->request->redirect( $redirect_uri );
    }
 

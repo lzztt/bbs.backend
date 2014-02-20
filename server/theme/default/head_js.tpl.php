@@ -1,6 +1,31 @@
-<script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"><\/script>')</script>
-<script>window.jQuery || document.write('<script src="http://code.jquery.com/jquery-1.9.1.min.js"><\/script>')</script>
+<script>
+   if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
+      document.write('<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"><\/script>');
+   } else {
+      document.write('<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"><\/script>');
+   }
+</script>
+<script>
+   if (!window.jQuery)
+   {
+      if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
+         document.write('<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.0.min.js"><\/script>');
+      }
+      else {
+         document.write('<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js"><\/script>');
+      }
+   }
+</script>
+<script>
+   if (!window.jQuery) {
+      if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
+         document.write('<script src="http://code.jquery.com/jquery-2.1.0.min.js"><\/script>');
+      }
+      else {
+         document.write('<script src="http://code.jquery.com/jquery-1.11.0.min.js"><\/script>');
+      }
+   }
+</script>
 
 <script>(typeof JSON === 'object') || document.write('<script src="/themes/<?php echo $tpl_theme; ?>/js/json2.js"><\/script>')</script>
 
