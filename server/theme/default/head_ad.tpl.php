@@ -1,4 +1,16 @@
-<div id="ad01" class="ad0" style="background-image: url('/data/ad/sunflower.jpg'); background-position: 300px 0;">
+<div id="ad01" class="ad0" style="width:468px; height:60px;">
+   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+   <!-- HoustonBBS_banner -->
+   <ins class="adsbygoogle"
+        style="display:inline-block;width:468px;height:60px"
+        data-ad-client="ca-pub-8257334386742604"
+        data-ad-slot="6059493283"></ins>
+   <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+   </script>
+
+</div>
+<div id="ad02" class="ad0" style="right:468px">
    <form action='http://groups.google.com/group/houstonbbs/boxsubscribe'>
       <input type='hidden' name='hl' value='en'>
       <ul>
@@ -7,14 +19,15 @@
       </ul>
    </form>
 </div>
-<div id="ad02" class="ad0" style="background-image: url('/data/ad/sunflower.jpg'); background-position: 0 0;"></div>
 <div id="ad11" class="ad1">
-   <script type="text/javascript">
-      google_ad_client = "ca-pub-8257334386742604";
-      google_ad_slot = "2768722489";
-      google_ad_width = 728;
-      google_ad_height = 90;
+   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+   <!-- HoustonBBS leaderboard -->
+   <ins class="adsbygoogle"
+        style="display:inline-block;width:728px;height:90px"
+        data-ad-client="ca-pub-8257334386742604"
+        data-ad-slot="2768722489"></ins>
+   <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
    </script>
-   <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 </div>
 <div id="ad12" class="ad1"><a href="http://jeffreyjin.com/" target="_blank"><img width="272px" height="90px" src="/data/ad/jinfei.gif" alt=""></a></div>
