@@ -167,8 +167,8 @@ class YP extends Controller
          $node->add();
 
          $nodeYP = new NodeYellowPage();
-         $nodeYP->nid = $node->nid;
-         foreach ( \array_diff( $nodeYP->getKeys(), ['nid'] ) as $key )
+         $nodeYP->nid = $node->id;
+         foreach ( \array_diff( $nodeYP->getProperties, ['nid'] ) as $key )
          {
             $nodeYP->$key = $this->request->post[$key];
          }
@@ -177,13 +177,13 @@ class YP extends Controller
          if ( isset( $this->request->post['files'] ) )
          {
             $file = new Image();
-            $file->updateFileList( $this->request->post['files'], $this->config->path['file'], $node->nid );
+            $file->updateFileList( $this->request->post['files'], $this->config->path['file'], $node->id );
          }
 
          $this->cache->delete( '/yp/' . $tid );
          $this->cache->delete( 'latestYellowPages' );
 
-         $this->request->redirect( '/node/' . $node->nid );
+         $this->request->redirect( '/node/' . $node->id );
       }
    }
 
