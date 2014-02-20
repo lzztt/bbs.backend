@@ -52,14 +52,14 @@ class AD extends Controller
 YP_SP;
        
       $form_yp = <<<'YP'
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+  <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="PEP9ASKEHJV7Q">
 <table>
 <tr><td><input type="hidden" name="on0" value="Time">Time</td></tr><tr><td><select name="os0">
-	<option value="3 months">3 months $120.00 USD</option>
-	<option value="6 months">6 months $210.00 USD</option>
-	<option value="12 months">12 months $360.00 USD</option>
+	<option value="3 months">3 months $240.00 USD</option>
+	<option value="6 months">6 months $420.00 USD</option>
+	<option value="12 months">12 months $720.00 USD</option>
 </select> </td></tr>
 </table>
 <input type="hidden" name="currency_code" value="USD">
@@ -70,14 +70,14 @@ YP;
 
 
       $form_banner = <<<'HEAD'
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="N2NJXZZRT69RS">
 <table>
 <tr><td><input type="hidden" name="on0" value="Time">Time</td></tr><tr><td><select name="os0">
-	<option value="3 months">3 months $400.00 USD</option>
-	<option value="6 months">6 months $700.00 USD</option>
-	<option value="12 months">12 months $1,200.00 USD</option>
+	<option value="3 months">3 months $800.00 USD</option>
+	<option value="6 months">6 months $1,400.00 USD</option>
+	<option value="12 months">12 months $2,400.00 USD</option>
 </select> </td></tr>
 </table>
 <input type="hidden" name="currency_code" value="USD">

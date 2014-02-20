@@ -153,12 +153,12 @@ class Node extends DBObject
 
    public function getLatestYellowPages()
    {
-      return $this->call( 'get_tag_recent_nodes_yp("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", 15)' );
+      return $this->call( 'get_tag_recent_nodes_yp("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", 25)' );
    }
 
    public function getLatestImmigrationPosts()
    {
-      return $this->call( 'get_tag_recent_nodes("15", 14)' );
+      return $this->call( 'get_tag_recent_nodes("15", 16)' );
    }
 
    public function getLatestForumTopicReplies()
