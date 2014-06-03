@@ -38,8 +38,8 @@
       <div id='page_navbar_mobile' data-umode='<?php echo $umode_mobile; ?>'><div>页面结束，以下为站内快捷链接：</div></div>
       <div id='page_footer'>
          <div id='page_footer_inner'>
-            <div id='copyright'>Contact the Web Administrator at
-               <span class='highlight'>admin@houstonbbs.com</span> | Copyright © 2009-2013 HoustonBBS.com. All rights reserved. | <a href='/term'>Terms and Conditions</a>
+            <div id='copyright'>如有问题，请联络网站管理员
+               <a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2014 HoustonBBS 版权所有 | <a href='/term'>免责声明</a>
             </div>
          </div>
          <div style="clear:both;"></div>

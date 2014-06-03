@@ -7,7 +7,7 @@ use site\Controller;
 class PHPInfo extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
       if ($this->request->uid !== 126 && $this->request->uid !== 1)
       {

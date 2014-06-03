@@ -8,9 +8,9 @@ use lzx\html\Template;
 class Term extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
-      parent::run();
+      
 
       $sitename = [
          'site_zh_cn' => '缤纷休斯顿华人网',

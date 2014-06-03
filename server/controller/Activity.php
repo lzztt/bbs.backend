@@ -11,9 +11,9 @@ class Activity extends Controller
 
     const NODES_PER_PAGE = 25;
 
-    public function run()
+    protected function _default()
     {
-        parent::run();
+        
         $this->listActivity();
     }
 

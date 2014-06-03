@@ -8,14 +8,12 @@ use lzx\html\Template;
 class Weather extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
 
-      $this->request->pageNotFound();
+      
 
-      parent::run();
-
-      if ( (strlen( $this->request->args[1] ) == 5) && is_numeric( $this->request->args[1] ) && ($this->request->args[1] > 0) )
+      if ( (\strlen( $this->request->args[1] ) == 5) && \is_numeric( $this->request->args[1] ) && ($this->request->args[1] > 0) )
       {
          $zip = $this->request->args[1];
       }
@@ -70,7 +68,7 @@ class Weather extends Controller
             $v = (int) $v;
          }
 
-         $day[3] = implode( '-', array_reverse( $tmp ) ) . ' &deg;F';
+         $day[3] = \implode( '-', \array_reverse( $tmp ) ) . ' &deg;F';
 
          $css = ($i % 2 == 0) ? '' : ' style="background-color: #FCF1D0;"';
          $str .= '<tr' . $css . '>';
@@ -82,8 +80,8 @@ class Weather extends Controller
          $i++;
       }
 
-      $time = trim( $update[0] );
-      $time = substr( $time, 0, -7 ) . str_replace( 'CT', date( 'T', $this->request->timestamp ), strtoupper( substr( $time, -7 ) ) ) . '</div>';
+      $time = \trim( $update[0] );
+      $time = \substr( $time, 0, -7 ) . \str_replace( 'CT', \date( 'T', $this->request->timestamp ), \strtoupper( substr( $time, -7 ) ) ) . '</div>';
       $str .= '<tr><td colspan="4" style="text-align: right">' . $time . '</td></tr>';
 
       $str .= '</tbody></table>';
@@ -149,7 +147,7 @@ class Weather extends Controller
          $day[] = $arr;
       }
 
-      return [ $title, $day ];
+      return [ $title, $day];
    }
 
 }

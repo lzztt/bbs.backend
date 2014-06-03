@@ -15,9 +15,9 @@ class YP extends Controller
    const YP_ROOT_TID = 2;
    const NODES_PER_PAGE = 25;
 
-   public function run()
+   protected function _default()
    {
-      parent::run();
+      
 
       if ( is_null( $this->request->args[1] ) )
       {
@@ -104,7 +104,7 @@ class YP extends Controller
       $this->html->var['content'] = new Template( 'yp_list', $contents );
    }
 
-   public function ajax()
+   protected function _ajax()
    {
       // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
 
@@ -168,7 +168,7 @@ class YP extends Controller
 
          $nodeYP = new NodeYellowPage();
          $nodeYP->nid = $node->id;
-         foreach ( \array_diff( $nodeYP->getProperties, ['nid'] ) as $key )
+         foreach ( \array_diff( $nodeYP->getProperties(), ['nid'] ) as $key )
          {
             $nodeYP->$key = $this->request->post[$key];
          }

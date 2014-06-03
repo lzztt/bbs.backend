@@ -10,9 +10,9 @@ use site\dbobject\User;
 class Lottery extends Controller
 {
 
-    public function run()
+    protected function _default()
     {
-        parent::run();
+        
         $this->cache->setStatus( FALSE );
 
         $func = (isset( $this->request->args[1] ) ? $this->request->args[1] : 'rules') . 'Handler';

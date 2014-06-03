@@ -8,9 +8,9 @@ use lzx\html\Template;
 class Help extends Controller
 {
 
-    public function run()
+    protected function _default()
     {
-        parent::run();
+        
 
         $this->html->var['content'] = '帮助文档建立中 ... ...<br />'
             . '<ol><li>发布活动要先在论坛的活动版发个活动贴，然后在活动贴中点击“发布为活动”发布，就可以在首页和活动页面显示啦</li>'

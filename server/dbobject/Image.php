@@ -52,7 +52,7 @@ class Image extends DBObject
    }
 
    // will always assuming multiple file array
-   public function saveFile( array $files, $filePath, $timestamp, $uid, $size = 5120000, $maxWidth = 600, $maxHeight = 960 )
+   public function saveFile( array $files, array $config )
    {
       $errmsg = [
          \UPLOAD_ERR_INI_SIZE => 'upload_err_ini_size',
@@ -70,7 +70,7 @@ class Image extends DBObject
       // save files
       foreach ( $files as $type => $fileList )
       {
-         $path = $filePath . '/data/' . $type . '/' . $timestamp . \mt_rand( 0, 9 ) . $uid;
+         $path = $config['path'] . $type . '/' . $config['prefix'] . \mt_rand( 0, 9 );
 
          foreach ( $fileList as $i => $f )
          {
@@ -92,7 +92,7 @@ class Image extends DBObject
             }
 
             // check image size
-            if ( $f['size'] > $size ) // File Size
+            if ( $f['size'] > $config['size'] ) // File Size
             {
                $errorFile[] = [
                   'name' => $fileName,
@@ -108,7 +108,7 @@ class Image extends DBObject
 
             $imageInfo = \getimagesize( $tmpFile ); // not requiring GD
             // check image type
-            if ( $imageInfo === FALSE || $imageInfo[2] > \IMAGETYPE_PNG ) // Image Type: 1 = IMAGETYPE_GIF, 2 = IMAGETYPE_JPEG, 3 = IMAGETYPE_PNG
+            if ( $imageInfo === FALSE || !\in_array( $imageInfo[2], $config['types'] ) )
             {
                $errorFile[] = [
                   'name' => $fileName,
@@ -128,10 +128,11 @@ class Image extends DBObject
             // save image
             try
             {
-               if ( $width > $maxWidth || $height > $maxHeight )
+               if ( $width > $config['width'] || $height > $config['height'] )
                {
                   // resize image
                   $im = new \Imagick( $tmpFile );
+                  $this->_autoRotateImage( $im );
                   $im->resizeImage( $maxWidth, $maxHeight, \Imagick::FILTER_LANCZOS, 1, TRUE );
                   $im->writeImage( $savePath );
                   $im->clear();
@@ -176,6 +177,27 @@ class Image extends DBObject
       }
 
       return ['error' => $errorFile, 'saved' => $savedFile];
+   }
+
+   private function _autoRotateImage( \Imagick $img )
+   {
+      $orientation = $img->getImageOrientation();
+
+      switch ( $orientation )
+      {
+         case \Imagick::ORIENTATION_BOTTOMRIGHT:
+            $img->rotateimage( "#000", 180 ); // rotate 180 degrees 
+            $img->setImageOrientation( \Imagick::ORIENTATION_TOPLEFT ); // update the EXIF data
+            break;
+         case \Imagick::ORIENTATION_RIGHTTOP:
+            $img->rotateimage( "#000", 90 ); // rotate 90 degrees CW 
+            $img->setImageOrientation( \Imagick::ORIENTATION_TOPLEFT ); // update the EXIF data
+            break;
+         case \Imagick::ORIENTATION_LEFTBOTTOM:
+            $img->rotateimage( "#000", -90 ); // rotate 90 degrees CCW 
+            $img->setImageOrientation( \Imagick::ORIENTATION_TOPLEFT ); // update the EXIF data
+            break;
+      }
    }
 
    public function updateFileList( array $files, $filePath, $nid, $cid = NULL )

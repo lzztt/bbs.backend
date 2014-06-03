@@ -13,96 +13,62 @@ use lzx\html\TextArea;
 use lzx\html\InputGroup;
 use lzx\html\Template;
 use lzx\core\Mailer;
-use site\dbobject\UserAction;
+
 
 class User extends Controller
 {
 
-   public function run()
+   protected function _init()
    {
-      parent::run();
+      parent::_init();
+      // don't cache user page at page level
+      $this->cache->setStatus( FALSE );      
+   }
+   
+   protected function _default()
+   {
+      // don't cache user page at page level
+      $this->cache->setStatus( FALSE );
 
       $args = $this->request->args;
-// Anonymous user
-      if ( $this->request->uid == 0 )
+      // Anonymous user
+      if ( $this->request->uid == self::GUEST_UID )
       {
-         if ( \sizeof( $args ) == 1 ) // uri = /user
-         {
-            $action = 'login';
-         }
-         else
-         {
-            $action = $args[1];
-            // uri = /user/<uid> ...
-            if ( \filter_var( $action, \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]] ) )
-            {
-               // will need to set this cookie here!
-               $this->cookie->loginReferer = $this->request->uri;
-               $this->request->redirect( '/user/login' );
-            }
-         }
+         $action = \sizeof( $args ) > 1 ? $args[1] : 'login';
       }
-// logged in user
       else
       {
-         $this->cache->setStatus( FALSE ); // we don't cache at page level, different users have different PM page
-         // no uid provided, uri = /user/<action>
-         if ( !\filter_var( $args[1], \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]] ) )
-         {
-            $args = \array_merge( [$args[0], $this->request->uid], \array_slice( $args, 1 ) );
-            $this->request->args = $args;
-         }
-         $action = \sizeof( $args ) > 2 ? $args[2] : 'display';
+         $action = \sizeof( $args ) > 1 ? $args[1] : 'display';
       }
 
-      $this->runAction( $action );
+      $this->$action;
    }
 
-   public function registerAction()
+   private function _loginGuest()
    {
-      if ( $this->request->uid > 0 )
-      {
-         $this->request->redirect( '/' );
-      }
+      $this->cache->setStatus( FALSE );
+      $this->cookie->loginReferer = $this->request->uri;
+      $this->login();
+   }
 
-      $session = $this->session;
+   public function register()
+   {
+      if ( $this->request->uid != self::GUEST_UID )
+      {
+         $this->error( '错误：用户已经登录，不能注册新用户' );
+      }
 
       if ( empty( $this->request->post ) )
       {
-         $link_tabs = $this->_link_tabs( '/user/register' );
-         $form = new Form( [
-            'action' => '/user/register'
-            ] );
-
-         $fieldset = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '帐户信息' ) );
-         $username = new Input( 'username', '用户名', '允许空格，不允许"."、“-”、“_”以外的其他符号', TRUE );
-         $email = new Input( 'email', '电子邮箱', '一个有效的电子邮件地址。帐号激活后的初始密码和所有本站发出的信件都将寄至此地址。电子邮件地址将不会被公开，仅当您想要接收新密码或通知时才会使用', TRUE );
-         $email->type = 'email';
-         $email2 = new Input( 'email2', '确认电子邮箱', '请重新输入您的电子邮箱，以确认', TRUE );
-         $email2->type = 'email';
-         $fieldset->addElements( [$username->toHTMLElement(), $email->toHTMLElement(), $email2->toHTMLElement()] );
-         $form->addElement( $fieldset );
-
-         $fieldset = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '图形验证CAPTCHA' ) );
-         $img = new HTMLElement( 'img', NULL, ['id' => 'captchaImage', 'title' => '图形验证', 'alt' => '图形验证未能正确显示，请刷新', 'src' => '/captcha'] );
-         $changeImage = new HTMLElement( 'a', '看不清，换一张', ['onclick' => 'document.getElementById(\'captchaImage\').setAttribute(\'src\',\'/captcha/\' + Math.random().toString().slice(2)); event.preventDefault();', 'href' => '#'] );
-         $captcha = new Input( 'captcha', '上面图片的内容是什么？', 'Enter the characters shown in the image', TRUE );
-         $fieldset->addElements( [$img, $changeImage, $captcha->toHTMLElement()] );
-         $form->addElement( $fieldset );
-         $terms = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '网站使用规范和免责声明' ) );
-         $terms->addElements( [new HTMLElement( 'a', '网站使用规范', ['href' => '/node/23200'] ), new HTMLElement( 'br' ), new HTMLElement( 'a', '免责声明', ['href' => '/term'] )] );
-         $form->addElement( $terms );
-         $form->setButton( ['submit' => '同意使用规范和免责声明，并创建新帐号'] );
-
-         $this->html->var['content'] = $link_tabs . $form;
+         $this->html->var['content'] = new Template( 'user_register', ['captcha' => '/captcha/' . \mt_rand()] );
       }
       else
       {
-         if ( \strtolower( $session->captcha ) != \strtolower( $this->request->post['captcha'] ) )
+         if ( \strtolower( $this->session->captcha ) != \strtolower( $this->request->post['captcha'] ) )
          {
             $this->error( '错误：图形验证码错误' );
          }
-         unset( $session->captcha );
+         unset( $this->session->captcha );
 
          // check username and email first
          if ( empty( $this->request->post['username'] ) )
@@ -113,11 +79,6 @@ class User extends Controller
          if ( !\filter_var( $this->request->post['email'], \FILTER_VALIDATE_EMAIL ) )
          {
             $this->error( '不合法的电子邮箱 : ' . $this->request->post['email'] );
-         }
-
-         if ( $this->request->post['email'] != $this->request->post['email2'] )
-         {
-            $this->error( '两次输入的电子邮箱不一致: ' . $this->request->post['email'] . ' : ' . $this->request->post['email2'] );
          }
 
          if ( isset( $this->request->post['submit'] ) || $this->_isBot( $this->request->post['email'] ) )
@@ -141,18 +102,12 @@ class User extends Controller
             $this->error( $e->errorInfo[2] );
          }
          // create user action and send out email
-         $action = new UserAction();
-         $action->uid = $user->id;
-         $action->time = $this->request->timestamp;
-         $action->code = \mt_rand();
-         $action->uri = '/user/password';
-         $action->add();
          $mailer = new Mailer();
          $mailer->to = $user->email;
-         $mailer->subject = $user->username . ' 的HoustonBBS账户激活和设置密码';
+         $mailer->subject = $user->username . ' 的HoustonBBS账户激活和设置密码链接';
          $contents = [
             'username' => $user->username,
-            'uri' => $action->uri . '?r=' . $action->id . '&c=' . $action->code . '&t=' . $action->time,
+            'uri' => $this->_createUser( $user->id, '/user/activate' ),
             'sitename' => 'HoustonBBS'
          ];
          $mailer->body = new Template( 'mail/newuser', $contents );
@@ -163,6 +118,17 @@ class User extends Controller
          }
          $this->html->var['content'] = '感谢注册！账户激活email已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示激活账户。<br />如果您的收件箱内没有帐号激活的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
       }
+   }
+
+   private function _createUser( $uid, $uri )
+   {
+      $action = new User();
+      $action->uid = $uid;
+      $action->time = $this->request->timestamp;
+      $action->code = \mt_rand();
+      $action->uri = $uri;
+      $action->add();
+      return $action->uri . '?r=' . $action->id . '&c=' . $action->code . '&t=' . $action->time;
    }
 
    private function _isBot( $m )
@@ -180,7 +146,12 @@ class User extends Controller
       return FALSE;
    }
 
-   public function usernameAction()
+   public function activate()
+   {
+      $this->resetPassword();
+   }
+
+   public function username()
    {
       if ( $this->request->uid > 0 )
       {
@@ -210,160 +181,25 @@ class User extends Controller
       }
    }
 
-   public function passwordAction()
+   public function password()
    {
-      if ( \array_key_exists( 'r', $this->request->get ) )
+      switch ( $this->request->args[2] )
       {
-         $action = new UserAction( $this->request->get['r'] );
-         if ( !$action->exists() || $action->code != \intval( $this->request->get['c'] ) || $action->time != \intval( $this->request->get['t'] ) )
-         {
-            $this->error( '无效的网址链接!' );
-         }
-         $this->_setUser( $action->uid );
-      }
-
-      if ( $this->session->uid == self::GUEST_UID )
-      {
-         if ( empty( $this->request->post ) )
-         {
-            $link_tabs = $this->_link_tabs( '/user/password' );
-            $form = new Form( [
-               'action' => '/user/password',
-               'id' => 'user-pass'
-               ] );
-            $username = new Input( 'username', '用户名', '输入您的用户名', TRUE );
-            $email = new Input( 'email', '注册电子邮箱地址', '输入您注册时使用的电子邮箱地址', TRUE );
-            $email->type = 'email';
-            $form->setData( [$username->toHTMLElement(), $email->toHTMLElement()] );
-            $form->setButton( ['submit' => '邮寄重设密码的网址链接'] );
-
-            $this->html->var['content'] = $link_tabs . $form;
-         }
-         else
-         {
-            if ( empty( $this->request->post['username'] ) )
+         case 'update':
+            $this->changePassword();
+            break;
+         case 'reset':
+            $this->resetPassword();
+            break;
+         default :
+            if ( $this->session->uid == self::GUEST_UID )
             {
-               $this->error( 'empty username' );
+               $this->forgetPassword();
             }
-            if ( !\filter_var( $this->request->post['email'], \FILTER_VALIDATE_EMAIL ) )
+            else
             {
-               $this->error( 'invalid email address : ' . $this->request->post['email'] );
+               $this->changePassword();
             }
-
-            $user = new UserObject();
-            $user->username = $this->request->post['username'];
-            $user->email = $this->request->post['email'];
-            $user->load( 'id,username,email,status' );
-            if ( $user->status === NULL )
-            {
-               $this->error( '该帐号等待激活中，未激活前不能修改密码' );
-            }
-            if ( $user->status === 0 )
-            {
-               $this->error( '该帐号已被封禁，不能修改密码' );
-            }
-            if ( $user->exists() )
-            {
-               $password = $user->randomPW();
-               $user->password = $user->hashPW( $password );
-               $user->update( 'password' );
-
-               $mailer = new Mailer();
-
-               $mailer->to = $user->email;
-               $mailer->subject = $user->username . ' 请求重设密码';
-               $contents = [
-                  'username' => $user->username,
-                  'password' => $password,
-                  'sitename' => 'HoustonBBS'
-               ];
-               $mailer->body = new Template( 'mail/password_reset', $contents );
-               if ( $mailer->send() )
-               {
-                  $this->logger->info( 'user password reset: ' . $user->username . ' : ' . $password );
-                  $this->html->var['content'] = '重设密码的网址链接已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示重设密码。<br />如果您的收件箱内没有帐号激活的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
-               }
-               else
-               {
-                  $this->error( '重设密码的网址链接邮寄失败，请联系网站管理员重设密码。' );
-               }
-            }
-         }
-      }
-      else
-      {
-         $user = new UserObject( $this->session->uid, 'password,status' );
-         if ( empty( $this->request->post ) )
-         {
-            $link_tabs = $this->_link_tabs( '/user/' . $user->id . '/password' );
-            $form = new Form( [
-               'action' => '/user/' . $user->id . '/password',
-               'id' => 'user-pass'
-               ] );
-            if($user->password)
-            {
-               $currentPassword = new Input( 'current_password', '当前密码', '当前密码', TRUE );
-               $currentPassword->type = 'password';
-            }
-            $newPassword = new Input( 'new_password', '新密码', '输入新密码', TRUE );
-            $newPassword2 = new Input( 'new_password2', '确认新密码', '确认新密码', TRUE );
-            $newPassword->type = 'password';
-            $newPassword2->type = 'password';
-            $form->setData( [$currentPassword->toHTMLElement(), $newPassword->toHTMLElement(), $newPassword2->toHTMLElement()] );
-            $form->setButton( ['submit' => '更改密码'] );
-
-            $this->html->var['content'] = $link_tabs . $form;
-         }
-         else
-         {
-            if ( empty( $this->request->post['username'] ) )
-            {
-               $this->error( 'empty username' );
-            }
-            if ( !\filter_var( $this->request->post['email'], \FILTER_VALIDATE_EMAIL ) )
-            {
-               $this->error( 'invalid email address : ' . $this->request->post['email'] );
-            }
-
-            $user = new UserObject();
-            $user->username = $this->request->post['username'];
-            $user->email = $this->request->post['email'];
-            $user->load( 'id,username,email,status' );
-            if ( $user->status === NULL )
-            {
-               $this->error( '该帐号等待激活中，未激活前不能修改密码' );
-            }
-            if ( $user->status === 0 )
-            {
-               $this->error( '该帐号已被封禁，不能修改密码' );
-            }
-            if ( $user->exists() )
-            {
-               $password = $user->randomPW();
-               $user->password = $user->hashPW( $password );
-               $user->update( 'password' );
-
-               $mailer = new Mailer();
-
-               $mailer->to = $user->email;
-               $mailer->subject = $user->username . ' 请求重设密码';
-               $contents = [
-                  'username' => $user->username,
-                  'password' => $password,
-                  'sitename' => 'HoustonBBS'
-               ];
-               $mailer->body = new Template( 'mail/password_reset', $contents );
-               if ( $mailer->send() )
-               {
-                  $this->logger->info( 'user password reset: ' . $user->username . ' : ' . $password );
-                  $this->html->var['content'] = '重设密码的网址链接已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示重设密码。<br />如果您的收件箱内没有帐号激活的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
-               }
-               else
-               {
-                  $this->error( '重设密码的网址链接邮寄失败，请联系网站管理员重设密码。' );
-               }
-            }
-         }
       }
    }
 
@@ -375,25 +211,25 @@ class User extends Controller
    }
 
 // user login
-   public function loginAction()
+   public function login()
    {
-      if ( $this->request->uid > 0 )
+      if ( $this->request->uid == self::GUEST_UID )
       {
          $this->request->redirect( '/' );
       }
 
       $this->cache->setStatus( FALSE );
-      $ref = $this->request->referer;
+
       $guestActions = ['/user', '/user/login', '/user/register', '/user/password', '/user/username'];
-      //update page redirection
-      if ( !\in_array( $ref, $guestActions ) )
+//update page redirection
+      if ( !\in_array( $this->request->referer, $guestActions ) )
       {
-         $this->cookie->loginReferer = $ref;
+         $this->cookie->loginReferer = $this->request->referer;
       }
 
       if ( isset( $this->request->post['username'] ) && isset( $this->request->post['password'] ) )
       {
-         // todo: login times control
+// todo: login times control
          $user = new UserObject();
          if ( $user->login( $this->request->post['username'], $this->request->post['password'] ) )
          {
@@ -469,10 +305,10 @@ class User extends Controller
       return $this->html->linkTabs( $tabs, $active_link );
    }
 
-   // switch to user or back to super user
-   public function switchAction()
+// switch to user or back to super user
+   public function su()
    {
-      // switch to user
+// switch to user
       if ( $this->session->uid == self::ADMIN_UID )
       {
          if ( \filter_var( $this->request->args[3], \FILTER_VALIDATE_INT, ['options' => ['min_range' => 2]] ) )
@@ -495,7 +331,7 @@ class User extends Controller
             $this->error( 'invalid user id' );
          }
       }
-      // switch back to super user
+// switch back to super user
       elseif ( isset( $this->session->suid ) )
       {
          $suid = $this->session->suid;
@@ -514,7 +350,7 @@ class User extends Controller
    }
 
 // user logout
-   public function logoutAction()
+   public function logout()
    {
       if ( $this->request->uid == 0 )
       {
@@ -522,10 +358,10 @@ class User extends Controller
          $this->request->redirect( '/' );
       }
 
-      // logout to switch back to super user
+// logout to switch back to super user
       if ( isset( $this->session->suid ) )
       {
-         $this->runAction( 'switch' );
+         $this->su();
          return;
       }
 
@@ -533,7 +369,7 @@ class User extends Controller
       $uid = $this->request->args[1];
       if ( $this->request->uid == $uid )
       {
-         //session_destroy();
+//session_destroy();
          $this->session->clear(); // keep session record but clear the whole $_SESSION variable
          $this->cookie->uid = 0;
          $this->cookie->urole = Template::UROLE_GUEST;
@@ -546,7 +382,7 @@ class User extends Controller
       }
    }
 
-   public function deleteAction()
+   public function delete()
    {
       if ( $this->request->uid == 0 )
       {
@@ -573,7 +409,7 @@ class User extends Controller
    }
 
 //logged in user
-   public function editAction()
+   public function edit()
    {
       if ( $this->request->uid == 0 )
       {
@@ -681,8 +517,8 @@ class User extends Controller
          $form->setButton( ['submit' => '保存'] );
 
          $this->html->var['content'] = $link_tabs . $form;
-         // display edit form
-         //$this->html->var['content'] = new Template('user_edit', ['user' => new UserObject($uid)));
+// display edit form
+//$this->html->var['content'] = new Template('user_edit', ['user' => new UserObject($uid)));
       }
       else
       {
@@ -759,7 +595,7 @@ class User extends Controller
       }
    }
 
-   public function displayAction()
+   public function display()
    {
       if ( $this->request->uid == 0 )
       {
@@ -819,7 +655,7 @@ class User extends Controller
       $this->html->var['content'] = $link_tabs . $info . $this->_recentTopics( $uid );
    }
 
-   public function pmAction()
+   public function pm()
    {
       if ( $this->request->uid == 0 )
       {
@@ -832,7 +668,7 @@ class User extends Controller
       if ( $user->id == $this->request->uid )
       {
          $link_tabs = $this->_link_tabs( '/user/' . $user->id . '/pm' );
-         // show pm mailbox
+// show pm mailbox
          $mailbox = \sizeof( $this->request->args ) > 3 ? $this->request->args[3] : 'inbox';
 
          if ( !\in_array( $mailbox, ['inbox', 'sent'] ) )
@@ -881,12 +717,12 @@ class User extends Controller
       }
       else
       {
-         // show send pm to user page
+// show send pm to user page
          $user->load( 'username' );
 
          if ( empty( $this->request->post ) )
          {
-            // display pm edit form
+// display pm edit form
             $content = [
                'breadcrumb' => $breadcrumb,
                'toUID' => $uid,
@@ -906,7 +742,7 @@ class User extends Controller
          }
          else
          {
-            // save pm to database
+// save pm to database
             if ( \strlen( $this->request->post['body'] ) < 5 )
             {
                $this->html->var['content'] = '错误：短信正文需最少5个字母或3个汉字。';
