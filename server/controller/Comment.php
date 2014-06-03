@@ -12,7 +12,7 @@ use site\dbobject\User;
 class Comment extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
       if ( $this->request->uid == 0 )
       {
@@ -20,10 +20,10 @@ class Comment extends Controller
          $this->request->pageForbidden();
       }
       $action = $this->request->args[2];
-      $this->runAction( $action );
+      $this->run( $action );
    }
 
-   public function editAction()
+   public function edit()
    { // edit existing comment
       $cid = \intval( $this->request->args[1] );
 
@@ -74,7 +74,7 @@ class Comment extends Controller
       $this->request->redirect( $this->request->referer );
    }
 
-   public function deleteAction()
+   public function delete()
    {
       $comment = new CommentObject();
       $comment->id = \intval( $this->request->args[1] );

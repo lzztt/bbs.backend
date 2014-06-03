@@ -22,57 +22,38 @@ use lzx\core\ControllerAction;
 abstract class Controller
 {
 
-    public $logger;
-    public $cache;
-    public $html;
-    public $request;
-    public $session;
-    public $cookie;
-    protected static $l = [];
-    protected $class;
+   public $logger;
+   public $cache;
+   public $html;
+   public $request;
+   public $session;
+   public $cookie;
+   protected static $l = [];
+   protected $class;
 
-    public function __construct()
-    {
-        $this->class = \get_class( $this );
-    }
+   public function __construct()
+   {
+      $this->class = \get_class( $this );
+   }
 
-    abstract public function run();
+   abstract public function run( $method );
 
-    public function runAction( $action )
-    {
-        $func = $action . 'Action';
-        if ( \method_exists( $this, $func ) )
-        {
-            return $this->$func();
-        }
-        else
-        {
-            $actionClass = $this->class . '\\' . $action;
-            $action = new $actionClass( $this );
-            if ( !$action instanceof ControllerAction )
-            {
-                throw new \Exception( 'action class ' . $actionClass . 'need to extend ContollerAction class' );
-            }
-            return $action->run();
-        }
-    }
+   protected function error( $msg, $log = FALSE )
+   {
+      Cache::$status = FALSE;
+      if ( $log )
+      {
+         $this->logger->error( $msg );
+      }
+      $this->html->var['content'] = $this->l( 'Error' ) . ' : ' . $msg;
+      $this->request->pageExit( (string) $this->html );
+   }
 
-    public function error( $msg, $log = FALSE )
-    {
-        Cache::$status = FALSE;
-        if ( $log )
-        {
-            $this->logger->error( $msg );
-        }
-        $this->html->var['content'] = $this->l( 'Error' ) . ' : ' . $msg;
-        $this->request->pageExit( (string) $this->html );
-    }
-
-    public function l( $key )
-    {
-        return '[' . $key . ']';
-        //return \array_key_exists( $key, self::$l[$this->class] ) ? self::$l[$this->class][$key] : '[' . $key . ']';
-    }
+   protected function l( $key )
+   {
+      return '[' . $key . ']';
+      //return \array_key_exists( $key, self::$l[$this->class] ) ? self::$l[$this->class][$key] : '[' . $key . ']';
+   }
 
 }
 

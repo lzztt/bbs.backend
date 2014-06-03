@@ -16,7 +16,7 @@ fi
 file_dir=/home/web/www.houstonbbs.com/client
 
 tmp_list=/tmp/files_deleted.list
-mysql -D hbbs -e 'SELECT fid, path FROM ImageDeleted' > $tmp_list || error_exit 'failed to get file list from database'
+mysql -D hbbs -e 'SELECT id, path FROM images_deleted' > $tmp_list || error_exit 'failed to get file list from database'
 
 fids=''
 paths=''
@@ -29,7 +29,7 @@ done < <(tail -n +2 $tmp_list) ## use process substitution, do not use pipe beca
 if [[ ! -z $fids ]]; then
     rm -rf $paths || error_exit "failed to delete files: $paths"
     fids=$(echo $fids | sed 's/^, //')
-    mysql -D hbbs -e "DELETE FROM ImageDeleted WHERE fid IN ($fids)" || error_exit "failed to update database for fids: '$fids'"
+    mysql -D hbbs -e "DELETE FROM images_deleted WHERE id IN ($fids)" || error_exit "failed to update database for fids: '$fids'"
 fi
 
 count=$(wc -l $tmp_list | awk '{print $1}')

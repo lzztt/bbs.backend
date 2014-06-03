@@ -8,9 +8,9 @@ use lzx\html\Template;
 class Search extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
-      parent::run();
+      
 
       $html = <<<HTML
 <div id="cse-search-form" style="width: 100%;">Loading</div>

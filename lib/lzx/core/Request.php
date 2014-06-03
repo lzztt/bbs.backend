@@ -33,7 +33,7 @@ class Request
         $this->files = $this->getUploadFiles();
 
         $arr = \explode( $this->domain, $_SERVER['HTTP_REFERER'] );
-        $this->referer = sizeof( $arr ) > 1 ? $arr[1] : '/';
+        $this->referer = \sizeof( $arr ) > 1 ? $arr[1] : NULL;
     }
 
     /**
@@ -91,6 +91,11 @@ class Request
         return $_files;
     }
 
+    /**
+     * 
+     * @param string $uri test
+     * @return NULL
+     */
     public function getURIargs( $uri )
     {
         static $_URIargs = [];
@@ -333,3 +338,5 @@ class Request
       }
      */
 }
+
+//__END_OF_FILE__

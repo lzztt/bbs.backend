@@ -19,11 +19,11 @@ use site\dbobject\AD as ADObject;
 class Adm extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
       Template::$theme = $this->config->theme['adm'];
 
-      parent::run();
+      
 
       $this->cache->setStatus( FALSE );
       if ( $this->request->uid !== self::ADMIN_UID )
@@ -32,7 +32,7 @@ class Adm extends Controller
       }
 
       $action = $this->request->args[1] ? $this->request->args[1] : 'user';
-      $this->html->var['content'] = $this->runAction( $action );
+      $this->html->var['content'] = $this->run( $action );
    }
 
 }

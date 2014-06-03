@@ -1,14 +1,5 @@
 <div id="ad01" class="ad0" style="width:468px; height:60px;">
-   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-   <!-- HoustonBBS_banner -->
-   <ins class="adsbygoogle"
-        style="display:inline-block;width:468px;height:60px"
-        data-ad-client="ca-pub-8257334386742604"
-        data-ad-slot="6059493283"></ins>
-   <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-   </script>
-
+<a href="http://www.llestudyusa.com" target="_blank"><img width="468px" height="60px" src="/data/ad/lles-1.jpg" alt=""></a>
 </div>
 <div id="ad02" class="ad0" style="right:468px">
    <form action='http://groups.google.com/group/houstonbbs/boxsubscribe'>
@@ -30,4 +21,4 @@
       (adsbygoogle = window.adsbygoogle || []).push({});
    </script>
 </div>
-<div id="ad12" class="ad1"><a href="http://jeffreyjin.com/" target="_blank"><img width="272px" height="90px" src="/data/ad/jinfei.gif" alt=""></a></div>
+<div id="ad12" class="ad1"><a href="http://jeffreyjinteam.com/" target="_blank"><img width="272px" height="90px" src="/data/ad/jinfei.gif" alt=""></a></div>

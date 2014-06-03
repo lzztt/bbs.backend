@@ -10,27 +10,35 @@ use lzx\db\DBObject;
 use lzx\db\DB;
 
 /**
+ * two level category system
  * @property $id
- * @property $uid
- * @property $code
+ * @property $name
+ * @property $email
+ * @property $phone
+ * @property $guests
  * @property $time
- * @property $uri
+ * @property $status 
  */
-class UserAction extends DBObject
+class Wedding extends DBObject
 {
 
    public function __construct( $id = null, $properties = '' )
    {
       $db = DB::getInstance();
-      $table = 'user_actions';
+      $table = 'wedding';
       $fields = [
          'id' => 'id',
-         'code' => 'code',
+         'name' => 'name',
+         'email' => 'email',
+         'phone' => 'phone',
+         'guests' => 'guests',
          'time' => 'time',
-         'uri' => 'uri'
+         'status' => 'status'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
+
+  
 
 }
 

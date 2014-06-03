@@ -14,9 +14,9 @@ class Forum extends Controller
 
    const NODES_PER_PAGE = 25;
 
-   public function run()
+   protected function _default()
    {
-      parent::run();
+      
 
       if ( $this->request->args[1] == 'help' )
       {
@@ -62,7 +62,7 @@ class Forum extends Controller
       }
    }
 
-   public function ajax()
+   protected function _ajax()
    {
       // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
 
@@ -227,7 +227,7 @@ class Forum extends Controller
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         $user->validatePost( $this->request->ip, $this->request->timestamp );
+         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post['body'] );
          $node = new Node();
          $node->tid = $tid;
          $node->uid = $this->request->uid;
@@ -239,7 +239,50 @@ class Forum extends Controller
       }
       catch ( \Exception $e )
       {
-         $this->logger->error( ' --node-- ' . $node->title . PHP_EOL . $node->body );
+         // spammer found
+         if ( $user->isSpammer() )
+         {
+            $this->logger->info( 'SPAMMER FOUND: uid=' . $user->id );
+            $u = new User();
+            $u->lastAccessIP = \ip2long( $this->request->ip );
+            $users = $u->getList( 'createTime' );
+            $deleteAll = TRUE;
+            if ( \sizeof( $users ) > 1 )
+            {
+               // check if we have old users that from this ip
+               foreach ( $users as $u )
+               {
+                  if ( $this->request->timestamp - $u['createTime'] > 2592000 )
+                  {
+                     $deleteAll = FALSE;
+                     break;
+                  }
+               }
+
+               if ( $deleteAll )
+               {
+                  $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
+                  foreach ( $users as $u )
+                  {
+                     $spammer = new User( $u['id'], NULL );
+                     $spammer->delete();
+                     $log = $log . $spammer->id . ' ';
+                  }
+                  $this->logger->info( $log );
+               }
+            }
+            
+            if ( $this->config->webmaster )
+            {
+               $mailer = new \lzx\core\Mailer();
+               $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
+               $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
+               $mailer->to = $this->config->webmaster;
+               $mailer->send();
+            }
+         }
+
+         $this->logger->error( ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'] );
          $this->error( $e->getMessage(), TRUE );
       }
 

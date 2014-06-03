@@ -13,7 +13,7 @@ use lzx\html\Template;
 class Schools extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
       $this->html->var['content'] = $this->getSchoolList();
    }

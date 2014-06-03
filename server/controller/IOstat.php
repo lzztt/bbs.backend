@@ -19,9 +19,9 @@ use lzx\html\Template;
 class IOstat extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
-      parent::run();
+      
       $this->cache->setStatus( FALSE );
 
       $this->html->var['content'] = $this->sarchart();
