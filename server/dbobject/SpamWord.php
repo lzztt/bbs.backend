@@ -11,23 +11,21 @@ use lzx\db\DB;
 
 /**
  * @property $id
- * @property $uid
  * @property $code
  * @property $time
  * @property $uri
  */
-class UserAction extends DBObject
+class SpamWord extends DBObject
 {
 
    public function __construct( $id = null, $properties = '' )
    {
       $db = DB::getInstance();
-      $table = 'user_actions';
+      $table = 'spam_words';
       $fields = [
          'id' => 'id',
-         'code' => 'code',
-         'time' => 'time',
-         'uri' => 'uri'
+         'word' => 'word',
+         'lastHitTime' => 'last_hit_time',
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }

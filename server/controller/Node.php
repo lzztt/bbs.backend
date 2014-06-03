@@ -20,11 +20,21 @@ class Node extends Controller
 
    const COMMENTS_PER_PAGE = 10;
 
-   public function run()
+   protected function _default()
    {
-      parent::run();
+      $this->display();
+   }
 
-      $nid = \is_numeric( $this->request->args[1] ) ? \intval( $this->request->args[1] ) : 0;
+   public function display()
+   {
+      list($nid, $type) = $this->_getNodeType();
+      $method = '_display' . $type;
+      $this->$method( $nid );
+   }
+
+   private function _getNodeType()
+   {
+      $nid = \intval( $this->request->args[0] );
       if ( $nid <= 0 )
       {
          $this->request->pageNotFound();
@@ -50,20 +60,10 @@ class Node extends Controller
          $this->error( 'wrong node type' );
       }
 
-      $action = isset( $this->request->args[2] ) ? $this->request->args[2] : 'display';
-
-      if ( $action !== 'display' && $this->request->uid == 0 )
-      {
-         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->request->pageForbidden();
-      }
-
-      $action = $action . $types[$rootTagID];
-
-      $this->runAction( $action );
+      return [$nid, $types[$rootTagID]];
    }
 
-   public function ajax()
+   protected function _ajax()
    {
       // url = /node/ajax/viewcount?nid=<nid>
 
@@ -83,9 +83,8 @@ class Node extends Controller
       return $viewCount;
    }
 
-   public function tagForumTopicAction()
+   private function _tagForumTopic( $nid )
    {
-      $nid = \intval( $this->request->args[1] );
       $newTagID = \intval( $this->request->args[3] );
 
       $nodeObj = new NodeObject( $nid, 'uid,tid' );
@@ -108,9 +107,8 @@ class Node extends Controller
       }
    }
 
-   public function displayForumTopicAction()
+   private function _displayForumTopic( $nid )
    {
-      $nid = \intval( $this->request->args[1] );
       $nodeObj = new NodeObject();
       $node = $nodeObj->getForumNode( $nid );
       $tags = $nodeObj->getTags( $nid );
@@ -134,7 +132,7 @@ class Node extends Controller
       }
       $breadcrumb[] = ['name' => $node['title']];
 
-      list($pageNo, $pageCount) = $this->getPagerInfo( $node['comment_count'], self::COMMENTS_PER_PAGE );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $node['comment_count'], self::COMMENTS_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node['id'] );
 
       $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
@@ -181,7 +179,16 @@ class Node extends Controller
             $node['HTMLbody'] = \nl2br( $node['body'] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
          }
-         $node['signature'] = \nl2br( $node['signature'] );
+
+         if ( $nid == 42763 )
+         {
+            $weather = new Weather();
+            $weather->request = $this->request;
+            $weather->logger = $this->logger;
+            $weather->cache = $this->cache;
+            $node['HTMLbody'] = $weather->get_weather_div( 77833 ) . $node['HTMLbody'];
+         }
+         // $node['signature'] = \nl2br( $node['signature'] );
 
          $node['authorPanel'] = $this->authorPanel( \array_intersect_key( $node, $authorPanelInfo ) );
          $node['city'] = $this->request->getCityFromIP( $node['access_ip'] );
@@ -214,7 +221,7 @@ class Node extends Controller
                $c['HTMLbody'] = \nl2br( $c['body'] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );
             }
-            $c['signature'] = \nl2br( $c['signature'] );
+            // $c['signature'] = \nl2br( $c['signature'] );
 
             $c['authorPanel'] = $this->authorPanel( \array_intersect_key( $c, $authorPanelInfo ) );
             $c['city'] = $this->request->getCityFromIP( $c['access_ip'] );
@@ -324,11 +331,10 @@ class Node extends Controller
       return $attachments;
    }
 
-   public function editForumTopicAction()
+   private function _editForumTopic( $nid )
    { // edit existing comment
       $this->cache->setStatus( FALSE );
 
-      $nid = \intval( $this->request->args[1] );
       $node = new NodeObject( $nid, 'uid,status' );
 
       if ( !$node->exists() || $node->status == 0 )
@@ -371,11 +377,10 @@ class Node extends Controller
 // refresh node content cache
    }
 
-   public function deleteForumTopicAction()
+   private function _deleteForumTopic( $nid )
    {
       $this->cache->setStatus( FALSE );
 
-      $nid = \intval( $this->request->args[1] );
       $node = new NodeObject( $nid, 'uid,tid,status' );
       $tags = $node->getTags( $nid );
 
@@ -408,11 +413,10 @@ class Node extends Controller
       $this->request->redirect( '/forum/' . $node->tid );
    }
 
-   public function commentForumTopicAction()
+   private function _commentForumTopic( $nid )
    { // create new comment
       $this->cache->setStatus( FALSE );
 
-      $nid = \intval( $this->request->args[1] );
       $node = new NodeObject( $nid, 'tid,status' );
 
       if ( !$node->exists() || $node->status == 0 )
@@ -428,7 +432,7 @@ class Node extends Controller
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         $user->validatePost( $this->request->ip, $this->request->timestamp );
+         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post['body'] );
          $comment = new Comment();
          $comment->nid = $nid;
          $comment->uid = $this->request->uid;
@@ -438,7 +442,49 @@ class Node extends Controller
       }
       catch ( \Exception $e )
       {
-         $this->logger->error( ' --comment-- ' . $comment->body );
+         // spammer found
+         if ( $user->isSpammer() )
+         {
+            $this->logger->info( 'SPAMMER FOUND: uid=' . $user->id );
+            $u = new User();
+            $u->lastAccessIP = \ip2long( $this->request->ip );
+            $users = $u->getList( 'createTime' );
+            $deleteAll = TRUE;
+            if ( \sizeof( $users ) > 0 )
+            {
+               // check if we have old users that from this ip
+               foreach ( $users as $u )
+               {
+                  if ( $this->request->timestamp - $u['createTime'] > 2592000 )
+                  {
+                     $deleteAll = FALSE;
+                     break;
+                  }
+               }
+
+               if ( $deleteAll )
+               {
+                  $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
+                  foreach ( $users as $u )
+                  {
+                     $spammer = new User( $u['id'], NULL );
+                     $spammer->delete();
+                     $log = $log . $spammer->id . ' ';
+                  }
+                  $this->logger->info( $log );
+               }
+            }
+            if ( $this->config->webmaster )
+            {
+               $mailer = new \lzx\core\Mailer();
+               $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
+               $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
+               $mailer->to = $this->config->webmaster;
+               $mailer->send();
+            }
+         }
+
+         $this->logger->error( ' --comment-- ' . $this->request->post['body'] );
          $this->error( $e->getMessage(), TRUE );
       }
 
@@ -465,10 +511,9 @@ class Node extends Controller
       $this->request->redirect( $redirect_uri );
    }
 
-   public function displayYellowPageAction()
+   private function _displayYellowPage( $nid )
    {
       $nodeObj = new NodeObject();
-      $nid = \intval( $this->request->args[1] );
       $node = $nodeObj->getYellowPageNode( $nid );
       $tags = $nodeObj->getTags( $nid );
 
@@ -552,7 +597,7 @@ class Node extends Controller
       $this->html->var['content'] = new Template( 'node_yellow_page', $contents );
    }
 
-   public function editYellowPageAction()
+   private function _editYellowPage( $nid )
    {
       $this->cache->setStatus( FALSE );
       if ( $this->request->uid != 1 )
@@ -565,7 +610,6 @@ class Node extends Controller
       {
          // display edit interface
          $nodeObj = new NodeObject();
-         $nid = \intval( $this->request->args[1] );
          $contents = $nodeObj->getYellowPageNode( $nid );
 
          $this->html->var['content'] = new Template( 'editor_bbcode_yp', $contents );
@@ -573,7 +617,6 @@ class Node extends Controller
       else
       {
          // save modification
-         $nid = \intval( $this->request->args[1] );
          $node = new NodeObject( $nid, 'tid' );
          if ( $node->exists() )
          {
@@ -605,7 +648,7 @@ class Node extends Controller
 // refresh node content cache
    }
 
-   public function deleteYellowPageAction()
+   private function _deleteYellowPage( $nid )
    {
       $this->cache->setStatus( FALSE );
       if ( $this->request->uid != 1 )
@@ -613,7 +656,6 @@ class Node extends Controller
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
          $this->request->pageForbidden();
       }
-      $nid = \intval( $this->request->args[1] );
       $node = new NodeObject( $nid, 'tid,status' );
       if ( $node->exists() && $node->status > 0 )
       {
@@ -625,11 +667,10 @@ class Node extends Controller
       $this->request->redirect( '/yp/' . $node->tid );
    }
 
-   public function commentYellowPageAction()
+   private function _commentYellowPage( $nid )
    { // create new comment
       $this->cache->setStatus( FALSE );
 
-      $nid = \intval( $this->request->args[1] );
       $node = new NodeObject( $nid, 'status' );
 
       if ( !$node->exists() || $node->status == 0 )
@@ -645,7 +686,7 @@ class Node extends Controller
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         $user->validatePost( $this->request->ip, $this->request->timestamp );
+         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post['body'] );
          $comment = new Comment();
          $comment->nid = $nid;
          $comment->uid = $this->request->uid;
@@ -655,7 +696,49 @@ class Node extends Controller
       }
       catch ( \Exception $e )
       {
-         $this->logger->error( ' --comment-- ' . $comment->body );
+         // spammer found
+         if ( $user->isSpammer() )
+         {
+            $this->logger->info( 'SPAMMER FOUND: uid=' . $user->id );
+            $u = new User();
+            $u->lastAccessIP = \ip2long( $this->request->ip );
+            $users = $u->getList( 'createTime' );
+            $deleteAll = TRUE;
+            if ( \sizeof( $users ) > 0 )
+            {
+               // check if we have old users that from this ip
+               foreach ( $users as $u )
+               {
+                  if ( $this->request->timestamp - $u['createTime'] > 2592000 )
+                  {
+                     $deleteAll = FALSE;
+                     break;
+                  }
+               }
+
+               if ( $deleteAll )
+               {
+                  $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
+                  foreach ( $users as $u )
+                  {
+                     $spammer = new User( $u['id'], NULL );
+                     $spammer->delete();
+                     $log = $log . $spammer->id . ' ';
+                  }
+                  $this->logger->info( $log );
+               }
+            }
+            if ( $this->config->webmaster )
+            {
+               $mailer = new \lzx\core\Mailer();
+               $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
+               $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
+               $mailer->to = $this->config->webmaster;
+               $mailer->send();
+            }
+         }
+
+         $this->logger->error( ' --comment-- ' . $this->request->post['body'] );
          $this->error( $e->getMessage(), TRUE );
       }
 
@@ -678,10 +761,8 @@ class Node extends Controller
       $this->request->redirect( $redirect_uri );
    }
 
-   public function activityForumTopicAction()
+   private function _activityForumTopic( $nid )
    {
-
-      $nid = \intval( $this->request->args[1] );
       $node = new NodeObject( $nid, 'tid,uid,title' );
 
       if ( !$node->exists() )

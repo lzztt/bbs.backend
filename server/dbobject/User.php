@@ -41,6 +41,8 @@ use lzx\db\DB;
 class User extends DBObject
 {
 
+   private $_isSpammer = FALSE;
+
    public function __construct( $id = null, $properties = '' )
    {
       $db = DB::getInstance();
@@ -178,29 +180,53 @@ class User extends DBObject
       }
    }
 
-   public function validatePost( $ip, $timestamp )
+   public function validatePost( $ip, $timestamp, $text )
    {
       // CHECK USER
       if ( $this->status != 1 )
       {
          throw new \Exception( 'This user account cannot post message.' );
       }
+
       $days = \intval( ($timestamp - $this->createTime) / 86400 );
-      // registered less than 10 days
-      if ( $days < 10 )
+      // registered less than 30 days
+      if ( $days < 30 )
       {
-         $geo = \geoip_record_by_name( \is_numeric( $ip ) ? \long2ip( $ip ) : $ip  );
-         // not from Texas
-         if ( !$geo || $geo['region'] != 'TX' )
+         // check spams
+         $spamwords = new SpamWord();
+         $list = $spamwords->getList();
+         foreach ( $list as $w )
          {
-            $oneday = \intval( $timestamp - 86400 );
-            $count = \array_pop( \array_pop( $this->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
-            if ( $count >= $days )
+            if ( \mb_strpos( $text, $w['word'] ) !== FALSE )
             {
-               throw new \Exception( 'Quota limitation reached!<br />Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours. <br /> You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.' );
+               // delete user
+               $this->delete();
+               $this->_isSpammer = TRUE;
+               throw new \Exception( 'User is blocked! You cannot post any message!' );
+            }
+         }
+
+         // check post counts
+         if ( $days < 10 )
+         {
+            $geo = \geoip_record_by_name( \is_numeric( $ip ) ? \long2ip( $ip ) : $ip  );
+            // not from Texas
+            if ( !$geo || $geo['region'] != 'TX' )
+            {
+               $oneday = \intval( $timestamp - 86400 );
+               $count = \array_pop( \array_pop( $this->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
+               if ( $count >= $days )
+               {
+                  throw new \Exception( 'Quota limitation reached!<br />Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours. <br /> You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.' );
+               }
             }
          }
       }
+   }
+
+   public function isSpammer()
+   {
+      return $this->_isSpammer;
    }
 
    public function getUserStat( $timestamp )
