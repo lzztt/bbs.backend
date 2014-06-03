@@ -65,10 +65,15 @@ class WebApp extends App
       }
    }
 
-   // only controller will handle all exceptions and local languages
+   // controller will handle all exceptions and local languages
    // other classes will report status to controller
    // controller set status back the WebApp object
    // WebApp object will call Theme to display the content
+   /**
+    * 
+    * @param type $argc
+    * @param array $argv
+    */
    public function run( $argc = 0, Array $argv = [] )
    {
       $request = $this->getRequest();
@@ -123,11 +128,7 @@ class WebApp extends App
       $html = new Template( 'html' );
       $html->var['domain'] = $this->config->domain;
 
-      $ctrler = $this->getController( ($request->args ? $request->args[0] : NULL ) );
-      if ( empty( $ctrler ) )
-      {
-         $request->pageNotFound( 'controller not found :(' );
-      }
+      list( $ctrler, $method ) = $this->getControllerAndMethod( $request );
 
       $ctrler->logger = $this->logger;
       $ctrler->cache = $cache;
@@ -136,7 +137,8 @@ class WebApp extends App
       $ctrler->session = $session;
       $ctrler->cookie = $cookie;
       $ctrler->config = $this->config;
-      $ctrler->run();
+      $ctrler->run( $method );
+
       $session->close();
 
       $html = (string) $html;
@@ -284,23 +286,44 @@ class WebApp extends App
    /**
     *
     * @param Request $request
-    * @return \lzx\core\Controller
+    * @return array 
     * @throws \Exception
     */
-   public function getController( $ctrler )
+   public function getControllerAndMethod( Request $req )
    {
-      if ( empty( $ctrler ) )
+      $count = \sizeof( $req->args );
+      if ( $count == 0 )
       {
-         $ctrler = 'DEFAULT';
+         $ctrler = 'home';
+         $method = NULL;
+      }
+      else
+      {
+         $ctrler = \array_shift( $req->args );
+
+         if ( $count == 1 || \is_numeric( $req->args[0] ) )
+         {
+            $method = NULL;
+         }
+         else
+         {
+            $method = \array_shift( $req->args );
+         }
       }
 
       require_once $this->config->path['server'] . '/route.php';
+      $ctrlerClass = $route[$ctrler];
 
-      if ( \array_key_exists( $ctrler, $route ) )
+      if ( empty( $ctrlerClass ) )
       {
-         $ctrlerClass = $route[$ctrler];
-         return new $ctrlerClass();
+         $req->pageNotFound( 'controller not found :(' );
       }
+      if ( $method && !\in_array( $method, \get_class_methods( $ctrlerClass ) ) )
+      {
+         $req->pageNotFound();
+      }
+
+      return [new $ctrlerClass(), $method];
    }
 
 }

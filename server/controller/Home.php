@@ -13,252 +13,249 @@ use site\dbobject\User;
 class Home extends Controller
 {
 
-    public function run()
-    {
-        parent::run();
+   protected function _default()
+   {
+      $content = [
+         'recentActivities' => $this->_getRecentActivities(),
+         'latestForumTopics' => $this->_getLatestForumTopics(),
+         'hotForumTopics' => $this->_getHotForumTopics(),
+         'latestYellowPages' => $this->_getLatestYellowPages(),
+         'latestImmigrationPosts' => $this->_getLatestImmigrationPosts(),
+         'latestForumTopicReplies' => $this->_getLatestForumTopicReplies(),
+         'latestYellowPageReplies' => $this->_getLatestYellowPageReplies(),
+         'recentActivities' => $this->_getRecentActivities(),
+         'imageSlider' => $this->_getImageSlider(),
+      ];
 
-        $content = [
-            'recentActivities' => $this->getRecentActivities(),
-            'latestForumTopics' => $this->getLatestForumTopics(),
-            'hotForumTopics' => $this->getHotForumTopics(),
-            'latestYellowPages' => $this->getLatestYellowPages(),
-            'latestImmigrationPosts' => $this->getLatestImmigrationPosts(),
-            'latestForumTopicReplies' => $this->getLatestForumTopicReplies(),
-            'latestYellowPageReplies' => $this->getLatestYellowPageReplies(),
-            'recentActivities' => $this->getRecentActivities(),
-            'imageSlider' => $this->getImageSlider(),
-        ];
+      $this->html->var['content'] = new Template( 'home', $content );
+   }
 
-        $this->html->var['content'] = new Template( 'home', $content );
-    }
+   protected function _ajax()
+   {
+      $node = new Node();
+      $r = $node->getNodeStat();
 
-    public function ajax()
-    {
-        $node = new Node();
-        $r = $node->getNodeStat();
-
-        $r['alexa'] = \strval( new Template( 'alexa' ) );
+      $r['alexa'] = \strval( new Template( 'alexa' ) );
 
 
-        $user = new User();
-        $res = \array_merge( $r, $user->getUserStat( $this->request->timestamp - 300 ) );
+      $user = new User();
+      $res = \array_merge( $r, $user->getUserStat( $this->request->timestamp - 300 ) );
 
-        return $res;
-    }
+      return $res;
+   }
 
-    public function getImageSlider()
-    {
-        $cache_key = 'imageSlider';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            // try 3 times 10 images first
-            $img = new Image();
-            $images = $img->getRecentImages();
-            \shuffle( $images );
+   private function _getImageSlider()
+   {
+      $cache_key = 'imageSlider';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $img = new Image();
+         $images = $img->getRecentImages();
+         \shuffle( $images );
 
-            $content['images'] = $images;
-            $ul = new Template( 'image_slider', $content );
+         $content['images'] = $images;
+         $ul = new Template( 'image_slider', $content );
 
-            $this->cache->store( $cache_key, $ul );
-            foreach ( $images as $i )
-            {
-                $this->cache->storeMap( '/node/' . $i['nid'], $cache_key );
-            }
-        }
+         $this->cache->store( $cache_key, $ul );
+         foreach ( $images as $i )
+         {
+            $this->cache->storeMap( '/node/' . $i['nid'], $cache_key );
+         }
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    public function getLatestForumTopics()
-    {
-        $cache_key = 'latestForumTopics';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            $node = new Node();
-            $arr = $node->getLatestForumTopics();
+   private function _getLatestForumTopics()
+   {
+      $cache_key = 'latestForumTopics';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $node = new Node();
+         $arr = $node->getLatestForumTopics( 15 );
 
-            $rightTagKey = 'rightTag';
-            foreach ( $arr as $i => $n )
-            {
-                $arr[$i][$rightTagKey] = \date( 'H:i', $n['create_time'] );
-                $arr[$i]['uri'] = '/node/' . $n['nid'];
-                $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
-            }
-            $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
-        }
+         $rightTagKey = 'rightTag';
+         foreach ( $arr as $i => $n )
+         {
+            $arr[$i][$rightTagKey] = \date( 'H:i', $n['create_time'] );
+            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
+         }
+         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    public function getHotForumTopics()
-    {
-        $cache_key = 'hotForumTopics';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            $node = new Node();
-            $arr = $node->getHotForumTopics( $this->request->timestamp - 604800 );
+   private function _getHotForumTopics()
+   {
+      $cache_key = 'hotForumTopics';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $node = new Node();
+         $arr = $node->getHotForumTopics( 15, $this->request->timestamp - 604800 );
 
-            $rightTagKey = 'rightTag';
-            foreach ( $arr as $i => $n )
-            {
-                $arr[$i][$rightTagKey] = $n['comment_count'];
-                $arr[$i]['uri'] = '/node/' . $n['nid'];
-                $arr[$i]['title'] = $this->html->truncate( $n['title'], 36 );
-            }
-            $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
-        }
+         $rightTagKey = 'rightTag';
+         foreach ( $arr as $i => $n )
+         {
+            $arr[$i][$rightTagKey] = $n['comment_count'];
+            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['title'] = $this->html->truncate( $n['title'], 36 );
+         }
+         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    public function getLatestYellowPages()
-    {
-        $cache_key = 'latestYellowPages';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            $node = new Node();
-            $arr = $node->getLatestYellowPages();
+   private function _getLatestYellowPages()
+   {
+      $cache_key = 'latestYellowPages';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $node = new Node();
+         $arr = $node->getLatestYellowPages( 25 );
 
-            $rightTagKey = 'rightTag';
-            foreach ( $arr as $i => $n )
-            {
-                $arr[$i][$rightTagKey] = \date( 'm/d', $n['exp_time'] );
-                $arr[$i]['uri'] = '/node/' . $n['nid'];
-                $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
-            }
-            $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
-        }
+         $rightTagKey = 'rightTag';
+         foreach ( $arr as $i => $n )
+         {
+            $arr[$i][$rightTagKey] = \date( 'm/d', $n['exp_time'] );
+            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
+         }
+         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    public function getLatestImmigrationPosts()
-    {
-        $cache_key = 'latestImmigrationPosts';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            $node = new Node();
-            $arr = $node->getLatestImmigrationPosts();
+   private function _getLatestImmigrationPosts()
+   {
+      $cache_key = 'latestImmigrationPosts';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $node = new Node();
+         $arr = $node->getLatestImmigrationPosts( 25 );
 
-            $rightTagKey = 'rightTag';
-            foreach ( $arr as $i => $n )
-            {
-                $arr[$i][$rightTagKey] = \date( 'm/d', $n['create_time'] );
-                $arr[$i]['uri'] = '/node/' . $n['nid'];
-                $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
-            }
-            $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
-        }
+         $rightTagKey = 'rightTag';
+         foreach ( $arr as $i => $n )
+         {
+            $arr[$i][$rightTagKey] = \date( 'm/d', $n['create_time'] );
+            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['title'] = $this->html->truncate( $n['title'], 34 );
+         }
+         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    public function getLatestForumTopicReplies()
-    {
-        $cache_key = 'latestForumTopicReplies';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            $node = new Node();
-            $arr = $node->getLatestForumTopicReplies();
+   private function _getLatestForumTopicReplies()
+   {
+      $cache_key = 'latestForumTopicReplies';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $node = new Node();
+         $arr = $node->getLatestForumTopicReplies( 15 );
 
-            $rightTagKey = 'rightTag';
-            foreach ( $arr as $i => $n )
-            {
-                $arr[$i][$rightTagKey] = $n['comment_count'];
-                $arr[$i]['uri'] = '/node/' . $n['nid'] . '?page=last#comment' . $n['last_cid'];
-                $arr[$i]['title'] = $this->html->truncate( $n['title'], 36 );
-            }
-            $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
-        }
+         $rightTagKey = 'rightTag';
+         foreach ( $arr as $i => $n )
+         {
+            $arr[$i][$rightTagKey] = $n['comment_count'];
+            $arr[$i]['uri'] = '/node/' . $n['nid'] . '?page=last#comment' . $n['last_cid'];
+            $arr[$i]['title'] = $this->html->truncate( $n['title'], 36 );
+         }
+         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    public function getLatestYellowPageReplies()
-    {
-        $cache_key = 'latestYellowPageReplies';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            $node = new Node();
-            $arr = $node->getLatestYellowPageReplies();
+   private function _getLatestYellowPageReplies()
+   {
+      $cache_key = 'latestYellowPageReplies';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $node = new Node();
+         $arr = $node->getLatestYellowPageReplies( 25 );
 
-            $rightTagKey = 'rightTag';
-            foreach ( $arr as $i => $n )
-            {
-                $arr[$i][$rightTagKey] = $n['comment_count'];
-                $arr[$i]['uri'] = '/node/' . $n['nid'] . '?page=last#comment' . $n['last_cid'];
-                $arr[$i]['title'] = $this->html->truncate( $n['title'], 36 );
-            }
-            $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
-        }
+         $rightTagKey = 'rightTag';
+         foreach ( $arr as $i => $n )
+         {
+            $arr[$i][$rightTagKey] = $n['comment_count'];
+            $arr[$i]['uri'] = '/node/' . $n['nid'] . '?page=last#comment' . $n['last_cid'];
+            $arr[$i]['title'] = $this->html->truncate( $n['title'], 36 );
+         }
+         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    public function getRecentActivities()
-    {
-        $cache_key = 'recentActivities';
-        $ul = $this->cache->fetch( $cache_key );
-        if ( $ul === FALSE )
-        {
-            $activity = new Activity();
-            $arr = $activity->getRecentActivities( 12, $this->request->timestamp );
+   private function _getRecentActivities()
+   {
+      $cache_key = 'recentActivities';
+      $ul = $this->cache->fetch( $cache_key );
+      if ( $ul === FALSE )
+      {
+         $activity = new Activity();
+         $arr = $activity->getRecentActivities( 12, $this->request->timestamp );
 
-            foreach ( $arr as $i => $n )
-            {
-                $arr[$i]['uri'] = '/node/' . $n['nid'];
-                $arr[$i]['title'] = '<span class="activity_' . $n['class'] . '">[' . date( 'm/d', $n['start_time'] ) . ']</span> ' . $this->html->truncate( $n['title'], 32 );
-            }
-            $ul = $this->_linkNodeList( $arr, $cache_key );
-        }
+         foreach ( $arr as $i => $n )
+         {
+            $arr[$i]['uri'] = '/node/' . $n['nid'];
+            $arr[$i]['title'] = '<span class="activity_' . $n['class'] . '">[' . date( 'm/d', $n['start_time'] ) . ']</span> ' . $this->html->truncate( $n['title'], 32 );
+         }
+         $ul = $this->_linkNodeList( $arr, $cache_key );
+      }
 
-        $this->cache->storeMap( $cache_key, '/' );
-        return $ul;
-    }
+      $this->cache->storeMap( $cache_key, '/' );
+      return $ul;
+   }
 
-    private function _linkNodeList( $arr, $cache_key, $rightTagKey = NULL )
-    {
-        $links = [];
-        if ( $rightTagKey )
-        {
-            foreach ( $arr as $n )
-            {
-                $rightTag = new HTMLElement( 'span', $n[$rightTagKey], [ 'class' => "li_right"] );
-                $links[] = $rightTag . $this->html->link( $n['title'], $n['uri'] );
-            }
-        }
-        else
-        {
-            foreach ( $arr as $n )
-            {
-                $links[] = $this->html->link( $n['title'], $n['uri'] );
-            }
-        }
+   private function _linkNodeList( $arr, $cache_key, $rightTagKey = NULL )
+   {
+      $links = [];
+      if ( $rightTagKey )
+      {
+         foreach ( $arr as $n )
+         {
+            $rightTag = new HTMLElement( 'span', $n[$rightTagKey], [ 'class' => "li_right"] );
+            $links[] = $rightTag . $this->html->link( $n['title'], $n['uri'] );
+         }
+      }
+      else
+      {
+         foreach ( $arr as $n )
+         {
+            $links[] = $this->html->link( $n['title'], $n['uri'] );
+         }
+      }
 
-        $ul = (string) $this->html->ulist( $links );
+      $ul = (string) $this->html->ulist( $links );
 
-        $this->cache->store( $cache_key, $ul );
-        foreach ( $arr as $n )
-        {
-            $this->cache->storeMap( '/node/' . $n['nid'], $cache_key );
-        }
+      $this->cache->store( $cache_key, $ul );
+      foreach ( $arr as $n )
+      {
+         $this->cache->storeMap( '/node/' . $n['nid'], $cache_key );
+      }
 
-        return $ul;
-    }
+      return $ul;
+   }
 
 }
 

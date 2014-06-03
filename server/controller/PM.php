@@ -17,9 +17,9 @@ class PM extends Controller
 
    const PMS_PER_PAGE = 25;
 
-   public function run()
+   protected function _default()
    {
-      parent::run();
+      
       $this->cache->setStatus( FALSE );
 
       if ( $this->request->uid == 0 )
@@ -34,12 +34,12 @@ class PM extends Controller
          if ( $msgID > 0 )
          {
             $action = sizeof( $this->request->args ) > 2 ? $this->request->args[2] : 'display';
-            $this->runAction( $action );
+            $this->run( $action );
          }
       }
    }
 
-   public function displayAction()
+   public function display()
    {
       $msgID = \intval( $this->request->args[1] );
 
@@ -96,7 +96,7 @@ class PM extends Controller
       $this->html->var['content'] = $link_tabs . $pager . $messages . $reply_form;
    }
 
-   public function replyAction()
+   public function reply()
    {
       $msgID = \intval( $this->request->args[1] );
 
@@ -137,7 +137,7 @@ class PM extends Controller
       $this->request->redirect( '/pm/' . $msgID );
    }
 
-   public function deleteAction()
+   public function delete()
    {
       $msgID = \intval( $this->request->args[1] );
       $messageID = \intval( $this->request->args[3] );

@@ -8,7 +8,7 @@ use lzx\html\Template;
 class Captcha extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
       if (strpos($_SERVER['HTTP_REFERER'], $this->request->domain) < 4)
       {

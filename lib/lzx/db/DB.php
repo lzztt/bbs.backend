@@ -82,7 +82,7 @@ class DB
          }
          else
          {
-// query debug timer and info
+            // query debug timer and info
             $_timer = \microtime( TRUE );
             $statement = $this->db->query( $sql, \PDO::FETCH_ASSOC );
             $this->queries[] = \sprintf( '%8.6f', \microtime( TRUE ) - $_timer ) . ' : [QUERY] ' . $sql;

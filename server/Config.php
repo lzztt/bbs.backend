@@ -26,8 +26,8 @@ class Config
 
    public function __construct()
    {
-      $this->stage = self::STAGE_DEVELOPMENT;
-      //$this->stage = self::STAGE_PRODUCTION;
+      //$this->stage = self::STAGE_DEVELOPMENT;
+      $this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
       $this->cache = FALSE;
 
@@ -46,10 +46,11 @@ class Config
          'user' => 'web',
          'password' => 'Ab663067',
       ];
-      $this->getkeys = ['p', 'page', 'type', 'tid', 'nid', 'nids', 'nosession', 'r', 'c', 't'];
+      $this->getkeys = ['p', 'page', 'type', 'id', 'tid', 'nid', 'nids', 'nosession', 'r', 'c', 't'];
       $this->language = 'zh-cn';
       $this->theme = [
          'default' => 'default',
+         'wedding' => 'wedding',
          'adm' => 'adm'
       ];
       $this->cookie = [
@@ -59,6 +60,13 @@ class Config
       ];
       $this->domain = \implode( '.', \array_slice( \explode( '.', $_SERVER['HTTP_HOST'] ), -2 ) );
       $this->webmaster = 'ikki3355@gmail.com';
+
+      $this->image = [
+         'types' => [\IMAGETYPE_GIF, \IMAGETYPE_PNG, \IMAGETYPE_JPEG],
+         'height' => 960,
+         'width' => 600,
+         'size' => 5242880,
+      ];
 
       // make this file immutable
       // root# chattr +i config.php

@@ -68,12 +68,6 @@
                     </div>
 
                     <div class="post-footer">
-                        <?php if ( $p['signature'] ): ?>
-                            <div class="author-signature">
-                                <?php echo $p['signature']; ?>
-                            </div>
-                        <?php endif; ?>
-
                         <div class="post-links" data-urole='<?php echo $urole_user; ?>'>
                             <ul class="links inline forum-links">
                                 <?php if ( $tid == 16 && $p['type'] == 'node' ): ?>
@@ -85,7 +79,6 @@
                                 <li><a rel="nofollow" title="Quote" class="bb-quote last button" id="<?php echo $p['type'] . '-' . $p['id']; ?>-quote" href="/node/<?php echo $nid; ?>/comment">引用</a></li>
                             </ul>
                         </div>
-
                     </div>
                 </div>
                 <div id="<?php echo $p['type'] . '-' . $p['id']; ?>-raw" style="display:none;">

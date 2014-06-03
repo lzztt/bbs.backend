@@ -26,6 +26,7 @@ class BBCode
             'list' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '', 'content_handling' => [__CLASS__, '_list']],
             'youtube' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_youtube']],
             'tudou' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_tudou']],
+            'googlemap' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_googlemap']],
          ]
       ];
 
@@ -85,6 +86,11 @@ class BBCode
    private static function _tudou( $content, $param )
    {
       return '<embed src="http://www.tudou.com/v/' . $content . '/v.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" wmode="opaque" width="480" height="400"></embed>';
+   }
+   
+   private static function _googlemap( $content, $param )
+   {
+      return '<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' . $content . '&f=d&source=s_d&output=embed"></iframe><br /><small><a href="' . $content . '" style="text-align:left">View Larger Map</a></small>';
    }
 
 }

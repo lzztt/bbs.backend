@@ -8,7 +8,7 @@ use lzx\html\Template;
 class CacheManager extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
       if ($this->request->uid != 1)
       {
@@ -17,7 +17,7 @@ class CacheManager extends Controller
 // logged in user
       else
       {
-         parent::run();
+         
          $this->cache->setStatus(FALSE);
          $this->listCache();
       }

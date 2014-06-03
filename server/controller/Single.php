@@ -22,7 +22,7 @@ class Single extends Controller
     private $thirty_two_start = '2013-08-16';
     private $db;
 
-    public function run()
+    protected function _default()
     {
         $this->cache->setStatus( FALSE );
 
@@ -48,7 +48,7 @@ class Single extends Controller
             $this->$func();
             $this->html->tpl = 'FindYouFindMe';
             $this->html->var['header'] = new Template( 'FFpage_header' );
-            $this->html->var['footer'] = $this->footerAction( TRUE );
+            $this->html->var['footer'] = $this->footer( TRUE );
         }
         else
         {
@@ -56,13 +56,13 @@ class Single extends Controller
         }
     }
 
-    public function nodeAction()
+    public function node()
     {
         $this->request->redirect( '/node/32576' );
     }
 
     // show activity details
-    public function showAction()
+    public function show()
     {
         $vids = [ "fhFadSF2vrM", "eBXpRXt-5a8"];
         $vid = \mt_rand( 0, 100 ) % sizeof( $vids );
@@ -103,7 +103,7 @@ class Single extends Controller
     }
 
     // attend activity
-    public function attendAction()
+    public function attend()
     {
         if ( \file_exists( $this->config->path['file'] . '/ffmy.msg' ) )
         {
@@ -172,7 +172,7 @@ class Single extends Controller
     }
 
     // public comments
-    public function commentAction()
+    public function comment()
     {
         $func = ($this->request->args[2] ? $this->request->args[2] : 'add') . 'Comment';
         $output = \method_exists( $this, $func ) ? $this->$func() : $this->request->pageNotFound();
@@ -222,7 +222,7 @@ class Single extends Controller
     }
 
     // private attendee info
-    public function attendeeAction()
+    public function attendee()
     {
         if ( TRUE )//$this->request->timestamp < strtotime( "09/16/2013 22:00:00 CDT" ) )
         {
@@ -239,7 +239,7 @@ class Single extends Controller
         }
     }
 
-    public function subscribeAction()
+    public function subscribe()
     {
         if ( empty( $this->request->post['email'] ) )
         {
@@ -352,7 +352,7 @@ class Single extends Controller
         return $stat;
     }
 
-    public function chartAction()
+    public function chart()
     {
         $stat = [
             '七夕' => $this->getAgeStatJSON( 1312350024, 1313607290 ),
@@ -437,7 +437,7 @@ class Single extends Controller
         exit;
     }
 
-    public function footerAction( $return = FALSE )
+    public function footer( $return = FALSE )
     {
         $c = \array_pop( $this->db->query( 'CALL get_stat_single(' . $this->thirty_two_start . ')' ) );
         $r = [

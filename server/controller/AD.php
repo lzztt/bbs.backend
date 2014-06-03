@@ -19,10 +19,10 @@ use lzx\html\Template;
 class AD extends Controller
 {
 
-   public function run()
+   protected function _default()
    {
       //$this->request->pageNotFound();
-      parent::run();
+      
       $this->cache->setStatus(FALSE);
 
       $func = $this->request->args[1] ? $this->request->args[1] : 'yp';
