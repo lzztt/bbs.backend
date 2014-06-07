@@ -39,7 +39,7 @@ class Config
          'log' => \dirname( __DIR__ ) . '/log',
          'file' => \dirname( __DIR__ ) . '/client',
          'backup' => \dirname( __DIR__ ) . '/backup',
-         'cache' => '/cache/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
+         'cache' => '/tmp/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
       ];
       $this->db = [
          'dsn' => 'hbbs',

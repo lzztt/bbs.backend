@@ -14,11 +14,11 @@
 
       <div id="wrapper">
          <ul class="nav">
-            <li class="current"><img onclick="change_bg(this.src);"src="/themes/wedding/images/bg0.jpg" alt="" height="112px" width="168px" /></li>
-            <li class=""><img onclick="change_bg(this.src);" src="/themes/wedding/images/bg1.jpg" alt="" height="112px" width="168px" /></li>
-            <li class=""><img onclick="change_bg(this.src);"src="/themes/wedding/images/bg2.jpg" alt="" height="112px" width="168px" /></li>
-            <li class=""><img onclick="change_bg(this.src);"src="/themes/wedding/images/bg3.jpg" alt="" height="112px" width="168px" /></li>
-            <li class=""><img onclick="change_bg(this.src);"src="/themes/wedding/images/bg6.jpg" alt="" height="112px" width="168px" /></li>
+            <li><img src="/themes/wedding/images/bg0.jpg" alt="" height="112px" width="168px" /></li>
+            <li><img src="/themes/wedding/images/bg1.jpg" alt="" height="112px" width="168px" /></li>
+            <li><img src="/themes/wedding/images/bg2.jpg" alt="" height="112px" width="168px" /></li>
+            <li><img src="/themes/wedding/images/bg3.jpg" alt="" height="112px" width="168px" /></li>
+            <li><img src="/themes/wedding/images/bg4.jpg" alt="" height="112px" width="168px" /></li>
          </ul>
          <div id="content">
             <?php echo $body; ?>
