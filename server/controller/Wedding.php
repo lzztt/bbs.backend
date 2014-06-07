@@ -34,7 +34,7 @@ class Wedding extends Controller
 
    public function _default()
    {
-      $this->html->var['body'] = new Template( 'join_form' );
+      $this->html->var['body'] = new Template('join_form');
    }
 
    public function join()
@@ -48,21 +48,22 @@ class Wedding extends Controller
       $a->status = 1;
       $a->add();
 
-      $mailer = new Mailer( 'wedding' );
-      $mailer->subject = "Thanks you for comming";
-      $mailer->body = "testsss ";
-      $mailer->signature = '\n\nLongzhang & Ying';
+      $mailer = new Mailer('wedding');
+      $mailer->subject = "欢迎来参加我们的新婚答谢宴";
+      $mailer->body = new Template('wedding_mail');
+      $mailer->signature = '\n\n龙璋 & 莹';
       $mailer->to = $a->email;
       $mailer->send();
-      
-      $this->html->var['body'] = 'Thank you!';
+
+      $this->html->var['body'] = '<div class="center">谢谢' . $a->name . '!</div>'
+         . '<div class="down">新婚答谢宴暂定于2014年6月21日晚上6点18分，地点稍后email通知。</div>';
    }
 
    public function listall()
    {
       $a = new WeddingAttendee();
       $l = $a->getList();
-      $this->html->var['body'] = new Template( 'attendees', ['attendees' => $l] );
+      $this->html->var['body'] = new Template('attendees', ['attendees' => $l]);
    }
 
 }

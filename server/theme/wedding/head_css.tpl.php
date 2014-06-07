@@ -1,1 +1,1 @@
-<link href="/themes/wedding/css/contact.css" rel="stylesheet" type="text/css" /> <!-- AJAX Contact Form Stylesheet -->
+<link href="/themes/wedding/css/main.css" rel="stylesheet" type="text/css" /> <!-- AJAX Contact Form Stylesheet -->
