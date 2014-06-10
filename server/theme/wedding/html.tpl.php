@@ -20,6 +20,9 @@
             <li><img src="/themes/wedding/images/bg3.jpg" alt="" height="112px" width="168px" /></li>
             <li><img src="/themes/wedding/images/bg4.jpg" alt="" height="112px" width="168px" /></li>
          </ul>
+         <button id="bgswitch" type="button">停止图片轮播</button>
+           
+            
          <div id="content">
             <?php echo $body; ?>
          </div>
