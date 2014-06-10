@@ -53,10 +53,10 @@ class Wedding extends Controller
       $mailer->body = new Template('wedding_mail');
       $mailer->signature = '\n\n龙璋 & 莹';
       $mailer->to = $a->email;
-      $mailer->send();
+      //$mailer->send();
 
       $this->html->var['body'] = '<div class="center">谢谢' . $a->name . '!</div>'
-         . '<div class="down">新婚答谢宴暂定于2014年6月21日晚上6点18分，地点稍后email通知。</div>';
+         . '<div class="down">新婚答谢宴将于2014年6月28日晚上6点28分举行，地点等详情稍后email通知。</div>';
    }
 
    public function listall()
