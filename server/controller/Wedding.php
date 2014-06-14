@@ -49,11 +49,11 @@ class Wedding extends Controller
       $a->add();
 
       $mailer = new Mailer('wedding');
-      $mailer->subject = "欢迎来参加我们的新婚答谢宴";
-      $mailer->body = new Template('wedding_mail');
-      $mailer->signature = '\n\n龙璋 & 莹';
-      $mailer->to = $a->email;
-      //$mailer->send();
+      $mailer->subject = 'wedding: ' . $a->name . ' ( ' . $a->guests . ' )';
+      $mailer->body = (string) $a; //new Template('wedding_mail');
+      $mailer->signature = '';
+      $mailer->to = 'admin@houstonbbs.com';
+      $mailer->send();
 
       $this->html->var['body'] = '<div class="center">谢谢' . $a->name . '!</div>'
          . '<div class="down">新婚答谢宴将于2014年6月28日晚上6点28分举行，地点等详情稍后email通知。</div>';
