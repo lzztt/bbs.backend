@@ -106,6 +106,16 @@ abstract class DBObject
             $this->_unDirty( $prop );
         }
     }
+    
+    public function __toString()
+    {
+       $str = '';
+       foreach( $this->_values as $k => $v )
+       {
+          $str = $str . $k . ' -> ' . $v . PHP_EOL;
+       }
+       return $str;
+    }
 
     public function getProperties()
     {

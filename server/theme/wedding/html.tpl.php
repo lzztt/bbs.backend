@@ -11,22 +11,21 @@
 
    </head>
    <body>
-
-      <div id="wrapper">
-         <ul class="nav">
-            <li><img src="/themes/wedding/images/bg0.jpg" alt="" height="112px" width="168px" /></li>
-            <li><img src="/themes/wedding/images/bg1.jpg" alt="" height="112px" width="168px" /></li>
-            <li><img src="/themes/wedding/images/bg2.jpg" alt="" height="112px" width="168px" /></li>
-            <li><img src="/themes/wedding/images/bg3.jpg" alt="" height="112px" width="168px" /></li>
-            <li><img src="/themes/wedding/images/bg4.jpg" alt="" height="112px" width="168px" /></li>
-         </ul>
-         <button id="bgswitch" type="button">停止图片轮播</button>
-           
-            
-         <div id="content">
-            <?php echo $body; ?>
+      <div id="page">
+         <div id="bg"></div>
+         <div id="wrapper">
+            <ul class="nav">
+               <li><img src="/themes/wedding/images/bg0.jpg" alt="" height="112px" width="168px" /></li>
+               <li><img src="/themes/wedding/images/bg1.jpg" alt="" height="112px" width="168px" /></li>
+               <li><img src="/themes/wedding/images/bg2.jpg" alt="" height="112px" width="168px" /></li>
+               <li><img src="/themes/wedding/images/bg3.jpg" alt="" height="112px" width="168px" /></li>
+               <li><img src="/themes/wedding/images/bg4.jpg" alt="" height="112px" width="168px" /></li>
+            </ul>
+            <button id="bgswitch" type="button">停止图片轮播</button>
+            <div id="content">
+               <?php echo $body; ?>
+            </div>
          </div>
       </div>
-   </div>
-</body>
+   </body>
 </html>

@@ -1,5 +1,5 @@
 <form method="post" action="/wedding/join" name="contactform" id="contactform" autocomplete="on">
-   <p style="text-align: center;">田龙璋＆何莹 新婚答谢宴会将于2014年6月28号在Houston中国城举行<br />请于6月14号(星期六)之前回复是否前来参加，方便我们的人数统计和场地准备</p>
+   <p style="text-align: center;">田龙璋＆何莹 新婚答谢宴会将于2014年6月28号晚上在Houston中国城举行<br />请于6月18号(星期三)之前回复是否前来参加，方便我们的人数统计和场地准备</p>
       <div>
          <label for="name" accesskey="U">姓名</label>
          <input name="name" type="text" id="name" placeholder="中文姓名" required="required" />
@@ -19,7 +19,7 @@
          <input name="phone" type="tel" id="phone" size="30" placeholder="输入你的电话号码" />
       </div>
       <div>
-         <input type="submit" class="submit" id="submit" value="参加答谢宴" />
+         <input type="submit" class="submit" id="submit" value="参加答谢晚宴" />
       </div>
 
 </form>
