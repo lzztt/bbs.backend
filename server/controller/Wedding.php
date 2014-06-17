@@ -54,9 +54,14 @@ class Wedding extends Controller
       $mailer->signature = '';
       $mailer->to = 'admin@houstonbbs.com';
       $mailer->send();
+      
+      $mailer->subject = '谢谢来参加我们的新婚答谢宴';
+      $mailer->to = $a->email;
+      $mailer->body = new Template('mail/attendee', ['name' => $a->name]);
+      $mailer->send();
 
       $this->html->var['body'] = '<div class="center">谢谢' . $a->name . '!</div>'
-         . '<div class="down">新婚答谢宴将于2014年6月28日晚上6点28分举行，地点等详情稍后email通知。</div>';
+         . '<div class="down">新婚答谢宴将于6月28日晚上6点28分举行<br />地点等详情已经通过email发送到您的邮箱 ' . $a->email . '<br />请查收~</div>';
    }
 
    public function listall()
