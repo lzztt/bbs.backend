@@ -17,6 +17,7 @@ use lzx\db\DB;
  * @property $phone
  * @property $guests
  * @property $time
+ * @property $checkin
  * @property $status 
  */
 class Wedding extends DBObject
@@ -33,9 +34,16 @@ class Wedding extends DBObject
          'phone' => 'phone',
          'guests' => 'guests',
          'time' => 'time',
+         'checkin' => 'checkin',
          'status' => 'status'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
+   }
+
+   public function getTotal()
+   {
+      $arr = $this->_db->query( 'SELECT SUM(guests) FROM wedding' );
+      return \array_pop( $arr[0] );
    }
 
 }

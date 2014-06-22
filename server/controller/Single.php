@@ -33,16 +33,16 @@ class Single extends Controller
         $this->thirty_start = \strtotime( $this->thirty_start );
         $this->thirty_two_start = \strtotime( $this->thirty_two_start );
 
-        if ( $this->request->args[1] == 'attendee' )
+        if ( $this->args[1] == 'attendee' )
         {
             $this->request->pageNotFound();
         }
-        elseif ( $this->request->args[1] == '0914' )
+        elseif ( $this->args[1] == '0914' )
         {
-            $this->request->args[1] = 'attendee';
+            $this->args[1] = 'attendee';
         }
 
-        $func = ($this->request->args[1] ? $this->request->args[1] : 'show') . 'Action';
+        $func = ($this->args[1] ? $this->args[1] : 'show') . 'Action';
         if ( \method_exists( $this, $func ) )
         {
             $this->$func();
@@ -174,7 +174,7 @@ class Single extends Controller
     // public comments
     public function comment()
     {
-        $func = ($this->request->args[2] ? $this->request->args[2] : 'add') . 'Comment';
+        $func = ($this->args[2] ? $this->args[2] : 'add') . 'Comment';
         $output = \method_exists( $this, $func ) ? $this->$func() : $this->request->pageNotFound();
 
         echo $output;

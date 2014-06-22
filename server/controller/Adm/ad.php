@@ -26,7 +26,7 @@ class ad extends ControllerAction
 
    public function run()
    {
-      $function = $this->request->args[2] ? $this->request->args[2] : 'show';
+      $function = $this->args[2] ? $this->args[2] : 'show';
 
       if ( \method_exists( $this, $function ) )
       {
