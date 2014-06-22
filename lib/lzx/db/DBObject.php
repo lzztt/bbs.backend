@@ -693,7 +693,7 @@ abstract class DBObject
 
             if ( \sizeof( $this->_fields_type ) < \sizeof( $this->_fields ) )
             {
-                throw new \Exception( 'the following fields do not exist in db table: ' . \implode( ', ', \array_diff( \array_values( $this->_fields ), \array_keys( $this->field_types ) ) ) );
+                throw new \Exception( 'the following fields do not exist in db table: ' . \implode( ', ', \array_diff( \array_values( $this->_fields ), \array_keys( $this->_fields_type ) ) ) );
             }
 
             $_fields[$this->_table] = [

@@ -3,15 +3,26 @@
 namespace site\controller;
 
 use site\Controller;
-use site\dbobject\User;
+use site\controller\User;
+use site\dbobject\User as UserObject;
 use lzx\html\Template;
 use lzx\core\Mailer;
-use site\dbobject\UserAction;
+use site\dbobject\SecureLink;
 
 class Password extends Controller
 {
 
-   public function _default()
+   /**
+    * default protected interfaces
+    */
+   protected function _init()
+   {
+      parent::_init();
+      // don't cache password page at page level
+      $this->cache->setStatus( FALSE );
+   }
+
+   protected function _default()
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
@@ -23,79 +34,88 @@ class Password extends Controller
       }
    }
 
+   /**
+    * public interfaces
+    */
    public function reset()
    {
       if ( $this->request->uid != self::GUEST_UID )
       {
-         $this->error( '错误：用户已经登录，不能注册新用户' );
+         $this->error( '错误：用户已经登录，不能重设密码。' );
       }
 
-      $uid = $this->_validateUser();
-      if ( $uid === FALSE )
+      $uri = $this->request->buildURI( $this->request->getURIargs( $this->request->uri ) );
+      $slink = SecureLink::loadFromRequest( $uri, $this->request->get );
+      if ( $slink->exists() )
       {
-         $this->error( '无效的网址链接!' );
-      }
+         if ( empty( $this->request->post ) )
+         {
+            $this->html->var['content'] = new Template( 'password_reset' );
+         }
+         else
+         {
+            if ( empty( $this->request->post['password'] ) )
+            {
+               $this->error( '请输入密码!' );
+            }
 
-      if ( empty( $this->request->post ) )
-      {
-         $this->html->var['content'] = new Template( 'password_reset' );
-         ;
+            $user = new UserObject();
+            $user->id = $uid;
+            $user->password = $user->hashPW( $this->request->post['password'] );
+            $user->update( 'password' );
+            $slink->delete();
+            $this->html->var['content'] = '您的密码已经重设成功，请用新密码登录。';
+         }
       }
       else
       {
-         
+         $this->error( '无效的网址链接!' );
       }
-   }
-
-   private function _validateUser()
-   {
-      if ( !( isset( $this->request->get['r'] ) && $this->request->get['c'] && $this->request->get['t'] ) )
-      {
-         return FALSE;
-      }
-
-      $action = new UserAction();
-      $action->id = $this->request->get['r'];
-      $action->code = $this->request->get['c'];
-      $action->time = $this->request->get['t'];
-      $action->load( 'uid' );
-
-      return $action->exists() ? $action->uid : FALSE;
    }
 
    public function change()
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->request->pageNotFound();
+         $this->_setLoginRedirect( $this->request->uri );
+         $this->_forward( new User(), 'login' );
+         return;
       }
 
       if ( empty( $this->request->post ) )
       {
-         $this->html->var['content'] = new Template( 'change_password' );
+         $this->html->var['content'] = new Template( 'password_change' );
       }
       else
       {
-         if ( empty( $this->request->post['old_password'] ) )
+         if ( empty( $this->request->post['password_old'] ) )
          {
             $this->error( '请输入旧密码!' );
          }
 
-         if ( empty( $this->request->post['new_password'] ) )
+         if ( empty( $this->request->post['password_new'] ) )
          {
             $this->error( '请输入新密码!' );
          }
 
-         $user = new User( $this->request->uid, 'password' );
+         $user = new UserObject( $this->request->uid, 'username,email,password' );
 
          if ( $user->exists() )
          {
-            $pass = $user->hashPW($this->request->post['old_password']);
-            if( $pass == $user->password )
+            $pass = $user->hashPW( $this->request->post['password_old'] );
+            if ( $pass == $user->password )
             {
-               $user->password = $user->hashPW($this->request->post['new_password']);
-               $user->update('password');
-               $this->html->var['content'] = 'The password has been changed successfully.';
+               $user->password = $user->hashPW( $this->request->post['password_new'] );
+               $user->update( 'password' );
+
+               // send an email to user
+               $m = new Mailer();
+               $m->to = $user->email;
+               $m->subject = '您在HoustonBBS网的密码已经更改成功';
+               $m->body = new Template( 'mail/password_changed' );
+               $m->send();
+
+               $this->html->var['content'] = '您的密码已经更改成功。';
             }
             else
             {
@@ -109,55 +129,40 @@ class Password extends Controller
    {
       if ( empty( $this->request->post ) )
       {
-         $link_tabs = $this->_link_tabs( '/user/password' );
-         $form = new Form( [
-            'action' => '/user/password',
-            'id' => 'user-pass'
-            ] );
-         $username = new Input( 'username', '用户名', '输入您的用户名', TRUE );
-         $email = new Input( 'email', '注册电子邮箱地址', '输入您注册时使用的电子邮箱地址', TRUE );
-         $email->type = 'email';
-         $form->setData( [$username->toHTMLElement(), $email->toHTMLElement()] );
-         $form->setButton( ['submit' => '发送重设密码链接'] );
-
-         $this->html->var['content'] = $link_tabs . $form;
+         $this->html->var['content'] = new Template( 'password_forget' );
       }
       else
       {
          if ( empty( $this->request->post['username'] ) )
          {
-            $this->error( 'empty username' );
+            $this->error( '请输入您的用户名' );
          }
          if ( !\filter_var( $this->request->post['email'], \FILTER_VALIDATE_EMAIL ) )
          {
-            $this->error( 'invalid email address : ' . $this->request->post['email'] );
+            $this->error( '不正确的电子邮箱地址 : ' . $this->request->post['email'] );
          }
 
          $user = new UserObject();
          $user->username = $this->request->post['username'];
          $user->email = $this->request->post['email'];
          $user->load( 'id,username,email,status' );
-         if ( $user->status === NULL )
-         {
-            $this->error( '该帐号等待激活中，未激活前不能修改密码' );
-         }
-         if ( $user->status === 0 )
-         {
-            $this->error( '该帐号已被封禁，不能修改密码' );
-         }
          if ( $user->exists() )
          {
-            $password = $user->randomPW();
-            $user->password = $user->hashPW( $password );
-            $user->update( 'password' );
+            if ( $user->status === NULL )
+            {
+               $this->error( '该帐号尚未激活，请通过激活邮件里的链接激活您的帐号并设置初始密码' );
+            }
+            if ( $user->status === 0 )
+            {
+               $this->error( '该帐号已被封禁，不能修改密码' );
+            }
 
             $mailer = new Mailer();
-
             $mailer->to = $user->email;
-            $mailer->subject = $user->username . ' 请求重设密码';
+            $mailer->subject = $user->username . ' 请求重设HoustonBBS的帐号密码';
             $contents = [
                'username' => $user->username,
-               'uri' => $this->_createUser( $user->id, '/user/password/update' ),
+               'uri' => (string) $this->_createSecureLink( $user->id, '/password/reset' ),
                'sitename' => 'HoustonBBS'
             ];
             $mailer->body = new Template( 'mail/password_reset', $contents );
@@ -170,7 +175,19 @@ class Password extends Controller
                $this->error( '重设密码的网址链接邮寄失败，请联系网站管理员重设密码。' );
             }
          }
+         else
+         {
+            $this->error( '您输入的用户名或者注册邮箱错误，找不到相对应的用户帐号。' );
+         }
       }
    }
 
+   /**
+    * protected methods
+    */
+   /**
+    * private methods
+    */
 }
+
+//__END_OF_FILE__

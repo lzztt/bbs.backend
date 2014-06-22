@@ -19,13 +19,13 @@ class Comment extends Controller
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
          $this->request->pageForbidden();
       }
-      $action = $this->request->args[2];
+      $action = $this->args[2];
       $this->run( $action );
    }
 
    public function edit()
    { // edit existing comment
-      $cid = \intval( $this->request->args[1] );
+      $cid = \intval( $this->args[1] );
 
       if ( \strlen( $this->request->post['body'] ) < 5 )
       {
@@ -77,7 +77,7 @@ class Comment extends Controller
    public function delete()
    {
       $comment = new CommentObject();
-      $comment->id = \intval( $this->request->args[1] );
+      $comment->id = \intval( $this->args[1] );
       $comment->load( 'uid,nid' );
 
       if ( $this->request->uid != 1 && $this->request->uid != $comment->uid )

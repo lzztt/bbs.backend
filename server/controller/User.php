@@ -5,6 +5,7 @@ namespace site\controller;
 use site\Controller;
 use site\dbobject\User as UserObject;
 use site\dbobject\PrivMsg;
+use site\controller\Password;
 use lzx\html\HTMLElement;
 use lzx\html\Form;
 use lzx\html\Input;
@@ -14,23 +15,22 @@ use lzx\html\InputGroup;
 use lzx\html\Template;
 use lzx\core\Mailer;
 
-
 class User extends Controller
 {
 
+   /**
+    * default protected methods
+    */
    protected function _init()
    {
       parent::_init();
       // don't cache user page at page level
-      $this->cache->setStatus( FALSE );      
+      $this->cache->setStatus( FALSE );
    }
-   
+
    protected function _default()
    {
-      // don't cache user page at page level
-      $this->cache->setStatus( FALSE );
-
-      $args = $this->request->args;
+      $args = $this->args;
       // Anonymous user
       if ( $this->request->uid == self::GUEST_UID )
       {
@@ -41,16 +41,12 @@ class User extends Controller
          $action = \sizeof( $args ) > 1 ? $args[1] : 'display';
       }
 
-      $this->$action;
+      $this->$action();
    }
 
-   private function _loginGuest()
-   {
-      $this->cache->setStatus( FALSE );
-      $this->cookie->loginReferer = $this->request->uri;
-      $this->login();
-   }
-
+   /**
+    * public methods
+    */
    public function register()
    {
       if ( $this->request->uid != self::GUEST_UID )
@@ -120,56 +116,28 @@ class User extends Controller
       }
    }
 
-   private function _createUser( $uid, $uri )
-   {
-      $action = new User();
-      $action->uid = $uid;
-      $action->time = $this->request->timestamp;
-      $action->code = \mt_rand();
-      $action->uri = $uri;
-      $action->add();
-      return $action->uri . '?r=' . $action->id . '&c=' . $action->code . '&t=' . $action->time;
-   }
-
-   private function _isBot( $m )
-   {
-      $try1 = unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
-      if ( $try1['email']['appears'] == 1 )
-      {
-         return TRUE;
-      }
-      $try2 = $this->request->curlGetData( 'http://botscout.com/test/?mail=' . $m );
-      if ( $try2[0] == 'Y' )
-      {
-         return TRUE;
-      }
-      return FALSE;
-   }
-
    public function activate()
    {
-      $this->resetPassword();
+      // forward to password controller
+      $this->_forward( new Password(), 'reset' );
+   }
+
+   public function password()
+   {
+      // forward to password controller
+      $this->_forward( new Password(), NULL );
    }
 
    public function username()
    {
-      if ( $this->request->uid > 0 )
+      if ( $this->request->uid != self::GUEST_UID )
       {
-         $this->request->redirect( '/' );
+         $this->request->redirect( '/user' );
       }
+
       if ( empty( $this->request->post ) )
       {
-         $link_tabs = $this->_link_tabs( '/user/username' );
-         $form = new Form( [
-            'action' => '/user/username',
-            'id' => 'user-pass'
-            ] );
-         $email = new Input( 'email', '注册电子邮箱地址', '输入您注册时使用的电子邮箱地址', TRUE );
-         $email->type = 'email';
-         $form->setData( $email->toHTMLElement() );
-         $form->setButton( ['submit' => '邮寄您的用户名'] );
-
-         $this->html->var['content'] = $link_tabs . $form;
+         $this->html->var['content'] = new Template( 'user_forgetusername' );
       }
       else
       {
@@ -177,143 +145,105 @@ class User extends Controller
          {
             $this->error( 'invalid email address : ' . $this->request->post['email'] );
          }
-         $this->html->var['content'] = 'Not Supported Yet :(';
+
+         $user = new UserObject();
+         $user->email = $this->request->post['email'];
+         $user->load( 'username' );
+
+         if ( $user->exists() )
+         {
+            $response = '您的注册用户名是: ' . $user->username;
+         }
+         else
+         {
+            $response = '未发现使用该注册邮箱的账户，请检查邮箱是否正确: ' . $user->email;
+         }
+         $this->html->var['content'] = $response;
       }
    }
 
-   public function password()
-   {
-      switch ( $this->request->args[2] )
-      {
-         case 'update':
-            $this->changePassword();
-            break;
-         case 'reset':
-            $this->resetPassword();
-            break;
-         default :
-            if ( $this->session->uid == self::GUEST_UID )
-            {
-               $this->forgetPassword();
-            }
-            else
-            {
-               $this->changePassword();
-            }
-      }
-   }
-
-   private function _setUser( $uid )
-   {
-      $this->session->uid = $uid;
-      $this->cookie->uid = $uid;
-      $this->cookie->urole = $uid == self::GUEST_UID ? Template::UROLE_GUEST : ($uid == self::ADMIN_UID ? Template::UROLE_ADM : Template::UROLE_USER);
-   }
-
-// user login
    public function login()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid != self::GUEST_UID )
       {
-         $this->request->redirect( '/' );
+         $this->error( '错误：您已经成功登录，不能重复登录。' );
       }
 
-      $this->cache->setStatus( FALSE );
-
-      $guestActions = ['/user', '/user/login', '/user/register', '/user/password', '/user/username'];
-//update page redirection
-      if ( !\in_array( $this->request->referer, $guestActions ) )
+      if ( empty( $this->request->post ) )
       {
-         $this->cookie->loginReferer = $this->request->referer;
+         // display login form
+         $this->html->var['content'] = new Template( 'user_login' );
       }
-
-      if ( isset( $this->request->post['username'] ) && isset( $this->request->post['password'] ) )
+      else
       {
-// todo: login times control
-         $user = new UserObject();
-         if ( $user->login( $this->request->post['username'], $this->request->post['password'] ) )
+         if ( isset( $this->request->post['username'] ) && isset( $this->request->post['password'] ) )
          {
-            $this->_setUser( $user->id );
-            if ( $this->cookie->loginReferer )
+            // todo: login times control
+            $user = new UserObject();
+            if ( $user->login( $this->request->post['username'], $this->request->post['password'] ) )
             {
-               $referer = $this->cookie->loginReferer;
-               unset( $this->cookie->loginReferer );
+               $this->_setUser( $user->id );
+               $uri = $this->_getLoginRedirect();
+               $this->request->redirect( $uri ? $uri : '/'  );
             }
             else
             {
-               $referer = '/';
-            }
-            $this->request->redirect( $referer );
-         }
-         elseif ( isset( $user->id ) )
-         {
-            $this->logger->info( 'Login Fail: ' . $user->username . ' @ ' . $this->request->ip );
-            if ( $user->status == 1 )
-            {
-               $this->error( '错误：错误的密码。' );
-            }
-            else
-            {
-               $this->error( '错误：该帐号已被封禁，如有问题请联络网站管理员。' );
+               $this->logger->info( 'Login Fail: ' . $user->username . ' @ ' . $this->request->ip );
+               if ( isset( $user->id ) )
+               {
+                  if ( $user->status == 1 )
+                  {
+                     $this->error( '错误：错误的密码。' );
+                  }
+                  else
+                  {
+                     $this->error( '错误：该帐号已被封禁，如有问题请联络网站管理员。' );
+                  }
+               }
+               else
+               {
+                  $this->error( '错误：错误的用户名。' );
+               }
             }
          }
          else
          {
-            $this->logger->info( 'Login Fail: ' . $user->username . ' @ ' . $this->request->ip );
-            $this->error( '错误：错误的用户名。' );
+            $this->error( '错误：请填写用户名和密码。' );
          }
       }
-      else
-      {
-         // display login form
-         $link_tabs = $this->_link_tabs( '/user/login' );
-         $form = new Form( [
-            'action' => '/user/login',
-            'id' => 'user-login'
-            ] );
-         $username = new Input( 'username', '用户名', '输入您在 缤纷休斯顿 华人论坛 的用户名', TRUE );
-         $password = new Input( 'password', '密码', '输入与您用户名相匹配的密码', TRUE );
-         $password->type = 'password';
-         $form->setData( [$username->toHTMLElement(), $password->toHTMLElement()] );
-         $form->setButton( ['submit' => '登录'] );
-
-         $this->html->var['content'] = $link_tabs . $form;
-      }
    }
 
-   private function _link_tabs( $active_link )
+   public function logout()
    {
-      if ( $this->request->uid == 0 )
+      if ( $this->request->uid == self::GUEST_UID )
       {
-         $tabs = [
-            '/user/login' => '登录',
-            '/user/register' => '创建新帐号',
-            '/user/password' => '重设密码',
-            '/user/username' => '忘记用户名',
-         ];
+         $this->error( '错误：您尚未成功登录，不能登出。' );
       }
-      else
+
+      // logout to switch back to super user
+      if ( isset( $this->session->suid ) )
       {
-         $uid = $this->request->args[1];
-         $tabs = [
-            '/user/' . $uid . '/display' => '用户首页',
-            '/user/' . $uid . '/edit' => '编辑个人资料',
-            '/user/' . $uid . '/password' => '重设密码',
-            '/user/' . $uid . '/pm' => '站内短信',
-         ];
+         $this->su();
+         return;
       }
-      return $this->html->linkTabs( $tabs, $active_link );
+
+      //session_destroy();
+      $this->session->clear(); // keep session record but clear the whole $_SESSION variable
+      $this->cookie->uid = 0;
+      $this->cookie->urole = Template::UROLE_GUEST;
+      unset( $this->cookie->pmCount );
+      $this->request->redirect( '/' );
    }
 
-// switch to user or back to super user
+   // switch to user or back to super user
    public function su()
    {
-// switch to user
+      // switch to user from super user
       if ( $this->session->uid == self::ADMIN_UID )
       {
-         if ( \filter_var( $this->request->args[3], \FILTER_VALIDATE_INT, ['options' => ['min_range' => 2]] ) )
+         if ( \filter_var( $this->args[0], \FILTER_VALIDATE_INT, ['options' => ['min_range' => 2]] ) )
          {
-            $user = new UserObject( $this->request->args[3], 'username' );
+            $user = new UserObject( $this->args[0], 'username' );
             if ( $user->exists() )
             {
                $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
@@ -323,15 +253,15 @@ class User extends Controller
             }
             else
             {
-               $this->error( 'user does not exist' );
+               $this->error( '错误：user does not exist' );
             }
          }
          else
          {
-            $this->error( 'invalid user id' );
+            $this->error( '错误：invalid user id' );
          }
       }
-// switch back to super user
+      // switch back to super user
       elseif ( isset( $this->session->suid ) )
       {
          $suid = $this->session->suid;
@@ -343,55 +273,17 @@ class User extends Controller
             $this->html->var['content'] = 'not logged out, just switched back to super user';
          }
       }
+      // hide from normal user
       else
       {
          $this->request->pageNotFound();
       }
    }
 
-// user logout
-   public function logout()
-   {
-      if ( $this->request->uid == 0 )
-      {
-         $this->cookie->urole = Template::UROLE_GUEST;
-         $this->request->redirect( '/' );
-      }
-
-// logout to switch back to super user
-      if ( isset( $this->session->suid ) )
-      {
-         $this->su();
-         return;
-      }
-
-      $this->cache->setStatus( FALSE );
-      $uid = $this->request->args[1];
-      if ( $this->request->uid == $uid )
-      {
-//session_destroy();
-         $this->session->clear(); // keep session record but clear the whole $_SESSION variable
-         $this->cookie->uid = 0;
-         $this->cookie->urole = Template::UROLE_GUEST;
-         unset( $this->cookie->pmCount );
-         $this->request->redirect( '/' );
-      }
-      else
-      {
-         $this->request->pageForbidden();
-      }
-   }
-
    public function delete()
    {
-      if ( $this->request->uid == 0 )
-      {
-         $this->request->redirect( '/user' );
-      }
-
-      $this->cache->setStatus( FALSE );
-      $uid = intval( $this->request->args[1] );
-      if ( ( $this->request->uid == 1 || $this->request->uid == $uid ) && $uid > 2 )  // can not delete uid = 1
+      $uid = (int) $this->args[0];
+      if ( $this->request->uid == self::ADMIN_UID && $uid > 1 )  // only admin can delete user, can not delete admin
       {
          $user = new UserObject();
          $user->id = $uid;
@@ -411,121 +303,71 @@ class User extends Controller
 //logged in user
    public function edit()
    {
-      if ( $this->request->uid == 0 )
+      if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->request->redirect( '/user' );
+         $this->_setLoginRedirect( $this->request->uri );
+         $this->login();
+         return;
       }
 
-      $uid = $this->request->args[1];
-      $this->cache->setStatus( FALSE );
+      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[0];
 
-      $link_tabs = $this->_link_tabs( '/user/' . $uid . '/edit' );
-
-
-      if ( $this->request->uid != $uid && $this->request->uid != 1 )
+      if ( $this->request->uid != $uid && $this->request->uid != self::ADMIN_UID )
       {
          $this->request->pageForbidden();
       }
 
+      $u = new UserObject();
+
       if ( empty( $this->request->post ) )
       {
-         $link_tabs = $this->_link_tabs( '/user/' . $uid . '/edit' );
-         $form = new Form( [
-            'action' => $this->request->uri,
-            'enctype' => 'multipart/form-data'
-            ] );
+         $u->id = $uid;
+         $u->load();
 
-         $user = new UserObject( $uid );
-
-         $fieldset = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '帐号设置' ) );
-         $avatar = new Input( 'avatar', '用户头像', '您的虚拟头像。最大尺寸是 <em>120 x 120</em> 像素，最大大小为 <em>60</em> KB' );
-         $avatar->type = 'file';
-         $avatar_element = $avatar->toHTMLElement();
-         $input = $avatar_element->getDataByIndex( 1 );
-         $input->addElement( new HTMLElement( 'img', NULL, ['class' => 'avatar', 'src' => $user->avatar ? $user->avatar : '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg'] ) );
-         $avatar_element->setDataByIndex( 1, $input );
-
-         $signature = new TextArea( 'signature', '签名档', '您的签名将会公开显示在评论的末尾' );
-         $signature->setValue( $user->signature );
-         $fieldset->addElements( [$avatar_element, $signature->toHTMLElement()] );
-         $form->addElement( $fieldset );
-
-         $fieldset = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '联系方式' ) );
-         $msn = new Input( 'msn', 'MSN' );
-         $msn->setValue( $user->msn );
-         $qq = new Input( 'qq', 'QQ' );
-         $qq->setValue( $user->qq );
-         $website = new Input( 'website', '个人网站' );
-         $website->setValue( $user->website );
-         $fieldset->addElements( [$msn->toHTMLElement(), $qq->toHTMLElement(), $website->toHTMLElement()] );
-         $form->addElement( $fieldset );
-
-         $fieldset = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '个人信息' ) );
-         $name = new InputGroup( '姓名', '不会公开显示' );
-         $firstName = new Input( 'firstname', '名' );
-         $firstName->setValue( $user->firstname );
-         $lastName = new Input( 'lastname', '姓' );
-         $lastName->setValue( $user->lastname );
-         $name->addFormElements( [$firstName->inline(), $lastName->inline()] );
-
-         $sex = new Select( 'sex', '性别' );
-         $sex->options = [
-            'null' => '未选择',
-            '0' => '女',
-            '1' => '男',
-         ];
-         $sex->setValue( \strval( $user->sex ) );
-
-         if ( $user->birthday )
+         if ( $u->exists() )
          {
-            $birthday = sprintf( '%08u', $user->birthday );
-            $value_byear = substr( $birthday, 0, 4 );
-            if ( $value_byear == '0000' )
+            if ( $user->birthday )
             {
-               $value_byear = NULL;
+               $birthday = \sprintf( '%08u', $user->birthday );
+               $byear = \substr( $birthday, 0, 4 );
+               if ( $byear == '0000' )
+               {
+                  $byear = NULL;
+               }
+               $bmonth = \substr( $birthday, 4, 2 );
+               $bday = \substr( $birthday, 6, 2 );
             }
-            $value_bmonth = substr( $birthday, 4, 2 );
-            $value_bday = substr( $birthday, 6, 2 );
+
+            $info = [
+               'uid' => $uid,
+               'username' => $u->username,
+               'avatar' => $u->avatar ? $user->avatar : '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg',
+               'qq' => $u->qq,
+               'wechat' => $u->wechat,
+               'website' => $u->website,
+               'firstname' => $u->firstname,
+               'lastname' => $u->lastname,
+               'sex' => $u->sex,
+               'byear' => $byear,
+               'bmonth' => $bmonth,
+               'bday' => $bday,
+               'occupation' => $u->occupation,
+               'interests' => $u->interests,
+               'aboutme' => $u->favoriteQuotation
+            ];
+
+            $this->html->var['content'] = new Template( 'user_edit', $info );
          }
-
-         $birthday = new InputGroup( '生日', '用于计算年龄，出生年不会公开显示' );
-         $bmonth = new Input( 'bmonth', '月(mm)' );
-         $bmonth->setValue( $value_bmonth );
-         $bday = new Input( 'bday', '日(dd)' );
-         $bday->setValue( $value_bday );
-         $byear = new Input( 'byear', '年(yyyy)' );
-         $byear->setValue( $value_byear );
-         $birthday->addFormElements( [$bmonth->inline(), $bday->inline(), $byear->inline()] );
-
-         $occupation = new Input( 'occupation', '职业' );
-         $occupation->setValue( $user->occupation );
-         $interests = new Input( 'interests', '兴趣爱好' );
-         $interests->setValue( $user->interests );
-         $aboutme = new TextArea( 'aboutme', '自我介绍' );
-         $aboutme->setValue( $user->favoriteQuotation );
-         $fieldset->addElements( [$name->toHTMLElement(), $sex->toHTMLElement(), $birthday->toHTMLElement(), $occupation->toHTMLElement(), $interests->toHTMLElement(), $aboutme->toHTMLElement()] );
-         $form->addElement( $fieldset );
-
-         $fieldset = new HTMLElement( 'fieldset', new HTMLElement( 'legend', '更改密码 (如果不想更改密码，此部分请留空)' ) );
-         $password1 = new Input( 'password1', '新密码' );
-         $password1->type = 'password';
-         $password2 = new Input( 'password2', '确认新密码' );
-         $password2->type = 'password';
-         $fieldset->addElements( [$password1->toHTMLElement(), $password2->toHTMLElement()] );
-         $form->addElement( $fieldset );
-
-         $form->setButton( ['submit' => '保存'] );
-
-         $this->html->var['content'] = $link_tabs . $form;
-// display edit form
-//$this->html->var['content'] = new Template('user_edit', ['user' => new UserObject($uid)));
+         else
+         {
+            $this->error( '错误：用户不存在' );
+         }
       }
       else
       {
-         $user = new UserObject();
-         $user->id = $uid;
+         $u->id = $uid;
 
-         $file = $_FILES['avatar'];
+         $file = $this->request->files['avatar'][0];
          if ( $file['error'] == 0 && $file['size'] > 0 )
          {
             $fileInfo = getimagesize( $file['tmp_name'] );
@@ -538,7 +380,7 @@ class User extends Controller
             {
                $avatar = '/data/avatars/' . $uid . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[2] );
                \move_uploaded_file( $file['tmp_name'], $this->config->path['file'] . $avatar );
-               $user->avatar = $avatar;
+               $u->avatar = $avatar;
             }
          }
 
@@ -547,7 +389,7 @@ class User extends Controller
             $password = $this->request->post['password2'];
             if ( $this->request->post['password1'] == $password )
             {
-               $user->password = $user->hashPW( $password );
+               $u->password = $u->hashPW( $password );
             }
             else
             {
@@ -571,52 +413,50 @@ class User extends Controller
 
          foreach ( $fields as $k => $f )
          {
-            $user->$k = \strlen( $this->request->post[$f] ) ? $this->request->post[$f] : NULL;
+            $u->$k = \strlen( $this->request->post[$f] ) ? $this->request->post[$f] : NULL;
          }
 
          if ( !\is_numeric( $this->request->post['sex'] ) )
          {
-            $user->sex = NULL;
+            $u->sex = NULL;
          }
          else
          {
-            $user->sex = $this->request->post['sex'];
+            $u->sex = $this->request->post['sex'];
          }
 
-         $user->birthday = (int) ($this->request->post['byear'] . $this->request->post['bmonth'] . $this->request->post['bday']);
+         $u->birthday = (int) ($this->request->post['byear'] . $this->request->post['bmonth'] . $this->request->post['bday']);
 
-         $user->update();
+         $u->update();
 
          $this->html->var['content'] = '您的最新资料已被保存。';
 
-         $this->cache->delete( 'authorPanel' . $user->id );
-         $this->cache->delete( '/user/' . $user->id );
-         $this->cache->delete( '/user/' . $user->id . '/*' );
+         $this->cache->delete( 'authorPanel' . $u->id );
+         $this->cache->delete( '/user/' . $u->id );
+         $this->cache->delete( '/user/' . $u->id . '/*' );
       }
    }
 
    public function display()
    {
-      if ( $this->request->uid == 0 )
+      if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->request->redirect( '/user' );
+         $this->_setLoginRedirect( $this->request->uri );
+         $this->login();
+         return;
       }
 // view: the default action
-      $uid = \intval( $this->request->args[1] );
-
-      if ( $uid == $this->request->uid )
+      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[0];
+      $user = new UserObject( $uid );
+      if ( !$user->exists() )
       {
-         $link_tabs = $this->_link_tabs( '/user/' . $uid . '/display' );
-      }
-      else
-      {
-         $link_tabs = '';
+         $this->error( '错误：用户不存在' );
       }
 
       $info = [];
-      $user = new UserObject( $uid );
+
       $info[] = ['dt' => '用户名', 'dd' => $user->username];
-      $info[] = ['dt' => 'MSN', 'dd' => $user->msn];
+      $info[] = ['dt' => '微信', 'dd' => $user->wechat];
       $info[] = ['dt' => 'QQ', 'dd' => $user->qq];
       $info[] = ['dt' => '个人网站', 'dd' => $user->website];
       $sex = \is_null( $user->sex ) ? '未知' : ( $user->sex == 1 ? '男' : '女');
@@ -657,19 +497,20 @@ class User extends Controller
 
    public function pm()
    {
-      if ( $this->request->uid == 0 )
+      if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->request->redirect( '/user' );
+         $this->_setLoginRedirect( $this->request->uri );
+         $this->login();
+         return;
       }
-      $uid = \intval( $this->request->args[1] );
+
+      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[0];
       $user = new UserObject( $uid, NULL );
-      $this->cache->setStatus( FALSE );
 
       if ( $user->id == $this->request->uid )
       {
-         $link_tabs = $this->_link_tabs( '/user/' . $user->id . '/pm' );
 // show pm mailbox
-         $mailbox = \sizeof( $this->request->args ) > 3 ? $this->request->args[3] : 'inbox';
+         $mailbox = \sizeof( $this->args ) > 1 ? $this->args[1] : 'inbox';
 
          if ( !\in_array( $mailbox, ['inbox', 'sent'] ) )
          {
@@ -682,14 +523,14 @@ class User extends Controller
             $this->error( $mailbox == 'sent' ? '您的发件箱里还没有短信。' : '您的收件箱里还没有短信。'  );
          }
 
-         $activeLink = '/user/' . $user->id . '/pm/' . $mailbox;
+         $activeLink = '/user/pm/' . $user->id . '/' . $mailbox;
          $mailboxList = $this->html->linkTabs( [
-            '/user/' . $user->id . '/pm/inbox' => '收件箱',
-            '/user/' . $user->id . '/pm/sent' => '发件箱'
+            '/user/pm/' . $user->id . '/inbox' => '收件箱',
+            '/user/pm/' . $user->id . '/sent' => '发件箱'
             ], $activeLink
          );
 
-         $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
+         $pageNo = $this->request->get['page'] ? (int) $this->request->get['page'] : 1;
          $pageCount = \ceil( $pmCount / 25 );
 
          if ( $pageNo < 1 || $pageNo > $pageCount )
@@ -773,10 +614,36 @@ class User extends Controller
       }
    }
 
+   /**
+    * 
+    * private methods
+    * 
+    */
+   private function _isBot( $m )
+   {
+      $try1 = unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
+      if ( $try1['email']['appears'] == 1 )
+      {
+         return TRUE;
+      }
+      $try2 = $this->request->curlGetData( 'http://botscout.com/test/?mail=' . $m );
+      if ( $try2[0] == 'Y' )
+      {
+         return TRUE;
+      }
+      return FALSE;
+   }
+
+   private function _setUser( $uid )
+   {
+      $this->session->uid = $uid;
+      $this->cookie->uid = $uid;
+      $this->cookie->urole = $uid == self::GUEST_UID ? Template::UROLE_GUEST : ($uid == self::ADMIN_UID ? Template::UROLE_ADM : Template::UROLE_USER);
+   }
+
    private function _recentTopics( $uid )
    {
       $user = new UserObject( $uid, NULL );
-      $this->cache->setStatus( FALSE );
 
       if ( $uid == 1 && $this->request->uid != 1 )
       {

@@ -34,7 +34,7 @@ class Node extends Controller
 
    private function _getNodeType()
    {
-      $nid = \intval( $this->request->args[0] );
+      $nid = \intval( $this->args[0] );
       if ( $nid <= 0 )
       {
          $this->request->pageNotFound();
@@ -68,7 +68,7 @@ class Node extends Controller
       // url = /node/ajax/viewcount?nid=<nid>
 
       $viewCount = [];
-      if ( $this->request->args[2] == 'viewcount' )
+      if ( $this->args[2] == 'viewcount' )
       {
          $nid = \intval( $this->request->get['nid'] );
          $nodeObj = new NodeObject( $nid, 'viewCount' );
@@ -85,7 +85,7 @@ class Node extends Controller
 
    private function _tagForumTopic( $nid )
    {
-      $newTagID = \intval( $this->request->args[3] );
+      $newTagID = \intval( $this->args[3] );
 
       $nodeObj = new NodeObject( $nid, 'uid,tid' );
       if ( $this->request->uid == 1 || $this->request->uid = $nodeObj->uid )

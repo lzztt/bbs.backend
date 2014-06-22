@@ -14,7 +14,7 @@ use lzx\db\DB;
  * @property $username
  * @property $password
  * @property $email
- * @property $msn
+ * @property $wechat
  * @property $qq
  * @property $website
  * @property $firstname
@@ -52,7 +52,7 @@ class User extends DBObject
          'username' => 'username',
          'password' => 'password',
          'email' => 'email',
-         'msn' => 'msn',
+         'wechat' => 'wechat',
          'qq' => 'qq',
          'website' => 'website',
          'firstname' => 'firstname',

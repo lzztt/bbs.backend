@@ -18,7 +18,7 @@ class File extends Controller
    protected function _ajax()
    {
       // uri = /file/ajax/upload
-      $action = $this->request->args[2];
+      $action = $this->args[2];
       return $this->run( $action );
    }
 
