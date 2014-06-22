@@ -13,9 +13,9 @@ class Weather extends Controller
 
       
 
-      if ( (\strlen( $this->request->args[1] ) == 5) && \is_numeric( $this->request->args[1] ) && ($this->request->args[1] > 0) )
+      if ( (\strlen( $this->args[1] ) == 5) && \is_numeric( $this->args[1] ) && ($this->args[1] > 0) )
       {
-         $zip = $this->request->args[1];
+         $zip = $this->args[1];
       }
       else
       {

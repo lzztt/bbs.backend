@@ -51,6 +51,7 @@ class Config
       $this->theme = [
          'default' => 'default',
          'wedding' => 'wedding',
+         'wedding2' => 'wedding2',
          'adm' => 'adm'
       ];
       $this->cookie = [

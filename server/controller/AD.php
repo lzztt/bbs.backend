@@ -25,7 +25,7 @@ class AD extends Controller
       
       $this->cache->setStatus(FALSE);
 
-      $func = $this->request->args[1] ? $this->request->args[1] : 'yp';
+      $func = $this->args[1] ? $this->args[1] : 'yp';
       if (method_exists($this, $func))
       {
          $this->html->var['content'] = $this->$func();

@@ -31,7 +31,7 @@ class Adm extends Controller
          $this->request->pageNotFound();
       }
 
-      $action = $this->request->args[1] ? $this->request->args[1] : 'user';
+      $action = $this->args[1] ? $this->args[1] : 'user';
       $this->html->var['content'] = $this->run( $action );
    }
 

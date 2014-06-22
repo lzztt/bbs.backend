@@ -33,9 +33,9 @@ class IOstat extends Controller
       $file = '/var/log/sysstat/sa' . date( 'd' );
 
       // using an old date file
-      if ( $this->request->args[1] )
+      if ( $this->args[1] )
       {
-         $_file = '/var/log/sysstat/sa' . $this->request->args[1];
+         $_file = '/var/log/sysstat/sa' . $this->args[1];
          if ( is_file( $_file ) && is_readable( $_file ) )
          {
             $file = $_file;

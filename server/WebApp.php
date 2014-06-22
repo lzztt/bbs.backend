@@ -77,8 +77,7 @@ class WebApp extends App
    public function run( $argc = 0, Array $argv = [] )
    {
       $request = $this->getRequest();
-
-      $request->args = \array_intersect_key( $request->args, $this->config->getkeys );
+      $request->get = \array_intersect_key( $request->get, \array_flip( $this->config->getkeys ) );
 
       $db = DB::getInstance( $this->config->db );
 
@@ -291,7 +290,8 @@ class WebApp extends App
     */
    public function getControllerAndMethod( Request $req )
    {
-      $count = \sizeof( $req->args );
+      $args = $req->getURIargs( $req->uri );
+      $count = \sizeof( $args );
       if ( $count == 0 )
       {
          $ctrler = 'home';
@@ -299,15 +299,15 @@ class WebApp extends App
       }
       else
       {
-         $ctrler = \array_shift( $req->args );
+         $ctrler = \array_shift( $args );
 
-         if ( $count == 1 || \is_numeric( $req->args[0] ) )
+         if ( $count == 1 || \is_numeric( $args[0] ) )
          {
             $method = NULL;
          }
          else
          {
-            $method = \array_shift( $req->args );
+            $method = \array_shift( $args );
          }
       }
 
@@ -323,7 +323,10 @@ class WebApp extends App
          $req->pageNotFound();
       }
 
-      return [new $ctrlerClass(), $method];
+      $ctrlerObj = new $ctrlerClass();
+      $ctrlerObj->args = $args;
+
+      return [$ctrlerObj, $method];
    }
 
 }

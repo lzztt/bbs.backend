@@ -15,7 +15,7 @@ class Lottery extends Controller
         
         $this->cache->setStatus( FALSE );
 
-        $func = (isset( $this->request->args[1] ) ? $this->request->args[1] : 'rules') . 'Handler';
+        $func = (isset( $this->args[1] ) ? $this->args[1] : 'rules') . 'Handler';
         $content = \method_exists( $this, $func ) ? $this->$func() : $this->pageNotFound();
 
         $links = [
@@ -26,7 +26,7 @@ class Lottery extends Controller
             'rank' => '排名'
         ];
 
-        $active = in_array( $this->request->args[1], array_keys( $links ), TRUE ) ? $this->request->args[1] : 'home';
+        $active = in_array( $this->args[1], array_keys( $links ), TRUE ) ? $this->args[1] : 'home';
 
         $header = '<div id="navbar">';
         foreach ( $links as $k => $v )
@@ -65,7 +65,7 @@ class Lottery extends Controller
     {
         $lottery = is_array( $this->session->lottery ) ? $this->session->lottery : [];
 
-        if ( $this->request->args[2] === 'run' )
+        if ( $this->args[2] === 'run' )
         {
             if ( isset( $lottery[$this->request->timestamp] ) )
             {
@@ -75,7 +75,7 @@ class Lottery extends Controller
             $this->session->lottery = $lottery;
             $this->request->redirect( $this->request->referer );
         }
-        if ( $this->request->args[2] === 'clear' )
+        if ( $this->args[2] === 'clear' )
         {
             unset( $this->session->lottery );
             $this->request->redirect( $this->request->referer );
@@ -133,7 +133,7 @@ class Lottery extends Controller
 
         $db = DB::getInstance();
 
-        if ( $this->request->args[2] === 'run' )
+        if ( $this->args[2] === 'run' )
         {
             if ( $isActive !== TRUE )
             {
@@ -197,7 +197,7 @@ class Lottery extends Controller
 
         $db = DB::getInstance();
 
-        if ( $this->request->args[2] === 'record' && \is_numeric( $this->request->args[3] ) )
+        if ( $this->args[2] === 'record' && \is_numeric( $this->args[3] ) )
         {
             // DB GET round time
         }
