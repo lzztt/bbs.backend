@@ -21,6 +21,7 @@ use lzx\core\ControllerAction;
  */
 abstract class Controller
 {
+   protected static $l = [];
 
    public $logger;
    public $cache;
@@ -28,7 +29,7 @@ abstract class Controller
    public $request;
    public $session;
    public $cookie;
-   protected static $l = [];
+   
    protected $class;
 
    public function __construct()

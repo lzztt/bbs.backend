@@ -18,16 +18,16 @@ class Forum extends Controller
    {
       
 
-      if ( $this->request->args[1] == 'help' )
+      if ( $this->args[1] == 'help' )
       {
          $this->showForumHelp();
          return;
       }
 
       $tag = new Tag();
-      if ( \is_numeric( $this->request->args[1] ) )
+      if ( \is_numeric( $this->args[1] ) )
       {
-         $tid = \intval( $this->request->args[1] );
+         $tid = \intval( $this->args[1] );
          $tag->id = $tid;
          $tag->load( 'id' );
          if ( $tag->exists() === FALSE )
@@ -49,7 +49,7 @@ class Forum extends Controller
 
       $tagTree = $tag->getTagTree();
 
-      if ( $this->request->args[2] == 'node' )
+      if ( $this->args[2] == 'node' )
       {
          \sizeof( $tagTree[$tid]['children'] ) ? $this->error( 'Could not post topic in this forum' ) : $this->createForumTopic( $tid );
       }
@@ -67,7 +67,7 @@ class Forum extends Controller
       // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
 
       $viewCount = [];
-      if ( $this->request->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
+      if ( $this->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
       {
          $tid = \intval( $this->request->get['tid'] );
          $nids = \explode( '_', $this->request->get['nids'] );

@@ -30,8 +30,12 @@ abstract class Controller extends LzxCtrler
    const ADMIN_UID = 1;
 
    public $user = NULL;
+   public $args;
    public $config;
 
+   /**
+    * public methods
+    */
    final public function run( $method )
    {
       $this->_init();
@@ -93,6 +97,9 @@ abstract class Controller extends LzxCtrler
       $this->request->pageExit( $return );
    }
 
+   /**
+    * protected methods
+    */
    protected function _init()
    {
       if ( !\array_key_exists( $this->class, self::$l ) )
@@ -118,6 +125,46 @@ abstract class Controller extends LzxCtrler
       }
       $this->_setNavbar();
       $this->_setTitle();
+   }
+   
+   protected function _ajax()
+   {
+      $this->request->pageNotFound();
+   }
+
+   protected function _forward( Controller $ctrler, $method )
+   {
+      $ctrler->logger = $this->logger;
+      $ctrler->cache = $this->cache;
+      $ctrler->html = $this->html;
+      $ctrler->request = $this->request;
+      $ctrler->session = $this->session;
+      $ctrler->cookie = $this->cookie;
+      $ctrler->config = $this->config;
+      $ctrler->run( $method );
+   }
+
+   protected function _setLoginRedirect( $uri )
+   {
+      $this->cookie->loginRedirect = $uri;
+   }
+
+   protected function _getLoginRedirect()
+   {
+      $uri = $this->cookie->loginRedirect;
+      unset( $this->cookie->loginRedirect );
+      return $uri;
+   }
+
+   protected function _createSecureLink( $uid, $uri )
+   {
+      $slink = new SecureLink();
+      $slink->uid = $uid;
+      $slink->time = $this->request->timestamp;
+      $slink->code = \mt_rand();
+      $slink->uri = $uri;
+      $slink->add();
+      return $slink;
    }
 
    protected function _setNavbar()
@@ -200,6 +247,9 @@ abstract class Controller extends LzxCtrler
       return [$pageNo, $pageCount];
    }
 
+   /**
+    * private methods
+    */
 }
 
 //__END_OF_FILE__

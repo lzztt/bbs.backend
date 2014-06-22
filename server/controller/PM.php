@@ -30,10 +30,10 @@ class PM extends Controller
       // logged in user
       else
       {
-         $msgID = (int) ($this->request->args[1]);
+         $msgID = (int) ($this->args[1]);
          if ( $msgID > 0 )
          {
-            $action = sizeof( $this->request->args ) > 2 ? $this->request->args[2] : 'display';
+            $action = sizeof( $this->args ) > 2 ? $this->args[2] : 'display';
             $this->run( $action );
          }
       }
@@ -41,7 +41,7 @@ class PM extends Controller
 
    public function display()
    {
-      $msgID = \intval( $this->request->args[1] );
+      $msgID = \intval( $this->args[1] );
 
       $pm = new PrivMsg();
       $msgs = $pm->getPMConversation( $msgID, $this->request->uid );
@@ -98,7 +98,7 @@ class PM extends Controller
 
    public function reply()
    {
-      $msgID = \intval( $this->request->args[1] );
+      $msgID = \intval( $this->args[1] );
 
       if ( $this->request->uid != $this->request->post['fromUID'] )
       {
@@ -139,8 +139,8 @@ class PM extends Controller
 
    public function delete()
    {
-      $msgID = \intval( $this->request->args[1] );
-      $messageID = \intval( $this->request->args[3] );
+      $msgID = \intval( $this->args[1] );
+      $messageID = \intval( $this->args[3] );
 
       $pm = new PrivMsg();
       $pm->id = $messageID;

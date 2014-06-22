@@ -19,14 +19,14 @@ class YP extends Controller
    {
       
 
-      if ( is_null( $this->request->args[1] ) )
+      if ( is_null( $this->args[1] ) )
       {
          $this->showYellowPageHome();
       }
-      elseif ( is_numeric( $this->request->args[1] ) )
+      elseif ( is_numeric( $this->args[1] ) )
       {
-         $tid = (int) $this->request->args[1];
-         if ( $this->request->args[2] == 'node' )
+         $tid = (int) $this->args[1];
+         if ( $this->args[2] == 'node' )
          {
             $this->createYellowPageNode( $tid );
          }
@@ -37,7 +37,7 @@ class YP extends Controller
       }
       else
       {
-         if ( $this->request->args[1] == 'join' )
+         if ( $this->args[1] == 'join' )
          {
             $this->showYellowPageJoin();
          }
@@ -109,7 +109,7 @@ class YP extends Controller
       // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
 
       $viewCount = [];
-      if ( $this->request->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
+      if ( $this->args[2] == 'viewcount' && \strlen( $this->request->get['nids'] ) > 0 )
       {
          //$tid = \intval($this->request->get['tid']);
          $nids = \explode( '_', $this->request->get['nids'] );
