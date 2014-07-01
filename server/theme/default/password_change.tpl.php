@@ -6,18 +6,15 @@
 </ul>
 <form accept-charset="UTF-8" autocomplete="off" method="post" action="/password/change" id="user-pass">
    <div class="form_element">
-      <div class="element_label"><label>请输入旧密码</label></div>
-      <div class="element_input"><input size="22" name="password_old" type="password"></div>
+      <label>旧密码</label><input size="22" name="password_old" type="password" required="required">
    </div>
    <div class="form_element">
-      <div class="element_label"><label>请输入新密码</label></div>
-      <div class="element_input"><input size="22" name="password_new" type="password"></div>
+      <label>新密码</label><input size="22" name="password_new" type="password" required="required">
    </div>
    <div class="form_element">
-      <div class="element_label"><label>请重新输入新密码</label></div>
-      <div class="element_input"><input size="22" name="password_new2" type="password"></div>
+      <label>请重新输入新密码</label><input size="22" name="password_new2" type="password" required="required">
    </div>
    <div class="form_element">
-      <div class="element_input"><button type="submit">更改密码</button></div>
+      <button type="submit">更改密码</button>
    </div>
 </form>

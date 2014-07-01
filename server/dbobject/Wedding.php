@@ -19,6 +19,7 @@ use lzx\db\DB;
  * @property $time
  * @property $checkin
  * @property $status 
+ * @property $table
  */
 class Wedding extends DBObject
 {
@@ -33,9 +34,13 @@ class Wedding extends DBObject
          'email' => 'email',
          'phone' => 'phone',
          'guests' => 'guests',
+         'comment' => 'comment',
          'time' => 'time',
          'checkin' => 'checkin',
-         'status' => 'status'
+         'status' => 'status',
+         'tid' => 'tid',
+         'gift' => 'gift',
+         'value' => 'value'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
