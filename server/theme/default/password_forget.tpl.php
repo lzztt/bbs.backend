@@ -6,14 +6,12 @@
 </ul>
 <form accept-charset="UTF-8" autocomplete="off" method="post" action="/user/password" id="user-pass">
    <div class="form_element">
-      <div class="element_label"><label>用户名</label><span class="element_required"> * </span><span class="element_help" title="输入您的用户名"> ? </span></div>
-      <div class="element_input"><input size="22" name="username" type="text" required="required"></div>
+      <label data-help="输入您的用户名">用户名</label><input size="22" name="username" type="text" required="required" />
    </div>
    <div class="form_element">
-      <div class="element_label"><label>注册电子邮箱地址</label><span class="element_required"> * </span><span class="element_help" title="输入您注册时使用的电子邮箱地址"> ? </span></div>
-      <div class="element_input"><input size="22" name="email" type="email" required="required"></div>
+      <label data-help="输入您注册时使用的电子邮箱地址">注册电子邮箱地址</label><input size="22" name="email" type="email" required="required" />
    </div>
    <div class="form_element">
-      <div class="element_input"><button type="submit">发送重设密码链接</button></div>
+      <button type="submit">发送重设密码链接</button>
    </div>
 </form>
