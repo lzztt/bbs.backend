@@ -4,25 +4,20 @@
       <label for="name" accesskey="U">姓名</label>
       <input name="name" type="text" id="name" value="<?php print $name; ?>" placeholder="中文姓名" required="required" />
    </div>
-
+   
    <div>
-      <label for="guests">人数</label>
-      <input name="guests" type="text" id="guests" value="<?php print $guests; ?>" placeholder="请填写一共多少人来参加答谢宴" />
+      <label for="comment">人数备注</label>
+      <input name="comment" type="text" id="comment" value="<?php print $comment; ?>" placeholder="人数备注" />
    </div>
 
    <div>
-      <label for="email" accesskey="E">Email</label>
-      <input name="email" type="email" id="email" value="<?php print $email; ?>" placeholder="输入你的个人电子邮箱" pattern="^[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$" required="required" />
+      <label for="gift">礼品</label>
+      <input name="gift" type="text" id="gift" value="<?php print $gift; ?>" placeholder="新婚礼品" />
    </div>
-
+   
    <div>
-      <label for="phone" accesskey="P">电话</label>
-      <input name="phone" type="tel" id="phone" value="<?php print $phone; ?>" placeholder="输入你的电话号码" />
-   </div>
-
-   <div>
-      <label for="checkin" accesskey="P">签到</label>
-      <input name="checkin" type="number" id="checkin" value="<?php print $checkin; ?>" placeholder="签到时间戳" />
+      <label for="value">礼品价值</label>
+      <input name="value" type="text" id="value" value="<?php print $value; ?>" placeholder="礼品价值" />
    </div>
 
    <div>

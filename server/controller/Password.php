@@ -105,8 +105,10 @@ class Password extends Controller
             $pass = $user->hashPW( $this->request->post['password_old'] );
             if ( $pass == $user->password )
             {
+               var_dump($this->request->post);
                $user->password = $user->hashPW( $this->request->post['password_new'] );
                $user->update( 'password' );
+               var_dump($user->password);
 
                // send an email to user
                $m = new Mailer();
