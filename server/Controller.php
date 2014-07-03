@@ -59,12 +59,12 @@ abstract class Controller extends LzxCtrler
       catch ( \Exception $e )
       {
          $this->logger->error( $e->getMessage(), $e->getTrace() );
-         $return['error'] = $this->l( 'ajax_excution_error' );
+         $return[ 'error' ] = $this->l( 'ajax_excution_error' );
       }
 
       // set default response data type
-      $type = $this->request->get['type'];
-      if ( !\in_array( $type, ['json', 'html', 'text'] ) )
+      $type = $this->request->get[ 'type' ];
+      if ( !\in_array( $type, ['json', 'html', 'text' ] ) )
       {
          $type = 'json';
       }
@@ -74,7 +74,7 @@ abstract class Controller extends LzxCtrler
          $return = \json_encode( $return );
          if ( $return === FALSE )
          {
-            $return = ['error' => $this->l( 'ajax_json_encode_error' )];
+            $return = ['error' => $this->l( 'ajax_json_encode_error' ) ];
             $return = \json_encode( $return );
          }
       }
@@ -84,7 +84,7 @@ abstract class Controller extends LzxCtrler
          {
             if ( \sizeof( $return ) == 1 && \array_key_exists( 'error', $return ) )
             {
-               $return = $this->l( 'Error' ) . ' : ' . $return['error'];
+               $return = $this->l( 'Error' ) . ' : ' . $return[ 'error' ];
             }
          }
 
@@ -109,7 +109,7 @@ abstract class Controller extends LzxCtrler
          {
             include $lang_file;
          }
-         self::$l[$this->class] = isset( $language ) ? $language : [];
+         self::$l[ $this->class ] = isset( $language ) ? $language : [ ];
       }
    }
 
@@ -126,14 +126,16 @@ abstract class Controller extends LzxCtrler
       $this->_setNavbar();
       $this->_setTitle();
    }
-   
+
    protected function _ajax()
    {
       $this->request->pageNotFound();
    }
 
-   protected function _forward( Controller $ctrler, $method )
+   protected function _forward( $ctrlerClass, $method )
    {
+      $ctrlerClass = __NAMESPACE__ . '\\controller\\' . $ctrlerClass;
+      $ctrler = new $ctrlerClass();
       $ctrler->logger = $this->logger;
       $ctrler->cache = $this->cache;
       $ctrler->html = $this->html;
@@ -154,6 +156,13 @@ abstract class Controller extends LzxCtrler
       $uri = $this->cookie->loginRedirect;
       unset( $this->cookie->loginRedirect );
       return $uri;
+   }
+
+   protected function _displayLogin( $redirect = NULL )
+   {
+      $this->_setLoginRedirect( $redirect ? $redirect : '/'  );
+      $this->_forward( 'User', 'login' );
+      $this->request->pageExit( $this->html );
    }
 
    protected function _createSecureLink( $uid, $uri )
@@ -180,13 +189,13 @@ abstract class Controller extends LzxCtrler
          $navbar = new Template( 'page_navbar', $vars );
          $this->cache->store( 'page_navbar', $navbar );
       }
-      $this->html->var['page_navbar'] = $navbar;
+      $this->html->var[ 'page_navbar' ] = $navbar;
    }
 
    protected function _setTitle()
    {
-      $this->html->var['head_description'] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
-      $this->html->var['head_title'] = '缤纷休斯顿华人网';
+      $this->html->var[ 'head_description' ] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
+      $this->html->var[ 'head_title' ] = '缤纷休斯顿华人网';
    }
 
    /*
@@ -211,17 +220,17 @@ abstract class Controller extends LzxCtrler
 
       if ( \sizeof( $tree ) > 0 )
       {
-         foreach ( $tree[$tid]['children'] as $branch_id )
+         foreach ( $tree[ $tid ][ 'children' ] as $branch_id )
          {
-            $branch = $tree[$branch_id];
-            $liMenu .= '<li><a title="' . $branch['name'] . '" href="/' . $type . '/' . $branch['id'] . '">' . $branch['name'] . '</a>';
-            if ( \sizeof( $branch['children'] ) )
+            $branch = $tree[ $branch_id ];
+            $liMenu .= '<li><a title="' . $branch[ 'name' ] . '" href="/' . $type . '/' . $branch[ 'id' ] . '">' . $branch[ 'name' ] . '</a>';
+            if ( \sizeof( $branch[ 'children' ] ) )
             {
                $liMenu .= '<ul style="display: none;">';
-               foreach ( $branch['children'] as $leaf_id )
+               foreach ( $branch[ 'children' ] as $leaf_id )
                {
-                  $leaf = $tree[$leaf_id];
-                  $liMenu .= '<li><a title="' . $leaf['name'] . '" href="/' . $type . '/' . $leaf['id'] . '">' . $leaf['name'] . '</a></li>';
+                  $leaf = $tree[ $leaf_id ];
+                  $liMenu .= '<li><a title="' . $leaf[ 'name' ] . '" href="/' . $type . '/' . $leaf[ 'id' ] . '">' . $leaf[ 'name' ] . '</a></li>';
                }
                $liMenu .= '</ul>';
             }
@@ -238,13 +247,13 @@ abstract class Controller extends LzxCtrler
       {
          throw new \Exception( 'negative value for number of items per page: ' . $nPerPage );
       }
-      $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
+      $pageNo = $this->request->get[ 'page' ] ? \intval( $this->request->get[ 'page' ] ) : 1;
       $pageCount = $nTotal > 0 ? \ceil( $nTotal / $nPerPage ) : 1;
       if ( $pageNo < 1 || $pageNo > $pageCount )
       {
          $pageNo = $pageCount;
       }
-      return [$pageNo, $pageCount];
+      return [$pageNo, $pageCount ];
    }
 
    /**

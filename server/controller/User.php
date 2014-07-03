@@ -5,13 +5,9 @@ namespace site\controller;
 use site\Controller;
 use site\dbobject\User as UserObject;
 use site\dbobject\PrivMsg;
-use site\controller\Password;
 use lzx\html\HTMLElement;
 use lzx\html\Form;
-use lzx\html\Input;
-use lzx\html\Select;
 use lzx\html\TextArea;
-use lzx\html\InputGroup;
 use lzx\html\Template;
 use lzx\core\Mailer;
 
@@ -30,17 +26,7 @@ class User extends Controller
 
    protected function _default()
    {
-      $args = $this->args;
-      // Anonymous user
-      if ( $this->request->uid == self::GUEST_UID )
-      {
-         $action = \sizeof( $args ) > 1 ? $args[1] : 'login';
-      }
-      else
-      {
-         $action = \sizeof( $args ) > 1 ? $args[1] : 'display';
-      }
-
+      $action = $this->request->uid == self::GUEST_UID ? 'login' : 'display';
       $this->$action();
    }
 
@@ -56,36 +42,36 @@ class User extends Controller
 
       if ( empty( $this->request->post ) )
       {
-         $this->html->var['content'] = new Template( 'user_register', ['captcha' => '/captcha/' . \mt_rand()] );
+         $this->html->var[ 'content' ] = new Template( 'user_register', ['captcha' => '/captcha/' . \mt_rand() ] );
       }
       else
       {
-         if ( \strtolower( $this->session->captcha ) != \strtolower( $this->request->post['captcha'] ) )
+         if ( \strtolower( $this->session->captcha ) != \strtolower( $this->request->post[ 'captcha' ] ) )
          {
             $this->error( '错误：图形验证码错误' );
          }
          unset( $this->session->captcha );
 
          // check username and email first
-         if ( empty( $this->request->post['username'] ) )
+         if ( empty( $this->request->post[ 'username' ] ) )
          {
             $this->error( '请填写用户名' );
          }
 
-         if ( !\filter_var( $this->request->post['email'], \FILTER_VALIDATE_EMAIL ) )
+         if ( !\filter_var( $this->request->post[ 'email' ], \FILTER_VALIDATE_EMAIL ) )
          {
-            $this->error( '不合法的电子邮箱 : ' . $this->request->post['email'] );
+            $this->error( '不合法的电子邮箱 : ' . $this->request->post[ 'email' ] );
          }
 
-         if ( isset( $this->request->post['submit'] ) || $this->_isBot( $this->request->post['email'] ) )
+         if ( isset( $this->request->post[ 'submit' ] ) || $this->_isBot( $this->request->post[ 'email' ] ) )
          {
-            $this->logger->info( 'STOP SPAMBOT : ' . $this->request->post['email'] );
+            $this->logger->info( 'STOP SPAMBOT : ' . $this->request->post[ 'email' ] );
             $this->error( '系统检测到可能存在的注册机器人。所以不能提交您的注册申请，如果您认为这是一个错误的判断，请与网站管理员联系。' );
          }
 
          $user = new UserObject();
-         $user->username = $this->request->post['username'];
-         $user->email = $this->request->post['email'];
+         $user->username = $this->request->post[ 'username' ];
+         $user->email = $this->request->post[ 'email' ];
          $user->createTime = $this->request->timestamp;
          $user->lastAccessIP = (int) \ip2long( $this->request->ip );
          try
@@ -95,7 +81,7 @@ class User extends Controller
          catch ( \PDOException $e )
          {
             $this->logger->error( $e->getMessage(), $e->getTrace() );
-            $this->error( $e->errorInfo[2] );
+            $this->error( $e->errorInfo[ 2 ] );
          }
          // create user action and send out email
          $mailer = new Mailer();
@@ -112,20 +98,20 @@ class User extends Controller
          {
             $this->error( 'sending new user activation email error: ' . $user->email );
          }
-         $this->html->var['content'] = '感谢注册！账户激活email已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示激活账户。<br />如果您的收件箱内没有帐号激活的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
+         $this->html->var[ 'content' ] = '感谢注册！账户激活email已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示激活账户。<br />如果您的收件箱内没有帐号激活的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
       }
    }
 
    public function activate()
    {
       // forward to password controller
-      $this->_forward( new Password(), 'reset' );
+      $this->_forward( 'Password', 'reset' );
    }
 
    public function password()
    {
       // forward to password controller
-      $this->_forward( new Password(), NULL );
+      $this->_forward( 'Password', NULL );
    }
 
    public function username()
@@ -137,17 +123,17 @@ class User extends Controller
 
       if ( empty( $this->request->post ) )
       {
-         $this->html->var['content'] = new Template( 'user_forgetusername' );
+         $this->html->var[ 'content' ] = new Template( 'user_forgetusername' );
       }
       else
       {
-         if ( !\filter_var( $this->request->post['email'], \FILTER_VALIDATE_EMAIL ) )
+         if ( !\filter_var( $this->request->post[ 'email' ], \FILTER_VALIDATE_EMAIL ) )
          {
-            $this->error( 'invalid email address : ' . $this->request->post['email'] );
+            $this->error( 'invalid email address : ' . $this->request->post[ 'email' ] );
          }
 
          $user = new UserObject();
-         $user->email = $this->request->post['email'];
+         $user->email = $this->request->post[ 'email' ];
          $user->load( 'username' );
 
          if ( $user->exists() )
@@ -158,7 +144,7 @@ class User extends Controller
          {
             $response = '未发现使用该注册邮箱的账户，请检查邮箱是否正确: ' . $user->email;
          }
-         $this->html->var['content'] = $response;
+         $this->html->var[ 'content' ] = $response;
       }
    }
 
@@ -172,15 +158,15 @@ class User extends Controller
       if ( empty( $this->request->post ) )
       {
          // display login form
-         $this->html->var['content'] = new Template( 'user_login' );
+         $this->html->var[ 'content' ] = new Template( 'user_login' );
       }
       else
       {
-         if ( isset( $this->request->post['username'] ) && isset( $this->request->post['password'] ) )
+         if ( isset( $this->request->post[ 'username' ] ) && isset( $this->request->post[ 'password' ] ) )
          {
             // todo: login times control
             $user = new UserObject();
-            if ( $user->login( $this->request->post['username'], $this->request->post['password'] ) )
+            if ( $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] ) )
             {
                $this->_setUser( $user->id );
                $uri = $this->_getLoginRedirect();
@@ -241,15 +227,15 @@ class User extends Controller
       // switch to user from super user
       if ( $this->session->uid == self::ADMIN_UID )
       {
-         if ( \filter_var( $this->args[0], \FILTER_VALIDATE_INT, ['options' => ['min_range' => 2]] ) )
+         if ( \filter_var( $this->args[ 0 ], \FILTER_VALIDATE_INT, ['options' => ['min_range' => 2 ] ] ) )
          {
-            $user = new UserObject( $this->args[0], 'username' );
+            $user = new UserObject( $this->args[ 0 ], 'username' );
             if ( $user->exists() )
             {
                $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
                $this->session->suid = $this->session->uid;
                $this->_setUser( $user->id );
-               $this->html->var['content'] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
+               $this->html->var[ 'content' ] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
             }
             else
             {
@@ -270,7 +256,7 @@ class User extends Controller
          {
             $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $suid );
             $this->_setUser( $suid );
-            $this->html->var['content'] = 'not logged out, just switched back to super user';
+            $this->html->var[ 'content' ] = 'not logged out, just switched back to super user';
          }
       }
       // hide from normal user
@@ -282,7 +268,7 @@ class User extends Controller
 
    public function delete()
    {
-      $uid = (int) $this->args[0];
+      $uid = (int) $this->args[ 0 ];
       if ( $this->request->uid == self::ADMIN_UID && $uid > 1 )  // only admin can delete user, can not delete admin
       {
          $user = new UserObject();
@@ -292,7 +278,7 @@ class User extends Controller
          {
             $this->cache->delete( '/node/' . $nid );
          }
-         $this->html->var['content'] = '用户ID: ' . $uid . '已经从系统中删除。';
+         $this->html->var[ 'content' ] = '用户ID: ' . $uid . '已经从系统中删除。';
       }
       else
       {
@@ -305,12 +291,10 @@ class User extends Controller
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->_setLoginRedirect( $this->request->uri );
-         $this->login();
-         return;
+         $this->_displayLogin( $this->request->uri );
       }
 
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[0];
+      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
 
       if ( $this->request->uid != $uid && $this->request->uid != self::ADMIN_UID )
       {
@@ -356,7 +340,7 @@ class User extends Controller
                'aboutme' => $u->favoriteQuotation
             ];
 
-            $this->html->var['content'] = new Template( 'user_edit', $info );
+            $this->html->var[ 'content' ] = new Template( 'user_edit', $info );
          }
          else
          {
@@ -367,27 +351,27 @@ class User extends Controller
       {
          $u->id = $uid;
 
-         $file = $this->request->files['avatar'][0];
-         if ( $file['error'] == 0 && $file['size'] > 0 )
+         $file = $this->request->files[ 'avatar' ][ 0 ];
+         if ( $file[ 'error' ] == 0 && $file[ 'size' ] > 0 )
          {
-            $fileInfo = getimagesize( $file['tmp_name'] );
-            if ( $fileInfo === FALSE || $fileInfo[0] > 120 || $fileInfo[1] > 120 )
+            $fileInfo = getimagesize( $file[ 'tmp_name' ] );
+            if ( $fileInfo === FALSE || $fileInfo[ 0 ] > 120 || $fileInfo[ 1 ] > 120 )
             {
                $this->error( '修改头像错误：上传头像图片尺寸太大。最大允许尺寸为 120 x 120 像素。' );
                return;
             }
             else
             {
-               $avatar = '/data/avatars/' . $uid . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[2] );
-               \move_uploaded_file( $file['tmp_name'], $this->config->path['file'] . $avatar );
+               $avatar = '/data/avatars/' . $uid . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[ 2 ] );
+               \move_uploaded_file( $file[ 'tmp_name' ], $this->config->path[ 'file' ] . $avatar );
                $u->avatar = $avatar;
             }
          }
 
-         if ( $this->request->post['password2'] )
+         if ( $this->request->post[ 'password2' ] )
          {
-            $password = $this->request->post['password2'];
-            if ( $this->request->post['password1'] == $password )
+            $password = $this->request->post[ 'password2' ];
+            if ( $this->request->post[ 'password1' ] == $password )
             {
                $u->password = $u->hashPW( $password );
             }
@@ -413,23 +397,23 @@ class User extends Controller
 
          foreach ( $fields as $k => $f )
          {
-            $u->$k = \strlen( $this->request->post[$f] ) ? $this->request->post[$f] : NULL;
+            $u->$k = \strlen( $this->request->post[ $f ] ) ? $this->request->post[ $f ] : NULL;
          }
 
-         if ( !\is_numeric( $this->request->post['sex'] ) )
+         if ( !\is_numeric( $this->request->post[ 'sex' ] ) )
          {
             $u->sex = NULL;
          }
          else
          {
-            $u->sex = $this->request->post['sex'];
+            $u->sex = $this->request->post[ 'sex' ];
          }
 
-         $u->birthday = (int) ($this->request->post['byear'] . $this->request->post['bmonth'] . $this->request->post['bday']);
+         $u->birthday = (int) ($this->request->post[ 'byear' ] . $this->request->post[ 'bmonth' ] . $this->request->post[ 'bday' ]);
 
          $u->update();
 
-         $this->html->var['content'] = '您的最新资料已被保存。';
+         $this->html->var[ 'content' ] = '您的最新资料已被保存。';
 
          $this->cache->delete( 'authorPanel' . $u->id );
          $this->cache->delete( '/user/' . $u->id );
@@ -441,26 +425,24 @@ class User extends Controller
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->_setLoginRedirect( $this->request->uri );
-         $this->login();
-         return;
+         $this->_displayLogin( $this->request->uri );
       }
 // view: the default action
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[0];
+      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
       $user = new UserObject( $uid );
       if ( !$user->exists() )
       {
          $this->error( '错误：用户不存在' );
       }
 
-      $info = [];
+      $info = [ ];
 
-      $info[] = ['dt' => '用户名', 'dd' => $user->username];
-      $info[] = ['dt' => '微信', 'dd' => $user->wechat];
-      $info[] = ['dt' => 'QQ', 'dd' => $user->qq];
-      $info[] = ['dt' => '个人网站', 'dd' => $user->website];
+      $info[] = ['dt' => '用户名', 'dd' => $user->username ];
+      $info[] = ['dt' => '微信', 'dd' => $user->wechat ];
+      $info[] = ['dt' => 'QQ', 'dd' => $user->qq ];
+      $info[] = ['dt' => '个人网站', 'dd' => $user->website ];
       $sex = \is_null( $user->sex ) ? '未知' : ( $user->sex == 1 ? '男' : '女');
-      $info[] = ['dt' => '性别', 'dd' => $sex];
+      $info[] = ['dt' => '性别', 'dd' => $sex ];
       if ( $user->birthday )
       {
          $birthday = \substr( \sprintf( '%08u', $user->birthday ), 4, 4 );
@@ -470,49 +452,47 @@ class User extends Controller
       {
          $birthday = '未知';
       }
-      $info[] = ['dt' => '生日', 'dd' => $birthday];
-      $info[] = ['dt' => '职业', 'dd' => $user->occupation];
-      $info[] = ['dt' => '兴趣爱好', 'dd' => $user->interests];
-      $info[] = ['dt' => '自我介绍', 'dd' => $user->favoriteQuotation];
+      $info[] = ['dt' => '生日', 'dd' => $birthday ];
+      $info[] = ['dt' => '职业', 'dd' => $user->occupation ];
+      $info[] = ['dt' => '兴趣爱好', 'dd' => $user->interests ];
+      $info[] = ['dt' => '自我介绍', 'dd' => $user->favoriteQuotation ];
 
-      $info[] = ['dt' => '注册时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->createTime )];
-      $info[] = ['dt' => '上次登录时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->lastAccessTime )];
+      $info[] = ['dt' => '注册时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->createTime ) ];
+      $info[] = ['dt' => '上次登录时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->lastAccessTime ) ];
 
-      $info[] = ['dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP( $user->lastAccessIP )];
+      $info[] = ['dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP( $user->lastAccessIP ) ];
 
       $dlist = $this->html->dlist( $info );
 
 
       $pic = $user->avatar ? $user->avatar : '/data/avatars/avatar0' . \mt_rand( 1, 5 ) . '.jpg';
-      $avatar = new HTMLElement( 'div', NULL, ['class' => 'avatar_div'] );
-      $avatar->addElement( new HTMLElement( 'img', NULL, ['class' => 'avatar', 'src' => $pic, 'alt' => $user->username . '的头像'] ) );
+      $avatar = new HTMLElement( 'div', NULL, ['class' => 'avatar_div' ] );
+      $avatar->addElement( new HTMLElement( 'img', NULL, ['class' => 'avatar', 'src' => $pic, 'alt' => $user->username . '的头像' ] ) );
       if ( $uid != $this->request->uid )
       {
-         $avatar->addElement( $this->html->link( '发送站内短信', '/user/' . $uid . '/pm', ['class' => 'button'] ) );
+         $avatar->addElement( $this->html->link( '发送站内短信', '/user/' . $uid . '/pm', ['class' => 'button' ] ) );
       }
-      $info = new HTMLElement( 'div', [$avatar, $dlist] );
+      $info = new HTMLElement( 'div', [$avatar, $dlist ] );
 
-      $this->html->var['content'] = $link_tabs . $info . $this->_recentTopics( $uid );
+      $this->html->var[ 'content' ] = $link_tabs . $info . $this->_recentTopics( $uid );
    }
 
    public function pm()
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->_setLoginRedirect( $this->request->uri );
-         $this->login();
-         return;
+         $this->_displayLogin( $this->request->uri );
       }
 
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[0];
+      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
       $user = new UserObject( $uid, NULL );
 
       if ( $user->id == $this->request->uid )
       {
-// show pm mailbox
-         $mailbox = \sizeof( $this->args ) > 1 ? $this->args[1] : 'inbox';
+         // show pm mailbox
+         $mailbox = \sizeof( $this->args ) > 1 ? $this->args[ 1 ] : 'inbox';
 
-         if ( !\in_array( $mailbox, ['inbox', 'sent'] ) )
+         if ( !\in_array( $mailbox, ['inbox', 'sent' ] ) )
          {
             $this->error( '短信文件夹[' . $mailbox . ']不存在。' );
          }
@@ -532,7 +512,6 @@ class User extends Controller
 
          $pageNo = $this->request->get['page'] ? (int) $this->request->get['page'] : 1;
          $pageCount = \ceil( $pmCount / 25 );
-
          if ( $pageNo < 1 || $pageNo > $pageCount )
          {
             $pageNo = $pageCount;
@@ -542,19 +521,20 @@ class User extends Controller
 
          $thead = ['cells' => ['短信', '联系人', '时间']];
          $tbody = [];
-         foreach ( $msgs as $m )
+         foreach ( $msgs as $i => $m )
          {
-            $words = ($m['is_new'] == 1 ? '<span style="color:red;">new</span> ' : '') . $this->html->truncate( $m['body'] );
-            $tbody[] = ['cells' => [
-                  $this->html->link( $words, '/pm/' . $m['id'] ),
-                  $m['from_name'] . ' -> ' . $m['to_name'],
-                  \date( 'm/d/Y H:i', $m['pm_time'] )
-            ]];
+            $msgs[$i]['body'] = $this->html->truncate( $m['body'] );
+            $msgs[$i]['time'] = \date( 'm/d/Y H:i', $m['time'] );
          }
+         
+         $content = [
+            'uid' => $user->id,
+            'linkList' => $mailboxList,
+            'pager' => $pager,
+            'msgs' => $msgs,
+         ];
 
-         $messages = $this->html->table( ['thead' => $thead, 'tbody' => $tbody] );
-
-         $this->html->var['content'] = $link_tabs . $mailboxList . $pager . $messages . $pager;
+         $this->html->var[ 'content' ] = new Template( 'pm_list', $content );
       }
       else
       {
@@ -574,26 +554,26 @@ class User extends Controller
                'action' => '/user/' . $user->id . '/pm',
                'id' => 'user-pm-send'
                ] );
-            $receipt = new HTMLElement( 'div', ['收信人: ', $this->html->link( $user->username, '/user/' . $user->id )] );
+            $receipt = new HTMLElement( 'div', ['收信人: ', $this->html->link( $user->username, '/user/' . $user->id ) ] );
             $message = new TextArea( 'body', '短信正文', '最少5个字母或3个汉字', TRUE );
 
-            $form->setData( [$receipt, $message->toHTMLElement()] );
-            $form->setButton( ['submit' => '发送短信'] );
-            $this->html->var['content'] = $form;
+            $form->setData( [$receipt, $message->toHTMLElement() ] );
+            $form->setButton( ['submit' => '发送短信' ] );
+            $this->html->var[ 'content' ] = $form;
          }
          else
          {
 // save pm to database
-            if ( \strlen( $this->request->post['body'] ) < 5 )
+            if ( \strlen( $this->request->post[ 'body' ] ) < 5 )
             {
-               $this->html->var['content'] = '错误：短信正文需最少5个字母或3个汉字。';
+               $this->html->var[ 'content' ] = '错误：短信正文需最少5个字母或3个汉字。';
                return;
             }
 
             $pm = new PrivMsg();
             $pm->fromUID = $this->request->uid;
             $pm->toUID = $user->id;
-            $pm->body = $this->request->post['body'];
+            $pm->body = $this->request->post[ 'body' ];
             $pm->time = $this->request->timestamp;
             $pm->add();
             $pm->msgID = $pm->id;
@@ -609,9 +589,19 @@ class User extends Controller
                $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
             }
 
-            $this->html->var['content'] = '您的短信已经发送给用户 <i>' . $user->username . '</i>';
+            $this->html->var[ 'content' ] = '您的短信已经发送给用户 <i>' . $user->username . '</i>';
          }
       }
+   }
+
+   /**
+    * protected methods
+    */
+   protected function _displayLogin( $redirect = NULL )
+   {
+      $this->_setLoginRedirect( $redirect ? $redirect : '/'  );
+      $this->login();
+      $this->request->pageExit( $this->html );
    }
 
    /**
@@ -622,12 +612,12 @@ class User extends Controller
    private function _isBot( $m )
    {
       $try1 = unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
-      if ( $try1['email']['appears'] == 1 )
+      if ( $try1[ 'email' ][ 'appears' ] == 1 )
       {
          return TRUE;
       }
       $try2 = $this->request->curlGetData( 'http://botscout.com/test/?mail=' . $m );
-      if ( $try2[0] == 'Y' )
+      if ( $try2[ 0 ] == 'Y' )
       {
          return TRUE;
       }
@@ -653,28 +643,28 @@ class User extends Controller
       $posts = $user->getRecentNodes( 10 );
 
       $caption = '最近发表的论坛话题';
-      $thead = ['cells' => ['论坛话题', '发表时间']];
-      $tbody = [];
+      $thead = ['cells' => ['论坛话题', '发表时间' ] ];
+      $tbody = [ ];
       foreach ( $posts as $n )
       {
-         $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n['title'] ), '/node/' . $n['nid'] ), \date( 'm/d/Y H:i', $n['create_time'] )]];
+         $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n[ 'title' ] ), '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
       }
 
-      $recent_topics = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody] );
+      $recent_topics = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
 
       $posts = $user->getRecentComments( 10 );
 
       $caption = '最近回复的论坛话题';
-      $thead = ['cells' => ['论坛话题', '回复时间']];
-      $tbody = [];
+      $thead = ['cells' => ['论坛话题', '回复时间' ] ];
+      $tbody = [ ];
       foreach ( $posts as $n )
       {
-         $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n['title'] ), '/node/' . $n['nid'] ), \date( 'm/d/Y H:i', $n['create_time'] )]];
+         $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n[ 'title' ] ), '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
       }
 
-      $recent_comments = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody] );
+      $recent_comments = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
 
-      return new HTMLElement( 'div', [$recent_topics, $recent_comments], ['class' => 'user_recent_topics'] );
+      return new HTMLElement( 'div', [$recent_topics, $recent_comments ], ['class' => 'user_recent_topics' ] );
    }
 
 }
