@@ -4,10 +4,10 @@ namespace site\controller;
 
 use site\Controller;
 
-class PHPInfo extends Controller
+abstract class PHPInfo extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       if ($this->request->uid !== 126 && $this->request->uid !== 1)
       {

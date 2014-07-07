@@ -3,226 +3,42 @@
 namespace site\controller;
 
 use site\Controller;
+use lzx\core\Request;
+use lzx\html\Template;
+use site\Config;
+use lzx\core\Logger;
+use lzx\core\Cache;
+use lzx\core\Session;
+use lzx\core\Cookie;
 use site\dbobject\User as UserObject;
 use site\dbobject\PrivMsg;
 use lzx\html\HTMLElement;
 use lzx\html\Form;
 use lzx\html\TextArea;
-use lzx\html\Template;
 use lzx\core\Mailer;
 
-class User extends Controller
+abstract class User extends Controller
 {
 
-   /**
-    * default protected methods
-    */
-   protected function _init()
+   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Cache $cache, Session $session, Cookie $cookie )
    {
-      parent::_init();
+      parent::__construct( $req, $html, $config, $logger, $cache, $session, $cookie );
       // don't cache user page at page level
       $this->cache->setStatus( FALSE );
    }
 
-   protected function _default()
-   {
-      $action = $this->request->uid == self::GUEST_UID ? 'login' : 'display';
-      $this->$action();
-   }
-
    /**
-    * public methods
+    * protected methods
     */
-   public function register()
+   protected function displayLogin( $redirect = NULL )
    {
-      if ( $this->request->uid != self::GUEST_UID )
-      {
-         $this->error( '错误：用户已经登录，不能注册新用户' );
-      }
-
-      if ( empty( $this->request->post ) )
-      {
-         $this->html->var[ 'content' ] = new Template( 'user_register', ['captcha' => '/captcha/' . \mt_rand() ] );
-      }
-      else
-      {
-         if ( \strtolower( $this->session->captcha ) != \strtolower( $this->request->post[ 'captcha' ] ) )
-         {
-            $this->error( '错误：图形验证码错误' );
-         }
-         unset( $this->session->captcha );
-
-         // check username and email first
-         if ( empty( $this->request->post[ 'username' ] ) )
-         {
-            $this->error( '请填写用户名' );
-         }
-
-         if ( !\filter_var( $this->request->post[ 'email' ], \FILTER_VALIDATE_EMAIL ) )
-         {
-            $this->error( '不合法的电子邮箱 : ' . $this->request->post[ 'email' ] );
-         }
-
-         if ( isset( $this->request->post[ 'submit' ] ) || $this->_isBot( $this->request->post[ 'email' ] ) )
-         {
-            $this->logger->info( 'STOP SPAMBOT : ' . $this->request->post[ 'email' ] );
-            $this->error( '系统检测到可能存在的注册机器人。所以不能提交您的注册申请，如果您认为这是一个错误的判断，请与网站管理员联系。' );
-         }
-
-         $user = new UserObject();
-         $user->username = $this->request->post[ 'username' ];
-         $user->email = $this->request->post[ 'email' ];
-         $user->createTime = $this->request->timestamp;
-         $user->lastAccessIP = (int) \ip2long( $this->request->ip );
-         try
-         {
-            $user->add();
-         }
-         catch ( \PDOException $e )
-         {
-            $this->logger->error( $e->getMessage(), $e->getTrace() );
-            $this->error( $e->errorInfo[ 2 ] );
-         }
-         // create user action and send out email
-         $mailer = new Mailer();
-         $mailer->to = $user->email;
-         $mailer->subject = $user->username . ' 的HoustonBBS账户激活和设置密码链接';
-         $contents = [
-            'username' => $user->username,
-            'uri' => $this->_createUser( $user->id, '/user/activate' ),
-            'sitename' => 'HoustonBBS'
-         ];
-         $mailer->body = new Template( 'mail/newuser', $contents );
-
-         if ( $mailer->send() === FALSE )
-         {
-            $this->error( 'sending new user activation email error: ' . $user->email );
-         }
-         $this->html->var[ 'content' ] = '感谢注册！账户激活email已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示激活账户。<br />如果您的收件箱内没有帐号激活的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
-      }
-   }
-
-   public function activate()
-   {
-      // forward to password controller
-      $this->_forward( 'Password', 'reset' );
-   }
-
-   public function password()
-   {
-      // forward to password controller
-      $this->_forward( 'Password', NULL );
-   }
-
-   public function username()
-   {
-      if ( $this->request->uid != self::GUEST_UID )
-      {
-         $this->request->redirect( '/user' );
-      }
-
-      if ( empty( $this->request->post ) )
-      {
-         $this->html->var[ 'content' ] = new Template( 'user_forgetusername' );
-      }
-      else
-      {
-         if ( !\filter_var( $this->request->post[ 'email' ], \FILTER_VALIDATE_EMAIL ) )
-         {
-            $this->error( 'invalid email address : ' . $this->request->post[ 'email' ] );
-         }
-
-         $user = new UserObject();
-         $user->email = $this->request->post[ 'email' ];
-         $user->load( 'username' );
-
-         if ( $user->exists() )
-         {
-            $response = '您的注册用户名是: ' . $user->username;
-         }
-         else
-         {
-            $response = '未发现使用该注册邮箱的账户，请检查邮箱是否正确: ' . $user->email;
-         }
-         $this->html->var[ 'content' ] = $response;
-      }
-   }
-
-   public function login()
-   {
-      if ( $this->request->uid != self::GUEST_UID )
-      {
-         $this->error( '错误：您已经成功登录，不能重复登录。' );
-      }
-
-      if ( empty( $this->request->post ) )
-      {
-         // display login form
-         $this->html->var[ 'content' ] = new Template( 'user_login' );
-      }
-      else
-      {
-         if ( isset( $this->request->post[ 'username' ] ) && isset( $this->request->post[ 'password' ] ) )
-         {
-            // todo: login times control
-            $user = new UserObject();
-            if ( $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] ) )
-            {
-               $this->_setUser( $user->id );
-               $uri = $this->_getLoginRedirect();
-               $this->request->redirect( $uri ? $uri : '/'  );
-            }
-            else
-            {
-               $this->logger->info( 'Login Fail: ' . $user->username . ' @ ' . $this->request->ip );
-               if ( isset( $user->id ) )
-               {
-                  if ( $user->status == 1 )
-                  {
-                     $this->error( '错误：错误的密码。' );
-                  }
-                  else
-                  {
-                     $this->error( '错误：该帐号已被封禁，如有问题请联络网站管理员。' );
-                  }
-               }
-               else
-               {
-                  $this->error( '错误：错误的用户名。' );
-               }
-            }
-         }
-         else
-         {
-            $this->error( '错误：请填写用户名和密码。' );
-         }
-      }
-   }
-
-   public function logout()
-   {
-      if ( $this->request->uid == self::GUEST_UID )
-      {
-         $this->error( '错误：您尚未成功登录，不能登出。' );
-      }
-
-      // logout to switch back to super user
-      if ( isset( $this->session->suid ) )
-      {
-         $this->su();
-         return;
-      }
-
-      //session_destroy();
-      $this->session->clear(); // keep session record but clear the whole $_SESSION variable
-      $this->cookie->uid = 0;
-      $this->cookie->urole = Template::UROLE_GUEST;
-      unset( $this->cookie->pmCount );
-      $this->request->redirect( '/' );
+      $this->setLoginRedirect( $redirect ? $redirect : '/'  );
+      $this->html->var[ 'content' ] = new Template( 'user_login' );
+      $this->request->pageExit( $this->html );
    }
 
    // switch to user or back to super user
-   public function su()
+   protected function su()
    {
       // switch to user from super user
       if ( $this->session->uid == self::ADMIN_UID )
@@ -255,7 +71,7 @@ class User extends Controller
          if ( $suid == self::ADMIN_UID )
          {
             $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $suid );
-            $this->_setUser( $suid );
+            $this->setUser( $suid );
             $this->html->var[ 'content' ] = 'not logged out, just switched back to super user';
          }
       }
@@ -265,351 +81,8 @@ class User extends Controller
          $this->request->pageNotFound();
       }
    }
-
-   public function delete()
-   {
-      $uid = (int) $this->args[ 0 ];
-      if ( $this->request->uid == self::ADMIN_UID && $uid > 1 )  // only admin can delete user, can not delete admin
-      {
-         $user = new UserObject();
-         $user->id = $uid;
-         $user->delete();
-         foreach ( $user->getAllNodeIDs() as $nid )
-         {
-            $this->cache->delete( '/node/' . $nid );
-         }
-         $this->html->var[ 'content' ] = '用户ID: ' . $uid . '已经从系统中删除。';
-      }
-      else
-      {
-         $this->request->pageForbidden();
-      }
-   }
-
-//logged in user
-   public function edit()
-   {
-      if ( $this->request->uid == self::GUEST_UID )
-      {
-         $this->_displayLogin( $this->request->uri );
-      }
-
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
-
-      if ( $this->request->uid != $uid && $this->request->uid != self::ADMIN_UID )
-      {
-         $this->request->pageForbidden();
-      }
-
-      $u = new UserObject();
-
-      if ( empty( $this->request->post ) )
-      {
-         $u->id = $uid;
-         $u->load();
-
-         if ( $u->exists() )
-         {
-            if ( $user->birthday )
-            {
-               $birthday = \sprintf( '%08u', $user->birthday );
-               $byear = \substr( $birthday, 0, 4 );
-               if ( $byear == '0000' )
-               {
-                  $byear = NULL;
-               }
-               $bmonth = \substr( $birthday, 4, 2 );
-               $bday = \substr( $birthday, 6, 2 );
-            }
-
-            $info = [
-               'uid' => $uid,
-               'username' => $u->username,
-               'avatar' => $u->avatar ? $user->avatar : '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg',
-               'qq' => $u->qq,
-               'wechat' => $u->wechat,
-               'website' => $u->website,
-               'firstname' => $u->firstname,
-               'lastname' => $u->lastname,
-               'sex' => $u->sex,
-               'byear' => $byear,
-               'bmonth' => $bmonth,
-               'bday' => $bday,
-               'occupation' => $u->occupation,
-               'interests' => $u->interests,
-               'aboutme' => $u->favoriteQuotation
-            ];
-
-            $this->html->var[ 'content' ] = new Template( 'user_edit', $info );
-         }
-         else
-         {
-            $this->error( '错误：用户不存在' );
-         }
-      }
-      else
-      {
-         $u->id = $uid;
-
-         $file = $this->request->files[ 'avatar' ][ 0 ];
-         if ( $file[ 'error' ] == 0 && $file[ 'size' ] > 0 )
-         {
-            $fileInfo = getimagesize( $file[ 'tmp_name' ] );
-            if ( $fileInfo === FALSE || $fileInfo[ 0 ] > 120 || $fileInfo[ 1 ] > 120 )
-            {
-               $this->error( '修改头像错误：上传头像图片尺寸太大。最大允许尺寸为 120 x 120 像素。' );
-               return;
-            }
-            else
-            {
-               $avatar = '/data/avatars/' . $uid . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[ 2 ] );
-               \move_uploaded_file( $file[ 'tmp_name' ], $this->config->path[ 'file' ] . $avatar );
-               $u->avatar = $avatar;
-            }
-         }
-
-         if ( $this->request->post[ 'password2' ] )
-         {
-            $password = $this->request->post[ 'password2' ];
-            if ( $this->request->post[ 'password1' ] == $password )
-            {
-               $u->password = $u->hashPW( $password );
-            }
-            else
-            {
-               $this->error( '修改密码错误：两次输入的新密码不一致。 ' );
-               return;
-            }
-         }
-
-         $fields = [
-            'msn' => 'msn',
-            'qq' => 'qq',
-            'website' => 'website',
-            'firstname' => 'firstname',
-            'lastname' => 'lastname',
-            'occupation' => 'occupation',
-            'interests' => 'interests',
-            'favoriteQuotation' => 'aboutme',
-            'relationship' => 'relationship',
-            'signature' => 'signature'
-         ];
-
-         foreach ( $fields as $k => $f )
-         {
-            $u->$k = \strlen( $this->request->post[ $f ] ) ? $this->request->post[ $f ] : NULL;
-         }
-
-         if ( !\is_numeric( $this->request->post[ 'sex' ] ) )
-         {
-            $u->sex = NULL;
-         }
-         else
-         {
-            $u->sex = $this->request->post[ 'sex' ];
-         }
-
-         $u->birthday = (int) ($this->request->post[ 'byear' ] . $this->request->post[ 'bmonth' ] . $this->request->post[ 'bday' ]);
-
-         $u->update();
-
-         $this->html->var[ 'content' ] = '您的最新资料已被保存。';
-
-         $this->cache->delete( 'authorPanel' . $u->id );
-         $this->cache->delete( '/user/' . $u->id );
-         $this->cache->delete( '/user/' . $u->id . '/*' );
-      }
-   }
-
-   public function display()
-   {
-      if ( $this->request->uid == self::GUEST_UID )
-      {
-         $this->_displayLogin( $this->request->uri );
-      }
-// view: the default action
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
-      $user = new UserObject( $uid );
-      if ( !$user->exists() )
-      {
-         $this->error( '错误：用户不存在' );
-      }
-
-      $info = [ ];
-
-      $info[] = ['dt' => '用户名', 'dd' => $user->username ];
-      $info[] = ['dt' => '微信', 'dd' => $user->wechat ];
-      $info[] = ['dt' => 'QQ', 'dd' => $user->qq ];
-      $info[] = ['dt' => '个人网站', 'dd' => $user->website ];
-      $sex = \is_null( $user->sex ) ? '未知' : ( $user->sex == 1 ? '男' : '女');
-      $info[] = ['dt' => '性别', 'dd' => $sex ];
-      if ( $user->birthday )
-      {
-         $birthday = \substr( \sprintf( '%08u', $user->birthday ), 4, 4 );
-         $birthday = \substr( $birthday, 0, 2 ) . '/' . \substr( $birthday, 2, 2 );
-      }
-      else
-      {
-         $birthday = '未知';
-      }
-      $info[] = ['dt' => '生日', 'dd' => $birthday ];
-      $info[] = ['dt' => '职业', 'dd' => $user->occupation ];
-      $info[] = ['dt' => '兴趣爱好', 'dd' => $user->interests ];
-      $info[] = ['dt' => '自我介绍', 'dd' => $user->favoriteQuotation ];
-
-      $info[] = ['dt' => '注册时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->createTime ) ];
-      $info[] = ['dt' => '上次登录时间', 'dd' => \date( 'm/d/Y H:i:s T', $user->lastAccessTime ) ];
-
-      $info[] = ['dt' => '上次登录地点', 'dd' => $this->request->getLocationFromIP( $user->lastAccessIP ) ];
-
-      $dlist = $this->html->dlist( $info );
-
-
-      $pic = $user->avatar ? $user->avatar : '/data/avatars/avatar0' . \mt_rand( 1, 5 ) . '.jpg';
-      $avatar = new HTMLElement( 'div', NULL, ['class' => 'avatar_div' ] );
-      $avatar->addElement( new HTMLElement( 'img', NULL, ['class' => 'avatar', 'src' => $pic, 'alt' => $user->username . '的头像' ] ) );
-      if ( $uid != $this->request->uid )
-      {
-         $avatar->addElement( $this->html->link( '发送站内短信', '/user/' . $uid . '/pm', ['class' => 'button' ] ) );
-      }
-      $info = new HTMLElement( 'div', [$avatar, $dlist ] );
-
-      $this->html->var[ 'content' ] = $link_tabs . $info . $this->_recentTopics( $uid );
-   }
-
-   public function pm()
-   {
-      if ( $this->request->uid == self::GUEST_UID )
-      {
-         $this->_displayLogin( $this->request->uri );
-      }
-
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
-      $user = new UserObject( $uid, NULL );
-
-      if ( $user->id == $this->request->uid )
-      {
-         // show pm mailbox
-         $mailbox = \sizeof( $this->args ) > 1 ? $this->args[ 1 ] : 'inbox';
-
-         if ( !\in_array( $mailbox, ['inbox', 'sent' ] ) )
-         {
-            $this->error( '短信文件夹[' . $mailbox . ']不存在。' );
-         }
-
-         $pmCount = $user->getPrivMsgsCount( $mailbox );
-         if ( $pmCount == 0 )
-         {
-            $this->error( $mailbox == 'sent' ? '您的发件箱里还没有短信。' : '您的收件箱里还没有短信。'  );
-         }
-
-         $activeLink = '/user/pm/' . $user->id . '/' . $mailbox;
-         $mailboxList = $this->html->linkTabs( [
-            '/user/pm/' . $user->id . '/inbox' => '收件箱',
-            '/user/pm/' . $user->id . '/sent' => '发件箱'
-            ], $activeLink
-         );
-
-         $pageNo = $this->request->get['page'] ? (int) $this->request->get['page'] : 1;
-         $pageCount = \ceil( $pmCount / 25 );
-         if ( $pageNo < 1 || $pageNo > $pageCount )
-         {
-            $pageNo = $pageCount;
-         }
-         $pager = $this->html->pager( $pageNo, $pageCount, $activeLink );
-         $msgs = $user->getPrivMsgs( $mailbox, 25, ($pageNo - 1) * 25 );
-
-         $thead = ['cells' => ['短信', '联系人', '时间']];
-         $tbody = [];
-         foreach ( $msgs as $i => $m )
-         {
-            $msgs[$i]['body'] = $this->html->truncate( $m['body'] );
-            $msgs[$i]['time'] = \date( 'm/d/Y H:i', $m['time'] );
-         }
-         
-         $content = [
-            'uid' => $user->id,
-            'linkList' => $mailboxList,
-            'pager' => $pager,
-            'msgs' => $msgs,
-         ];
-
-         $this->html->var[ 'content' ] = new Template( 'pm_list', $content );
-      }
-      else
-      {
-// show send pm to user page
-         $user->load( 'username' );
-
-         if ( empty( $this->request->post ) )
-         {
-// display pm edit form
-            $content = [
-               'breadcrumb' => $breadcrumb,
-               'toUID' => $uid,
-               'toName' => $user->username,
-               'form_handler' => '/user/' . $uid . '/pm',
-            ];
-            $form = new Form( [
-               'action' => '/user/' . $user->id . '/pm',
-               'id' => 'user-pm-send'
-               ] );
-            $receipt = new HTMLElement( 'div', ['收信人: ', $this->html->link( $user->username, '/user/' . $user->id ) ] );
-            $message = new TextArea( 'body', '短信正文', '最少5个字母或3个汉字', TRUE );
-
-            $form->setData( [$receipt, $message->toHTMLElement() ] );
-            $form->setButton( ['submit' => '发送短信' ] );
-            $this->html->var[ 'content' ] = $form;
-         }
-         else
-         {
-// save pm to database
-            if ( \strlen( $this->request->post[ 'body' ] ) < 5 )
-            {
-               $this->html->var[ 'content' ] = '错误：短信正文需最少5个字母或3个汉字。';
-               return;
-            }
-
-            $pm = new PrivMsg();
-            $pm->fromUID = $this->request->uid;
-            $pm->toUID = $user->id;
-            $pm->body = $this->request->post[ 'body' ];
-            $pm->time = $this->request->timestamp;
-            $pm->add();
-            $pm->msgID = $pm->id;
-            $pm->update( 'msgID' );
-
-            $user->load( 'username,email' );
-            $mailer = new Mailer();
-            $mailer->to = $user->email;
-            $mailer->subject = $user->username . ' 您有一封新的站内短信';
-            $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://www.houstonbbs.com/pm/' . $pm->id;
-            if ( !$mailer->send() )
-            {
-               $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
-            }
-
-            $this->html->var[ 'content' ] = '您的短信已经发送给用户 <i>' . $user->username . '</i>';
-         }
-      }
-   }
-
-   /**
-    * protected methods
-    */
-   protected function _displayLogin( $redirect = NULL )
-   {
-      $this->_setLoginRedirect( $redirect ? $redirect : '/'  );
-      $this->login();
-      $this->request->pageExit( $this->html );
-   }
-
-   /**
-    * 
-    * private methods
-    * 
-    */
-   private function _isBot( $m )
+   
+   protected function isBot( $m )
    {
       $try1 = unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
       if ( $try1[ 'email' ][ 'appears' ] == 1 )
@@ -624,14 +97,14 @@ class User extends Controller
       return FALSE;
    }
 
-   private function _setUser( $uid )
+   protected function setUser( $uid )
    {
       $this->session->uid = $uid;
       $this->cookie->uid = $uid;
       $this->cookie->urole = $uid == self::GUEST_UID ? Template::UROLE_GUEST : ($uid == self::ADMIN_UID ? Template::UROLE_ADM : Template::UROLE_USER);
    }
 
-   private function _recentTopics( $uid )
+   protected function recentTopics( $uid )
    {
       $user = new UserObject( $uid, NULL );
 
@@ -665,6 +138,32 @@ class User extends Controller
       $recent_comments = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
 
       return new HTMLElement( 'div', [$recent_topics, $recent_comments ], ['class' => 'user_recent_topics' ] );
+   }
+
+   protected function getUserLinks( $uid, $activeLink )
+   {
+      if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
+      {
+         return $this->html->linkList( [
+               '/user/display/' . $uid => '用户首页',
+               '/user/pm/' . $uid => '站内短信',
+               '/user/edit/' . $uid => '编辑个人资料',
+               '/password/change/' . $uid => '更改密码'
+               ], $activeLink
+         );
+      }
+   }
+
+   protected function getMailBoxLinks( $uid, $activeLink )
+   {
+      if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
+      {
+         return $this->html->linkList( [
+               '/user/pm/' . $uid . '/inbox' => '收件箱',
+               '/user/pm/' . $uid . '/sent' => '发件箱'
+               ], $activeLink
+         );
+      }
    }
 
 }

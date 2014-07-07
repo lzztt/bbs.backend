@@ -5,10 +5,10 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\Template;
 
-class Captcha extends Controller
+abstract class Captcha extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       if (strpos($_SERVER['HTTP_REFERER'], $this->request->domain) < 4)
       {
@@ -40,7 +40,7 @@ class Captcha extends Controller
       return TRUE;
    }
 
-   private function _get_rand_color()
+   public function _get_rand_color()
    {
       $hex_dark = '#' . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9);
       return new \ImagickPixel($hex_dark);
@@ -49,7 +49,7 @@ class Captcha extends Controller
    /**
     * Base public function for generating a image CAPTCHA.
     */
-   private function _generate_image($code, $format)
+   public function _generate_image($code, $format)
    {
       // Get font.
       $font = $this->config->path['file'] . '/themes/' . Template::$theme . '/images/Tuffy.ttf';

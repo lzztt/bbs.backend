@@ -6,12 +6,12 @@ use site\Controller;
 use lzx\html\Template;
 use site\dbobject\Activity as ActivityObject;
 
-class Activity extends Controller
+abstract class Activity extends Controller
 {
 
     const NODES_PER_PAGE = 25;
 
-    protected function _default()
+    public function run()
     {
         
         $this->listActivity();
