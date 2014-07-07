@@ -5,17 +5,17 @@ namespace site\controller;
 use site\Controller;
 use site\dbobject\Image;
 
-class File extends Controller
+abstract class File extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       $this->checkAJAX();
       // just exit on other request
       $this->request->pageExit();
    }
 
-   protected function _ajax()
+   protected function ajax()
    {
       // uri = /file/ajax/upload
       $action = $this->args[2];

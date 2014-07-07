@@ -10,16 +10,16 @@ use lzx\html\Template;
  *
  * @author ikki
  */
-class Schools extends Controller
+abstract class Schools extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       $this->html->var['content'] = $this->getSchoolList();
    }
 
    //put your code here
-   private function getSchoolList()
+   public function getSchoolList()
    {
       $doc = new \DOMDocument();
 
@@ -88,7 +88,7 @@ class Schools extends Controller
       }
    }
 
-   private function curlGetData($url)
+   public function curlGetData($url)
    {
       $c = \curl_init($url);
       \curl_setopt_array($c, [

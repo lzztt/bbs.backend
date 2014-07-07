@@ -5,10 +5,10 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\Template;
 
-class Weather extends Controller
+abstract class Weather extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
 
       

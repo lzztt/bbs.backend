@@ -5,10 +5,10 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\Template;
 
-class Search extends Controller
+abstract class Search extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       
 

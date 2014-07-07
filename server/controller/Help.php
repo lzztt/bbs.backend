@@ -5,10 +5,10 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\Template;
 
-class Help extends Controller
+abstract class Help extends Controller
 {
 
-    protected function _default()
+    public function run()
     {
         
 
