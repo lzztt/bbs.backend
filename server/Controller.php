@@ -7,7 +7,14 @@ namespace site;
 // controller set status back the WebApp object
 // WebApp object will call Theme to display the content
 use lzx\core\Controller as LzxCtrler;
+use lzx\core\Request;
 use lzx\html\Template;
+use site\Config;
+use lzx\core\Logger;
+use lzx\core\Cache;
+use lzx\core\Session;
+use lzx\core\Cookie;
+use site\ControllerRouter;
 use site\dbobject\User;
 use site\dbobject\Tag;
 
@@ -23,7 +30,7 @@ use site\dbobject\Tag;
  * @property \site\dbobject\User $user
  *
  */
-abstract class Controller extends LzxCtrler
+abstract class Controller extends LzxCtrler implements \SplObserver
 {
 
    const GUEST_UID = 0;
@@ -36,32 +43,69 @@ abstract class Controller extends LzxCtrler
    /**
     * public methods
     */
-   final public function run( $method )
+   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Cache $cache, Session $session, Cookie $cookie )
    {
-      $this->_init();
+      parent::__construct( $req, $html, $logger, $cache, $session, $cookie );
+      $this->config = $config;
+      if ( !\array_key_exists( $this->class, self::$l ) )
+      {
+         $lang_file = $lang_path . \str_replace( '\\', '/', $this->class ) . '.' . Template::$language . '.php';
+         if ( \is_file( $lang_file ) )
+         {
+            include $lang_file;
+         }
+         self::$l[ $this->class ] = isset( $language ) ? $language : [ ];
+      }
 
-      $method ? $this->$method() : $this->_default();
-
-      $this->_final();
+      // register this controller as an observer of the HTML template
+      $this->html->attach( $this );
    }
 
-   final public function ajax()
+   /**
+    * SPLObserver interface
+    */
+   public function update( \SplSubject $html )
    {
-      if ( !$this->request->referer )
-      {
-         $this->request->pageForbidden( $this->l( 'ajax_access_error' ) );
-      }
+      static $updated = FALSE;
 
-      try
+      if ( !$updated )
       {
-         $return = $this->_ajax();
-      }
-      catch ( \Exception $e )
-      {
-         $this->logger->error( $e->getMessage(), $e->getTrace() );
-         $return[ 'error' ] = $this->l( 'ajax_excution_error' );
-      }
+         // update user info
+         if ( $this->request->uid > 0 )
+         {
+            $this->user = new User( $this->request->uid, NULL );
+            // update access info
+            $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
+            // check new pm message
+            $this->cookie->pmCount = \intval( $this->user->getPrivMsgsCount( 'new' ) );
+            $updateUserInfo = FALSE;
+         }
 
+         // set navbar
+         $navbar = $this->cache->fetch( 'page_navbar' );
+         if ( $navbar === FALSE )
+         {
+            $vars = [
+               'forumMenu' => $this->createMenu( Tag::FORUM_ID ),
+               'ypMenu' => $this->createMenu( Tag::YP_ID ),
+               'uid' => $this->request->uid
+            ];
+            $navbar = new Template( 'page_navbar', $vars );
+            $this->cache->store( 'page_navbar', $navbar );
+         }
+         $html->var[ 'page_navbar' ] = $navbar;
+
+         // set headers
+         $html->var[ 'head_description' ] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
+         $html->var[ 'head_title' ] = '缤纷休斯顿华人网';
+
+         // mark updated
+         $updated = TRUE;
+      }
+   }
+
+   protected function ajax( $return )
+   {
       // set default response data type
       $type = $this->request->get[ 'type' ];
       if ( !\in_array( $type, ['json', 'html', 'text' ] ) )
@@ -97,75 +141,37 @@ abstract class Controller extends LzxCtrler
       $this->request->pageExit( $return );
    }
 
-   /**
-    * protected methods
-    */
-   protected function _init()
+   protected function forward( $uri )
    {
-      if ( !\array_key_exists( $this->class, self::$l ) )
-      {
-         $lang_file = $lang_path . \str_replace( '\\', '/', $this->class ) . '.' . $this->request->language . '.php';
-         if ( \is_file( $lang_file ) )
-         {
-            include $lang_file;
-         }
-         self::$l[ $this->class ] = isset( $language ) ? $language : [ ];
-      }
-   }
-
-   protected function _final()
-   {
-      if ( $this->request->uid > 0 )
-      {
-         $this->user = new User( $this->request->uid, NULL );
-         // update access info
-         $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
-         // check new pm message
-         $this->cookie->pmCount = \intval( $this->user->getPrivMsgsCount( 'new' ) );
-      }
-      $this->_setNavbar();
-      $this->_setTitle();
-   }
-
-   protected function _ajax()
-   {
-      $this->request->pageNotFound();
-   }
-
-   protected function _forward( $ctrlerClass, $method )
-   {
-      $ctrlerClass = __NAMESPACE__ . '\\controller\\' . $ctrlerClass;
-      $ctrler = new $ctrlerClass();
+      $ctrler = ControllerRouter::create( $this->request, $this->html, $uri );
+      $ctrler->config = $this->config;
       $ctrler->logger = $this->logger;
       $ctrler->cache = $this->cache;
-      $ctrler->html = $this->html;
-      $ctrler->request = $this->request;
       $ctrler->session = $this->session;
       $ctrler->cookie = $this->cookie;
-      $ctrler->config = $this->config;
-      $ctrler->run( $method );
+      $ctrler->run();
    }
 
-   protected function _setLoginRedirect( $uri )
+   protected function setLoginRedirect( $uri )
    {
       $this->cookie->loginRedirect = $uri;
    }
 
-   protected function _getLoginRedirect()
+   protected function getLoginRedirect()
    {
       $uri = $this->cookie->loginRedirect;
       unset( $this->cookie->loginRedirect );
       return $uri;
    }
 
-   protected function _displayLogin( $redirect = NULL )
+   protected function displayLogin( $redirect = NULL )
    {
-      $this->_setLoginRedirect( $redirect ? $redirect : '/'  );
-      $this->_forward( 'User', 'login' );
+      $this->setLoginRedirect( $redirect ? $redirect : '/'  );
+      $this->forward( '/user/login' );
       $this->request->pageExit( $this->html );
    }
 
-   protected function _createSecureLink( $uid, $uri )
+   protected function createSecureLink( $uid, $uri )
    {
       $slink = new SecureLink();
       $slink->uid = $uid;
@@ -176,33 +182,11 @@ abstract class Controller extends LzxCtrler
       return $slink;
    }
 
-   protected function _setNavbar()
-   {
-      $navbar = $this->cache->fetch( 'page_navbar' );
-      if ( $navbar === FALSE )
-      {
-         $vars = [
-            'forumMenu' => $this->_createMenu( Tag::FORUM_ID ),
-            'ypMenu' => $this->_createMenu( Tag::YP_ID ),
-            'uid' => $this->request->uid
-         ];
-         $navbar = new Template( 'page_navbar', $vars );
-         $this->cache->store( 'page_navbar', $navbar );
-      }
-      $this->html->var[ 'page_navbar' ] = $navbar;
-   }
-
-   protected function _setTitle()
-   {
-      $this->html->var[ 'head_description' ] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
-      $this->html->var[ 'head_title' ] = '缤纷休斯顿华人网';
-   }
-
    /*
     * create menu tree for root tags
     */
 
-   protected function _createMenu( $tid )
+   protected function createMenu( $tid )
    {
       $tag = new Tag( $tid, NULL );
       $tree = $tag->getTagTree();
@@ -241,18 +225,20 @@ abstract class Controller extends LzxCtrler
       return $liMenu;
    }
 
-   protected function _getPagerInfo( $nTotal, $nPerPage )
+   protected function getPagerInfo( $nTotal, $nPerPage )
    {
       if ( $nPerPage <= 0 )
       {
-         throw new \Exception( 'negative value for number of items per page: ' . $nPerPage );
+         throw new \Exception( 'invalid value for number of items per page: ' . $nPerPage );
       }
-      $pageNo = $this->request->get[ 'page' ] ? \intval( $this->request->get[ 'page' ] ) : 1;
+
+      $pageNo = $this->request->get[ 'page' ] ? (int) $this->request->get[ 'page' ] : 1;
       $pageCount = $nTotal > 0 ? \ceil( $nTotal / $nPerPage ) : 1;
       if ( $pageNo < 1 || $pageNo > $pageCount )
       {
          $pageNo = $pageCount;
       }
+
       return [$pageNo, $pageCount ];
    }
 

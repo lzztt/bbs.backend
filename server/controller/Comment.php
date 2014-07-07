@@ -9,10 +9,10 @@ use site\dbobject\Node;
 use site\dbobject\Image;
 use site\dbobject\User;
 
-class Comment extends Controller
+abstract class Comment extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       if ( $this->request->uid == 0 )
       {

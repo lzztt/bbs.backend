@@ -9,12 +9,12 @@ use site\dbobject\Node;
 use site\dbobject\Image;
 use site\dbobject\User;
 
-class Forum extends Controller
+abstract class Forum extends Controller
 {
 
    const NODES_PER_PAGE = 25;
 
-   protected function _default()
+   public function run()
    {
       
 
@@ -62,7 +62,7 @@ class Forum extends Controller
       }
    }
 
-   protected function _ajax()
+   protected function ajax()
    {
       // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
 

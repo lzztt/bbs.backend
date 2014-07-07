@@ -15,12 +15,12 @@ use site\dbobject\User;
 use site\dbobject\Activity;
 use site\dbobject\Tag;
 
-class Node extends Controller
+abstract class Node extends Controller
 {
 
    const COMMENTS_PER_PAGE = 10;
 
-   protected function _default()
+   public function run()
    {
       $this->display();
    }
@@ -32,9 +32,9 @@ class Node extends Controller
       $this->$method( $nid );
    }
 
-   private function _getNodeType()
+   public function _getNodeType()
    {
-      $nid = \intval( $this->args[0] );
+      $nid = \intval( $this->args[ 0 ] );
       if ( $nid <= 0 )
       {
          $this->request->pageNotFound();
@@ -60,32 +60,32 @@ class Node extends Controller
          $this->error( 'wrong node type' );
       }
 
-      return [$nid, $types[$rootTagID]];
+      return [$nid, $types[ $rootTagID ] ];
    }
 
-   protected function _ajax()
+   protected function ajax()
    {
       // url = /node/ajax/viewcount?nid=<nid>
 
-      $viewCount = [];
-      if ( $this->args[2] == 'viewcount' )
+      $viewCount = [ ];
+      if ( $this->args[ 2 ] == 'viewcount' )
       {
-         $nid = \intval( $this->request->get['nid'] );
+         $nid = \intval( $this->request->get[ 'nid' ] );
          $nodeObj = new NodeObject( $nid, 'viewCount' );
          if ( $nodeObj->exists() )
          {
             $nodeObj->viewCount = $nodeObj->viewCount + 1;
             $nodeObj->update( 'viewCount' );
-            $viewCount['viewCount_' . $nid] = $nodeObj->viewCount;
+            $viewCount[ 'viewCount_' . $nid ] = $nodeObj->viewCount;
          }
       }
 
       return $viewCount;
    }
 
-   private function _tagForumTopic( $nid )
+   public function _tagForumTopic( $nid )
    {
-      $newTagID = \intval( $this->args[3] );
+      $newTagID = \intval( $this->args[ 3 ] );
 
       $nodeObj = new NodeObject( $nid, 'uid,tid' );
       if ( $this->request->uid == 1 || $this->request->uid = $nodeObj->uid )
@@ -107,48 +107,48 @@ class Node extends Controller
       }
    }
 
-   private function _displayForumTopic( $nid )
+   public function _displayForumTopic( $nid )
    {
       $nodeObj = new NodeObject();
       $node = $nodeObj->getForumNode( $nid );
       $tags = $nodeObj->getTags( $nid );
 
-      $this->html->var['head_title'] = $node['title'] . ' - ' . $this->html->var['head_title'];
-      $this->html->var['head_description'] = $node['title'] . ', ' . $this->html->var['head_description'];
+      $this->html->var[ 'head_title' ] = $node[ 'title' ] . ' - ' . $this->html->var[ 'head_title' ];
+      $this->html->var[ 'head_description' ] = $node[ 'title' ] . ', ' . $this->html->var[ 'head_description' ];
 
       if ( \is_null( $node ) )
       {
          $this->request->pageNotFound();
       }
 
-      $breadcrumb = [];
+      $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
          $breadcrumb[] = [
             'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-            'title' => $t['description'],
-            'name' => $t['name']
+            'title' => $t[ 'description' ],
+            'name' => $t[ 'name' ]
          ];
       }
-      $breadcrumb[] = ['name' => $node['title']];
+      $breadcrumb[] = ['name' => $node[ 'title' ] ];
 
-      list($pageNo, $pageCount) = $this->_getPagerInfo( $node['comment_count'], self::COMMENTS_PER_PAGE );
-      $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node['id'] );
+      list($pageNo, $pageCount) = $this->getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
+      $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node[ 'id' ] );
 
       $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
 
       $contents = [
          'nid' => $nid,
-         'tid' => $node['tid'],
-         'commentCount' => $node['comment_count'],
-         'status' => $node['status'],
+         'tid' => $node[ 'tid' ],
+         'commentCount' => $node[ 'comment_count' ],
+         'status' => $node[ 'status' ],
          'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
          'ajaxURI' => '/node/ajax/viewcount?type=json&nid=' . $nid . '&nosession',
       ];
 
-      $posts = [];
+      $posts = [ ];
 
       $authorPanelInfo = [
          'uid' => NULL,
@@ -164,19 +164,19 @@ class Node extends Controller
       $timeFormat = 'l, m/d/Y - H:i T';
       if ( $pageNo == 1 )
       { // show node details as the first post
-         $node['type'] = 'node';
-         $node['createTime'] = \date( $timeFormat, $node['create_time'] );
-         if ( $node['lastModifiedTime'] )
+         $node[ 'type' ] = 'node';
+         $node[ 'createTime' ] = \date( $timeFormat, $node[ 'create_time' ] );
+         if ( $node[ 'lastModifiedTime' ] )
          {
-            $node['lastModifiedTime'] = \date( $timeFormat, $node['last_modified_time'] );
+            $node[ 'lastModifiedTime' ] = \date( $timeFormat, $node[ 'last_modified_time' ] );
          }
          try
          {
-            $node['HTMLbody'] = BBCode::parse( $node['body'] );
+            $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
          catch ( \Exception $e )
          {
-            $node['HTMLbody'] = \nl2br( $node['body'] );
+            $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
          }
 
@@ -186,14 +186,14 @@ class Node extends Controller
             $weather->request = $this->request;
             $weather->logger = $this->logger;
             $weather->cache = $this->cache;
-            $node['HTMLbody'] = $weather->get_weather_div( 77833 ) . $node['HTMLbody'];
+            $node[ 'HTMLbody' ] = $weather->get_weather_div( 77833 ) . $node[ 'HTMLbody' ];
          }
          // $node['signature'] = \nl2br( $node['signature'] );
 
-         $node['authorPanel'] = $this->authorPanel( \array_intersect_key( $node, $authorPanelInfo ) );
-         $node['city'] = $this->request->getCityFromIP( $node['access_ip'] );
-         $node['attachments'] = $this->attachments( $node['files'], $node['body'] );
-         $node['filesJSON'] = \json_encode( $node['files'] );
+         $node[ 'authorPanel' ] = $this->authorPanel( \array_intersect_key( $node, $authorPanelInfo ) );
+         $node[ 'city' ] = $this->request->getCityFromIP( $node[ 'access_ip' ] );
+         $node[ 'attachments' ] = $this->attachments( $node[ 'files' ], $node[ 'body' ] );
+         $node[ 'filesJSON' ] = \json_encode( $node[ 'files' ] );
 
          $posts[] = $node;
       }
@@ -205,28 +205,28 @@ class Node extends Controller
       {
          foreach ( $comments as $c )
          {
-            $c['type'] = 'comment';
-            $c['createTime'] = \date( $timeFormat, $c['create_time'] );
-            if ( $c['lastModifiedTime'] )
+            $c[ 'type' ] = 'comment';
+            $c[ 'createTime' ] = \date( $timeFormat, $c[ 'create_time' ] );
+            if ( $c[ 'lastModifiedTime' ] )
             {
-               $c['lastModifiedTime'] = \date( $timeFormat, $c['last_modified_time'] );
+               $c[ 'lastModifiedTime' ] = \date( $timeFormat, $c[ 'last_modified_time' ] );
             }
 
             try
             {
-               $c['HTMLbody'] = BBCode::parse( $c['body'] );
+               $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
             }
             catch ( \Exception $e )
             {
-               $c['HTMLbody'] = \nl2br( $c['body'] );
+               $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );
             }
             // $c['signature'] = \nl2br( $c['signature'] );
 
-            $c['authorPanel'] = $this->authorPanel( \array_intersect_key( $c, $authorPanelInfo ) );
-            $c['city'] = $this->request->getCityFromIP( $c['access_ip'] );
-            $c['attachments'] = $this->attachments( $c['files'], $c['body'] );
-            $c['filesJSON'] = \json_encode( $c['files'] );
+            $c[ 'authorPanel' ] = $this->authorPanel( \array_intersect_key( $c, $authorPanelInfo ) );
+            $c[ 'city' ] = $this->request->getCityFromIP( $c[ 'access_ip' ] );
+            $c[ 'attachments' ] = $this->attachments( $c[ 'files' ], $c[ 'body' ] );
+            $c[ 'filesJSON' ] = \json_encode( $c[ 'files' ] );
 
             $posts[] = $c;
          }
@@ -234,7 +234,7 @@ class Node extends Controller
 
       $editor_contents = [
          'show_title' => FALSE,
-         'title' => $node['title'],
+         'title' => $node[ 'title' ],
          'form_handler' => '/node/' . $nid . '/comment'
       ];
       $editor = new Template( 'editor_bbcode', $editor_contents );
@@ -245,48 +245,48 @@ class Node extends Controller
          'editor' => $editor
       ];
 
-      $this->html->var['content'] = new Template( 'node_forum_topic', $contents );
+      $this->html->var[ 'content' ] = new Template( 'node_forum_topic', $contents );
    }
 
-   private function authorPanel( $info )
+   public function authorPanel( $info )
    {
-      static $authorPanels = [];
+      static $authorPanels = [ ];
 
-      if ( !(\array_key_exists( 'uid', $info ) && $info['uid'] > 0) )
+      if ( !(\array_key_exists( 'uid', $info ) && $info[ 'uid' ] > 0) )
       {
          return NULL;
       }
 
-      if ( !\array_key_exists( $info['uid'], $authorPanels ) )
+      if ( !\array_key_exists( $info[ 'uid' ], $authorPanels ) )
       {
-         $authorPanel = $this->cache->fetch( 'authorPanel' . $info['uid'] );
+         $authorPanel = $this->cache->fetch( 'authorPanel' . $info[ 'uid' ] );
          if ( $authorPanel === FALSE )
          {
-            $info['joinTime'] = date( 'm/d/Y', $info['join_time'] );
-            $info['sex'] = isset( $info['sex'] ) ? ($info['sex'] == 1 ? '男' : '女') : '未知';
-            if ( empty( $info['avatar'] ) )
+            $info[ 'joinTime' ] = date( 'm/d/Y', $info[ 'join_time' ] );
+            $info[ 'sex' ] = isset( $info[ 'sex' ] ) ? ($info[ 'sex' ] == 1 ? '男' : '女') : '未知';
+            if ( empty( $info[ 'avatar' ] ) )
             {
-               $info['avatar'] = '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg';
+               $info[ 'avatar' ] = '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg';
             }
-            $info['city'] = $this->request->getCityFromIP( $info['access_ip'] );
+            $info[ 'city' ] = $this->request->getCityFromIP( $info[ 'access_ip' ] );
             $authorPanel = new Template( 'author_panel_forum', $info );
-            $this->cache->store( 'authorPanel' . $info['uid'], $authorPanel );
+            $this->cache->store( 'authorPanel' . $info[ 'uid' ], $authorPanel );
          }
-         $authorPanels[$info['uid']] = $authorPanel;
+         $authorPanels[ $info[ 'uid' ] ] = $authorPanel;
       }
 
-      return $authorPanels[$info['uid']];
+      return $authorPanels[ $info[ 'uid' ] ];
    }
 
-   private function attachments( $files, $body )
+   public function attachments( $files, $body )
    {
       $attachments = NULL;
-      $_files = [];
-      $_images = [];
+      $_files = [ ];
+      $_images = [ ];
 
       foreach ( $files as $f )
       {
-         $tmp = \explode( '.', $f['path'] );
+         $tmp = \explode( '.', $f[ 'path' ] );
          $type = \array_pop( $tmp );
          switch ( $type )
          {
@@ -295,11 +295,11 @@ class Node extends Controller
             case 'png':
             case 'gif':
                $isImage = TRUE;
-               $bbcode = '[img]' . $f['path'] . '[/img]';
+               $bbcode = '[img]' . $f[ 'path' ] . '[/img]';
                break;
             default :
                $isImage = FALSE;
-               $bbcode = '[file="' . $f['path'] . '"]' . $f['name'] . '[/file]';
+               $bbcode = '[file="' . $f[ 'path' ] . '"]' . $f[ 'name' ] . '[/file]';
          }
 
          if ( \strpos( $body, $bbcode ) !== FALSE )
@@ -309,29 +309,29 @@ class Node extends Controller
 
          if ( $isImage )
          {
-            $img = new HTMLElement( 'h4', $f['name'] );
-            $img .= new HTMLElement( 'img', NULL, ['src' => $f['path'], 'alt' => '图片加载失败 : ' . $f['name']] );
+            $img = new HTMLElement( 'h4', $f[ 'name' ] );
+            $img .= new HTMLElement( 'img', NULL, ['src' => $f[ 'path' ], 'alt' => '图片加载失败 : ' . $f[ 'name' ] ] );
             $_images[] = $img;
          }
          else
          {
-            $_files[] = $this->html->link( $f['name'], $f['path'] );
+            $_files[] = $this->html->link( $f[ 'name' ], $f[ 'path' ] );
          }
       }
 
       if ( \sizeof( $_images ) > 0 )
       {
-         $attachments .= $this->html->ulist( $_images, ['class' => 'attach_images'], FALSE );
+         $attachments .= $this->html->ulist( $_images, ['class' => 'attach_images' ], FALSE );
       }
       if ( \sizeof( $_files ) > 0 )
       {
-         $attachments .= $this->html->olist( $_files, ['class' => 'attach_files'] );
+         $attachments .= $this->html->olist( $_files, ['class' => 'attach_files' ] );
       }
 
       return $attachments;
    }
 
-   private function _editForumTopic( $nid )
+   public function _editForumTopic( $nid )
    { // edit existing comment
       $this->cache->setStatus( FALSE );
 
@@ -342,7 +342,7 @@ class Node extends Controller
          $this->error( 'node does not exist.' );
       }
 
-      if ( \strlen( $this->request->post['body'] ) < 5 || \strlen( $this->request->post['title'] ) < 5 )
+      if ( \strlen( $this->request->post[ 'body' ] ) < 5 || \strlen( $this->request->post[ 'title' ] ) < 5 )
       {
          $this->error( 'Topic title or body is too short.' );
       }
@@ -353,8 +353,8 @@ class Node extends Controller
          $this->request->pageForbidden();
       }
 
-      $node->title = $this->request->post['title'];
-      $node->body = $this->request->post['body'];
+      $node->title = $this->request->post[ 'title' ];
+      $node->body = $this->request->post[ 'body' ];
       $node->lastModifiedTime = $this->request->timestamp;
 
       try
@@ -366,9 +366,9 @@ class Node extends Controller
          $this->error( $e->getMessage(), TRUE );
       }
 
-      $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : [];
+      $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
       $file = new Image();
-      $file->updateFileList( $files, $this->config->path['file'], $nid );
+      $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
       $this->cache->delete( 'imageSlider' );
 
       $this->cache->delete( '/node/' . $nid );
@@ -377,7 +377,7 @@ class Node extends Controller
 // refresh node content cache
    }
 
-   private function _deleteForumTopic( $nid )
+   public function _deleteForumTopic( $nid )
    {
       $this->cache->setStatus( FALSE );
 
@@ -413,7 +413,7 @@ class Node extends Controller
       $this->request->redirect( '/forum/' . $node->tid );
    }
 
-   private function _commentForumTopic( $nid )
+   public function _commentForumTopic( $nid )
    { // create new comment
       $this->cache->setStatus( FALSE );
 
@@ -424,7 +424,7 @@ class Node extends Controller
          $this->error( 'node does not exist.' );
       }
 
-      if ( strlen( $this->request->post['body'] ) < 5 )
+      if ( strlen( $this->request->post[ 'body' ] ) < 5 )
       {
          $this->error( '错误：评论正文字数太少。' );
       }
@@ -432,11 +432,11 @@ class Node extends Controller
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post['body'] );
+         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
          $comment = new Comment();
          $comment->nid = $nid;
          $comment->uid = $this->request->uid;
-         $comment->body = $this->request->post['body'];
+         $comment->body = $this->request->post[ 'body' ];
          $comment->createTime = $this->request->timestamp;
          $comment->add();
       }
@@ -455,7 +455,7 @@ class Node extends Controller
                // check if we have old users that from this ip
                foreach ( $users as $u )
                {
-                  if ( $this->request->timestamp - $u['createTime'] > 2592000 )
+                  if ( $this->request->timestamp - $u[ 'createTime' ] > 2592000 )
                   {
                      $deleteAll = FALSE;
                      break;
@@ -467,7 +467,7 @@ class Node extends Controller
                   $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
                   foreach ( $users as $u )
                   {
-                     $spammer = new User( $u['id'], NULL );
+                     $spammer = new User( $u[ 'id' ], NULL );
                      $spammer->delete();
                      $log = $log . $spammer->id . ' ';
                   }
@@ -478,20 +478,20 @@ class Node extends Controller
             {
                $mailer = new \lzx\core\Mailer();
                $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
-               $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
+               $mailer->body = ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ];
                $mailer->to = $this->config->webmaster;
                $mailer->send();
             }
          }
 
-         $this->logger->error( ' --comment-- ' . $this->request->post['body'] );
+         $this->logger->error( ' --comment-- ' . $this->request->post[ 'body' ] );
          $this->error( $e->getMessage(), TRUE );
       }
 
-      if ( $this->request->post['files'] )
+      if ( $this->request->post[ 'files' ] )
       {
          $file = new Image();
-         $file->updateFileList( $this->request->post['files'], $this->config->path['file'], $nid, $comment->id );
+         $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $nid, $comment->id );
          $this->cache->delete( 'imageSlider' );
       }
 
@@ -511,79 +511,88 @@ class Node extends Controller
       $this->request->redirect( $redirect_uri );
    }
 
-   private function _displayYellowPage( $nid )
+   public function _displayYellowPage( $nid )
    {
       $nodeObj = new NodeObject();
       $node = $nodeObj->getYellowPageNode( $nid );
       $tags = $nodeObj->getTags( $nid );
 
-      $this->html->var['head_title'] = $node['title'] . ' - ' . $this->html->var['head_title'];
-      $this->html->var['head_description'] = $node['title'] . ', ' . $this->html->var['head_description'];
+      $this->html->var[ 'head_title' ] = $node[ 'title' ] . ' - ' . $this->html->var[ 'head_title' ];
+      $this->html->var[ 'head_description' ] = $node[ 'title' ] . ', ' . $this->html->var[ 'head_description' ];
 
       if ( \is_null( $node ) )
       {
          $this->request->pageNotFound();
       }
 
-      $breadcrumb = [];
+      $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
          $breadcrumb[] = [
             'href' => ($i === Tag::YP_ID ? '/yp' : ('/yp/' . $i)),
-            'title' => $t['description'],
-            'name' => $t['name']
+            'title' => $t[ 'description' ],
+            'name' => $t[ 'name' ]
          ];
       }
-      $breadcrumb[] = ['name' => $node['title']];
+      $breadcrumb[] = ['name' => $node[ 'title' ] ];
 
-      list($pageNo, $pageCount) = $this->_getPagerInfo( $node['comment_count'], self::COMMENTS_PER_PAGE );
+      list($pageNo, $pageCount) = $this->getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $nid );
 
       $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
 
       $contents = [
          'nid' => $nid,
-         'cid' => $tags[2]['cid'],
-         'commentCount' => $node['comment_count'],
-         'status' => $node['status'],
+         'cid' => $tags[ 2 ][ 'cid' ],
+         'commentCount' => $node[ 'comment_count' ],
+         'status' => $node[ 'status' ],
          'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
          'ajaxURI' => '/node/ajax/viewcount?type=json&nid=' . $nid . '&nosession',
       ];
 
-      $node['type'] = 'node';
+      $node[ 'type' ] = 'node';
 
       if ( $pageNo == 1 )
       { // show node details as the first post
          try
          {
-            $node['HTMLbody'] = BBCode::parse( $node['body'] );
+            $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
          catch ( \Exception $e )
          {
-            $node['HTMLbody'] = \nl2br( $node['body'] );
+            $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
          }
-         $node['attachments'] = $this->attachments( $node['files'], $node['body'] );
+         $node[ 'attachments' ] = $this->attachments( $node[ 'files' ], $node[ 'body' ] );
          //$node['filesJSON'] = \json_encode($node['files']);
       }
 
       $comments = $nodeObj->getYellowPageNodeComments( $nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE );
 
-      $cmts = [];
-      if ( sizeof( $comments ) > 0 )
+      $cmts = [ ];
+      if ( \sizeof( $comments ) > 0 )
       {
          foreach ( $comments as $c )
          {
-            $c['id'] = $c['id'];
-            $c['type'] = 'comment';
-            $c['createTime'] = \date( 'm/d/Y H:i', $c['create_time'] );
-            if ( $c['lastModifiedTime'] )
+            $c[ 'id' ] = $c[ 'id' ];
+            $c[ 'type' ] = 'comment';
+            $c[ 'createTime' ] = \date( 'm/d/Y H:i', $c[ 'create_time' ] );
+            if ( $c[ 'lastModifiedTime' ] )
             {
-               $c['lastModifiedTime'] = \date( 'm/d/Y H:i', $c['last_modified_time'] );
+               $c[ 'lastModifiedTime' ] = \date( 'm/d/Y H:i', $c[ 'last_modified_time' ] );
             }
-            $c['HTMLbody'] = \nl2br( $c['body'] );
+            $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
+            try
+            {
+               $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
+            }
+            catch ( \Exception $e )
+            {
+               $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
+               $this->logger->error( $e->getMessage(), $e->getTrace() );
+            }
 
             $cmts[] = $c;
          }
@@ -594,10 +603,10 @@ class Node extends Controller
          'comments' => $cmts
       ];
 
-      $this->html->var['content'] = new Template( 'node_yellow_page', $contents );
+      $this->html->var[ 'content' ] = new Template( 'node_yellow_page', $contents );
    }
 
-   private function _editYellowPage( $nid )
+   public function _editYellowPage( $nid )
    {
       $this->cache->setStatus( FALSE );
       if ( $this->request->uid != 1 )
@@ -612,7 +621,7 @@ class Node extends Controller
          $nodeObj = new NodeObject();
          $contents = $nodeObj->getYellowPageNode( $nid );
 
-         $this->html->var['content'] = new Template( 'editor_bbcode_yp', $contents );
+         $this->html->var[ 'content' ] = new Template( 'editor_bbcode_yp', $contents );
       }
       else
       {
@@ -620,25 +629,25 @@ class Node extends Controller
          $node = new NodeObject( $nid, 'tid' );
          if ( $node->exists() )
          {
-            $node->title = $this->request->post['title'];
-            $node->body = $this->request->post['body'];
+            $node->title = $this->request->post[ 'title' ];
+            $node->body = $this->request->post[ 'body' ];
             $node->lastModifiedTime = $this->request->timestamp;
             $node->update();
 
             $node_yp = new NodeYellowPage( $nid, 'nid' );
-            $keys = ['address', 'phone', 'email', 'website', 'fax'];
+            $keys = ['address', 'phone', 'email', 'website', 'fax' ];
             foreach ( $keys as $k )
             {
-               $node_yp->$k = \strlen( $this->request->post[$k] ) ? $this->request->post[$k] : NULL;
+               $node_yp->$k = \strlen( $this->request->post[ $k ] ) ? $this->request->post[ $k ] : NULL;
                ;
             }
 
             $node_yp->update();
          }
 
-         $files = \is_array( $this->request->post['files'] ) ? $this->request->post['files'] : [];
+         $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
          $file = new Image();
-         $file->updateFileList( $files, $this->config->path['file'], $nid );
+         $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
 
          $this->cache->delete( '/node/' . $nid );
          $this->cache->delete( '/yp/' . $node->tid );
@@ -648,7 +657,7 @@ class Node extends Controller
 // refresh node content cache
    }
 
-   private function _deleteYellowPage( $nid )
+   public function _deleteYellowPage( $nid )
    {
       $this->cache->setStatus( FALSE );
       if ( $this->request->uid != 1 )
@@ -667,7 +676,7 @@ class Node extends Controller
       $this->request->redirect( '/yp/' . $node->tid );
    }
 
-   private function _commentYellowPage( $nid )
+   public function _commentYellowPage( $nid )
    { // create new comment
       $this->cache->setStatus( FALSE );
 
@@ -678,7 +687,7 @@ class Node extends Controller
          $this->error( 'node does not exist.' );
       }
 
-      if ( strlen( $this->request->post['body'] ) < 5 )
+      if ( strlen( $this->request->post[ 'body' ] ) < 5 )
       {
          $this->error( '错误：评论正文字数太少。' );
       }
@@ -686,11 +695,11 @@ class Node extends Controller
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post['body'] );
+         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
          $comment = new Comment();
          $comment->nid = $nid;
          $comment->uid = $this->request->uid;
-         $comment->body = $this->request->post['body'];
+         $comment->body = $this->request->post[ 'body' ];
          $comment->createTime = $this->request->timestamp;
          $comment->add();
       }
@@ -709,7 +718,7 @@ class Node extends Controller
                // check if we have old users that from this ip
                foreach ( $users as $u )
                {
-                  if ( $this->request->timestamp - $u['createTime'] > 2592000 )
+                  if ( $this->request->timestamp - $u[ 'createTime' ] > 2592000 )
                   {
                      $deleteAll = FALSE;
                      break;
@@ -721,7 +730,7 @@ class Node extends Controller
                   $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
                   foreach ( $users as $u )
                   {
-                     $spammer = new User( $u['id'], NULL );
+                     $spammer = new User( $u[ 'id' ], NULL );
                      $spammer->delete();
                      $log = $log . $spammer->id . ' ';
                   }
@@ -732,19 +741,19 @@ class Node extends Controller
             {
                $mailer = new \lzx\core\Mailer();
                $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
-               $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
+               $mailer->body = ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ];
                $mailer->to = $this->config->webmaster;
                $mailer->send();
             }
          }
 
-         $this->logger->error( ' --comment-- ' . $this->request->post['body'] );
+         $this->logger->error( ' --comment-- ' . $this->request->post[ 'body' ] );
          $this->error( $e->getMessage(), TRUE );
       }
 
-      if ( isset( $this->request->post['star'] ) && \is_numeric( $this->request->post['star'] ) )
+      if ( isset( $this->request->post[ 'star' ] ) && \is_numeric( $this->request->post[ 'star' ] ) )
       {
-         $rating = (int) $this->request->post['star'];
+         $rating = (int) $this->request->post[ 'star' ];
          if ( $rating > 0 )
          {
             $node->updateRating( $nid, $this->request->uid, $rating, $this->request->timestamp );
@@ -761,7 +770,7 @@ class Node extends Controller
       $this->request->redirect( $redirect_uri );
    }
 
-   private function _activityForumTopic( $nid )
+   public function _activityForumTopic( $nid )
    {
       $node = new NodeObject( $nid, 'tid,uid,title' );
 
@@ -785,28 +794,28 @@ class Node extends Controller
       {
          // display pm edit form
          $tags = $node->getTags( $nid );
-         $breadcrumb = [];
+         $breadcrumb = [ ];
          foreach ( $tags as $i => $t )
          {
             $breadcrumb[] = [
                'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-               'title' => $t['description'],
-               'name' => $t['name']
+               'title' => $t[ 'description' ],
+               'name' => $t[ 'name' ]
             ];
          }
-         $breadcrumb[] = ['name' => $node->title];
+         $breadcrumb[] = ['name' => $node->title ];
 
          $content = [
             'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
             'exampleDate' => $this->request->timestamp - ($this->request->timestamp % 3600) + 259200
          ];
-         $this->html->var['content'] = new Template( 'activity_create', $content );
+         $this->html->var[ 'content' ] = new Template( 'activity_create', $content );
       }
       else
       {
          $this->cache->setStatus( FALSE );
-         $startTime = strtotime( $this->request->post['start_time'] );
-         $endTime = strtotime( $this->request->post['end_time'] );
+         $startTime = strtotime( $this->request->post[ 'start_time' ] );
+         $endTime = strtotime( $this->request->post[ 'end_time' ] );
 
          if ( $startTime < $this->request->timestamp || $endTime < $this->request->timestamp )
          {
@@ -842,7 +851,7 @@ class Node extends Controller
          $activity = new Activity();
          $activity->addActivity( $nid, $startTime, $endTime );
 
-         $this->html->var['content'] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
+         $this->html->var[ 'content' ] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
       }
    }
 

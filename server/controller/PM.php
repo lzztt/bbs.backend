@@ -13,7 +13,7 @@ use lzx\html\Input;
 use lzx\html\Hidden;
 use lzx\html\TextArea;
 
-class PM extends Controller
+abstract class PM extends Controller
 {
 
    const PMS_PER_PAGE = 25;
@@ -21,7 +21,7 @@ class PM extends Controller
    /**
     * default protected methods
     */
-   protected function _init()
+   protected function init()
    {
       parent::_init();
       // don't cache user page at page level
@@ -33,7 +33,7 @@ class PM extends Controller
       }
    }
 
-   protected function _default()
+   public function run()
    {
       $this->display();
    }

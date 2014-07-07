@@ -1,4 +1,5 @@
-<?php print $linkList; ?>
+<?php print $userLinks; ?>
+<?php print $mailBoxLinks; ?>
 <?php print $pager; ?>
 <table>
    <thead>

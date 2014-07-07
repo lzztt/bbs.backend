@@ -16,10 +16,10 @@ use lzx\html\Template;
  *
  * @author ikki
  */
-class AD extends Controller
+abstract class AD extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       //$this->request->pageNotFound();
       

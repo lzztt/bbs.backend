@@ -5,10 +5,10 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\Template;
 
-class CacheManager extends Controller
+abstract class CacheManager extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       if ($this->request->uid != 1)
       {
