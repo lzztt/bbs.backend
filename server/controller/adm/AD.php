@@ -1,8 +1,8 @@
 <?php
 
-namespace site\controller\Adm;
+namespace site\controller\adm;
 
-use lzx\core\ControllerAction;
+use site\Controller;
 use lzx\html\Template;
 use site\dbobject\AD as ADObject;
 use site\dbobject\ADPayment;
@@ -21,7 +21,7 @@ use lzx\html\TextArea;
  *
  * @author ikki
  */
-class ad extends ControllerAction
+class AD extends Controller
 {
 
    public function run()
