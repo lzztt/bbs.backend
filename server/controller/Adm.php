@@ -5,6 +5,7 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\Template;
 use site\dbobject\AD as ADObject;
+use site\contoller\adm\AD as AD;
 
 /*
  * To change this template, choose Tools | Templates
@@ -16,23 +17,30 @@ use site\dbobject\AD as ADObject;
  *
  * @author ikki
  */
-class Adm extends Controller
+abstract class Adm extends Controller
 {
 
-   protected function _default()
+   protected function init()
    {
-      Template::$theme = $this->config->theme['adm'];
-
-      
-
       $this->cache->setStatus( FALSE );
+      
       if ( $this->request->uid !== self::ADMIN_UID )
       {
          $this->request->pageNotFound();
       }
-
+      
+      Template::$theme = $this->config->theme['adm'];
+   }
+   
+   public function run()
+   {
       $action = $this->args[1] ? $this->args[1] : 'user';
       $this->html->var['content'] = $this->run( $action );
+   }
+   
+   public function ad()
+   {
+      (new AD())->run();
    }
 
 }

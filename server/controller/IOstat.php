@@ -16,10 +16,10 @@ use lzx\html\Template;
  *
  * @author ikki
  */
-class IOstat extends Controller
+abstract class IOstat extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       
       $this->cache->setStatus( FALSE );

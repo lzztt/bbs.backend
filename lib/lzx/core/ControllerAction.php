@@ -27,7 +27,7 @@ abstract class ControllerAction
 
    public function __construct( Controller $ctrler )
    {
-      $this->controller = $ctrler;
+      $this->ctrler = $ctrler;
       $this->path = $ctrler->path;
       $this->logger = $ctrler->logger;
       $this->cache = $ctrler->cache;

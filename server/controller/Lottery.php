@@ -7,10 +7,10 @@ use lzx\html\Template;
 use lzx\db\DB;
 use site\dbobject\User;
 
-class Lottery extends Controller
+abstract class Lottery extends Controller
 {
 
-    protected function _default()
+    public function run()
     {
         
         $this->cache->setStatus( FALSE );

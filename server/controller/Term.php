@@ -5,10 +5,10 @@ namespace site\controller;
 use site\Controller;
 use lzx\html\Template;
 
-class Term extends Controller
+abstract class Term extends Controller
 {
 
-   protected function _default()
+   public function run()
    {
       
 

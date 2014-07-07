@@ -9,13 +9,13 @@ use site\dbobject\Node;
 use site\dbobject\NodeYellowPage;
 use site\dbobject\Image;
 
-class YP extends Controller
+abstract class YP extends Controller
 {
 
    const YP_ROOT_TID = 2;
    const NODES_PER_PAGE = 25;
 
-   protected function _default()
+   public function run()
    {
       
 
@@ -104,7 +104,7 @@ class YP extends Controller
       $this->html->var['content'] = new Template( 'yp_list', $contents );
    }
 
-   protected function _ajax()
+   protected function ajax()
    {
       // url = /forum/ajax/viewcount?tid=<tid>&nids=<nid>_<nid>_
 

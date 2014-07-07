@@ -12,6 +12,7 @@ use lzx\core\Cache;
 use lzx\html\Template;
 use site\Config;
 use site\SessionHandler;
+use site\ControllerRouter;
 
 /**
  *
@@ -45,7 +46,7 @@ class WebApp extends App
       // display errors on page if not in production stage
       Handler::$displayError = ($this->config->stage !== Config::STAGE_PRODUCTION);
 
-      $this->setLogDir( $this->config->path['log'] );
+      $this->setLogDir( $this->config->path[ 'log' ] );
       $this->setLogMailer( $this->config->webmaster );
 
       // enable cache if cache not set and not in developemtn stage
@@ -57,7 +58,7 @@ class WebApp extends App
       // website is offline
       if ( $this->config->mode === Config::MODE_OFFLINE )
       {
-         $offline_file = $this->config->path['file'] . '/offline.txt';
+         $offline_file = $this->config->path[ 'file' ] . '/offline.txt';
          $output = \is_file( $offline_file ) ? \file_get_contents( $offline_file ) : 'Website is currently offline. Please visit later.';
          // page exit
          \header( 'Content-Type: text/html; charset=UTF-8' );
@@ -74,7 +75,7 @@ class WebApp extends App
     * @param type $argc
     * @param array $argv
     */
-   public function run( $argc = 0, Array $argv = [] )
+   public function run( $argc = 0, Array $argv = [ ] )
    {
       $request = $this->getRequest();
       $request->get = \array_intersect_key( $request->get, \array_flip( $this->config->getkeys ) );
@@ -116,27 +117,20 @@ class WebApp extends App
       $request->uid = \intval( $session->uid );
 
       // start cache
-      $cache = Cache::getInstance( $this->config->path['cache'] );
+      $cache = Cache::getInstance( $this->config->path[ 'cache' ] );
       $cache->setLogger( $this->logger );
       $cache->setStatus( $this->config->cache );
 
       // start template
       Template::setLogger( $this->logger );
-      Template::$theme = $this->config->theme['default'];
-      Template::$path = $this->config->path['theme'];
+      Template::$theme = $this->config->theme[ 'default' ];
+      Template::$path = $this->config->path[ 'theme' ];
+      Template::$language = $this->config->language;
       $html = new Template( 'html' );
-      $html->var['domain'] = $this->config->domain;
+      $html->var[ 'domain' ] = $this->config->domain;
 
-      list( $ctrler, $method ) = $this->getControllerAndMethod( $request );
-
-      $ctrler->logger = $this->logger;
-      $ctrler->cache = $cache;
-      $ctrler->html = $html;
-      $ctrler->request = $request;
-      $ctrler->session = $session;
-      $ctrler->cookie = $cookie;
-      $ctrler->config = $this->config;
-      $ctrler->run( $method );
+      $ctrler = ControllerRouter::create( $request, $html, $this->config, $this->logger, $cache, $session, $cookie );      
+      $ctrler->run();
 
       $session->close();
 
@@ -171,9 +165,9 @@ class WebApp extends App
       {
          $umode = $cookie->umode;
 
-         if ( !\in_array( $umode, [Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT] ) )
+         if ( !\in_array( $umode, [Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT ] ) )
          {
-            $agent = $_SERVER['HTTP_USER_AGENT'];
+            $agent = $_SERVER[ 'HTTP_USER_AGENT' ];
             if ( \preg_match( '/(http|Yahoo|bot|pider)/i', $agent ) )
             {
                $umode = Template::UMODE_ROBOT;
@@ -227,9 +221,9 @@ class WebApp extends App
          }
          else
          {
-            $lifetime = $this->config->cookie['lifetime'];
-            $path = $this->config->cookie['path'] ? $this->config->cookie['path'] : '/';
-            $domain = $this->config->cookie['domain'] ? $this->config->cookie['domain'] : $this->config->domain;
+            $lifetime = $this->config->cookie[ 'lifetime' ];
+            $path = $this->config->cookie[ 'path' ] ? $this->config->cookie[ 'path' ] : '/';
+            $domain = $this->config->cookie[ 'domain' ] ? $this->config->cookie[ 'domain' ] : $this->config->domain;
             \session_set_cookie_params( $lifetime, $path, $domain );
             \session_name( 'LZXSID' );
             $handler = new SessionHandler( DB::getInstance() );
@@ -257,9 +251,9 @@ class WebApp extends App
 
       if ( !isset( $cookie ) )
       {
-         $lifetime = $this->config->cookie['lifetime'];
-         $path = $this->config->cookie['path'] ? $this->config->cookie['path'] : '/';
-         $domain = $this->config->cookie['domain'] ? $this->config->cookie['domain'] : $this->config->domain;
+         $lifetime = $this->config->cookie[ 'lifetime' ];
+         $path = $this->config->cookie[ 'path' ] ? $this->config->cookie[ 'path' ] : '/';
+         $domain = $this->config->cookie[ 'domain' ] ? $this->config->cookie[ 'domain' ] : $this->config->domain;
          Cookie::setParams( $lifetime, $path, $domain );
 
          $cookie = Cookie::getInstance();
@@ -280,53 +274,6 @@ class WebApp extends App
       }
 
       return $cookie;
-   }
-
-   /**
-    *
-    * @param Request $request
-    * @return array 
-    * @throws \Exception
-    */
-   public function getControllerAndMethod( Request $req )
-   {
-      $args = $req->getURIargs( $req->uri );
-      $count = \sizeof( $args );
-      if ( $count == 0 )
-      {
-         $ctrler = 'home';
-         $method = NULL;
-      }
-      else
-      {
-         $ctrler = \array_shift( $args );
-
-         if ( $count == 1 || \is_numeric( $args[0] ) )
-         {
-            $method = NULL;
-         }
-         else
-         {
-            $method = \array_shift( $args );
-         }
-      }
-
-      require_once $this->config->path['server'] . '/route.php';
-      $ctrlerClass = $route[$ctrler];
-
-      if ( empty( $ctrlerClass ) )
-      {
-         $req->pageNotFound( 'controller not found :(' );
-      }
-      if ( $method && !\in_array( $method, \get_class_methods( $ctrlerClass ) ) )
-      {
-         $req->pageNotFound();
-      }
-
-      $ctrlerObj = new $ctrlerClass();
-      $ctrlerObj->args = $args;
-
-      return [$ctrlerObj, $method];
    }
 
 }
