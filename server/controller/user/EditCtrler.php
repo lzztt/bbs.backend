@@ -14,7 +14,7 @@ class EditCtrler extends User
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->displayLogin( $this->request->uri );
+         $this->_displayLogin( $this->request->uri );
       }
 
       $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
@@ -46,7 +46,7 @@ class EditCtrler extends User
             }
 
             $currentURI = '/user/edit/' . $uid;
-            $userLinks = $this->getUserLinks( $uid, $currentURI );
+            $userLinks = $this->_getUserLinks( $uid, $currentURI );
             $info = [
                'action' => $currentURI,
                'userLinks' => $userLinks,

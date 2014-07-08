@@ -30,7 +30,7 @@ use site\dbobject\Tag;
  * @property \site\dbobject\User $user
  *
  */
-abstract class Controller extends LzxCtrler implements \SplObserver
+abstract class Controller extends LzxCtrler
 {
 
    const GUEST_UID = 0;
@@ -86,8 +86,8 @@ abstract class Controller extends LzxCtrler implements \SplObserver
          if ( $navbar === FALSE )
          {
             $vars = [
-               'forumMenu' => $this->createMenu( Tag::FORUM_ID ),
-               'ypMenu' => $this->createMenu( Tag::YP_ID ),
+               'forumMenu' => $this->_createMenu( Tag::FORUM_ID ),
+               'ypMenu' => $this->_createMenu( Tag::YP_ID ),
                'uid' => $this->request->uid
             ];
             $navbar = new Template( 'page_navbar', $vars );
@@ -141,7 +141,7 @@ abstract class Controller extends LzxCtrler implements \SplObserver
       $this->request->pageExit( $return );
    }
 
-   protected function forward( $uri )
+   protected function _forward( $uri )
    {
       $ctrler = ControllerRouter::create( $this->request, $this->html, $uri );
       $ctrler->config = $this->config;
@@ -152,26 +152,26 @@ abstract class Controller extends LzxCtrler implements \SplObserver
       $ctrler->run();
    }
 
-   protected function setLoginRedirect( $uri )
+   protected function _setLoginRedirect( $uri )
    {
       $this->cookie->loginRedirect = $uri;
    }
 
-   protected function getLoginRedirect()
+   protected function _getLoginRedirect()
    {
       $uri = $this->cookie->loginRedirect;
       unset( $this->cookie->loginRedirect );
       return $uri;
    }
 
-   protected function displayLogin( $redirect = NULL )
+   protected function _displayLogin( $redirect = NULL )
    {
-      $this->setLoginRedirect( $redirect ? $redirect : '/'  );
-      $this->forward( '/user/login' );
+      $this->_setLoginRedirect( $redirect ? $redirect : '/'  );
+      $this->_forward( '/user/login' );
       $this->request->pageExit( $this->html );
    }
 
-   protected function createSecureLink( $uid, $uri )
+   protected function _createSecureLink( $uid, $uri )
    {
       $slink = new SecureLink();
       $slink->uid = $uid;
@@ -186,7 +186,7 @@ abstract class Controller extends LzxCtrler implements \SplObserver
     * create menu tree for root tags
     */
 
-   protected function createMenu( $tid )
+   protected function _createMenu( $tid )
    {
       $tag = new Tag( $tid, NULL );
       $tree = $tag->getTagTree();
@@ -225,7 +225,7 @@ abstract class Controller extends LzxCtrler implements \SplObserver
       return $liMenu;
    }
 
-   protected function getPagerInfo( $nTotal, $nPerPage )
+   protected function _getPagerInfo( $nTotal, $nPerPage )
    {
       if ( $nPerPage <= 0 )
       {

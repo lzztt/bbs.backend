@@ -176,7 +176,7 @@ abstract class Forum extends Controller
       }
 
       $node = new Node();
-      list($pageNo, $pageCount) = $this->getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/forum/' . $tid );
 
       $nodes = $node->getForumNodeList( $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );

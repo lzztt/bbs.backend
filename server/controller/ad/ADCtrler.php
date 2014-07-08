@@ -4,7 +4,6 @@ namespace site\controller\ad;
 
 use site\controller\AD;
 use lzx\html\HTMLElement;
-use lzx\html\Template;
 
 /*
  * To change this template, choose Tools | Templates
@@ -21,20 +20,7 @@ class ADCtrler extends AD
 
    public function run()
    {
-      //$this->request->pageNotFound();
-      
-      $this->cache->setStatus(FALSE);
-
-      $func = $this->args[1] ? $this->args[1] : 'yp';
-      if (method_exists($this, $func))
-      {
-         $this->html->var['content'] = $this->$func();
-      }
-   }
-
-   public function yp()
-   {
-       $form_yp_sp = <<<'YP_SP'
+      $form_yp_sp = <<<'YP_SP'
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="FKY5DLSE3T7SY">
@@ -50,7 +36,7 @@ class ADCtrler extends AD
 <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>
 YP_SP;
-       
+
       $form_yp = <<<'YP'
   <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_s-xclick">
@@ -86,39 +72,24 @@ YP;
 </form>
 HEAD;
 
-      $content = new HTMLElement('div', NULL);
-/*      
-      $form = new HTMLElement('div', NULL);
-      $form->setDataByIndex(NULL, new HTMLElement('h3', 'Yellow Page Web Advertisement (SH Home Remodeling)'));
-      $form->setDataByIndex(NULL, $form_yp_sp);
-      $content->setDataByIndex(NULL, $form);
- */     
-      $form = new HTMLElement('div', NULL);
-      $form->setDataByIndex(NULL, new HTMLElement('h3', 'Yellow Page Web Advertisement'));
-      $form->setDataByIndex(NULL, $form_yp);
-      $content->setDataByIndex(NULL, $form);
+      $content = new HTMLElement( 'div', NULL );
+      /*
+        $form = new HTMLElement('div', NULL);
+        $form->setDataByIndex(NULL, new HTMLElement('h3', 'Yellow Page Web Advertisement (SH Home Remodeling)'));
+        $form->setDataByIndex(NULL, $form_yp_sp);
+        $content->setDataByIndex(NULL, $form);
+       */
+      $form = new HTMLElement( 'div', NULL );
+      $form->setDataByIndex( NULL, new HTMLElement( 'h3', 'Yellow Page Web Advertisement' ) );
+      $form->setDataByIndex( NULL, $form_yp );
+      $content->setDataByIndex( NULL, $form );
 
-      $form = new HTMLElement('div', NULL);
-      $form->setDataByIndex(NULL, new HTMLElement('h3', 'Page Header Web Advertisement'));
-      $form->setDataByIndex(NULL, $form_banner);
-      $content->setDataByIndex(NULL, $form);
+      $form = new HTMLElement( 'div', NULL );
+      $form->setDataByIndex( NULL, new HTMLElement( 'h3', 'Page Header Web Advertisement' ) );
+      $form->setDataByIndex( NULL, $form_banner );
+      $content->setDataByIndex( NULL, $form );
 
-      return $content;
-   }
-
-   public function header()
-   {
-      return 'header';
-   }
-
-   public function cancel()
-   {
-      return 'cancel';
-   }
-
-   public function success()
-   {
-      return 'success';
+      $this->html->var[ 'content' ] = $content;
    }
 
 }

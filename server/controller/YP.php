@@ -80,7 +80,7 @@ abstract class YP extends Controller
 
       $node = new Node();
       $nodeCount = $node->getNodeCount( $tids );
-      list($pageNo, $pageCount) = $this->getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/yp/' . $tid );
 
       $nodes = $node->getYellowPageNodeList( $tids, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
