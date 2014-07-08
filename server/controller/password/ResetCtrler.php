@@ -77,8 +77,8 @@ class ResetCtrler extends Password
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->setLoginRedirect( $this->request->uri );
-         $this->forward( '/user/login' );
+         $this->_setLoginRedirect( $this->request->uri );
+         $this->_forward( '/user/login' );
          return;
       }
 
@@ -162,7 +162,7 @@ class ResetCtrler extends Password
             $mailer->subject = $user->username . ' 请求重设HoustonBBS的帐号密码';
             $contents = [
                'username' => $user->username,
-               'uri' => (string) $this->createSecureLink( $user->id, '/password/reset' ),
+               'uri' => (string) $this->_createSecureLink( $user->id, '/password/reset' ),
                'sitename' => 'HoustonBBS'
             ];
             $mailer->body = new Template( 'mail/password_reset', $contents );

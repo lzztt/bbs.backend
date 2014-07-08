@@ -136,7 +136,8 @@ class Template implements \SplSubject
 
    public function error( $msg )
    {
-      
+      $this->errors[] = $msg;
+      self::$status = FALSE;
    }
 
    public function formatTime( $timestamp )

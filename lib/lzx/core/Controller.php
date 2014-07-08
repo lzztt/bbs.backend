@@ -24,7 +24,7 @@ use lzx\core\Cookie;
  * @property \lzx\core\Cookie $cookie
  *
  */
-abstract class Controller
+abstract class Controller implements \SplObserver
 {
 
    protected static $l = [ ];
