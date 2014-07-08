@@ -11,11 +11,7 @@ use lzx\core\Cache;
 use lzx\core\Session;
 use lzx\core\Cookie;
 use site\dbobject\User as UserObject;
-use site\dbobject\PrivMsg;
 use lzx\html\HTMLElement;
-use lzx\html\Form;
-use lzx\html\TextArea;
-use lzx\core\Mailer;
 
 abstract class User extends Controller
 {
@@ -30,15 +26,8 @@ abstract class User extends Controller
    /**
     * protected methods
     */
-   protected function displayLogin( $redirect = NULL )
-   {
-      $this->setLoginRedirect( $redirect ? $redirect : '/'  );
-      $this->html->var[ 'content' ] = new Template( 'user_login' );
-      $this->request->pageExit( $this->html );
-   }
-
    // switch to user or back to super user
-   protected function su()
+   protected function _switchUser()
    {
       // switch to user from super user
       if ( $this->session->uid == self::ADMIN_UID )
@@ -71,7 +60,7 @@ abstract class User extends Controller
          if ( $suid == self::ADMIN_UID )
          {
             $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $suid );
-            $this->setUser( $suid );
+            $this->_setUser( $suid );
             $this->html->var[ 'content' ] = 'not logged out, just switched back to super user';
          }
       }
@@ -82,7 +71,7 @@ abstract class User extends Controller
       }
    }
    
-   protected function isBot( $m )
+   protected function _isBot( $m )
    {
       $try1 = unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
       if ( $try1[ 'email' ][ 'appears' ] == 1 )
@@ -97,14 +86,14 @@ abstract class User extends Controller
       return FALSE;
    }
 
-   protected function setUser( $uid )
+   protected function _setUser( $uid )
    {
       $this->session->uid = $uid;
       $this->cookie->uid = $uid;
       $this->cookie->urole = $uid == self::GUEST_UID ? Template::UROLE_GUEST : ($uid == self::ADMIN_UID ? Template::UROLE_ADM : Template::UROLE_USER);
    }
 
-   protected function recentTopics( $uid )
+   protected function _recentTopics( $uid )
    {
       $user = new UserObject( $uid, NULL );
 
@@ -140,7 +129,7 @@ abstract class User extends Controller
       return new HTMLElement( 'div', [$recent_topics, $recent_comments ], ['class' => 'user_recent_topics' ] );
    }
 
-   protected function getUserLinks( $uid, $activeLink )
+   protected function _getUserLinks( $uid, $activeLink )
    {
       if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
       {
@@ -154,7 +143,7 @@ abstract class User extends Controller
       }
    }
 
-   protected function getMailBoxLinks( $uid, $activeLink )
+   protected function _getMailBoxLinks( $uid, $activeLink )
    {
       if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
       {

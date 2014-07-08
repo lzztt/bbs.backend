@@ -35,7 +35,7 @@ class LoginCtrler extends User
             if ( $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] ) )
             {
                $this->_setUser( $user->id );
-               $uri = $this->getLoginRedirect();
+               $uri = $this->_getLoginRedirect();
                $this->request->redirect( $uri ? $uri : '/'  );
             }
             else
