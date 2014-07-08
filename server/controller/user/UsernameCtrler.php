@@ -105,13 +105,13 @@ class UsernameCtrler extends User
    public function activate()
    {
       // forward to password controller
-      $this->forward( '/password/reset' );
+      $this->_forward( '/password/reset' );
    }
 
    public function password()
    {
       // forward to password controller
-      $this->forward( '/password' );
+      $this->_forward( '/password' );
    }
 
    public function username()
@@ -169,7 +169,7 @@ class UsernameCtrler extends User
             if ( $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] ) )
             {
                $this->_setUser( $user->id );
-               $uri = $this->getLoginRedirect();
+               $uri = $this->_getLoginRedirect();
                $this->request->redirect( $uri ? $uri : '/'  );
             }
             else
@@ -209,7 +209,7 @@ class UsernameCtrler extends User
       // logout to switch back to super user
       if ( isset( $this->session->suid ) )
       {
-         $this->su();
+         $this->_switchUser();
          return;
       }
 
@@ -222,7 +222,7 @@ class UsernameCtrler extends User
    }
 
    // switch to user or back to super user
-   public function su()
+   public function _switchUser()
    {
       // switch to user from super user
       if ( $this->session->uid == self::ADMIN_UID )
@@ -291,7 +291,7 @@ class UsernameCtrler extends User
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->displayLogin( $this->request->uri );
+         $this->_displayLogin( $this->request->uri );
       }
 
       $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
@@ -405,7 +405,7 @@ class UsernameCtrler extends User
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->displayLogin( $this->request->uri );
+         $this->_displayLogin( $this->request->uri );
       }
 
       $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
@@ -462,7 +462,7 @@ class UsernameCtrler extends User
    {
       if ( $this->request->uid == self::GUEST_UID )
       {
-         $this->displayLogin( $this->request->uri );
+         $this->_displayLogin( $this->request->uri );
       }
 
       $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
@@ -572,9 +572,9 @@ class UsernameCtrler extends User
    /**
     * protected methods
     */
-   protected function displayLogin( $redirect = NULL )
+   protected function _displayLogin( $redirect = NULL )
    {
-      $this->setLoginRedirect( $redirect ? $redirect : '/'  );
+      $this->_setLoginRedirect( $redirect ? $redirect : '/'  );
       $this->login();
       $this->request->pageExit( $this->html );
    }

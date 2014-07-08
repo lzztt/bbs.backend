@@ -18,7 +18,7 @@ class LogoutCtrler extends User
       // logout to switch back to super user
       if ( isset( $this->session->suid ) )
       {
-         $this->su();
+         $this->_switchUser();
          return;
       }
 

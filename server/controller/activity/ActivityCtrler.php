@@ -9,17 +9,9 @@ use site\dbobject\Activity as ActivityObject;
 class ActivityCtrler extends Activity
 {
 
-    const NODES_PER_PAGE = 25;
-
-    public function run()
-    {
-        
-        $this->listActivity();
-    }
-
-    public function listActivity()
-    {
-        $act = new ActivityObject();
+        public function run()
+        {
+      $act = new ActivityObject();
         $act->status = 1;
         $total = $act->getCount();
 

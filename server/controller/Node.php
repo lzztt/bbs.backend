@@ -132,7 +132,7 @@ abstract class Node extends Controller
       }
       $breadcrumb[] = ['name' => $node[ 'title' ] ];
 
-      list($pageNo, $pageCount) = $this->getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node[ 'id' ] );
 
       $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
@@ -536,7 +536,7 @@ abstract class Node extends Controller
       }
       $breadcrumb[] = ['name' => $node[ 'title' ] ];
 
-      list($pageNo, $pageCount) = $this->getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $nid );
 
       $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
