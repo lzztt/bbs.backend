@@ -1,9 +1,17 @@
+<div id="navbar">
+   <a href="/lottery" class="navlink">规则</a>
+   <a href="/lottery/prize" class="navlink">奖品</a>
+   <a href="/lottery/try" class="navlink">试一下</a>
+   <a href="/lottery/start" class="navlink">开始抽奖</a>
+   <a href="/lottery/rank" class="navlink">排名</a>
+</div>
+
 <div>
 
    <h1>圣诞-春节 节日抽奖</h1>
 
    <div class="headerbox">
-      抽奖正式开始，不能撤销 :) 所以抽奖前请详细阅读<a href="/lottery/rules">规则</a><br />每次抽奖得到的数值为0到100内的一个随机数字<br />抽奖次数越多，平均值将会越接近中间数字50<br />
+      抽奖正式开始，不能撤销 :) 所以抽奖前请详细阅读<a href="/lottery">规则</a><br />每次抽奖得到的数值为0到100内的一个随机数字<br />抽奖次数越多，平均值将会越接近中间数字50<br />
       每两次抽奖间隔时间为至少1分钟<br />
       <a  href="/node/10445">抽奖活动讨论贴</a>
    </div>
@@ -24,7 +32,7 @@
             </tr>
             <?php foreach ($roundResults as $r): ?>
                <tr>
-                  <td><?php echo date('m/d/Y H:i:s', $r['time']); ?> </td>
+                  <td><?php echo \date('m/d/Y H:i:s', $r['time']); ?> </td>
                   <td><?php echo $r['points']; ?> </td>
                   <td><?php echo $r['code']; ?> </td>
                </tr>

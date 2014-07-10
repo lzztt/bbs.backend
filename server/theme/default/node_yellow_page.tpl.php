@@ -101,7 +101,7 @@
          <div class="box-inner" data-urole='<?php echo $urole_user; ?>'>
             <h2 class="title">发表评论</h2>
             <div id="editor-div">
-               <form id="editor-form" method="post" accept-charset="UTF-8" action="/node/<?php echo $nid; ?>/comment">
+               <form id="editor-form" method="post" accept-charset="UTF-8" action="/node/comment/<?php echo $nid; ?>">
                   <div>
                      <div id="edit-fivestar-rating-wrapper" class="form-item">
                         <label for="edit-fivestar-rating">星级评分: <span style="font-size: 0.929em; font-weight: normal;">(每位用户只有最新的一次星级评分在系统中有效，如果您不想更新星级评分，可以忽略此选项。)</span></label>
