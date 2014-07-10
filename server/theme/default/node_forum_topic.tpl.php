@@ -9,8 +9,8 @@
 
             <div class="forum-top-links">
                 <ul class="links forum-links">
-                    <li data-urole='<?php echo $urole_user; ?>'><a rel="nofollow" class="bb-create-node button" href="/forum/<?php echo $tid; ?>/node">发表新话题</a></li>
-                    <li data-urole='<?php echo $urole_user; ?>'><a rel="nofollow" class="bb-reply button" href="/node/<?php echo $nid; ?>/comment">回复</a></li>
+                    <li data-urole='<?php echo $urole_user; ?>'><a rel="nofollow" class="bb-create-node button" href="/forum/node/<?php echo $tid; ?>">发表新话题</a></li>
+                    <li data-urole='<?php echo $urole_user; ?>'><a rel="nofollow" class="bb-reply button" href="/node/comment/<?php echo $nid; ?>">回复</a></li>
                     <li data-urole='<?php echo $urole_guest; ?>'>您需要先<a rel="nofollow" href="/user">登录</a>或<a rel="nofollow" href="/user/register">注册</a>才能发表话题或回复</li>
                 </ul>
             </div>
@@ -71,12 +71,12 @@
                         <div class="post-links" data-urole='<?php echo $urole_user; ?>'>
                             <ul class="links inline forum-links">
                                 <?php if ( $tid == 16 && $p['type'] == 'node' ): ?>
-                                    <li><a rel="nofollow" title="发布为活动" class="activity-link button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $p['uid']; ?>" id="<?php echo $p['type'] . '-' . $p['id']; ?>-activity" href="<?php echo '/' . $p['type'] . '/' . $p['id'] . '/activity'; ?>">发布为活动</a></li>
+                                    <li><a rel="nofollow" title="发布为活动" class="activity-link button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $p['uid']; ?>" id="<?php echo $p['type'] . '-' . $p['id']; ?>-activity" href="<?php echo '/node/activity/' . $p['id']; ?>">发布为活动</a></li>
                                 <?php endif; ?>
-                                <li><a rel="nofollow" title="Edit" class="bb-edit button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $p['uid']; ?>" id="<?php echo $p['type'] . '-' . $p['id']; ?>-edit" href="<?php echo '/' . $p['type'] . '/' . $p['id'] . '/edit'; ?>">编辑</a></li>
-                                <li><a rel="nofollow" title="Delete" class="delete button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $p['uid']; ?>" id="<?php echo $p['type'] . '-' . $p['id']; ?>-delete" href="<?php echo '/' . $p['type'] . '/' . $p['id'] . '/delete'; ?>">删除</a></li>
-                                <li><a rel="nofollow" title="Reply" class="bb-reply button" id="<?php echo $p['type'] . '-' . $p['id']; ?>-reply" href="/node/<?php echo $nid; ?>/comment">回复</a></li>
-                                <li><a rel="nofollow" title="Quote" class="bb-quote last button" id="<?php echo $p['type'] . '-' . $p['id']; ?>-quote" href="/node/<?php echo $nid; ?>/comment">引用</a></li>
+                                <li><a rel="nofollow" title="Edit" class="bb-edit button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $p['uid']; ?>" id="<?php echo $p['type'] . '-' . $p['id']; ?>-edit" href="<?php echo '/' . $p['type'] . '/edit/' . $p['id']; ?>">编辑</a></li>
+                                <li><a rel="nofollow" title="Delete" class="delete button" data-urole="<?php echo $urole_adm . $tid . ' ' . $urole_user . $p['uid']; ?>" id="<?php echo $p['type'] . '-' . $p['id']; ?>-delete" href="<?php echo '/' . $p['type'] . '/delete/' . $p['id']; ?>">删除</a></li>
+                                <li><a rel="nofollow" title="Reply" class="bb-reply button" id="<?php echo $p['type'] . '-' . $p['id']; ?>-reply" href="/node/comment/<?php echo $nid; ?>">回复</a></li>
+                                <li><a rel="nofollow" title="Quote" class="bb-quote last button" id="<?php echo $p['type'] . '-' . $p['id']; ?>-quote" href="/node/comment/<?php echo $nid; ?>">引用</a></li>
                             </ul>
                         </div>
                     </div>

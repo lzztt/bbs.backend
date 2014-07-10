@@ -55,8 +55,9 @@ class Node extends DBObject
 
       if ( \sizeof( $arr ) > 0 )
       {
-         $arr[0]['files'] = $this->call( 'get_node_images(' . $id . ')' );
-         return $arr[0];
+         $node = $arr[ 0 ];
+         $node[ 'files' ] = $this->call( 'get_node_images(' . $id . ')' );
+         return $node;
       }
       else
       {
@@ -70,7 +71,7 @@ class Node extends DBObject
 
       foreach ( $arr as $i => $r )
       {
-         $arr[$i]['files'] = $this->call( 'get_comment_images(' . $r['id'] . ')' );
+         $arr[ $i ][ 'files' ] = $this->call( 'get_comment_images(' . $r[ 'id' ] . ')' );
       }
 
       return $arr;
@@ -86,8 +87,8 @@ class Node extends DBObject
       $arr = $this->call( 'get_yp_node(' . $id . ')' );
       if ( \sizeof( $arr ) > 0 )
       {
-         $arr[0]['files'] = $this->call( 'get_node_images(' . $id . ')' );
-         return $arr[0];
+         $arr[ 0 ][ 'files' ] = $this->call( 'get_node_images(' . $id . ')' );
+         return $arr[ 0 ];
       }
       else
       {
@@ -113,7 +114,7 @@ class Node extends DBObject
     */
    public function getTags( $nid )
    {
-      static $tags = [];
+      static $tags = [ ];
 
       if ( !\array_key_exists( $nid, $tags ) )
       {
@@ -121,14 +122,14 @@ class Node extends DBObject
          if ( $node->exists() )
          {
             $tag = new Tag( $node->tid, NULL );
-            $tags[$nid] = $tag->getTagRoot();
+            $tags[ $nid ] = $tag->getTagRoot();
          }
          else
          {
-            $tags[$nid] = [];
+            $tags[ $nid ] = [ ];
          }
       }
-      return $tags[$nid];
+      return $tags[ $nid ];
    }
 
    public function getLatestForumTopics( $count )
@@ -143,10 +144,10 @@ class Node extends DBObject
 
    public function getHotForumTopicNIDs( $count, $timestamp )
    {
-      $ids = [];
+      $ids = [ ];
       foreach ( $this->getHotForumTopics( $count, $timestamp ) as $t )
       {
-         $ids[] = $t['id'];
+         $ids[] = $t[ 'id' ];
       }
       return $ids;
    }
@@ -181,10 +182,10 @@ class Node extends DBObject
       $today = \strtotime( \date( "m/d/Y" ) );
       $stats = \array_pop( $this->call( 'get_node_stat(' . $today . ')' ) );
       return [
-         'nodeCount' => $stats['node_count_total'],
-         'nodeTodayCount' => $stats['node_count_recent'],
-         'commentTodayCount' => $stats['comment_count_recent'],
-         'postCount' => $stats['node_count_total'] + $stats['comment_count_total']
+         'nodeCount' => $stats[ 'node_count_total' ],
+         'nodeTodayCount' => $stats[ 'node_count_recent' ],
+         'commentTodayCount' => $stats[ 'comment_count_recent' ],
+         'postCount' => $stats[ 'node_count_total' ] + $stats[ 'comment_count_total' ]
       ];
    }
 
