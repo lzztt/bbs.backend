@@ -31,7 +31,7 @@ class AJAXCtrler extends Home
       catch ( \Exception $e )
       {
          $this->logger->error( $e->getMessage(), $e->getTrace() );
-         $return[ 'error' ] = $this->l( 'ajax_excution_error' );
+         $return[ 'error' ] = 'ajax_excution_error';
       }
 
       $this->ajax( $return );

@@ -1,9 +1,8 @@
 <?php
 
-namespace site\controller;
+namespace site\controller\iostat;
 
-use site\Controller;
-use lzx\html\HTMLElement;
+use site\controller\IOStat;
 use lzx\html\Template;
 
 /*
@@ -16,18 +15,19 @@ use lzx\html\Template;
  *
  * @author ikki
  */
-abstract class IOstat extends Controller
+class IOStatCtrler extends IOStat
 {
 
    public function run()
    {
+      $this->request->pageNotFound('not available yet :(');
       
       $this->cache->setStatus( FALSE );
 
-      $this->html->var['content'] = $this->sarchart();
+      $this->html->var['content'] = $this->sarChart();
    }
 
-   public function sarchart()
+   protected function sarChart()
    {
       $sar = 'sar -b -s 00:00:01 -e 23:59:59 -f ';
       $file = '/var/log/sysstat/sa' . date( 'd' );
@@ -43,7 +43,7 @@ abstract class IOstat extends Controller
       }
 
       // check the date file
-      if ( !(is_file( $file ) && is_readable( $file )) )
+      if ( !(\is_file( $file ) && \is_readable( $file )) )
       {
          $this->error( 'io stat data does not exist' );
       }
@@ -61,21 +61,6 @@ abstract class IOstat extends Controller
       ];
 //var_dump($content);exit;
       return (new Template( 'iochart', $content ));
-   }
-
-   public function header()
-   {
-      return 'header';
-   }
-
-   public function cancel()
-   {
-      return 'cancel';
-   }
-
-   public function success()
-   {
-      return 'success';
    }
 
 }

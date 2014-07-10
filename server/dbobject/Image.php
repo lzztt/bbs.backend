@@ -38,13 +38,13 @@ class Image extends DBObject
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
 
-   private function rmTmpFile( $file )
+   private function _rmTmpFile( $file )
    {
       try
       {
          \unlink( $file );
       }
-      catch ( \Exception $e )
+      catch (\Exception $e)
       {
          $logger = Logger::getInstance();
          $logger->error( $e->getMessage() . ' : ' . $file );
@@ -65,42 +65,42 @@ class Image extends DBObject
          103 => 'upload_err_cant_save',
       ];
 
-      $errorFile = [];
-      $savedFile = [];
+      $errorFile = [ ];
+      $savedFile = [ ];
       // save files
       foreach ( $files as $type => $fileList )
       {
-         $path = $config['path'] . $type . '/' . $config['prefix'] . \mt_rand( 0, 9 );
+         $path = $config[ 'path' ] . '/data/' . $type . '/' . $config[ 'prefix' ] . \mt_rand( 0, 9 );
 
          foreach ( $fileList as $i => $f )
          {
-            $fileName = $f['name'];
-            $tmpFile = $f['tmp_name'];
+            $fileName = $f[ 'name' ];
+            $tmpFile = $f[ 'tmp_name' ];
 
             // check upload error
-            if ( $f['error'] !== \UPLOAD_ERR_OK ) // upload error
+            if ( $f[ 'error' ] !== \UPLOAD_ERR_OK ) // upload error
             {
                $errorFile[] = [
                   'name' => $fileName,
-                  'error' => $errmsg[$f['error']],
+                  'error' => $errmsg[ $f[ 'error' ] ],
                ];
                if ( $tmpFile )
                {
-                  $this->rmTmpFile( $tmpFile );
+                  $this->_rmTmpFile( $tmpFile );
                }
                continue;
             }
 
             // check image size
-            if ( $f['size'] > $config['size'] ) // File Size
+            if ( $f[ 'size' ] > $config[ 'size' ] ) // File Size
             {
                $errorFile[] = [
                   'name' => $fileName,
-                  'error' => $errmsg[\UPLOAD_ERR_INI_SIZE],
+                  'error' => $errmsg[ \UPLOAD_ERR_INI_SIZE ],
                ];
                if ( $tmpFile )
                {
-                  $this->rmTmpFile( $tmpFile );
+                  $this->_rmTmpFile( $tmpFile );
                }
                continue;
             }
@@ -108,27 +108,27 @@ class Image extends DBObject
 
             $imageInfo = \getimagesize( $tmpFile ); // not requiring GD
             // check image type
-            if ( $imageInfo === FALSE || !\in_array( $imageInfo[2], $config['types'] ) )
+            if ( $imageInfo === FALSE || !\in_array( $imageInfo[ 2 ], $config[ 'types' ] ) )
             {
                $errorFile[] = [
                   'name' => $fileName,
-                  'error' => $errmsg[102],
+                  'error' => $errmsg[ 102 ],
                ];
                if ( $tmpFile )
                {
-                  $this->rmTmpFile( $tmpFile );
+                  $this->_rmTmpFile( $tmpFile );
                }
                continue;
             }
 
-            $savePath = $path . $i . \image_type_to_extension( $imageInfo[2], TRUE ); // not requiring GD
-            $width = $imageInfo[0];
-            $height = $imageInfo[1];
+            $savePath = $path . $i . \image_type_to_extension( $imageInfo[ 2 ], TRUE ); // not requiring GD
+            $width = $imageInfo[ 0 ];
+            $height = $imageInfo[ 1 ];
 
             // save image
             try
             {
-               if ( $width > $config['width'] || $height > $config['height'] )
+               if ( $width > $config[ 'width' ] || $height > $config[ 'height' ] )
                {
                   // resize image
                   $im = new \Imagick( $tmpFile );
@@ -138,7 +138,7 @@ class Image extends DBObject
                   $im->clear();
                   if ( $tmpFile )
                   {
-                     $this->rmTmpFile( $tmpFile );
+                     $this->_rmTmpFile( $tmpFile );
                   }
                }
                else
@@ -147,7 +147,7 @@ class Image extends DBObject
                   \move_uploaded_file( $tmpFile, $savePath );
                }
             }
-            catch ( \Exception $e )
+            catch (\Exception $e)
             {
                if ( isset( $im ) )
                {
@@ -156,13 +156,13 @@ class Image extends DBObject
                }
                if ( $tmpFile )
                {
-                  $this->rmTmpFile( $tmpFile );
+                  $this->_rmTmpFile( $tmpFile );
                }
                $logger = Logger::getInstance();
                $logger->error( $e->getMessage() );
                $errorFile[] = [
                   'name' => $fileName,
-                  'error' => $errmsg[103],
+                  'error' => $errmsg[ 103 ],
                ];
                continue;
             }
@@ -171,19 +171,19 @@ class Image extends DBObject
 
             $savedFile[] = [
                'name' => $p > 0 ? \substr( $fileName, 0, $p ) : $fileName,
-               'path' => \substr( $savePath, \strlen( $filePath ) )
+               'path' => \substr( $savePath, \strlen( $config[ 'path' ] ) )
             ];
          }
       }
 
-      return ['error' => $errorFile, 'saved' => $savedFile];
+      return ['error' => $errorFile, 'saved' => $savedFile ];
    }
 
    private function _autoRotateImage( \Imagick $img )
    {
       $orientation = $img->getImageOrientation();
 
-      switch ( $orientation )
+      switch ($orientation)
       {
          case \Imagick::ORIENTATION_BOTTOMRIGHT:
             $img->rotateimage( "#000", 180 ); // rotate 180 degrees 
@@ -216,10 +216,10 @@ class Image extends DBObject
          $arr = $this->call( 'get_node_images(' . $nid . ')' );
       }
 
-      $images = [];
+      $images = [ ];
       foreach ( $arr as $r )
       {
-         $images[$r['id']] = $r;
+         $images[ $r[ 'id' ] ] = $r;
       }
 
       foreach ( $files as $fid => $file )
@@ -227,23 +227,23 @@ class Image extends DBObject
          if ( \is_numeric( $fid ) )
          {
             $fid = \intval( $fid );
-            if ( $file['name'] != $images[$fid]['name'] )
+            if ( $file[ 'name' ] != $images[ $fid ][ 'name' ] )
             {
-               $this->call( 'update_image(:fid, :name)', [':fid' => $fid, ':name' => $file['name']] );
+               $this->call( 'update_image(:fid, :name)', [':fid' => $fid, ':name' => $file[ 'name' ] ] );
             }
-            unset( $images[$fid] );
+            unset( $images[ $fid ] );
          }
          else
          {
             // new uploaded files
             try
             {
-               $info = \getimagesize( $filePath . $file['path'] );
-               $width = $info[0];
-               $height = $info[1];
-               $insert[] = '(' . $nid . ',' . $cid . ',"' . $file['name'] . '","' . $file['path'] . '",' . $height . ',' . $width . ')';
+               $info = \getimagesize( $filePath . $file[ 'path' ] );
+               $width = $info[ 0 ];
+               $height = $info[ 1 ];
+               $insert[] = '(' . $nid . ',' . $cid . ',"' . $file[ 'name' ] . '","' . $file[ 'path' ] . '",' . $height . ',' . $width . ')';
             }
-            catch ( \Exception $e )
+            catch (\Exception $e)
             {
                $logger = Logger::getInstance();
                $logger->error( $e->getMessage() );
@@ -260,7 +260,7 @@ class Image extends DBObject
       // insert new files
       if ( \sizeof( $insert ) > 0 )
       {
-         $this->call( 'insert_images(:values)', [':values' => \implode( ',', $insert )] );
+         $this->call( 'insert_images(:values)', [':values' => \implode( ',', $insert ) ] );
       }
    }
 
