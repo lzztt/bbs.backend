@@ -10,10 +10,6 @@ use lzx\core\Logger;
 use lzx\core\Cache;
 use lzx\core\Session;
 use lzx\core\Cookie;
-use site\controller\User;
-use site\dbobject\User as UserObject;
-use lzx\core\Mailer;
-use site\dbobject\SecureLink;
 
 abstract class Password extends Controller
 {

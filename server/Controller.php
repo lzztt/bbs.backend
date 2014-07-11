@@ -17,6 +17,7 @@ use lzx\core\Cookie;
 use site\ControllerRouter;
 use site\dbobject\User;
 use site\dbobject\Tag;
+use site\dbobject\SecureLink;
 
 /**
  *
@@ -143,12 +144,7 @@ abstract class Controller extends LzxCtrler
 
    protected function _forward( $uri )
    {
-      $ctrler = ControllerRouter::create( $this->request, $this->html, $uri );
-      $ctrler->config = $this->config;
-      $ctrler->logger = $this->logger;
-      $ctrler->cache = $this->cache;
-      $ctrler->session = $this->session;
-      $ctrler->cookie = $this->cookie;
+      $ctrler = ControllerRouter::create( $this->request, $this->html, $this->config, $this->logger, $this->cache, $this->session, $this->cookie, $uri );
       $ctrler->run();
    }
 
@@ -180,6 +176,33 @@ abstract class Controller extends LzxCtrler
       $slink->uri = $uri;
       $slink->add();
       return $slink;
+   }
+
+   protected function _getSecureLink( $uri )
+   {
+      $arr = \explode( '?', $uri );
+      if ( \sizeof( $arr ) == 2 )
+      {
+         $l = new SecureLink();
+
+         $l->uri = $arr[ 0 ];
+         \parse_str( $arr[ 1 ], $get );
+
+         if ( isset( $get[ 'r' ] ) && isset( $get[ 'u' ] ) && isset( $get[ 'c' ] ) && isset( $get[ 't' ] ) )
+         {
+            $l->id = $get[ 'r' ];
+            $l->uid = $get[ 'u' ];
+            $l->code = $get[ 'c' ];
+            $l->time = $get[ 't' ];
+            $l->load( 'id' );
+            if ( $l->exists() )
+            {
+               return $l;
+            }
+         }
+      }
+
+      return NULL;
    }
 
    /*
