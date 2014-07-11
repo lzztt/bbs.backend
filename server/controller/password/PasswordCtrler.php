@@ -45,7 +45,7 @@ class PasswordCtrler extends Password
       }
 
       $uri = $this->request->buildURI( $this->request->getURIargs( $this->request->uri ) );
-      $slink = SecureLink::loadFromRequest( $uri, $this->request->get );
+      $slink = SecureLink::getInstance( $uri, $this->request->get );
       if ( $slink->exists() )
       {
          if ( empty( $this->request->post ) )
