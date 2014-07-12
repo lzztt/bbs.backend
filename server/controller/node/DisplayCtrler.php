@@ -186,7 +186,7 @@ class DisplayCtrler extends Node
             $weather->request = $this->request;
             $weather->logger = $this->logger;
             $weather->cache = $this->cache;
-            $node[ 'HTMLbody' ] = $weather->get_weather_div( 77833 ) . $node[ 'HTMLbody' ];
+            $node[ 'HTMLbody' ] = $weather->_get_weather_div( 77833 ) . $node[ 'HTMLbody' ];
          }
          // $node['signature'] = \nl2br( $node['signature'] );
 

@@ -4,12 +4,6 @@ namespace site\controller\user;
 
 use site\controller\User;
 use site\dbobject\User as UserObject;
-use site\dbobject\PrivMsg;
-use lzx\html\HTMLElement;
-use lzx\html\Form;
-use lzx\html\TextArea;
-use lzx\html\Template;
-use lzx\core\Mailer;
 
 class LoginCtrler extends User
 {
@@ -24,7 +18,7 @@ class LoginCtrler extends User
       if ( empty( $this->request->post ) )
       {
          // display login form
-         $this->html->var[ 'content' ] = new Template( 'user_login' );
+         $this->_displayLogin();
       }
       else
       {

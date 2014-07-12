@@ -3,16 +3,12 @@
 namespace site\controller\weather;
 
 use site\controller\Weather;
-use lzx\html\Template;
 
 class WeatherCtrler extends Weather
 {
 
    public function run()
    {
-
-      
-
       if ( (\strlen( $this->args[1] ) == 5) && \is_numeric( $this->args[1] ) && ($this->args[1] > 0) )
       {
          $zip = $this->args[1];
@@ -21,14 +17,14 @@ class WeatherCtrler extends Weather
       {
          $zip = '77036';
       }
-      $this->html->var['content'] = $this->get_weather( $zip );
+      $this->html->var['content'] = $this->_get_weather( $zip );
    }
 
-   public function get_weather_div( $zip )
+   protected function _get_weather_div( $zip )
    {
       try
       {
-         return '<div style="float: right">' . $this->get_weather( $zip ) . '</div>';
+         return '<div style="float: right">' . $this->_get_weather( $zip ) . '</div>';
       }
       catch ( \Exception $e )
       {
@@ -38,21 +34,21 @@ class WeatherCtrler extends Weather
       }
    }
 
-   public function get_weather( $zip )
+   protected function _get_weather( $zip )
    {
       //$this->cache->setStatus(FALSE);
       //$key = 'weather_' . $zip;
       //$data = $this->cache->fetch($key);
       //if ($data === FALSE)
       //{
-      $weather = $this->get_weather_detail( $zip );
-      $data = $this->display_weather( $weather );
+      $weather = $this->_get_weather_detail( $zip );
+      $data = $this->_display_weather( $weather );
       //$this->cache->store($key, $data);
       //}
       return $data;
    }
 
-   public function display_weather( $weather )
+   protected function _display_weather( $weather )
    {
       $title = $weather[0];
       $days = $weather[1];
@@ -89,7 +85,7 @@ class WeatherCtrler extends Weather
       return $str;
    }
 
-   public function get_weather_detail( $zip )
+   protected function _get_weather_detail( $zip )
    {
       $doc = new \DOMDocument();
       // We need to validate our document before refering to the id
