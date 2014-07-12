@@ -162,8 +162,11 @@ abstract class Controller extends LzxCtrler
 
    protected function _displayLogin( $redirect = NULL )
    {
-      $this->_setLoginRedirect( $redirect ? $redirect : '/'  );
-      $this->_forward( '/user/login' );
+      if ( $redirect )
+      {
+         $this->_setLoginRedirect( $redirect );
+      }
+      $this->html->var[ 'content' ] = new Template( 'user_login' );
       $this->request->pageExit( $this->html );
    }
 

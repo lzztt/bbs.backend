@@ -3,15 +3,12 @@
 namespace site\controller\search;
 
 use site\controller\Search;
-use lzx\html\Template;
 
 class SearchCtrler extends Search
 {
 
    public function run()
    {
-      
-
       $html = <<<HTML
 <div id="cse-search-form" style="width: 100%;">Loading</div>
 <style>
