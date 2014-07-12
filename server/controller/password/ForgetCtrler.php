@@ -63,7 +63,7 @@ class ForgetCtrler extends Password
             }
             else
             {
-               $this->error( '重设密码的网址链接邮寄失败，请联系网站管理员重设密码。' );
+               $this->error( '重设密码的网址链接发送失败，请联系网站管理员重设密码。' );
             }
          }
          else
