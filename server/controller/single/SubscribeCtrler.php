@@ -42,7 +42,7 @@ class SubscribeCtrler extends Single
       }
       else
       {
-         echo '<span style="color:#B22222">错误</span>: 关注确认邮件邮寄失败';
+         echo '<span style="color:#B22222">错误</span>: 关注确认邮件发送失败';
       }
 
       exit;
