@@ -24,9 +24,12 @@ class SchoolsCtrler extends Schools
       $doc = new \DOMDocument();
 
       // We need to validate our document before refering to the id
-      $doc->validateOnParse = TRUE;
-      //@$doc->loadHTML($this->curlGetData('http://www.har.com/school/dispExempSchools.cfm'));
-      @$doc->loadHTML(\file_get_contents('/home/ikki/dispExempSchools.cfm'));
+      $doc->validateOnParse = false;
+      $doc->resolveExternals = false;
+      $doc->substituteEntities = false;
+      $doc->strictErrorChecking = false;
+      //\libxml_use_internal_errors(TRUE);
+      @$doc->loadHTML($this->curlGetData('http://www.har.com/school/dispExempSchools.cfm'), LIBXML_NOENT|LIBXML_NOERROR|LIBXML_NOWARNING);
 
       $schoolElements = [
          'Elementary' => $doc->getElementById('elemSchool'),
@@ -96,7 +99,7 @@ class SchoolsCtrler extends Schools
          CURLOPT_CONNECTTIMEOUT => 20,
          CURLOPT_TIMEOUT => 30
       ]);
-      $data = \curl_exec($c);
+      $data = \str_replace('&', '#_AMP_#', \preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", \curl_exec($c)));
       \curl_close($c);
 
       return $data; // will return FALSE on failure
@@ -104,4 +107,4 @@ class SchoolsCtrler extends Schools
 
 }
 
-?>
+//__END_OF_FILE__

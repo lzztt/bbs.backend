@@ -10,8 +10,6 @@ class TermCtrler extends Term
 
    public function run()
    {
-      
-
       $sitename = [
          'site_zh_cn' => '缤纷休斯顿华人网',
          'site_en_us' => 'HoustonBBS.com'
