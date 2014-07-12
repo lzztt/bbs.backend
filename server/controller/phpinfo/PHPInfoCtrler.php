@@ -13,7 +13,7 @@ class PHPInfoCtrler extends PHPInfo
       {
          $this->request->pageNotFound();
       }
-      phpinfo();
+      \phpinfo();
    }
 
 }
