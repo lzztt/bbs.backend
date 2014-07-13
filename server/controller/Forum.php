@@ -12,9 +12,9 @@ abstract class Forum extends Controller
 
    protected function _getTagObj()
    {
-      if ( \sizeof( $this->args ) > 0 )
+      if ( $this->id )
       {
-         $tid = (int) $this->args[ 0 ];
+         $tid = $this->id;
          if ( $tid > 0 )
          {
             $tag = new Tag( $tid, NULL );

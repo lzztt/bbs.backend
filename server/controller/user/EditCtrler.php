@@ -17,7 +17,7 @@ class EditCtrler extends User
          $this->_displayLogin( $this->request->uri );
       }
 
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
+      $uid = $this->id ? $this->id : $this->request->uid;
 
       if ( $this->request->uid != $uid && $this->request->uid != self::ADMIN_UID )
       {
@@ -45,7 +45,7 @@ class EditCtrler extends User
                $bday = \substr( $birthday, 6, 2 );
             }
 
-            $currentURI = '/user/edit/' . $uid;
+            $currentURI = '/user/' . $uid . '/edit';
             $userLinks = $this->_getUserLinks( $uid, $currentURI );
             $info = [
                'action' => $currentURI,

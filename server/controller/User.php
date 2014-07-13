@@ -32,9 +32,9 @@ abstract class User extends Controller
       // switch to user from super user
       if ( $this->session->uid == self::ADMIN_UID )
       {
-         if ( \filter_var( $this->args[ 0 ], \FILTER_VALIDATE_INT, ['options' => ['min_range' => 2 ] ] ) )
+         if ( $this->id > 1 )
          {
-            $user = new UserObject( $this->args[ 0 ], 'username' );
+            $user = new UserObject( $this->id, 'username' );
             if ( $user->exists() )
             {
                $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
@@ -70,7 +70,7 @@ abstract class User extends Controller
          $this->request->pageNotFound();
       }
    }
-   
+
    protected function _isBot( $m )
    {
       $try1 = unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
@@ -131,13 +131,28 @@ abstract class User extends Controller
 
    protected function _getUserLinks( $uid, $activeLink )
    {
-      if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
+      if ( $this->request->uid )
       {
+         // self or admin
+         if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
+         {
+            return $this->html->linkList( [
+                  '/user/' . $uid => '用户首页',
+                  '/user/' . $uid . '/pm' => '站内短信',
+                  '/user/' . $uid . '/edit' => '编辑个人资料',
+                  '/password/' . $uid . '/change' => '更改密码'
+                  ], $activeLink
+            );
+         }
+      }
+      else
+      {
+         // guest
          return $this->html->linkList( [
-               '/user/display/' . $uid => '用户首页',
-               '/user/pm/' . $uid => '站内短信',
-               '/user/edit/' . $uid => '编辑个人资料',
-               '/password/change/' . $uid => '更改密码'
+               '/user/login' => '登录',
+               '/user/register' => '创建新帐号',
+               '/password/reset' => '重设密码',
+               '/user/username' => '忘记用户名'
                ], $activeLink
          );
       }
@@ -148,8 +163,8 @@ abstract class User extends Controller
       if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
       {
          return $this->html->linkList( [
-               '/user/pm/' . $uid . '/inbox' => '收件箱',
-               '/user/pm/' . $uid . '/sent' => '发件箱'
+               '/user/' . $uid . '/pm/inbox' => '收件箱',
+               '/user/' . $uid . '/pm/sent' => '发件箱'
                ], $activeLink
          );
       }

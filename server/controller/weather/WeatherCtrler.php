@@ -9,9 +9,11 @@ class WeatherCtrler extends Weather
 
    public function run()
    {
-      if ( (\strlen( $this->args[1] ) == 5) && \is_numeric( $this->args[1] ) && ($this->args[1] > 0) )
+      $this->request->pageNotFound();
+      
+      if ( $this->id )
       {
-         $zip = $this->args[1];
+         $zip = (string) $this->id;
       }
       else
       {

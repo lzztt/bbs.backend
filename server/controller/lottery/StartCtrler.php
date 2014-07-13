@@ -58,7 +58,7 @@ class StartCtrler extends Lottery
 
       $db = DB::getInstance();
 
-      if ( $this->args[ 2 ] === 'run' )
+      if ( $this->args[ 0 ] === 'run' )
       {
          if ( $isActive !== TRUE )
          {
@@ -90,7 +90,7 @@ class StartCtrler extends Lottery
       \krsort( $aPoints );
 
       $results = [ ];
-      switch ($round)
+      switch ( $round )
       {
          // DB get detailed points
       }

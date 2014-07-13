@@ -44,10 +44,10 @@ class EditCtrler extends Wedding
       }
       else
       {
-         if ( $this->args && (int) $this->args[ 0 ] > 0 )
+         if ( $this->id )
          {
             // edit one guest
-            $a->id = $this->args[ 0 ];
+            $a->id = $this->id;
             $this->html->var[ 'body' ] = new Template( 'edit', \array_pop( $a->getList() ) );
          }
          else

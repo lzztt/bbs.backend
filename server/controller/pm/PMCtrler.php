@@ -17,7 +17,7 @@ class PMCtrler extends PM
 
    public function run()
    {
-      $topicID = (int) $this->args[ 0 ];
+      $topicID = $this->id;
 
       $pm = new PrivMsg();
       $msgs = $pm->getPMConversation( $topicID, $this->request->uid );

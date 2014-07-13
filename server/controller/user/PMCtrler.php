@@ -23,13 +23,13 @@ class PMCtrler extends User
          $this->_displayLogin( $this->request->uri );
       }
 
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
+      $uid = $this->id ? $this->id : $this->request->uid;
       $user = new UserObject( $uid, NULL );
 
       if ( $user->id == $this->request->uid )
       {
          // show pm mailbox
-         $mailbox = \sizeof( $this->args ) > 1 ? $this->args[ 1 ] : 'inbox';
+         $mailbox = $this->args ? $this->args[ 0 ] : 'inbox';
 
          if ( !\in_array( $mailbox, ['inbox', 'sent' ] ) )
          {
@@ -42,10 +42,10 @@ class PMCtrler extends User
             $this->error( $mailbox == 'sent' ? '您的发件箱里还没有短信。' : '您的收件箱里还没有短信。'  );
          }
 
-         $currentURI = '/user/pm/' . $uid;
+         $currentURI = '/user/' . $uid . '/pm';
          $userLinks = $this->_getUserLinks( $uid, $currentURI );
 
-         $activeLink = '/user/pm/' . $uid . '/' . $mailbox;
+         $activeLink = '/user/' . $uid . '/pm/' . $mailbox;
          $mailBoxLinks = $this->_getMailBoxLinks( $uid, $activeLink );
 
          list($pageNo, $pager) = $this->_getPager( $pmCount, $activeLink );

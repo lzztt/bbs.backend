@@ -13,7 +13,7 @@ class EditCtrler extends Comment
    public function run()
    {
       // edit existing comment
-      $cid = (int) $this->args[ 0 ];
+      $cid = $this->id;
 
       if ( \strlen( $this->request->post[ 'body' ] ) < 5 )
       {

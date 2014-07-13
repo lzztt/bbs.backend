@@ -12,7 +12,7 @@ class ReplyCtrler extends PM
 
    public function run()
    {
-      $topicID = (int) $this->args[ 0 ];
+      $topicID = $this->id;
 
       if ( $this->request->uid != $this->request->post[ 'fromUID' ] )
       {

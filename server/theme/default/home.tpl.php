@@ -1,17 +1,17 @@
 <div id="content">
    <div class="front-items">
-      <div class="item-list" style="width: 66%;"><?php echo $imageSlider; ?></div>
-      <div class="item-list"><h2 class="title">近期活动</h2><?php echo $recentActivities; ?></div>
+      <div class="item-list" style="width: 66%;"><?php print $imageSlider; ?></div>
+      <div class="item-list"><h2 class="title">近期活动</h2><?php print $recentActivities; ?></div>
    </div>
    <div class="front-items">
-      <div class="item-list"><h2 class="title">最新话题</h2><?php echo $latestForumTopics; ?></div>
-      <div class="item-list"><h2 class="title">最新论坛回复</h2><?php echo $latestForumTopicReplies; ?></div>
-      <div class="item-list"><h2 class="title">本周热门</h2><?php echo $hotForumTopics; ?></div>
+      <div class="item-list"><h2 class="title">最新话题</h2><?php print $latestForumTopics; ?></div>
+      <div class="item-list"><h2 class="title">最新论坛回复</h2><?php print $latestForumTopicReplies; ?></div>
+      <div class="item-list"><h2 class="title">本周热门</h2><?php print $hotForumTopics; ?></div>
    </div>
    <div class="front-items">
-      <div class="item-list"><h2 class="title">最新黄页</h2><?php echo $latestYellowPages; ?></div>
-      <div class="item-list"><h2 class="title">最新黄页回复</h2><?php echo $latestYellowPageReplies; ?></div>
-      <div class="item-list"><h2 class="title">签证移民信息</h2><?php echo $latestImmigrationPosts; ?></div>
+      <div class="item-list"><h2 class="title">最新黄页</h2><?php print $latestYellowPages; ?></div>
+      <div class="item-list"><h2 class="title">最新黄页回复</h2><?php print $latestYellowPageReplies; ?></div>
+      <div class="item-list"><h2 class="title">签证移民信息</h2><?php print $latestImmigrationPosts; ?></div>
    </div>
 
    <div id="ajax_statistics">
