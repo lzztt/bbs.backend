@@ -4,10 +4,6 @@ namespace site\controller\user;
 
 use site\controller\User;
 use site\dbobject\User as UserObject;
-use site\dbobject\PrivMsg;
-use lzx\html\HTMLElement;
-use lzx\html\Form;
-use lzx\html\TextArea;
 use lzx\html\Template;
 use lzx\core\Mailer;
 
@@ -36,9 +32,23 @@ class UsernameCtrler extends User
          $user->email = $this->request->post[ 'email' ];
          $user->load( 'username' );
 
+
          if ( $user->exists() )
          {
-            $response = '您的注册用户名是: ' . $user->username;
+
+            $mailer = new Mailer();
+            $mailer->to = $user->email;
+            $mailer->subject = $user->username . 'HoustonBBS的账户名';
+            $mailer->body = '你在HoustonBBS的用户名是: ' . $user->username;
+            
+            if ( $mailer->send() )
+            {
+               $response = '用户名已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email。<br />如果您的收件箱内没有此电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
+            }
+            else
+            {
+               $this->error( '找回用户名邮件发送失败，请联系网站管理员。' );
+            }
          }
          else
          {

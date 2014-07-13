@@ -7,11 +7,6 @@ use lzx\core\BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
-use site\dbobject\NodeYellowPage;
-use site\dbobject\Comment;
-use site\dbobject\Image;
-use site\dbobject\User;
-use site\dbobject\Activity;
 use site\dbobject\Tag;
 
 class NodeCtrler extends Node

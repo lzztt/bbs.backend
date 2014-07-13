@@ -3,11 +3,9 @@
 namespace site\controller\comment;
 
 use site\controller\Comment;
-use site\dbobject\Tag;
 use site\dbobject\Comment as CommentObject;
 use site\dbobject\Node;
 use site\dbobject\Image;
-use site\dbobject\User;
 
 class EditCtrler extends Comment
 {
