@@ -1,9 +1,4 @@
-<ul class="tabs">
-   <li><a href="/user/display">用户首页</a></li>
-   <li><a href="/user/pm">站内短信</a></li>
-   <li><a href="/user/edit">编辑个人资料</a></li>
-   <li class="active"><a href="/password/change">更改密码</a></li>
-</ul>
+<?php print $userLinks; ?>
 <form accept-charset="UTF-8" autocomplete="off" method="post" action="/password/change" id="user-pass">
    <div class="form_element">
       <label>旧密码</label><input size="22" name="password_old" type="password" required="required">

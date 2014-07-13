@@ -14,7 +14,7 @@ class DeleteCtrler extends Comment
    public function run()
    {
       $comment = new CommentObject();
-      $comment->id = (int) $this->args[ 0 ];
+      $comment->id = $this->id;
       $comment->load( 'uid,nid' );
 
       if ( $this->request->uid != 1 && $this->request->uid != $comment->uid )

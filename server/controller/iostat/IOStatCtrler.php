@@ -20,23 +20,23 @@ class IOStatCtrler extends IOStat
 
    public function run()
    {
-      $this->request->pageNotFound('not available yet :(');
-      
+      $this->request->pageNotFound( 'not available yet :(' );
+
       $this->cache->setStatus( FALSE );
 
-      $this->html->var['content'] = $this->sarChart();
+      $this->html->var[ 'content' ] = $this->sarChart();
    }
 
    protected function sarChart()
    {
       $sar = 'sar -b -s 00:00:01 -e 23:59:59 -f ';
-      $file = '/var/log/sysstat/sa' . date( 'd' );
+      $file = '/var/log/sysstat/sa' . \date( 'd' );
 
       // using an old date file
-      if ( $this->args[1] )
+      if ( $this->id )
       {
-         $_file = '/var/log/sysstat/sa' . $this->args[1];
-         if ( is_file( $_file ) && is_readable( $_file ) )
+         $_file = '/var/log/sysstat/sa' . \sprintf( '%2d', $this->id );
+         if ( \is_file( $_file ) && \is_readable( $_file ) )
          {
             $file = $_file;
          }

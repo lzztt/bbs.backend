@@ -22,7 +22,7 @@ class AdCtrler extends Adm
 
    public function run()
    {
-      $function = $this->args[ 0 ] ? $this->args[ 0 ] : 'show';
+      $function = $this->args ? $this->args[ 0 ] : 'show';
 
       if ( \method_exists( $this, $function ) )
       {

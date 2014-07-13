@@ -1,4 +1,4 @@
-<?php echo $username; ?> 您好，
+<?php print $username; ?> 您好，
 
 周末愉快！
 
@@ -21,6 +21,6 @@ http://www.houstonbbs.com/node/7694
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-您收到此信息是由于您注册了<?php echo SITENAME; ?>会员，
-如果您有任何问题，或者以后不想再收到来自 <?php echo SITENAME; ?> 的此类邮件，都可以与网站管理员联系 admin@houstonbbs.com
+您收到此信息是由于您注册了<?php print SITENAME; ?>会员，
+如果您有任何问题，或者以后不想再收到来自 <?php print SITENAME; ?> 的此类邮件，都可以与网站管理员联系 admin@houstonbbs.com
 (You received this message because you have registered as a member at HoustonBBS.com. If you want to unsubscribe this message, please send an email to admin@houstonbbs.com)

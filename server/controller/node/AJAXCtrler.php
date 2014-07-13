@@ -17,7 +17,7 @@ class AJAXCtrler extends Node
       $viewCount = [ ];
       if ( $this->args[ 0 ] == 'viewcount' )
       {
-         $nid = \intval( $this->request->get[ 'nid' ] );
+         $nid = (int) $this->request->get[ 'nid' ];
          $nodeObj = new NodeObject( $nid, 'viewCount' );
          if ( $nodeObj->exists() )
          {

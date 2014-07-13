@@ -8,7 +8,7 @@
                     <tr id="forum-list-1" class="first-row container container-1" >
                         <td colspan="2" class="container">
                             <div class="forum-details">
-                                <div class="description"><?php echo $tags[$group_id]['description']; ?></div>
+                                <div class="description"><?php print $tags[$group_id]['description']; ?></div>
                             </div>
                         </td>
                         <td class="topics">主题</td>
@@ -21,18 +21,18 @@
                             <td class="forum-icon"> <img src="/themes/default/images/forum/forum-folder.png" alt="文件夹" title="文件夹" width="33" height="29" /> </td>
                             <td>
                                 <div class="forum-details">
-                                    <div class="name"><a href="/forum/<?php echo $board_id; ?>"><?php echo $tags[$board_id]['name']; ?></a></div>
-                                    <div class="description"><?php echo $tags[$board_id]['description']; ?></div>
+                                    <div class="name"><a href="/forum/<?php print $board_id; ?>"><?php print $tags[$board_id]['name']; ?></a></div>
+                                    <div class="description"><?php print $tags[$board_id]['description']; ?></div>
                                 </div>
                             </td>
                             <td class="topics">
-                                <?php echo $nodeInfo[$board_id]['node_count']; ?>
+                                <?php print $nodeInfo[$board_id]['node_count']; ?>
                             </td>
                             <td class="topics">
-                                <?php echo $nodeInfo[$board_id]['comment_count']; ?>
+                                <?php print $nodeInfo[$board_id]['comment_count']; ?>
                             </td>
                             <td class="last-reply">
-                                <a href="/node/<?php echo $nodeInfo[$board_id]['nid']; ?>"><?php echo $nodeInfo[$board_id]['title']; ?></a><br />作者 <?php echo $nodeInfo[$board_id]['username']; ?><br /><?php echo $nodeInfo[$board_id]['create_time']; ?>
+                                <a href="/node/<?php print $nodeInfo[$board_id]['nid']; ?>"><?php print $nodeInfo[$board_id]['title']; ?></a><br />作者 <?php print $nodeInfo[$board_id]['username']; ?><br /><?php print $nodeInfo[$board_id]['create_time']; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
