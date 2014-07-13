@@ -11,7 +11,7 @@ use lzx\html\TextArea;
 use lzx\html\Template;
 use lzx\core\Mailer;
 
-class PmCtrler extends User
+class PMCtrler extends User
 {
 
    const PM_PER_PAGE = 25;

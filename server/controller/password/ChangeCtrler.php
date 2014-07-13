@@ -3,8 +3,7 @@
 namespace site\controller\password;
 
 use site\controller\Password;
-use site\controller\User;
-use site\dbobject\User as UserObject;
+use site\dbobject\User;
 use lzx\html\Template;
 use lzx\core\Mailer;
 
@@ -36,7 +35,7 @@ class ChangeCtrler extends Password
             $this->error( '请输入新密码!' );
          }
 
-         $user = new UserObject( $this->request->uid, 'username,email,password' );
+         $user = new User( $this->request->uid, 'username,email,password' );
 
          if ( $user->exists() )
          {

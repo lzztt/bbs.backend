@@ -3,8 +3,7 @@
 namespace site\controller\password;
 
 use site\controller\Password;
-use site\controller\User;
-use site\dbobject\User as UserObject;
+use site\dbobject\User;
 use lzx\html\Template;
 use lzx\core\Mailer;
 use site\dbobject\SecureLink;
@@ -59,7 +58,7 @@ class PasswordCtrler extends Password
                $this->error( '请输入密码!' );
             }
 
-            $user = new UserObject();
+            $user = new User();
             $user->id = $uid;
             $user->password = $user->hashPW( $this->request->post['password'] );
             $user->update( 'password' );
@@ -98,7 +97,7 @@ class PasswordCtrler extends Password
             $this->error( '请输入新密码!' );
          }
 
-         $user = new UserObject( $this->request->uid, 'username,email,password' );
+         $user = new User( $this->request->uid, 'username,email,password' );
 
          if ( $user->exists() )
          {
@@ -142,7 +141,7 @@ class PasswordCtrler extends Password
             $this->error( '不正确的电子邮箱地址 : ' . $this->request->post['email'] );
          }
 
-         $user = new UserObject();
+         $user = new User();
          $user->username = $this->request->post['username'];
          $user->email = $this->request->post['email'];
          $user->load( 'id,username,email,status' );

@@ -12,9 +12,6 @@ use site\dbobject\Image;
 class YPCtrler extends YP
 {
 
-   const YP_ROOT_TID = 2;
-   const NODES_PER_PAGE = 25;
-
    public function run()
    {
       

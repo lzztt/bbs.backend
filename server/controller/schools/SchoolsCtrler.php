@@ -3,7 +3,6 @@
 namespace site\controller\schools;
 
 use site\controller\Schools;
-use lzx\html\Template;
 
 /**
  * Description of schools
