@@ -3,10 +3,7 @@
 namespace site\controller\pm;
 
 use site\controller\PM;
-use site\controller\User as UserController;
 use site\dbobject\PrivMsg;
-use site\dbobject\User as UserObject;
-use lzx\core\Mailer;
 use lzx\html\HTMLElement;
 use lzx\html\Form;
 use lzx\html\Input;
@@ -18,27 +15,7 @@ class PMCtrler extends PM
 
    const PMS_PER_PAGE = 25;
 
-   /**
-    * default protected methods
-    */
-   protected function init()
-   {
-      parent::_init();
-      // don't cache user page at page level
-      $this->cache->setStatus( FALSE );
-
-      if ( $this->request->uid == self::GUEST_UID )
-      {
-         $this->_dispayLogin( $this->request->uri );
-      }
-   }
-
    public function run()
-   {
-      $this->display();
-   }
-
-   public function display()
    {
       $topicID = (int) $this->args[ 0 ];
 
@@ -93,67 +70,6 @@ class PMCtrler extends PM
       $reply_form->setButton( array( 'submit' => '发送' ) );
 
       $this->html->var[ 'content' ] = $link_tabs . $pager . $messages . $reply_form;
-   }
-
-   public function reply()
-   {
-      $topicID = (int) $this->args[ 0 ];
-
-      if ( $this->request->uid != $this->request->post[ 'fromUID' ] )
-      {
-         $this->error( '错误，用户没有权限回复此条短信' );
-      }
-
-      if ( \strlen( $this->request->post[ 'body' ] ) < 5 )
-      {
-         $this->error( '错误：短信正文字数太少。' );
-      }
-
-      $user = new UserObject( $this->request->post[ 'toUID' ], 'username,email' );
-
-      if ( !$user->exists() )
-      {
-         $this->error( '错误：收信人用户不存在。' );
-      }
-
-      $pm = new PrivMsg();
-      $pm->topicID = $topicID;
-      $pm->fromUID = $this->request->uid;
-      $pm->toUID = $user->id;
-      $pm->body = $this->request->post[ 'body' ];
-      $pm->time = $this->request->timestamp;
-      $pm->add();
-
-      $mailer = new Mailer();
-      $mailer->to = $user->email;
-      $mailer->subject = $user->username . ' 您有一封新的站内短信';
-      $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://www.houstonbbs.com/pm/' . $pm->topicID;
-      if ( !$mailer->send() )
-      {
-         $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
-      }
-
-      $this->request->redirect( '/pm/' . $topicID );
-   }
-
-   public function delete()
-   {
-      $topicID = (int) $this->args[ 0 ];
-      $messageID = (int) $this->args[ 1 ];
-
-      $pm = new PrivMsg();
-      $pm->id = $messageID;
-      try
-      {
-         $pm->deleteByUser( $this->request->uid );
-      }
-      catch ( \Exception $e )
-      {
-         $this->error( 'failed to delete message ' . $messageID . ' as user ' . $this->request->uid );
-      }
-
-      $redirect_uri = $topicID == $messageID ? '/user/pm' : '/pm/' . $topicID;
-      $this->request->redirect( $redirect_uri );
    }
 
 }

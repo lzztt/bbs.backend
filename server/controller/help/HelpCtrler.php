@@ -3,7 +3,6 @@
 namespace site\controller\help;
 
 use site\controller\Help;
-use lzx\html\Template;
 
 class HelpCtrler extends Help
 {

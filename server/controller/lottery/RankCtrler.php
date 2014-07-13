@@ -3,9 +3,7 @@
 namespace site\controller\lottery;
 
 use site\controller\Lottery;
-use lzx\html\Template;
 use lzx\db\DB;
-use site\dbobject\User;
 
 class RankCtrler extends Lottery
 {

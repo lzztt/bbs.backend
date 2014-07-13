@@ -4,7 +4,7 @@ namespace site\controller\user;
 
 use site\controller\User;
 
-class SuCtrler extends User
+class SUCtrler extends User
 {
 
    public function run()

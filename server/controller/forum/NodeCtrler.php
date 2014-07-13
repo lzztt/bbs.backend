@@ -3,8 +3,6 @@
 namespace site\controller\forum;
 
 use site\controller\Forum;
-use lzx\html\Template;
-use site\dbobject\Tag;
 use site\dbobject\Node;
 use site\dbobject\Image;
 use site\dbobject\User;
