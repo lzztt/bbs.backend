@@ -129,7 +129,7 @@ class WebApp extends App
       $html = new Template( 'html' );
       $html->var[ 'domain' ] = $this->config->domain;
 
-      $ctrler = ControllerRouter::create( $request, $html, $this->config, $this->logger, $cache, $session, $cookie );      
+      $ctrler = ControllerRouter::create( $request, $html, $this->config, $this->logger, $cache, $session, $cookie );  
       $ctrler->run();
 
       $session->close();

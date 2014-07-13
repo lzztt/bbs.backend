@@ -2,13 +2,13 @@
 <html lang='zh' dir='ltr'>
    <head>
       <meta charset='UTF-8' />
-      <meta name='description' content='<?php echo $head_description; ?>' />      
+      <meta name='description' content='<?php print $head_description; ?>' />      
       <meta name='viewport' content='width=device-width, initial-scale=1' />
 
       <?php include $tpl_path . '/head_js.tpl.php'; ?>
       <?php include $tpl_path . '/head_css.tpl.php'; ?>
 
-      <title><?php echo $head_title; ?></title>
+      <title><?php print $head_title; ?></title>
       <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
       <link rel='apple-touch-icon' sizes='72x72' href='/apple-touch-icon-72x72.png' />
       <link rel='apple-touch-icon' sizes='114x114' href='/apple-touch-icon-114x114.png' />
@@ -17,7 +17,7 @@
       <div id='page_overlay'><div id='popup'></div><div id='popup_bg'></div></div>
         <div id='page_header'>
          <div id='page_header_inner'>
-            <div data-umode='<?php echo $umode_pc; ?>' style='position:relative; height:150px'>
+            <div data-umode='<?php print $umode_pc; ?>' style='position:relative; height:150px'>
                <div id='logo-title'>
                   <div id='logo'><a style='padding: 0pt; margin: 0pt; display: block; width: 60px; height: 60px;' href='/' title='首页' rel='home'><img src='/themes/default/images/logo_60x60.png' alt='首页' id='logo-image'></a></div>
                   <div id='site-name'><span style='color: #A0522D;'>缤纷休斯顿</span></div>
@@ -25,17 +25,17 @@
                </div>
                <?php include $tpl_path . '/head_ad.tpl.php'; ?>
             </div>
-            <?php echo $page_navbar; ?>
+            <?php print $page_navbar; ?>
             <div style="clear:both;"></div>
          </div>
       </div>
       <div id='page_body'>
          <div id='page_body_inner'>
-            <?php echo $content; ?>
+            <?php print $content; ?>
          </div>
          <div style="clear:both;"></div>
       </div>
-      <div id='page_navbar_mobile' data-umode='<?php echo $umode_mobile; ?>'><div>页面结束，以下为站内快捷链接：</div></div>
+      <div id='page_navbar_mobile' data-umode='<?php print $umode_mobile; ?>'><div>页面结束，以下为站内快捷链接：</div></div>
       <div id='page_footer'>
          <div id='page_footer_inner'>
             <div id='copyright'>如有问题，请联络网站管理员
@@ -44,7 +44,7 @@
          </div>
          <div style="clear:both;"></div>
       </div>
-      <div id='page_data' style='display:none;'><?php echo $page_data; ?></div>
+      <div id='page_data' style='display:none;'><?php print $page_data; ?></div>
    </body>
    <?php if ( $domain === 'houstonbbs.com' ): ?>
       <script>

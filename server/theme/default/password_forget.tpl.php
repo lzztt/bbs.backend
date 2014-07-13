@@ -1,9 +1,4 @@
-<ul class="tabs">
-   <li><a href="/user/login">登录</a></li>
-   <li><a href="/user/register">创建新帐号</a></li>
-   <li class="active"><a href="/password/reset">重设密码</a></li>
-   <li><a href="/user/username">忘记用户名</a></li>
-</ul>
+<?php print $userLinks; ?>
 <form accept-charset="UTF-8" autocomplete="off" method="post" action="/user/password" id="user-pass">
    <div class="form_element">
       <label data-help="输入您的用户名">用户名</label><input size="22" name="username" type="text" required="required" />

@@ -13,7 +13,7 @@ abstract class Node extends Controller
 
    protected function _getNodeType()
    {
-      $nid = (int) $this->args[ 0 ];
+      $nid = $this->id;
       if ( $nid <= 0 )
       {
          $this->request->pageNotFound();

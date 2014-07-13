@@ -19,10 +19,15 @@ class TagCtrler extends Node
 
    private function _tagForumTopic( $nid )
    {
-      $newTagID = \intval( $this->args[ 3 ] );
+      if ( empty( $this->args ) )
+      {
+         $this->error( 'no tag id specified' );
+      }
+
+      $newTagID = (int) $this->args[ 0 ];
 
       $nodeObj = new NodeObject( $nid, 'uid,tid' );
-      if ( $this->request->uid == 1 || $this->request->uid = $nodeObj->uid )
+      if ( $this->request->uid == 1 || $this->request->uid == $nodeObj->uid )
       {
          $oldTagID = $nodeObj->tid;
          $nodeObj->tid = $newTagID;

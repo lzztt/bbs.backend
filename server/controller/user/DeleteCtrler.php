@@ -10,7 +10,7 @@ class DeleteCtrler extends User
 
    public function run()
    {
-      $uid = (int) $this->args[ 0 ];
+      $uid = $this->id;
       if ( $this->request->uid == self::ADMIN_UID && $uid > 1 )  // only admin can delete user, can not delete admin
       {
          $user = new UserObject();
