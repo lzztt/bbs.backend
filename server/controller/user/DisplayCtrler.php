@@ -16,7 +16,7 @@ class DisplayCtrler extends User
          $this->_displayLogin( $this->request->uri );
       }
 
-      $uid = empty( $this->args ) ? $this->request->uid : (int) $this->args[ 0 ];
+      $uid = $this->id ? $this->id : $this->request->uid;
       // user are not allowed to view ADMIN's info
       if ( $uid == self::ADMIN_UID && $this->request->uid != self::ADMIN_UID )
       {
@@ -44,7 +44,7 @@ class DisplayCtrler extends User
          'uid' => $uid,
          'username' => $user->username,
          'avator' => $user->avatar ? $user->avatar : '/data/avatars/avatar0' . \mt_rand( 1, 5 ) . '.jpg',
-         'userLinks' => $this->_getUserLinks( $uid, '/user/display/' . $uid ),
+         'userLinks' => $this->_getUserLinks( $uid, '/user/' . $uid ),
          'pm' => $uid != $this->request->uid ? '/user/pm/' . $uid : '',
          'info' => [
             '微信' => $user->wechat,

@@ -39,6 +39,7 @@ abstract class Controller extends LzxCtrler
 
    public $user = NULL;
    public $args;
+   public $id;
    public $config;
 
    /**
@@ -268,9 +269,6 @@ abstract class Controller extends LzxCtrler
       return [$pageNo, $pageCount ];
    }
 
-   /**
-    * private methods
-    */
 }
 
 //__END_OF_FILE__

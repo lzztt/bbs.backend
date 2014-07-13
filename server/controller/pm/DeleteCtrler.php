@@ -10,8 +10,8 @@ class DeleteCtrler extends PM
 
    public function run()
    {
-      $topicID = (int) $this->args[ 0 ];
-      $messageID = (int) $this->args[ 1 ];
+      $topicID = $this->id;
+      $messageID = $this->args ? (int) $this->args[ 0 ] : $topicID;
 
       $pm = new PrivMsg();
       $pm->id = $messageID;

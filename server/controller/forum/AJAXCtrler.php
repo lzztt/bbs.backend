@@ -15,13 +15,13 @@ class AJAXCtrler extends Forum
       $viewCount = [ ];
       if ( $this->args[ 0 ] == 'viewcount' && \strlen( $this->request->get[ 'nids' ] ) > 0 )
       {
-         $tid = \intval( $this->request->get[ 'tid' ] );
+         $tid = (int) $this->request->get[ 'tid' ];
          $nids = \explode( '_', $this->request->get[ 'nids' ] );
          foreach ( $nids as $i => $nid )
          {
             if ( \strlen( $nid ) > 0 )
             {
-               $nids[ $i ] = \intval( $nid );
+               $nids[ $i ] = (int) $nid;
             }
             else
             {

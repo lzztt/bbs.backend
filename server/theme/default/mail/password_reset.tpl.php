@@ -1,12 +1,12 @@
-<?php echo $username; ?> 您好，
+<?php print $username; ?> 您好，
 
-您要求了重设您在 <?php echo $sitename; ?> 网站的帐户密码。
+您要求了重设您在 <?php print $sitename; ?> 网站的帐户密码。
 
 下面是您的新密码信息：
 
-用户名： <?php echo $username; ?>
+用户名： <?php print $username; ?>
 
-密码： <?php echo $password; ?>
+密码： <?php print $password; ?>
 
 您现在可以点击下面的链接进行登录，或者将此链接复制到浏览器地址栏：
 
