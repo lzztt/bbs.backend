@@ -38,3 +38,5 @@ class AJAXCtrler extends Home
    }
 
 }
+
+//__END_OF_FILE__

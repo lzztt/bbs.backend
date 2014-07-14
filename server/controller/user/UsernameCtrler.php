@@ -19,7 +19,7 @@ class UsernameCtrler extends User
 
       if ( empty( $this->request->post ) )
       {
-         $this->html->var[ 'content' ] = new Template( 'user_forgetusername' );
+         $this->html->var[ 'content' ] = new Template( 'user_forgetusername', ['userLinks' => $this->_getUserLinks( '/user/username' ) ] );
       }
       else
       {
@@ -40,7 +40,7 @@ class UsernameCtrler extends User
             $mailer->to = $user->email;
             $mailer->subject = $user->username . 'HoustonBBS的账户名';
             $mailer->body = '你在HoustonBBS的用户名是: ' . $user->username;
-            
+
             if ( $mailer->send() )
             {
                $response = '用户名已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email。<br />如果您的收件箱内没有此电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';

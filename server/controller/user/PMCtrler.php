@@ -8,13 +8,10 @@ use site\dbobject\PrivMsg;
 use lzx\html\HTMLElement;
 use lzx\html\Form;
 use lzx\html\TextArea;
-use lzx\html\Template;
 use lzx\core\Mailer;
 
 class PMCtrler extends User
 {
-
-   const PM_PER_PAGE = 25;
 
    public function run()
    {
@@ -23,123 +20,67 @@ class PMCtrler extends User
          $this->_displayLogin( $this->request->uri );
       }
 
-      $uid = $this->id ? $this->id : $this->request->uid;
-      $user = new UserObject( $uid, NULL );
-
-      if ( $user->id == $this->request->uid )
+      if ( !$this->id || $this->id == $this->request->uid )
       {
-         // show pm mailbox
-         $mailbox = $this->args ? $this->args[ 0 ] : 'inbox';
+         $this->error( '不能给自己发送站内短信' );
+      }
 
-         if ( !\in_array( $mailbox, ['inbox', 'sent' ] ) )
-         {
-            $this->error( '短信文件夹[' . $mailbox . ']不存在。' );
-         }
+      $user = new UserObject( $this->id, 'username,email' );
 
-         $pmCount = $user->getPrivMsgsCount( $mailbox );
-         if ( $pmCount == 0 )
-         {
-            $this->error( $mailbox == 'sent' ? '您的发件箱里还没有短信。' : '您的收件箱里还没有短信。'  );
-         }
+      if ( !$user->exists() )
+      {
+         $this->error( '用户不存在' );
+      }
 
-         $currentURI = '/user/' . $uid . '/pm';
-         $userLinks = $this->_getUserLinks( $uid, $currentURI );
-
-         $activeLink = '/user/' . $uid . '/pm/' . $mailbox;
-         $mailBoxLinks = $this->_getMailBoxLinks( $uid, $activeLink );
-
-         list($pageNo, $pager) = $this->_getPager( $pmCount, $activeLink );
-         $msgs = $user->getPrivMsgs( $mailbox, 25, ($pageNo - 1) * 25 );
-
-         $thead = ['cells' => ['短信', '联系人', '时间' ] ];
-         $tbody = [ ];
-         foreach ( $msgs as $i => $m )
-         {
-            $msgs[ $i ][ 'body' ] = $this->html->truncate( $m[ 'body' ] );
-            $msgs[ $i ][ 'time' ] = \date( 'm/d/Y H:i', $m[ 'time' ] );
-         }
-
+      if ( empty( $this->request->post ) )
+      {
+         // display pm edit form
          $content = [
-            'uid' => $user->id,
-            'userLinks' => $userLinks,
-            'mailBoxLinks' => $mailBoxLinks,
-            'pager' => $pager,
-            'msgs' => $msgs,
+            'breadcrumb' => $breadcrumb,
+            'toUID' => $uid,
+            'toName' => $user->username,
+            'form_handler' => '/user/' . $uid . '/pm',
          ];
+         $form = new Form( [
+            'action' => '/user/' . $user->id . '/pm',
+            'id' => 'user-pm-send'
+            ] );
+         $receipt = new HTMLElement( 'div', ['收信人: ', $this->html->link( $user->username, '/user/' . $user->id ) ] );
+         $message = new TextArea( 'body', '短信正文', '最少5个字母或3个汉字', TRUE );
 
-         $this->html->var[ 'content' ] = new Template( 'pm_list', $content );
+         $form->setData( [$receipt, $message->toHTMLElement() ] );
+         $form->setButton( ['submit' => '发送短信' ] );
+         $this->html->var[ 'content' ] = $form;
       }
       else
       {
-// show send pm to user page
-         $user->load( 'username' );
-
-         if ( empty( $this->request->post ) )
+         // save pm to database
+         if ( \strlen( $this->request->post[ 'body' ] ) < 5 )
          {
-// display pm edit form
-            $content = [
-               'breadcrumb' => $breadcrumb,
-               'toUID' => $uid,
-               'toName' => $user->username,
-               'form_handler' => '/user/' . $uid . '/pm',
-            ];
-            $form = new Form( [
-               'action' => '/user/' . $user->id . '/pm',
-               'id' => 'user-pm-send'
-               ] );
-            $receipt = new HTMLElement( 'div', ['收信人: ', $this->html->link( $user->username, '/user/' . $user->id ) ] );
-            $message = new TextArea( 'body', '短信正文', '最少5个字母或3个汉字', TRUE );
-
-            $form->setData( [$receipt, $message->toHTMLElement() ] );
-            $form->setButton( ['submit' => '发送短信' ] );
-            $this->html->var[ 'content' ] = $form;
+            $this->html->var[ 'content' ] = '错误：短信正文需最少5个字母或3个汉字。';
+            return;
          }
-         else
+
+         $pm = new PrivMsg();
+         $pm->fromUID = $this->request->uid;
+         $pm->toUID = $user->id;
+         $pm->body = $this->request->post[ 'body' ];
+         $pm->time = $this->request->timestamp;
+         $pm->add();
+         $pm->msgID = $pm->id;
+         $pm->update( 'msgID' );
+
+         $mailer = new Mailer();
+         $mailer->to = $user->email;
+         $mailer->subject = $user->username . ' 您有一封新的站内短信';
+         $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://www.houstonbbs.com/pm/' . $pm->id;
+         if ( !$mailer->send() )
          {
-            // save pm to database
-            if ( \strlen( $this->request->post[ 'body' ] ) < 5 )
-            {
-               $this->html->var[ 'content' ] = '错误：短信正文需最少5个字母或3个汉字。';
-               return;
-            }
-
-            $pm = new PrivMsg();
-            $pm->fromUID = $this->request->uid;
-            $pm->toUID = $user->id;
-            $pm->body = $this->request->post[ 'body' ];
-            $pm->time = $this->request->timestamp;
-            $pm->add();
-            $pm->msgID = $pm->id;
-            $pm->update( 'msgID' );
-
-            $user->load( 'username,email' );
-            $mailer = new Mailer();
-            $mailer->to = $user->email;
-            $mailer->subject = $user->username . ' 您有一封新的站内短信';
-            $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://www.houstonbbs.com/pm/' . $pm->id;
-            if ( !$mailer->send() )
-            {
-               $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
-            }
-
-            $this->html->var[ 'content' ] = '您的短信已经发送给用户 <i>' . $user->username . '</i>';
+            $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
          }
-      }
-   }
 
-   protected function _getPager( $pmCount, $link )
-   {
-      $pageNo = $this->request->get[ 'page' ] ? (int) $this->request->get[ 'page' ] : 1;
-      $pageCount = \ceil( $pmCount / self::PM_PER_PAGE );
-
-      if ( $pageNo < 1 || $pageNo > $pageCount )
-      {
-         $pageNo = $pageCount;
+         $this->html->var[ 'content' ] = '您的短信已经发送给用户 <i>' . $user->username . '</i>';
       }
-      return [
-         $pageNo,
-         $this->html->pager( $pageNo, $pageCount, $link )
-      ];
    }
 
 }

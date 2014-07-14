@@ -135,11 +135,15 @@ class WebApp extends App
       $session->close();
 
       $html = (string) $html;
-
+      
       // output page content
       \header( 'Content-Type: text/html; charset=UTF-8' );
       echo $html;
       \flush();
+      \fastcgi_finish_request();
+
+      // FINISH request process,
+      // do heavy clean up here
 
       if ( Template::getStatus() === TRUE )
       {

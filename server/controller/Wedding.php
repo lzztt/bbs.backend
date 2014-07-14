@@ -87,3 +87,5 @@ abstract class Wedding extends Controller
    }
 
 }
+
+//__END_OF_FILE__
