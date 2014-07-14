@@ -182,4 +182,5 @@ class Tag extends DBObject
     }
 
 }
-?>
+
+//__END_OF_FILE__

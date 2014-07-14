@@ -20,7 +20,7 @@ class RegisterCtrler extends User
       if ( empty( $this->request->post ) )
       {
 
-         $this->html->var[ 'content' ] = new Template( 'user_register', ['captcha' => '/captcha/' . \mt_rand() ] );
+         $this->html->var[ 'content' ] = new Template( 'user_register', ['captcha' => '/captcha/' . \mt_rand(), 'userLinks' => $this->_getUserLinks( '/user/register' ) ] );
       }
       else
       {
@@ -56,7 +56,7 @@ class RegisterCtrler extends User
          {
             $user->add();
          }
-         catch (\PDOException $e)
+         catch ( \PDOException $e )
          {
             $this->logger->error( $e->getMessage(), $e->getTrace() );
             $this->error( $e->errorInfo[ 2 ] );
@@ -67,7 +67,7 @@ class RegisterCtrler extends User
          $mailer->subject = $user->username . ' 的HoustonBBS账户激活和设置密码链接';
          $contents = [
             'username' => $user->username,
-            'uri' => $this->_createUser( $user->id, '/user/activate' ),
+            'uri' => $this->_createSecureLink( $user->id, '/user/activate' ),
             'sitename' => 'HoustonBBS'
          ];
          $mailer->body = new Template( 'mail/newuser', $contents );

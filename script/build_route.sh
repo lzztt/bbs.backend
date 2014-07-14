@@ -50,6 +50,7 @@ cat >> $tmp_file <<'EOF'
    ];
 
 }
+
 //__END_OF_FILE__
 EOF
 

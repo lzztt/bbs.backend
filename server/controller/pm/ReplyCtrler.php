@@ -32,7 +32,7 @@ class ReplyCtrler extends PM
       }
 
       $pm = new PrivMsg();
-      $pm->topicID = $topicID;
+      $pm->msgID = $topicID;
       $pm->fromUID = $this->request->uid;
       $pm->toUID = $user->id;
       $pm->body = $this->request->post[ 'body' ];
@@ -42,7 +42,7 @@ class ReplyCtrler extends PM
       $mailer = new Mailer();
       $mailer->to = $user->email;
       $mailer->subject = $user->username . ' 您有一封新的站内短信';
-      $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://www.houstonbbs.com/pm/' . $pm->topicID;
+      $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://www.houstonbbs.com/pm/' . $pm->msgID;
       if ( !$mailer->send() )
       {
          $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );

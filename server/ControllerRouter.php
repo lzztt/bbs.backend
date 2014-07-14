@@ -45,16 +45,15 @@ class ControllerRouter extends ControllerFactory
       'node/ajax'         =>  'site\\controller\\node\\AJAXCtrler',
       'node/comment'      =>  'site\\controller\\node\\CommentCtrler',
       'node/delete'       =>  'site\\controller\\node\\DeleteCtrler',
-      'node/display'      =>  'site\\controller\\node\\DisplayCtrler',
       'node/edit'         =>  'site\\controller\\node\\EditCtrler',
       'node/tag'          =>  'site\\controller\\node\\TagCtrler',
-      'password'          =>  'site\\controller\\password\\PasswordCtrler',
       'password/change'   =>  'site\\controller\\password\\ChangeCtrler',
       'password/forget'   =>  'site\\controller\\password\\ForgetCtrler',
       'password/reset'    =>  'site\\controller\\password\\ResetCtrler',
       'phpinfo'           =>  'site\\controller\\phpinfo\\PHPInfoCtrler',
       'pm'                =>  'site\\controller\\pm\\PMCtrler',
       'pm/delete'         =>  'site\\controller\\pm\\DeleteCtrler',
+      'pm/mailbox'        =>  'site\\controller\\pm\\MailBoxCtrler',
       'pm/reply'          =>  'site\\controller\\pm\\ReplyCtrler',
       'schools'           =>  'site\\controller\\schools\\SchoolsCtrler',
       'search'            =>  'site\\controller\\search\\SearchCtrler',
@@ -96,4 +95,5 @@ class ControllerRouter extends ControllerFactory
    ];
 
 }
+
 //__END_OF_FILE__

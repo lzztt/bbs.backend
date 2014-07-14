@@ -72,3 +72,5 @@ class ControllerFactory
    }
 
 }
+
+//__END_OF_FILE__

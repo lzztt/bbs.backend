@@ -8,9 +8,6 @@ namespace site\dbobject;
 
 use lzx\db\DBObject;
 use lzx\db\DB;
-use lzx\core\Mailer;
-use lzx\core\Logger;
-use site\dbobject\User;
 
 /**
  *

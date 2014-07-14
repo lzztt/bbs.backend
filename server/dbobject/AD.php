@@ -46,4 +46,4 @@ class AD extends DBObject
 
 }
 
-?>
+//__END_OF_FILE__
