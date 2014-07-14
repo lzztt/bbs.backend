@@ -17,18 +17,15 @@ class EditCtrler extends User
          $this->_displayLogin( $this->request->uri );
       }
 
-      $uid = $this->id ? $this->id : $this->request->uid;
-
-      if ( $this->request->uid != $uid && $this->request->uid != self::ADMIN_UID )
+      if ( $this->id && $this->id != $this->request->uid )
       {
          $this->request->pageForbidden();
       }
 
-      $u = new UserObject();
+      $u = new UserObject( $this->request->uid, NULL );
 
       if ( empty( $this->request->post ) )
       {
-         $u->id = $uid;
          $u->load();
 
          if ( $u->exists() )
@@ -45,8 +42,7 @@ class EditCtrler extends User
                $bday = \substr( $birthday, 6, 2 );
             }
 
-            $currentURI = '/user/' . $uid . '/edit';
-            $userLinks = $this->_getUserLinks( $uid, $currentURI );
+            $userLinks = $this->_getUserLinks( '/user/' . $user->id . '/edit' );
             $info = [
                'action' => $currentURI,
                'userLinks' => $userLinks,
@@ -75,8 +71,6 @@ class EditCtrler extends User
       }
       else
       {
-         $u->id = $uid;
-
          $file = $this->request->files[ 'avatar' ][ 0 ];
          if ( $file[ 'error' ] == 0 && $file[ 'size' ] > 0 )
          {
@@ -88,7 +82,7 @@ class EditCtrler extends User
             }
             else
             {
-               $avatar = '/data/avatars/' . $uid . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[ 2 ] );
+               $avatar = '/data/avatars/' . $user->id . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[ 2 ] );
                \move_uploaded_file( $file[ 'tmp_name' ], $this->config->path[ 'file' ] . $avatar );
                $u->avatar = $avatar;
             }

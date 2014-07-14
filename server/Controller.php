@@ -167,7 +167,7 @@ abstract class Controller extends LzxCtrler
       {
          $this->_setLoginRedirect( $redirect );
       }
-      $this->html->var[ 'content' ] = new Template( 'user_login' );
+      $this->html->var[ 'content' ] = new Template( 'user_login', ['userLinks' => $this->_getUserLinks( '/user/login' ) ] );
       $this->request->pageExit( $this->html );
    }
 
@@ -267,6 +267,32 @@ abstract class Controller extends LzxCtrler
       }
 
       return [$pageNo, $pageCount ];
+   }
+
+   protected function _getUserLinks( $activeLink )
+   {
+      if ( $this->request->uid )
+      {
+         // user
+         return $this->html->linkList( [
+               '/user/' . $this->request->uid => '用户首页',
+               '/pm/mailbox' => '站内短信',
+               '/user/' . $this->request->uid . '/edit' => '编辑个人资料',
+               '/password/' . $this->request->uid . '/change' => '更改密码'
+               ], $activeLink
+         );
+      }
+      else
+      {
+         // guest
+         return $this->html->linkList( [
+               '/user/login' => '登录',
+               '/user/register' => '创建新帐号',
+               '/password/forget' => '忘记密码',
+               '/user/username' => '忘记用户名'
+               ], $activeLink
+         );
+      }
    }
 
 }
