@@ -129,47 +129,6 @@ abstract class User extends Controller
       return new HTMLElement( 'div', [$recent_topics, $recent_comments ], ['class' => 'user_recent_topics' ] );
    }
 
-   protected function _getUserLinks( $uid, $activeLink )
-   {
-      if ( $this->request->uid )
-      {
-         // self or admin
-         if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
-         {
-            return $this->html->linkList( [
-                  '/user/' . $uid => '用户首页',
-                  '/user/' . $uid . '/pm' => '站内短信',
-                  '/user/' . $uid . '/edit' => '编辑个人资料',
-                  '/password/' . $uid . '/change' => '更改密码'
-                  ], $activeLink
-            );
-         }
-      }
-      else
-      {
-         // guest
-         return $this->html->linkList( [
-               '/user/login' => '登录',
-               '/user/register' => '创建新帐号',
-               '/password/reset' => '重设密码',
-               '/user/username' => '忘记用户名'
-               ], $activeLink
-         );
-      }
-   }
-
-   protected function _getMailBoxLinks( $uid, $activeLink )
-   {
-      if ( $this->request->uid == $uid || $this->request->uid == self::ADMIN_UID )
-      {
-         return $this->html->linkList( [
-               '/user/' . $uid . '/pm/inbox' => '收件箱',
-               '/user/' . $uid . '/pm/sent' => '发件箱'
-               ], $activeLink
-         );
-      }
-   }
-
 }
 
 //__END_OF_FILE__

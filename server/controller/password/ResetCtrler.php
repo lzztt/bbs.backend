@@ -28,10 +28,14 @@ class ResetCtrler extends Password
       {
          // check if the referer page is a secure link page
          $slink = $this->_getSecureLink( $this->request->referer );
-         // referer is not a secure link either, or not stored in session
-         if ( !$slink || $this->request->referer != $this->session->secureLink )
+         // referer is not a secure link either
+         if ( !$slink )
          {
-            $this->error( '无效的网址链接!' );
+            // we don't have a secure link stored in session, or have one but not the referer
+            if ( !$this->session->secureLink || $this->request->referer != $this->session->secureLink )
+            {
+               $this->error( '无效的网址链接!' );
+            }
          }
       }
 
@@ -49,9 +53,30 @@ class ResetCtrler extends Password
             $this->error( '请输入密码!' );
          }
 
-         $user = new User( $slink->uid, NULL );
-         $user->password = $user->hashPW( $this->request->post[ 'password' ] );
-         $user->update( 'password' );
+         $user = new User( $slink->uid, 'password,status' );
+
+         if ( !$user->exists() )
+         {
+            $this->error( '用户不存在，无法重设密码' );
+         }
+
+         if ( $user->status === 0 )
+         {
+            $this->error( '用户被封禁，无法重设密码' );
+         }
+
+         // new user activation
+         if ( $user->status === NULL && $user->password === NULL )
+         {
+            $user->status = 1;
+            $user->password = $user->hashPW( $this->request->post[ 'password' ] );
+            $user->update( 'password,status' );
+         }
+         else
+         {
+            $user->password = $user->hashPW( $this->request->post[ 'password' ] );
+            $user->update( 'password' );
+         }
 
          unset( $this->session->secureLink );
          $slink->delete();

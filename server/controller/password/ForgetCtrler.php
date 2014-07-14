@@ -20,7 +20,7 @@ class ForgetCtrler extends Password
 
       if ( empty( $this->request->post ) )
       {
-         $this->html->var[ 'content' ] = new Template( 'password_forget' );
+         $this->html->var[ 'content' ] = new Template( 'password_forget', [ 'userLinks' => $this->_getUserLinks( '/password/forget' ) ] );
       }
       else
       {
