@@ -21,11 +21,13 @@ class DB
    // Singleton methord for each database
    public static function getInstance( array $config = [] )
    {
+      // no config
       if ( \count( $config ) == 0 && \count( self::$instances ) > 0 )
       {
          return \end( self::$instances );
       }
 
+      // only has dsn
       if ( \count( $config ) == 1 && \array_key_exists( 'dsn', $config ) && \array_key_exists( $config['dsn'], self::$instances ) )
       {
          return self::$instances[$config['dsn']];

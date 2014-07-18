@@ -2,30 +2,68 @@
 
 namespace site;
 
-/**
- * Description of SegmentCache
- *
- * @author ikki
- */
-class SegmentCache
+use site\Cache;
+
+class SegmentCache extends Cache
 {
 
    static public $path = '/tmp/www.houstonbbs.com/private';
-   protected $key;
-   protected $data;
+   static protected $format = '.txt';
 
-   public function __construct( $key )
-   {
-      $this->key = $key;
-   }
-
+   /**
+    * fetch segment data from cache
+    * @return boolean
+    */
    public function fetch()
    {
-      if( $this->data )
+      if ( !self::$status )
+      {
+         return FALSE;
+      }
+
+      if ( $this->data )
       {
          return $this->data;
       }
-      
+
+      return $this->_fetchFromFile();
+   }
+
+   public function flush()
+   {
+      if ( self::$status )
+      {
+         // unlink exiting parent cache nodes
+         $this->_unlinkParents( $this->key );
+
+         // update self
+         if ( $this->isDeleted )
+         {
+            // delete self
+            $this->_deleteDataFile();
+         }
+         else
+         {
+            if ( $this->data )
+            {
+               // save self
+               $this->_writeDataFile( $this->data );
+
+               // link to current parent nodes
+               foreach ( $this->parents as $p )
+               {
+                  $this->_saveMap( $p, $this->key );
+               }
+            }
+         }
+
+         // delete(flush) child cache nodes
+         $this->_deleteChildren();
+      }
+   }
+
+   public function _fetchFromFile()
+   {
       $file = $this->_getFileName();
       try
       {
@@ -37,38 +75,6 @@ class SegmentCache
          $this->logger->warn( 'Could not read from file [' . $file . ']: ' . $e->getMessage() );
          return FALSE;
       }
-   }
-
-   public function store( $data )
-   {
-      $this->data = (string) $data;
-   }
-   
-   public function addMap( $cachekey )
-   {
-      
-   }
-
-   public function flush()
-   {
-      $this->_saveToFile();
-   }
-
-   protected function _saveToFile()
-   {
-      \file_put_contents( $this->_getFileName(), $this->data, \LOCK_EX );
-   }
-
-   protected function _getFileName()
-   {
-      static $_filename;
-      
-      if( !$_filename )
-      {
-         $_filename = self::$path . '/' . \preg_replace( '/[^0-9a-z\.\_\-]/i', '_', $_key ) . '.txt';
-      }
-      
-      return $_filename;
    }
 
 }
