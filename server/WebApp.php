@@ -129,17 +129,25 @@ class WebApp extends App
       $html = new Template( 'html' );
       $html->var[ 'domain' ] = $this->config->domain;
 
-      $ctrler = ControllerRouter::create( $request, $html, $this->config, $this->logger, $cache, $session, $cookie );  
+      $ctrler = ControllerRouter::create( $request, $html, $this->config, $this->logger, $cache, $session, $cookie );
       $ctrler->run();
 
       $session->close();
 
       $html = (string) $html;
-      
+
       // output page content
       \header( 'Content-Type: text/html; charset=UTF-8' );
       echo $html;
       \flush();
+
+      if ( $this->config->stage !== Config::STAGE_PRODUCTION ) // DEV or TEST stage
+      {
+         echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
+         echo $userinfo . \PHP_EOL;
+         echo \print_r( $db->queries, TRUE ) . '</pre>';
+      }
+
       \fastcgi_finish_request();
 
       // FINISH request process,
@@ -148,13 +156,6 @@ class WebApp extends App
       if ( Template::getStatus() === TRUE )
       {
          $cache->storePage( $html );
-      }
-
-      if ( $this->config->stage !== Config::STAGE_PRODUCTION ) // DEV or TEST stage
-      {
-         echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
-         echo $userinfo . \PHP_EOL;
-         echo \print_r( $db->queries, TRUE ) . '</pre>';
       }
    }
 
