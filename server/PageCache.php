@@ -2,80 +2,83 @@
 
 namespace site;
 
+use site\Cache;
+
 /**
- * Description of PageCache
- *
- * @author ikki
+ * @property string $uri URI key for page cache
+ * @property \site\SegmentCache "[]" $segments segments for page cache
+ * @property string $data caching data
+ * @property \lzx\db\DB $_db cache tree database
  */
-class PageCache
+class PageCache extends Cache
 {
 
    static public $path = '/tmp/www.houstonbbs.com/public';
-   protected $uri;
-   protected $segments;
-   protected $data;
-
-   public function __construct( $uri )
-   {
-      $this->uri = $uri;
-      $this->segments = [ ];
-   }
-
-   public function store( $data )
-   {
-      $this->data = $data;
-   }
+   static protected $format = '.html.gz';
+   protected $segments = [ ];
 
    /**
     * 
     * @param type $key
     * @return SegmentCache
     */
-   public function fetchSegment( $key )
+   public function getSegment( $key )
    {
-      if ( !\array_key_exists( $key, $this->segments ) )
+      $cleanKey = $this->_getCleanKey( $key );
+
+      if ( !\array_key_exists( $cleanKey, $this->segments ) )
       {
-         $this->segments[ $key ] = new SegmentCache( $key );
+         $this->segments[ $cleanKey ] = new SegmentCache( $key );
       }
-      return $this->segments[ $key ];
+
+      return $this->segments[ $cleanKey ];
    }
 
    public function flush()
    {
-      // fluch page cache
-      $this->_saveToFile();
-
-      // flush all segments
-      foreach ( $this->segments as $seg )
+      if ( self::$status )
       {
-         $seg->flush();
-         
-         // save cache map
+         // unlink exiting parent cache nodes
+         $this->_unlinkParents( $this->key );
+
+         // update self
+         if ( $this->isDeleted )
+         {
+            // delete self
+            $this->_deleteDataFile();
+         }
+         else
+         {
+            if ( $this->data )
+            {
+               // save (flush) all segments first
+               foreach ( $this->segments as $seg )
+               {
+                  $seg->flush();
+               }
+
+               // save self
+               // gzip data for public cache file used by webserver
+               // use 6 as default and equal to webserver gzip compression level
+               $this->_writeDataFile( \gzencode( $this->data, 6 ) );
+
+               // link to current parent nodes
+               foreach ( $this->parents as $p )
+               {
+                  $this->_saveMap( $p, $this->key );
+               }
+
+               // link to its segments as parent nodes
+               foreach ( \array_keys( $this->segments ) as $p )
+               {
+                  $this->_saveMap( $p, $this->key );
+               }
+            }
+         }
+
+         // flush/delete child cache nodes
+         $this->_deleteChildren();
       }
-      
-      
-   }
-   
-   protected function _saveMap()
-   {
-      
-   }
-
-   protected function _saveToFile()
-   {
-      \file_put_contents( $this->_getFileName(), $this->data, \LOCK_EX );
-   }
-
-   protected function _getFileName()
-   {
-      static $_filename;
-
-      if ( !$_filename )
-      {
-         $_filename = self::$path . ( \strpos( $uri, '?' ) ? \str_replace( '?', '#', $uri ) : ($uri . '#') ) . '.html.gz';
-      }
-
-      return $_filename;
    }
 
 }
