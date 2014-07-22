@@ -26,8 +26,8 @@ class Config
 
    public function __construct()
    {
-      $this->stage = self::STAGE_DEVELOPMENT;
-      //$this->stage = self::STAGE_PRODUCTION;
+      //$this->stage = self::STAGE_DEVELOPMENT;
+      $this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
       $this->cache = FALSE;
 
@@ -52,7 +52,8 @@ class Config
          'default' => 'default',
          'wedding' => 'wedding',
          'wedding2' => 'wedding2',
-         'adm' => 'adm'
+         'adm' => 'adm',
+         'single' => 'single'
       ];
       $this->cookie = [
          //'path' => '/',
