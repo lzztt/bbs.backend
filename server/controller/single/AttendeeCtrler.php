@@ -14,14 +14,23 @@ class AttendeeCtrler extends Single
    // private attendee info
    public function run()
    {
+      // login first
+      if ( !$this->session->loginStatus )
+      {
+         $this->_displayLogin();
+         return;
+      }
+
+      // logged in    
       if ( TRUE )//$this->request->timestamp < strtotime( "09/16/2013 22:00:00 CDT" ) )
       {
-         $db = $this->db;
+         $a = \array_pop( $this->db->query( 'CALL get_latest_single_activity()' ) );
+
          $content = [
-            'attendees' => $db->query( 'CALL get_attendees_single(' . $this->thirty_two_start . ')' )
+            'attendees' => $this->db->query( 'CALL get_attendees_single(' . $a[ 'id' ] . ')' )
          ];
 
-         $this->html->var[ 'content' ] = new Template( 'FFattendee', $content );
+         $this->html->var[ 'content' ] = new Template( 'attendees', $content );
       }
       else
       {
