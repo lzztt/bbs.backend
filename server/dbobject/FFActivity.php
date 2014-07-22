@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DBObject;
@@ -11,24 +7,22 @@ use lzx\db\DB;
 
 /**
  * @property $id
- * @property $aid
  * @property $name
- * @property $body
  * @property $time
+ * @property $nid
  */
-class FFComment extends DBObject
+class FFActivity extends DBObject
 {
 
-   public function __construct( $id = null, $properties = '' )
+   public function __construct( $id = NULL, $properties = '' )
    {
       $db = DB::getInstance();
-      $table = 'ff_comments';
+      $table = 'ff_activities';
       $fields = [
          'id' => 'id',
-         'aid' => 'aid',
          'name' => 'name',
-         'body' => 'body',
-         'time' => 'time'
+         'time' => 'time',
+         'nid' => 'nid'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
