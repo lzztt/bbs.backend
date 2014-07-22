@@ -1,28 +1,49 @@
-<table>
-   <tbody>
-      <tr>
-         <th>姓名</th>
-         <th>桌号</th>
-         <th>人数</th>
-         <th>电子邮箱</th>
-         <th>电话</th>
-         <th>时间</th>
-         <th>签到</th>
-      </tr>
-      <?php foreach ( $tables as $i => $guests ): ?>
-         <?php foreach ( $guests as $g ): ?>
-            <tr>
-               <td><?php echo $g[ 'name' ]; ?></td>
-               <td><?php echo $g[ 'tid' ]; ?></td>
-               <td><?php echo $g[ 'guests' ]; ?></td>
-               <td><?php echo $g[ 'email' ]; ?></td>     
-               <td><?php echo $g[ 'phone' ]; ?></td>
-               <td><?php echo \date( 'm/d/Y', $g[ 'time' ] ); ?></td>
-               <td><?php echo $g[ 'checkin' ] ? \date( 'm/d/Y H:m:s', $g[ 'checkin' ] ) : ''; ?></td>
+   <table id="attendees">
+      <tbody><tr>
+            <th></th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>电子邮箱</th>
+            <th>报名时间</th>
+            <th>留言</th>
+         </tr>
+         <?php foreach ( $attendees as $i => $a ): ?>
+            <tr <?php print ($i % 2 == 0) ? '' : 'class="alt"'; ?> >
+               <td><?php print $i + 1; ?></td>
+               <td><?php print $a[ 'name' ]; ?></td>
+               <td><?php print $a[ 'sex' ] ? '男' : '女'; ?></td>
+               <td><?php print $a[ 'email' ]; ?></td>
+               <td><?php print date( 'm/d H:i', $a[ 'time' ] ); ?></td>
+               <td style="width: 40%"><?php print nl2br( $a[ 'body' ] ); ?></td>
             </tr>
          <?php endforeach; ?>
-            <tr style="background-color: gold;"><td colspan="10">人数：<?php print $counts[ $i ]; ?></td></tr>
-      <?php endforeach; ?>
-      <tr style="background-color: #A7C942;"><td colspan="10">总人数：<?php print $total; ?></td></tr>
-   </tbody>
-</table>
+      </tbody>
+   </table>
+
+<style type="text/css">
+   #attendees {
+      border-collapse: collapse;
+      font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+      width: 100%;
+      background: pink;
+   }
+
+   #attendees th {
+      background-color: #A7C942;
+      color: #FFFFFF;
+      font-size: 1.4em;
+      padding-bottom: 4px;
+      padding-top: 5px;
+      text-align: left;
+   }
+
+   #attendees td, #attendees th {
+      border: 1px solid #98BF21;
+      padding: 3px 7px 2px;
+   }
+
+   #attendees tr.alt td {
+      background-color: #EAF2D3;
+      color: #000000;
+   }
+</style>

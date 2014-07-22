@@ -35,6 +35,9 @@ abstract class Single extends Controller
       }
 
       $this->db = DB::getInstance();
+
+      // set template $min varible for JS and CSS
+      $this->html->var[ 'min' ] = $this->config->stage === Config::STAGE_PRODUCTION ? TRUE : FALSE;
    }
 
    /**
@@ -148,6 +151,21 @@ abstract class Single extends Controller
       $ffcomments->aid = $aid;
       $ffcomments->order( 'id', $order );
       return new Template( 'comments', ['comments' => $ffcomments->getList() ] );
+   }
+
+   protected function _displayLogin()
+   {
+      $defaultRedirect = '/single/attendee';
+      if ( $this->request->referer && $this->request->referer !== '/single/login' )
+      {
+         $this->session->loginRedirect = $this->request->referer;
+      }
+      else
+      {
+         $this->session->loginRedirect = $defaultRedirect;
+      }
+
+      $this->html->var[ 'content' ] = new Template( 'login', ['uri' => $this->request->uri ] );
    }
 
 }
