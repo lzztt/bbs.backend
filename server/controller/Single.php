@@ -19,10 +19,6 @@ use lzx\db\DB;
 abstract class Single extends Controller
 {
 
-   protected $tea_start = '2011-08-21';
-   protected $rich_start = '2012-03-11';
-   protected $thirty_start = '2013-03-19';
-   protected $thirty_two_start = '2013-08-16';
    protected $db;
 
    public function __construct( Request $req, Template $html, Config $config, Logger $logger, Cache $cache, Session $session, Cookie $cookie )
@@ -31,12 +27,14 @@ abstract class Single extends Controller
       // don't cache user page at page level
       $this->cache->setStatus( FALSE );
 
-      $this->db = DB::getInstance();
+      Template::$theme = $this->config->theme[ 'single' ];
 
-      $this->tea_start = \strtotime( $this->tea_start );
-      $this->rich_start = \strtotime( $this->rich_start );
-      $this->thirty_start = \strtotime( $this->thirty_start );
-      $this->thirty_two_start = \strtotime( $this->thirty_two_start );
+      if ( $this->session->loginStatus !== TRUE && \file_exists( '/tmp/single' ) )
+      {
+         $this->_register_end = TRUE;
+      }
+
+      $this->db = DB::getInstance();
    }
 
    /**
@@ -45,88 +43,32 @@ abstract class Single extends Controller
     */
    public function update( \SplSubject $html )
    {
-      $html->tpl = 'FindYouFindMe';
-
-      $html->var[ 'header' ] = new Template( 'FFpage_header' );
-      $html->var[ 'footer' ] = $this->_footer();
+      
    }
 
-
-   /**
-    * 
-    * protected methods
-    */
-   protected function _getImageSlider()
+   protected function _getChart( $activity )
    {
-      $images = [
+      $data = $this->_getAgeStatJSON( $activity[ 'id' ] );
+
+      $stat = [
          [
-            'path' => '/data/fyfm/13118198981266.png',
-            'name' => '薄荷'
+            'title' => $activity[ 'name' ] . ' 女生 (' . $data[ 0 ][ 'total' ] . ')人',
+            'data' => $data[ 0 ][ 'json' ],
+            'div_id' => 'stat_' . $activity[ 'id' ] . '_female'
          ],
          [
-            'path' => '/data/fyfm/13118268141266.png',
-            'name' => '七夕'
-         ],
-         [
-            'path' => '/data/fyfm/13118224061268.png',
-            'name' => '吉娃莲'
-         ],
-         [
-            'path' => '/data/fyfm/13119630681266.png',
-            'name' => '凡凡觅友'
+            'title' => $activity[ 'name' ] . ' 男生 (' . $data[ 1 ][ 'total' ] . ')人',
+            'data' => $data[ 1 ][ 'json' ],
+            'div_id' => 'stat_' . $activity[ 'id' ] . '_male'
          ],
       ];
 
-      \shuffle( $images );
-
-      $content[ 'images' ] = $images;
-      return new Template( 'image_slider', $content );
+      return new Template( 'chart', ['stat' => $stat ] );
    }
 
-   protected function _addComment()
+   protected function _getAgeStatJSON( $aid )
    {
-      if ( strlen( $this->request->post[ 'comment' ] ) < 5 )
-      {
-         return '<span style="color:#B22222">错误</span>: 留言字数最少为5个字符';
-      }
-
-
-      $comment = new FFComment();
-
-      if ( $this->request->post[ 'anonymous' ] || empty( $this->request->post[ 'name' ] ) )
-      {
-         $comment->name = $this->request->ip;
-      }
-      else
-      {
-         $comment->name = $this->request->post[ 'name' ];
-      }
-
-      $comment->body = $this->request->post[ 'comment' ];
-      $comment->time = $this->request->timestamp;
-      $comment->add();
-
-      $output = '谢谢您的留言，请点击这里<a class="commentViewButton" style="color:#A0522D" href="#">查看所有留言</a>'
-         . '<script type="text/javascript">$("#footer").load("/single/footer");</script>';
-      return $output;
-   }
-
-   protected function _viewComment()
-   {
-      $db = $this->db;
-      $comments = $db->query( 'CALL get_attendee_comments_single(' . $this->thirty_two_start . ',' . $this->request->timestamp . ')' );
-      $comments_thirty = $db->query( 'CALL get_attendee_comments_single(' . $this->thirty_start . ',' . $this->thirty_two_start . ')' );
-      $comments_rich = $db->query( 'CALL get_attendee_comments_single(' . $this->rich_start . ',' . $this->thirty_start . ')' );
-      $comments_tea = $db->query( 'CALL get_attendee_comments_single(' . $this->tea_start . ',' . $this->rich_start . ')' );
-      $comments_qixi = $db->query( 'CALL get_attendee_comments_single(0,' . $this->tea_start . ')' );
-
-      return new Template( 'FFview_comment', [ 'comments' => $comments, 'comments_thirty' => $comments_thirty, 'comments_rich' => $comments_rich, 'comments_tea' => $comments_tea, 'comments_qixi' => $comments_qixi ] );
-   }
-
-   protected function _getAgeStatJSON( $startTime, $endTime )
-   {
-      $db = $this->db;
-      $counts = $db->query( 'CALL get_age_stat_single(' . $startTime . ',' . $endTime . ')' );
+      $counts = $this->db->query( 'CALL get_age_stat_single(' . $aid . ')' );
       $ages = [
          '<=22' => 0,
          '23~25' => 0,
@@ -148,12 +90,11 @@ abstract class Single extends Controller
          1 => 0
       ];
 
-
       foreach ( $counts as $c )
       {
          $sex = (int) $c[ 'sex' ];
 
-         $total[ $sex ] += $c[ 'count' ];
+         $total[ $sex ] += (int) $c[ 'count' ];
 
          if ( $c[ 'age' ] < 23 )
          {
@@ -200,22 +141,13 @@ abstract class Single extends Controller
       return $stat;
    }
 
-   protected function _footer()
+   protected function _getComments( $aid, $order = 'DESC' )
    {
-      $c = \array_pop( $this->db->query( 'CALL get_stat_single(' . $this->thirty_two_start . ')' ) );
-      $r = [
-         'visitorCount' => $c[ 'visitor' ],
-         'hitCount' => $c[ 'hit' ],
-         'commentCount' => $c[ 'comment' ],
-         'attendeeCount' => $c[ 'male' ] + $c[ 'female' ],
-         'maleCount' => $c[ 'male' ],
-         'femaleCount' => $c[ 'female' ],
-         'subscriberCount' => $c[ 'subscriber' ],
-         'attendeeCount_prev' => 193,
-         'maleCount_prev' => 110,
-         'femaleCount_prev' => 83
-      ];
-      return new Template( 'FFpage_footer', $r );
+
+      $ffcomments = new FFComment();
+      $ffcomments->aid = $aid;
+      $ffcomments->order( 'id', $order );
+      return new Template( 'comments', ['comments' => $ffcomments->getList() ] );
    }
 
 }

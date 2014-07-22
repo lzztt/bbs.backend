@@ -14,15 +14,14 @@ class SingleCtrler extends Single
    // show activity details
    public function run()
    {
-      $vids = [ "fhFadSF2vrM", "eBXpRXt-5a8" ];
-      $vid = \mt_rand( 0, 100 ) % sizeof( $vids );
-      $content = [
-         'imageSlider' => $this->_getImageSlider(),
-         'vid' => $vids[ $vid ],
-      ];
-      $this->html->var[ 'content' ] = new Template( 'FFhome', $content );
+      $a = \array_pop( $this->db->query( 'CALL get_latest_single_activity()' ) );
 
-      $this->db->query( 'CALL update_view_count_single("' . \session_id() . '")' );
+      $this->html->var[ 'title' ] = $a[ 'name' ];
+      $this->html->var[ 'content' ] = new Template( 'home', [
+         'activity' => new Template( 'join_form', ['activity' => $a ] ),
+         'comments' => $this->_getComments( $a[ 'id' ] ),
+         'statistics' => $this->_getChart( $a )
+         ] );
    }
 
 }

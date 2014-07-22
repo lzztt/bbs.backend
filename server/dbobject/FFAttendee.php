@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DBObject;
@@ -11,6 +7,7 @@ use lzx\db\DB;
 
 /**
  * @property $id
+ * @property $aid
  * @property $name
  * @property $sex
  * @property $age
@@ -30,6 +27,7 @@ class FFAttendee extends DBObject
       $table = 'ff_attendees';
       $fields = [
          'id' => 'id',
+         'aid' => 'aid',
          'name' => 'name',
          'sex' => 'sex',
          'age' => 'age',
