@@ -13,6 +13,7 @@ use lzx\html\Template;
 use site\Config;
 use site\SessionHandler;
 use site\ControllerRouter;
+use site\PageCache;
 
 /**
  *
@@ -117,9 +118,10 @@ class WebApp extends App
       $request->uid = \intval( $session->uid );
 
       // start cache
-      $cache = Cache::getInstance( $this->config->path[ 'cache' ] );
-      $cache->setLogger( $this->logger );
-      $cache->setStatus( $this->config->cache );
+      PageCache::$path = $this->config->path[ 'cache' ] . '/public';
+      SegmentCache::$path = $this->config->path[ 'cache' ] . '/private';
+      PageCache::$status = $this->config->cache;
+      $cache = new PageCache( $request->uri );
 
       // start template
       Template::setLogger( $this->logger );
@@ -155,7 +157,8 @@ class WebApp extends App
 
       if ( Template::getStatus() === TRUE )
       {
-         $cache->storePage( $html );
+         $cache->store( $html );
+         $cache->flush();
       }
    }
 

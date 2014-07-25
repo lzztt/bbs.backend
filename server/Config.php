@@ -29,7 +29,7 @@ class Config
       $this->stage = self::STAGE_DEVELOPMENT;
       //$this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
-      $this->cache = FALSE;
+      $this->cache = TRUE;
 
       $this->path = [
          'server' => __DIR__,
