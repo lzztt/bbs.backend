@@ -8,6 +8,7 @@ use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Activity;
 use site\dbobject\Image;
+use site\SegmentCache;
 
 class HomeCtrler extends Home
 {
@@ -31,8 +32,8 @@ class HomeCtrler extends Home
 
    private function _getImageSlider()
    {
-      $cache_key = 'imageSlider';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'imageSlider' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $img = new Image();
@@ -42,21 +43,20 @@ class HomeCtrler extends Home
          $content[ 'images' ] = $images;
          $ul = new Template( 'image_slider', $content );
 
-         $this->cache->store( $cache_key, $ul );
+         $ulCache->store( $ul );
          foreach ( $images as $i )
          {
-            $this->cache->storeMap( '/node/' . $i[ 'nid' ], $cache_key );
+            $ulCache->addParent( '/node/' . $i[ 'nid' ] );
          }
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
       return $ul;
    }
 
    private function _getLatestForumTopics()
    {
-      $cache_key = 'latestForumTopics';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'latestForumTopics' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $node = new Node();
@@ -69,17 +69,16 @@ class HomeCtrler extends Home
             $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
             $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 34 );
          }
-         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
       return $ul;
    }
 
    private function _getHotForumTopics()
    {
-      $cache_key = 'hotForumTopics';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'hotForumTopics' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $node = new Node();
@@ -92,17 +91,17 @@ class HomeCtrler extends Home
             $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
             $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 36 );
          }
-         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
+
       return $ul;
    }
 
    private function _getLatestYellowPages()
    {
-      $cache_key = 'latestYellowPages';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'latestYellowPages' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $node = new Node();
@@ -115,17 +114,17 @@ class HomeCtrler extends Home
             $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
             $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 34 );
          }
-         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
+
       return $ul;
    }
 
    private function _getLatestImmigrationPosts()
    {
-      $cache_key = 'latestImmigrationPosts';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'latestImmigrationPosts' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $node = new Node();
@@ -138,17 +137,17 @@ class HomeCtrler extends Home
             $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
             $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 34 );
          }
-         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
+
       return $ul;
    }
 
    private function _getLatestForumTopicReplies()
    {
-      $cache_key = 'latestForumTopicReplies';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'latestForumTopicReplies' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $node = new Node();
@@ -161,17 +160,17 @@ class HomeCtrler extends Home
             $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ];
             $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 36 );
          }
-         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
+
       return $ul;
    }
 
    private function _getLatestYellowPageReplies()
    {
-      $cache_key = 'latestYellowPageReplies';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'latestYellowPageReplies' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $node = new Node();
@@ -184,17 +183,17 @@ class HomeCtrler extends Home
             $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ];
             $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 36 );
          }
-         $ul = $this->_linkNodeList( $arr, $cache_key, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
+
       return $ul;
    }
 
    private function _getRecentActivities()
    {
-      $cache_key = 'recentActivities';
-      $ul = $this->cache->fetch( $cache_key );
+      $ulCache = $this->cache->getSegment( 'recentActivities' );
+      $ul = $ulCache->fetch();
       if ( $ul === FALSE )
       {
          $activity = new Activity();
@@ -205,14 +204,14 @@ class HomeCtrler extends Home
             $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
             $arr[ $i ][ 'title' ] = '<span class="activity_' . $n[ 'class' ] . '">[' . date( 'm/d', $n[ 'start_time' ] ) . ']</span> ' . $this->html->truncate( $n[ 'title' ], 32 );
          }
-         $ul = $this->_linkNodeList( $arr, $cache_key );
+         $ul = $this->_linkNodeList( $arr, $ulCache );
       }
 
-      $this->cache->storeMap( $cache_key, '/' );
+
       return $ul;
    }
 
-   private function _linkNodeList( $arr, $cache_key, $rightTagKey = NULL )
+   private function _linkNodeList( $arr, SegmentCache $ulCache, $rightTagKey = NULL )
    {
       $links = [ ];
       if ( $rightTagKey )
@@ -233,10 +232,10 @@ class HomeCtrler extends Home
 
       $ul = (string) $this->html->ulist( $links );
 
-      $this->cache->store( $cache_key, $ul );
+      $ulCache->store( $ul );
       foreach ( $arr as $n )
       {
-         $this->cache->storeMap( '/node/' . $n[ 'nid' ], $cache_key );
+         $ulCache->addParent( '/node/' . $n[ 'nid' ] );
       }
 
       return $ul;

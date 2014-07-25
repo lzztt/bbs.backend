@@ -5,7 +5,6 @@ namespace lzx\core;
 use lzx\core\Request;
 use lzx\html\Template;
 use lzx\core\Logger;
-use lzx\core\Cache;
 use lzx\core\Session;
 use lzx\core\Cookie;
 
@@ -29,20 +28,18 @@ abstract class Controller implements \SplObserver
 
    protected static $l = [ ];
    public $logger;
-   public $cache;
    public $html;
    public $request;
    public $session;
    public $cookie;
    protected $class;
 
-   public function __construct(Request $req, Template $html, Logger $logger, Cache $cache, Session $session, Cookie $cookie)
+   public function __construct(Request $req, Template $html, Logger $logger, Session $session, Cookie $cookie)
    {
       $this->class = \get_class( $this );
       $this->request = $req;
       $this->html = $html;
       $this->logger = $logger;
-      $this->cache = $cache;
       $this->session = $session;
       $this->cookie = $cookie;
    }
