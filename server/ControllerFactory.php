@@ -6,7 +6,7 @@ use lzx\core\Request;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Cache;
+use site\PageCache;
 use lzx\core\Session;
 use lzx\core\Cookie;
 
@@ -21,7 +21,7 @@ class ControllerFactory
 
    protected static $_route = [ ];
 
-   public static function create( Request $req, Template $html, Config $config, Logger $logger, Cache $cache, Session $session, Cookie $cookie, $forwardURI = NULL )
+   public static function create( Request $req, Template $html, Config $config, Logger $logger, PageCache $cache, Session $session, Cookie $cookie, $forwardURI = NULL )
    {
       $id = NULL;
       $args = $req->getURIargs( $forwardURI ? $forwardURI : $req->uri  );

@@ -8,88 +8,103 @@ use lzx\db\DB;
  * Description of Cache
  *
  * @author ikki
- * @property \lzx\db\DB $db
+ * @property \lzx\db\DB $_db
  */
 abstract class Cache
 {
 
    static public $status;
    static public $path;
-   static protected $format;
-   protected $key;
-   protected $data;
-   protected $isDeleted = FALSE;
-   protected $parents = [ ];
-   protected $db;
+   static protected $_format;
+   static protected $_ids = [ ];
+   protected $_key;
+   protected $_data;
+   protected $_isDeleted = FALSE;
+   protected $_parents = [ ];
+   protected $_db;
+   protected $_id;
 
    /**
     * Factory design patern
     */
-   static public function getCache( $key )
+   static protected function _getCache( $key )
    {
       return $key[ 0 ] === '/' ? new PageCache( $key ) : new SegmentCache( $key );
    }
 
    public function __construct( $key )
    {
-      $this->key = $this->_getCleanKey( $key );
+      $this->_key = $this->_getCleanKey( $key );
+   }
+
+   public function getKey()
+   {
+      return $this->_key;
    }
 
    public function store( $data )
    {
-      $this->data = (string) $data;
+      $this->_data = (string) $data;
    }
 
    public function delete()
    {
       // clear data
-      $this->data = NULL;
-      $this->isDeleted = TRUE;
+      $this->_data = NULL;
+      $this->_isDeleted = TRUE;
    }
 
    public function addParent( $key )
    {
       $cleanKey = $this->_getCleanKey( $key );
-      if ( !\in_array( $cleanKey, $this->parents ) )
+      if ( $cleanKey && !\in_array( $cleanKey, $this->_parents ) )
       {
-         $this->parents[] = $cleanKey;
+         $this->_parents[] = $cleanKey;
       }
    }
 
    abstract public function flush();
 
-   protected function _rm( $path, $reportError = TRUE )
+   protected function _initDB()
    {
-      try
+      if ( !$this->_db )
       {
-         if ( !\is_dir( $path ) )
-         {
-            // remove file
-            \unlink( $path );
-         }
-         else
-         {
-            // remove all children
-            foreach ( \scandir( $path ) as $child )
-            {
-               if ( $child == '.' || $child == '..' )
-               {
-                  continue;
-               }
-               $this->_rm( $path . '/' . $child );
-            }
+         $this->_db = DB::getInstance();
+      }
+   }
 
-            // remove dir
-            \rmdir( $path );
-         }
-      }
-      catch ( \Exception $e )
+   protected function _getID( $key = NULL )
+   {
+      if ( !$key )
       {
-         if ( $reportError )
-         {
-            $this->logger->error( $e->getMessage() );
-         }
+         $key = $this->_key;
       }
+
+      // found from cached id
+      if ( \array_key_exists( $key, self::$_ids ) )
+      {
+         return self::$_ids[ $key ];
+      }
+
+      // found from database
+      $res = $this->_db->query( 'SELECT id FROM cache WHERE `key` = :key', [ ':key' => $key ] );
+      switch ( \count( $res ) )
+      {
+         case 0:
+            // add to database
+            $this->_db->query( 'INSERT INTO cache (`key`) VALUEs (:key)', [ ':key' => $key ] );
+            // save to id cache
+            self::$_ids[ $key ] = (int) $this->_db->insert_id();
+            break;
+         case 1:
+            // save to id cache
+            self::$_ids[ $key ] = (int) \array_pop( $res[ 0 ] );
+            break;
+         default :
+            throw new \Exception( 'SELECT Key error' );
+      }
+
+      return self::$_ids[ $key ];
    }
 
    protected function _getCleanKey( $key )
@@ -124,12 +139,12 @@ abstract class Cache
    {
       static $_filenames = [ ];
 
-      if ( !\array_key_exists( $this->key, $_filenames ) )
+      if ( !\array_key_exists( $this->_key, $_filenames ) )
       {
-         $_filename[ $this->key ] = static::$path . '/' . $this->key . static::$format;
+         $_filename[ $this->_key ] = static::$path . '/' . $this->_key . static::$_format;
       }
 
-      return $_filename[ $this->key ];
+      return $_filename[ $this->_key ];
    }
 
    protected function _deleteDataFile()
@@ -151,24 +166,49 @@ abstract class Cache
 
    protected function _deleteChildren()
    {
-      foreach ( $this->_getChildrenKeys() as $k )
+      if ( $this->_id )
       {
-         $cache = self::getCache( $k );
-         $cache->delete();
-         $cache->flush();
+         $children = $this->_db->query( 'SELECT id, `key` FROM cache WHERE id IN (SELECT cid FROM cache_tree WHERE pid = :pid)', [ ':pid' => $this->_id ] );
+         foreach ( $children as $c )
+         {
+            // cache ids
+            self::$_ids[ $c[ 'key' ] ] = $c[ 'id' ];
+
+            $cache = self::_getCache( $c[ 'key' ] );
+            $cache->delete();
+            $cache->flush();
+         }
       }
    }
 
-   protected function _unlinkParents( $key )
+   protected function _unlinkParents()
    {
-      $this->db->query( 'DELETE FROM cache_tree WHERE cid = (SELECT id FROM cache WHERE name = ' . $this->db->str( $key ) . ')' );
+      if ( $this->_id )
+      {
+         $this->_db->query( 'DELETE FROM cache_tree WHERE cid = :cid', [ ':cid' => $this->_id ] );
+      }
    }
 
-   protected function _saveMap( $pNode, $cNode )
+   // TODO
+   protected function _linkParents()
    {
-      foreach ( $this->segments as $s )
+      if ( $this->_parents )
       {
-         $this->_db->query( 'INSERT INTO cache_tree VALUES (:pid, :cid)', $pid, $cid );
+         \array_unique( $this->_parents );
+
+         $ids = [ ];
+         foreach ( $this->_parents as $key )
+         {
+            $ids[] = $this->_getID( $key );
+         }
+
+         $values = [ ];
+         foreach ( $ids as $pid )
+         {
+            $values[] = '(' . $pid . ',' . $this->_id . ')';
+         }
+
+         $this->_db->query( 'INSERT INTO cache_tree VALUES ' . \implode( ',', $values ) );
       }
    }
 

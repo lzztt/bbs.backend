@@ -1,10 +1,11 @@
-<?php
-
-foreach ( $tables as $i => $guests ):
-   echo '<div class="table"><div class="table_name">桌号: ' . $i . '</div>';
-   foreach ( $guests as $g ):
-      print '<div id="guest_' . $g[ 'id' ] . '" class="' . ($g[ 'checkin' ] ? 'confirmed' : 'guest') . '">' . $g[ 'name' ] . ' (' . $g[ 'guests' ] . ')</div>';
-   endforeach;
-   echo '</div>';
-endforeach;
-?>
+<div style="background-color: pink;">
+   <?php foreach ( $groups as $i => $attendees ): ?>
+      <div class="group"><h3><?php print $i ? '男生' : '女生'  ?></h3>
+         <?php foreach ( $attendees as $i => $a ): ?>
+            <div id="attendee_<?php print $a[ 'id' ]; ?>" class="attendee<?php print $a[ 'checkin' ] ? ' confirmed' : ''; ?>">
+               <span><?php print $i + 1; ?></span><?php print $a[ 'name' ]; ?>
+            </div>
+         <?php endforeach; ?>
+      </div>
+   <?php endforeach; ?>
+</div>

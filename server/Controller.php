@@ -11,7 +11,7 @@ use lzx\core\Request;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Cache;
+use site\PageCache;
 use lzx\core\Session;
 use lzx\core\Cookie;
 use site\ControllerRouter;
@@ -21,13 +21,13 @@ use site\dbobject\SecureLink;
 
 /**
  *
- * @property \lzx\Core\Cache $cache
  * @property \lzx\core\Logger $logger
  * @property \lzx\html\Template $html
  * @property \lzx\core\Request $request
  * @property \lzx\core\Session $session
  * @property \lzx\core\Cookie $cookie
  * @property \site\Config $config
+ * @property \site\PageCache $cache
  * @property \site\dbobject\User $user
  *
  */
@@ -41,14 +41,16 @@ abstract class Controller extends LzxCtrler
    public $args;
    public $id;
    public $config;
+   public $cache;
 
    /**
     * public methods
     */
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Cache $cache, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Template $html, Config $config, Logger $logger, PageCache $cache, Session $session, Cookie $cookie )
    {
-      parent::__construct( $req, $html, $logger, $cache, $session, $cookie );
+      parent::__construct( $req, $html, $logger, $session, $cookie );
       $this->config = $config;
+      $this->cache = $cache;
       if ( !\array_key_exists( $this->class, self::$l ) )
       {
          $lang_file = $lang_path . \str_replace( '\\', '/', $this->class ) . '.' . Template::$language . '.php';
@@ -84,7 +86,8 @@ abstract class Controller extends LzxCtrler
          }
 
          // set navbar
-         $navbar = $this->cache->fetch( 'page_navbar' );
+         $navbarCache = $this->cache->getSegment( 'page_navbar' );
+         $navbar = $navbarCache->fetch();
          if ( $navbar === FALSE )
          {
             $vars = [
@@ -93,7 +96,7 @@ abstract class Controller extends LzxCtrler
                'uid' => $this->request->uid
             ];
             $navbar = new Template( 'page_navbar', $vars );
-            $this->cache->store( 'page_navbar', $navbar );
+            $navbarCache->store( $navbar );
          }
          $html->var[ 'page_navbar' ] = $navbar;
 

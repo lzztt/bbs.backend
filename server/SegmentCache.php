@@ -8,7 +8,7 @@ class SegmentCache extends Cache
 {
 
    static public $path = '/tmp/www.houstonbbs.com/private';
-   static protected $format = '.txt';
+   static protected $_format = '.txt';
 
    /**
     * fetch segment data from cache
@@ -21,9 +21,9 @@ class SegmentCache extends Cache
          return FALSE;
       }
 
-      if ( $this->data )
+      if ( $this->_data )
       {
-         return $this->data;
+         return $this->_data;
       }
 
       return $this->_fetchFromFile();
@@ -33,27 +33,27 @@ class SegmentCache extends Cache
    {
       if ( self::$status )
       {
+         $this->_initDB();
+         $this->_id = $this->_getID();
+
          // unlink exiting parent cache nodes
-         $this->_unlinkParents( $this->key );
+         $this->_unlinkParents();
 
          // update self
-         if ( $this->isDeleted )
+         if ( $this->_isDeleted )
          {
             // delete self
             $this->_deleteDataFile();
          }
          else
          {
-            if ( $this->data )
+            if ( $this->_data )
             {
                // save self
-               $this->_writeDataFile( $this->data );
+               $this->_writeDataFile( $this->_data );
 
                // link to current parent nodes
-               foreach ( $this->parents as $p )
-               {
-                  $this->_saveMap( $p, $this->key );
-               }
+               $this->_linkParents();
             }
          }
 

@@ -16,6 +16,7 @@ use lzx\db\DB;
  * @property $guests
  * @property $time
  * @property $cid
+ * @property $checkin
  * @property $status
  */
 class FFAttendee extends DBObject
@@ -36,6 +37,7 @@ class FFAttendee extends DBObject
          'guests' => 'guests',
          'time' => 'time',
          'cid' => 'cid',
+         'checkin' => 'checkin',
          'status' => 'status'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
