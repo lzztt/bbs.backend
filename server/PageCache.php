@@ -14,8 +14,8 @@ class PageCache extends Cache
 {
 
    static public $path = '/tmp/www.houstonbbs.com/public';
-   static protected $format = '.html.gz';
-   protected $segments = [ ];
+   static protected $_format = '.html.gz';
+   protected $_segments = [ ];
 
    /**
     * 
@@ -26,33 +26,36 @@ class PageCache extends Cache
    {
       $cleanKey = $this->_getCleanKey( $key );
 
-      if ( !\array_key_exists( $cleanKey, $this->segments ) )
+      if ( !\array_key_exists( $cleanKey, $this->_segments ) )
       {
-         $this->segments[ $cleanKey ] = new SegmentCache( $key );
+         $this->_segments[ $cleanKey ] = new SegmentCache( $key );
       }
 
-      return $this->segments[ $cleanKey ];
+      return $this->_segments[ $cleanKey ];
    }
 
    public function flush()
    {
       if ( self::$status )
       {
+         $this->_initDB();
+         $this->_id = $this->_getID();
+
          // unlink exiting parent cache nodes
-         $this->_unlinkParents( $this->key );
+         $this->_unlinkParents();
 
          // update self
-         if ( $this->isDeleted )
+         if ( $this->_isDeleted )
          {
             // delete self
             $this->_deleteDataFile();
          }
          else
          {
-            if ( $this->data )
+            if ( $this->_data )
             {
-               // save (flush) all segments first
-               foreach ( $this->segments as $seg )
+               // save (flush) all segments first, this may delete segment's children (this cache)
+               foreach ( $this->_segments as $seg )
                {
                   $seg->flush();
                }
@@ -60,19 +63,16 @@ class PageCache extends Cache
                // save self
                // gzip data for public cache file used by webserver
                // use 6 as default and equal to webserver gzip compression level
-               $this->_writeDataFile( \gzencode( $this->data, 6 ) );
+               $this->_writeDataFile( \gzencode( $this->_data, 6 ) );
+
+               // make segments as parent nodes
+               foreach ( \array_keys( $this->_segments ) as $pkey )
+               {
+                  $this->_parents[] = $pkey;
+               }
 
                // link to current parent nodes
-               foreach ( $this->parents as $p )
-               {
-                  $this->_saveMap( $p, $this->key );
-               }
-
-               // link to its segments as parent nodes
-               foreach ( \array_keys( $this->segments ) as $p )
-               {
-                  $this->_saveMap( $p, $this->key );
-               }
+               $this->_linkParents();
             }
          }
 
