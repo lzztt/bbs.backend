@@ -16,14 +16,14 @@ abstract class Node extends Controller
       $nid = $this->id;
       if ( $nid <= 0 )
       {
-         $this->request->pageNotFound();
+         $this->pageNotFound();
       }
 
       $nodeObj = new NodeObject();
       $tags = $nodeObj->getTags( $nid );
       if ( empty( $tags ) )
       {
-         $this->request->pageNotFound();
+         $this->pageNotFound();
       }
 
       $rootTagID = \array_shift( \array_keys( $tags ) );

@@ -12,9 +12,10 @@ class NodeCtrler extends Forum
 
    public function run()
    {
-      if( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::GUEST_UID )
       {
          $this->_displayLogin( $this->request->uri );
+         return;
       }
 
       $tag = $this->_getTagObj();
@@ -43,7 +44,7 @@ class NodeCtrler extends Forum
          $node->status = 1;
          $node->add();
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          // spammer found
          if ( $user->isSpammer() )
@@ -97,20 +98,20 @@ class NodeCtrler extends Forum
       {
          $file = new Image();
          $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
-         $this->cache->delete( 'imageSlider' );
+         $this->_getIndependentCache( 'imageSlider' )->delete();
       }
 
       $user->points += 3;
       $user->update( 'points' );
 
-      $this->cache->delete( '/forum/' . $tid );
-      $this->cache->delete( 'latestForumTopics' );
+      $this->_getIndependentCache( '/forum/' . $tid )->delete();
+      $this->_getIndependentCache( 'latestForumTopics' )->delete();
       if ( $node->tid == 15 )
       {
-         $this->cache->delete( 'latestImmigrationPosts' );
+         $this->_getIndependentCache( 'latestImmigrationPosts' )->delete();
       }
 
-      $this->request->redirect( '/node/' . $node->id );
+      $this->redirect = '/node/' . $node->id;
    }
 
 }

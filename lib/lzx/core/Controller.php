@@ -23,7 +23,7 @@ use lzx\core\Cookie;
  * @property \lzx\core\Cookie $cookie
  *
  */
-abstract class Controller implements \SplObserver
+abstract class Controller
 {
 
    protected static $l = [ ];
@@ -32,9 +32,9 @@ abstract class Controller implements \SplObserver
    public $request;
    public $session;
    public $cookie;
-   protected $class;
+   protected $_class;
 
-   public function __construct(Request $req, Template $html, Logger $logger, Session $session, Cookie $cookie)
+   public function __construct( Request $req, Template $html, Logger $logger, Session $session, Cookie $cookie )
    {
       $this->class = \get_class( $this );
       $this->request = $req;
@@ -46,15 +46,35 @@ abstract class Controller implements \SplObserver
 
    abstract public function run();
 
+   /**
+    * Observer design pattern interfaces
+    */
+   abstract public function update( Template $html );
+
    protected function error( $msg, $log = FALSE )
    {
-      Cache::$status = FALSE;
       if ( $log )
       {
          $this->logger->error( $msg );
       }
       $this->html->error( $msg );
-      $this->request->pageExit( (string) $this->html );
+
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+      exit( (string) $this->html );
+   }
+
+   public function pageNotFound( $msg = NULL )
+   {
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+      \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
+      exit( $msg ? $msg : '404 Not Found :('  );
+   }
+
+   public function pageForbidden( $msg = NULL )
+   {
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+      \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
+      exit( $msg ? $msg : '403 Forbidden :('  );
    }
 
 }

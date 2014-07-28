@@ -22,7 +22,7 @@ class ChangeCtrler extends Password
       $uid = $this->id;
       if ( $uid != $this->request->uid && $this->request->uid != self::ADMIN_UID )
       {
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
 
       if ( empty( $this->request->post ) )

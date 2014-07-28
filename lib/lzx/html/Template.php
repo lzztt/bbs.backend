@@ -4,8 +4,9 @@ namespace lzx\html;
 
 use lzx\core\Logger;
 use lzx\html\HTMLElement;
+use lzx\core\Controller;
 
-class Template implements \SplSubject
+class Template
 {
 
    const UMODE_PC = 'pc';
@@ -19,35 +20,36 @@ class Template implements \SplSubject
    public static $path;
    public static $theme;
    public static $language;
-   private static $status = TRUE;
+   public static $debug = FALSE;
+   private static $_status = TRUE;
 
    /**
     * @var Logger $logger
     * @static Logger $logger
     */
-   private static $logger = NULL;
+   private static $_logger = NULL;
    //private static $tpl_cache = []; // pool for rendered templates without $var
    public $tpl;
    public $var = [ ]; // controller need to fill this array (or an array Theme can access)
-   private $errors = [ ];
-   private $observers;
+   private $_errors = [ ];
+   private $_observers;
 
    /**
-    * SPLObserver interfaces
+    * Observer design pattern interfaces
     */
-   public function attach( \SplObserver $observer )
+   public function attach( Controller $observer )
    {
-      $this->observers->attach($observer);;
+      $this->_observers->attach($observer);;
    }
 
-   public function detach( \SplObserver $observer )
+   public function detach( Controller $observer )
    {
-      $this->observers->detach($observer);
+      $this->_observers->detach($observer);
    }
 
    public function notify()
    {
-      foreach ( $this->observers as $observer )
+      foreach ( $this->_observers as $observer )
       {
          $observer->update( $this );
       }
@@ -59,7 +61,7 @@ class Template implements \SplSubject
     */
    public function __construct( $tpl, $var = [ ] )
    {
-      $this->observers = new \SplObjectStorage();
+      $this->_observers = new \SplObjectStorage();
 
       $this->tpl = $tpl;
       if ( !empty( $var ) )
@@ -75,9 +77,9 @@ class Template implements \SplSubject
       
       try
       {
-         if ( $this->errors )
+         if ( $this->_errors )
          {
-            $errors = $this->errors;
+            $errors = $this->_errors;
             $tpl = 'error';
          }
          else
@@ -92,11 +94,12 @@ class Template implements \SplSubject
          $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
          if ( !\is_file( $tpl_file ) || !\is_readable( $tpl_file ) )
          {
-            self::$status = FALSE;
+            self::$_status = FALSE;
             $output = 'template loading error: [' . $tpl_theme . ':' . $tpl . ']';
          }
          else
          {
+            $debug = self::$debug;
             $umode_pc = self::UMODE_PC;
             $umode_mobile = self::UMODE_MOBILE;
             $umode_robot = self::UMODE_ROBOT;
@@ -113,10 +116,10 @@ class Template implements \SplSubject
       catch ( \Exception $e )
       {
          \ob_end_clean();
-         self::$status = FALSE;
-         if ( isset( self::$logger ) )
+         self::$_status = FALSE;
+         if ( isset( self::$_logger ) )
          {
-            self::$logger->error( $e->getMessage(), $e->getTrace() );
+            self::$_logger->error( $e->getMessage(), $e->getTrace() );
          }
          $output = 'template parsing error: [' . $tpl_theme . ':' . $tpl . ']';
       }
@@ -126,18 +129,18 @@ class Template implements \SplSubject
 
    public static function setLogger( Logger $logger )
    {
-      self::$logger = $logger;
+      self::$_logger = $logger;
    }
 
    public static function getStatus()
    {
-      return self::$status;
+      return self::$_status;
    }
 
    public function error( $msg )
    {
-      $this->errors[] = $msg;
-      self::$status = FALSE;
+      $this->_errors[] = $msg;
+      self::$_status = FALSE;
    }
 
    public function formatTime( $timestamp )
@@ -166,13 +169,13 @@ class Template implements \SplSubject
 // do not use T in format, timezone info is not correct
    public function localDate( $format, $timestamp = TIMESTAMP )
    {
-      return date( $format, TIMESTAMP + ($_COOKIE[ 'timezone' ] - SYSTIMEZONE) * 3600 );
+      return \date( $format, TIMESTAMP + ($_COOKIE[ 'timezone' ] - SYSTIMEZONE) * 3600 );
    }
 
 // do not use timezone info in the $time string
    public function localStrToTime( $time )
    {
-      return (strtotime( $time ) - ($_COOKIE[ 'timezone' ] - SYSTIMEZONE) * 3600);
+      return (\strtotime( $time ) - ($_COOKIE[ 'timezone' ] - SYSTIMEZONE) * 3600);
    }
 
    public function renderPage()

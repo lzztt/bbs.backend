@@ -18,6 +18,7 @@ class PMCtrler extends User
       if ( $this->request->uid == self::GUEST_UID )
       {
          $this->_displayLogin( $this->request->uri );
+         return;
       }
 
       if ( !$this->id || $this->id == $this->request->uid )

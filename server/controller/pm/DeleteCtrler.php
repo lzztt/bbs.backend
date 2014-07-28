@@ -24,8 +24,7 @@ class DeleteCtrler extends PM
          $this->error( 'failed to delete message ' . $messageID . ' as user ' . $this->request->uid );
       }
 
-      $redirect_uri = $topicID == $messageID ? '/user/pm' : '/pm/' . $topicID;
-      $this->request->redirect( $redirect_uri );
+      $this->redirect = ( $topicID == $messageID ? '/user/pm' : '/pm/' . $topicID );
    }
 
 }

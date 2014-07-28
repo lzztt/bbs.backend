@@ -30,7 +30,7 @@ class AdCtrler extends Adm
       }
       else
       {
-         $this->request->pageNotFound( 'action not found :(' );
+         $this->error( 'action not found :(' );
       }
    }
 

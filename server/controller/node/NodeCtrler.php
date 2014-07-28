@@ -8,6 +8,7 @@ use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
 use site\dbobject\Tag;
+use site\PageCache;
 
 class NodeCtrler extends Node
 {
@@ -16,9 +17,13 @@ class NodeCtrler extends Node
 
    public function run()
    {
+      $this->cache = new PageCache( $this->request->uri );
+
       list($nid, $type) = $this->_getNodeType();
       $method = '_display' . $type;
       $this->$method( $nid );
+
+      $this->_getCacheEvent( 'NodeUpdate' . $nid )->addListener( $this->cache );
    }
 
    private function _displayForumTopic( $nid )
@@ -32,7 +37,7 @@ class NodeCtrler extends Node
 
       if ( !$node )
       {
-         $this->request->pageNotFound();
+         $this->pageNotFound();
       }
 
       $breadcrumb = [ ];
@@ -87,7 +92,7 @@ class NodeCtrler extends Node
          {
             $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
-         catch (\Exception $e)
+         catch ( \Exception $e )
          {
             $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -119,7 +124,7 @@ class NodeCtrler extends Node
             {
                $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
             }
-            catch (\Exception $e)
+            catch ( \Exception $e )
             {
                $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -137,10 +142,10 @@ class NodeCtrler extends Node
       $editor_contents = [
          'show_title' => FALSE,
          'title' => $node[ 'title' ],
-         'form_handler' => '/node/comment/' . $nid
+         'form_handler' => '/node/' . $nid . '/comment'
       ];
       $editor = new Template( 'editor_bbcode', $editor_contents );
-      
+
       $contents += [
          'posts' => $posts,
          'editor' => $editor
@@ -160,8 +165,9 @@ class NodeCtrler extends Node
 
       if ( !\array_key_exists( $info[ 'uid' ], $authorPanels ) )
       {
-         $authorPanel = $this->cache->fetch( 'authorPanel' . $info[ 'uid' ] );
-         if ( $authorPanel === FALSE )
+         $authorPanelCache = $this->_getIndependentCache( 'authorPanel' . $info[ 'uid' ] );
+         $authorPanel = $authorPanelCache->fetch();
+         if ( !$authorPanel )
          {
             $info[ 'joinTime' ] = date( 'm/d/Y', $info[ 'join_time' ] );
             $info[ 'sex' ] = isset( $info[ 'sex' ] ) ? ($info[ 'sex' ] == 1 ? '男' : '女') : '未知';
@@ -171,7 +177,7 @@ class NodeCtrler extends Node
             }
             $info[ 'city' ] = $this->request->getCityFromIP( $info[ 'access_ip' ] );
             $authorPanel = new Template( 'author_panel_forum', $info );
-            $this->cache->store( 'authorPanel' . $info[ 'uid' ], $authorPanel );
+            $authorPanelCache->store( $authorPanel );
          }
          $authorPanels[ $info[ 'uid' ] ] = $authorPanel;
       }
@@ -189,7 +195,7 @@ class NodeCtrler extends Node
       {
          $tmp = \explode( '.', $f[ 'path' ] );
          $type = \array_pop( $tmp );
-         switch ($type)
+         switch ( $type )
          {
             case 'jpg':
             case 'jpeg':
@@ -243,7 +249,7 @@ class NodeCtrler extends Node
 
       if ( \is_null( $node ) )
       {
-         $this->request->pageNotFound();
+         $this->pageNotFound();
       }
 
       $breadcrumb = [ ];
@@ -281,7 +287,7 @@ class NodeCtrler extends Node
          {
             $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
-         catch (\Exception $e)
+         catch ( \Exception $e )
          {
             $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -309,7 +315,7 @@ class NodeCtrler extends Node
             {
                $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
             }
-            catch (\Exception $e)
+            catch ( \Exception $e )
             {
                $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );

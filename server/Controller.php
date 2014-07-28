@@ -11,13 +11,15 @@ use lzx\core\Request;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use site\PageCache;
 use lzx\core\Session;
 use lzx\core\Cookie;
 use site\ControllerRouter;
 use site\dbobject\User;
 use site\dbobject\Tag;
 use site\dbobject\SecureLink;
+use site\Cache;
+use site\CacheEvent;
+use lzx\db\DB;
 
 /**
  *
@@ -27,8 +29,10 @@ use site\dbobject\SecureLink;
  * @property \lzx\core\Session $session
  * @property \lzx\core\Cookie $cookie
  * @property \site\Config $config
- * @property \site\PageCache $cache
  * @property \site\dbobject\User $user
+ * @property \site\PageCache $cache
+ * @property \site\Cache[]  $_independentCacheList
+ * @property \site\CacheEvent[] $_cacheEvents
  *
  */
 abstract class Controller extends LzxCtrler
@@ -42,113 +46,150 @@ abstract class Controller extends LzxCtrler
    public $id;
    public $config;
    public $cache;
+   public $redirect = NULL;
+   protected $_independentCacheList = [ ];
+   protected $_cacheEvents = [ ];
 
    /**
     * public methods
     */
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, PageCache $cache, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
    {
       parent::__construct( $req, $html, $logger, $session, $cookie );
       $this->config = $config;
-      $this->cache = $cache;
       if ( !\array_key_exists( $this->class, self::$l ) )
       {
-         $lang_file = $lang_path . \str_replace( '\\', '/', $this->class ) . '.' . Template::$language . '.php';
+         $lang_file = $lang_path . \str_replace( '\\', '/', $this->_class ) . '.' . Template::$language . '.php';
          if ( \is_file( $lang_file ) )
          {
             include $lang_file;
          }
-         self::$l[ $this->class ] = isset( $language ) ? $language : [ ];
+         self::$l[ $this->_class ] = isset( $language ) ? $language : [ ];
       }
 
       // register this controller as an observer of the HTML template
       $this->html->attach( $this );
    }
 
-   /**
-    * SPLObserver interface
-    */
-   public function update( \SplSubject $html )
+   public function __destruct()
    {
-      static $updated = FALSE;
-
-      if ( !$updated )
+      if ( $this->config->cache )
       {
-         // update user info
-         if ( $this->request->uid > 0 )
+         if ( $this->cache && Template::getStatus() === TRUE )
          {
-            $this->user = new User( $this->request->uid, NULL );
-            // update access info
-            $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
-            // check new pm message
-            $this->cookie->pmCount = \intval( $this->user->getPrivMsgsCount( 'new' ) );
-            $updateUserInfo = FALSE;
+            $this->cache->store( $this->html );
+            $this->cache->flush();
          }
 
-         // set navbar
-         $navbarCache = $this->cache->getSegment( 'page_navbar' );
-         $navbar = $navbarCache->fetch();
-         if ( $navbar === FALSE )
+         foreach ( $this->_independentCacheList as $s )
          {
-            $vars = [
-               'forumMenu' => $this->_createMenu( Tag::FORUM_ID ),
-               'ypMenu' => $this->_createMenu( Tag::YP_ID ),
-               'uid' => $this->request->uid
-            ];
-            $navbar = new Template( 'page_navbar', $vars );
-            $navbarCache->store( $navbar );
+            $s->flush();
          }
-         $html->var[ 'page_navbar' ] = $navbar;
 
-         // set headers
-         $html->var[ 'head_description' ] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
-         $html->var[ 'head_title' ] = '缤纷休斯顿华人网';
-
-         // mark updated
-         $updated = TRUE;
+         foreach ( $this->_cacheEvents as $e )
+         {
+            $e->flush();
+         }
       }
+   }
+
+   /**
+    * Observer design pattern interface
+    */
+   public function update( Template $html )
+   {
+      // update user info
+      if ( $this->request->uid > 0 )
+      {
+         $this->user = new User( $this->request->uid, NULL );
+         // update access info
+         $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
+         // check new pm message
+         $this->cookie->pmCount = \intval( $this->user->getPrivMsgsCount( 'new' ) );
+         $updateUserInfo = FALSE;
+      }
+
+      // set navbar
+      $navbarCache = $this->_getIndependentCache( 'page_navbar' );
+      $navbar = $navbarCache->fetch();
+      if ( !$navbar )
+      {
+         $vars = [
+            'forumMenu' => $this->_createMenu( Tag::FORUM_ID ),
+            'ypMenu' => $this->_createMenu( Tag::YP_ID ),
+            'uid' => $this->request->uid
+         ];
+         $navbar = new Template( 'page_navbar', $vars );
+         $navbarCache->store( $navbar );
+      }
+      $html->var[ 'page_navbar' ] = $navbar;
+
+      // set headers
+      $html->var[ 'head_description' ] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
+      $html->var[ 'head_title' ] = '缤纷休斯顿华人网';
+
+      // remove this controller from the subject's observer list
+      $html->detach( $this );
    }
 
    protected function ajax( $return )
    {
-      // set default response data type
-      $type = $this->request->get[ 'type' ];
-      if ( !\in_array( $type, ['json', 'html', 'text' ] ) )
+      $return = \json_encode( $return );
+      if ( $return === FALSE )
       {
-         $type = 'json';
-      }
-
-      if ( $type == 'json' )
-      {
+         $return = [ 'error' => 'ajax json encode error' ];
          $return = \json_encode( $return );
-         if ( $return === FALSE )
-         {
-            $return = ['error' => $this->l( 'ajax_json_encode_error' ) ];
-            $return = \json_encode( $return );
-         }
+      }
+      $this->html = $return;
+
+      if ( DB::$debug )
+      {
+         $this->logger->debug( DB::getInstance()->queries );
+         DB::$debug = FALSE;
+      }
+   }
+
+   /**
+    * 
+    * @return \site\Cache
+    */
+   protected function _getIndependentCache( $key )
+   {
+      $cache = Cache::create( $key );
+      if ( \array_key_exists( $cache->getKey(), $this->_independentCacheList ) )
+      {
+         return $this->_independentCacheList[ $cache->getKey() ];
       }
       else
       {
-         if ( \is_array( $return ) )
-         {
-            if ( \sizeof( $return ) == 1 && \array_key_exists( 'error', $return ) )
-            {
-               $return = $this->l( 'Error' ) . ' : ' . $return[ 'error' ];
-            }
-         }
-
-         if ( !\is_string( $return ) )
-         {
-            $return = $this->l( 'Error' ) . ' : ' . $this->l( 'ajax_data_type_error' );
-         }
+         $this->_independentCacheList[ $cache->getKey() ] = $cache;
+         return $cache;
       }
+   }
 
-      $this->request->pageExit( $return );
+   /**
+    * 
+    * @return \site\CacheEvent
+    */
+   protected function _getCacheEvent( $name )
+   {
+      $event = new CacheEvent( $name );
+      if ( \array_key_exists( $event->getName(), $this->_cacheEvents ) )
+      {
+         return $this->_cacheEvents[ $event->getName() ];
+      }
+      else
+      {
+         $this->_cacheEvents[ $event->getName() ] = $event;
+         return $event;
+      }
    }
 
    protected function _forward( $uri )
    {
-      $ctrler = ControllerRouter::create( $this->request, $this->html, $this->config, $this->logger, $this->cache, $this->session, $this->cookie, $uri );
+      $newReq = $this->request;
+      $newReq->uri = $uri;
+      $ctrler = ControllerRouter::create( $newReq, $this->html, $this->config, $this->logger, $this->cache, $this->session, $this->cookie );
       $ctrler->run();
    }
 
@@ -171,7 +212,6 @@ abstract class Controller extends LzxCtrler
          $this->_setLoginRedirect( $redirect );
       }
       $this->html->var[ 'content' ] = new Template( 'user_login', ['userLinks' => $this->_getUserLinks( '/user/login' ) ] );
-      $this->request->pageExit( $this->html );
    }
 
    protected function _createSecureLink( $uid, $uri )

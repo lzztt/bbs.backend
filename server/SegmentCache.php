@@ -3,11 +3,11 @@
 namespace site;
 
 use site\Cache;
+use site\CacheHandler;
 
 class SegmentCache extends Cache
 {
 
-   static public $path = '/tmp/www.houstonbbs.com/private';
    static protected $_format = '.txt';
 
    /**
@@ -16,11 +16,6 @@ class SegmentCache extends Cache
     */
    public function fetch()
    {
-      if ( !self::$status )
-      {
-         return FALSE;
-      }
-
       if ( $this->_data )
       {
          return $this->_data;
@@ -31,16 +26,15 @@ class SegmentCache extends Cache
 
    public function flush()
    {
-      if ( self::$status )
+      if ( $this->_dirty )
       {
-         $this->_initDB();
-         $this->_id = $this->_getID();
+         $this->_id = self::$_handler->getID( $this->_key );
 
-         // unlink exiting parent cache nodes
-         $this->_unlinkParents();
+         // unlink existing parent cache nodes
+         self::$_handler->unlinkParents( $this->_id );
 
          // update self
-         if ( $this->_isDeleted )
+         if ( $this->_deleted )
          {
             // delete self
             $this->_deleteDataFile();
@@ -53,12 +47,14 @@ class SegmentCache extends Cache
                $this->_writeDataFile( $this->_data );
 
                // link to current parent nodes
-               $this->_linkParents();
+               self::$_handler->linkParents( $this->_id, $this->_parents );
             }
          }
 
          // delete(flush) child cache nodes
          $this->_deleteChildren();
+
+         $this->_dirty = FALSE;
       }
    }
 
@@ -68,12 +64,12 @@ class SegmentCache extends Cache
       try
       {
          // read only if exist!!
-         return \is_file( $file ) ? \file_get_contents( $file ) : FALSE;
+         return \is_file( $file ) ? \file_get_contents( $file ) : NULL;
       }
       catch ( \Exception $e )
       {
          $this->logger->warn( 'Could not read from file [' . $file . ']: ' . $e->getMessage() );
-         return FALSE;
+         return NULL;
       }
    }
 

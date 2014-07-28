@@ -9,7 +9,7 @@ class CommentCtrler extends Comment
 
    public function run()
    {
-      $this->request->pageNotFound();
+      $this->pageNotFound();
    }
 
 }
