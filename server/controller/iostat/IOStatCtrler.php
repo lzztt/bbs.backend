@@ -20,10 +20,7 @@ class IOStatCtrler extends IOStat
 
    public function run()
    {
-      $this->request->pageNotFound( 'not available yet :(' );
-
-      $this->cache->setStatus( FALSE );
-
+      $this->error( 'not available yet :(' );
       $this->html->var[ 'content' ] = $this->sarChart();
    }
 
@@ -59,7 +56,7 @@ class IOStatCtrler extends IOStat
          'end' => shell_exec( 'tail -n 1 /tmp/iodata.txt | awk \'{print $1}\' | cut -c 2-13' ),
          'max' => shell_exec( 'sort -nr -k 2 /tmp/iodata.txt | head -n 1 | awk \'{print $2}\'' ),
       ];
-//var_dump($content);exit;
+
       return (new Template( 'iochart', $content ));
    }
 

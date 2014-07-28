@@ -22,18 +22,18 @@ abstract class Forum extends Controller
 
             if ( !$tag->exists() )
             {
-               $this->request->pageNotFound();
+               $this->pageNotFound();
             }
 
             $tagRoot = $tag->getTagRoot();
             if ( !\array_key_exists( Tag::FORUM_ID, $tagRoot ) )
             {
-               $this->request->pageNotFound();
+               $this->pageNotFound();
             }
          }
          else
          {
-            $this->request->pageNotFound();
+            $this->pageNotFound();
          }
       }
       else

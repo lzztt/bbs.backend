@@ -46,7 +46,7 @@
       </div>
       <div id='page_data' style='display:none;'><?php print $page_data; ?></div>
    </body>
-   <?php if ( $domain === 'houstonbbs.com' ): ?>
+   <?php if ( !$debug ): ?>
       <script>
          (function(i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;

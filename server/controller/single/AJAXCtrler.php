@@ -93,11 +93,14 @@ class AJAXCtrler extends Single
          'chart' => $chart,
          'comments' => $comments
       ] );
+
+      $this->_getIndependentCache( '/single' )->delete();
    }
 
    protected function error( $msg )
    {
       $this->ajax( ['error' => $msg ] );
+      exit( (string) $this->html );
    }
 
 }

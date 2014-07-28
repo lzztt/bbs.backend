@@ -3,12 +3,15 @@
 namespace site\controller\search;
 
 use site\controller\Search;
+use site\PageCache;
 
 class SearchCtrler extends Search
 {
 
    public function run()
    {
+      $this->cache = new PageCache( $this->request->uri );
+      
       $html = <<<HTML
 <div id="cse-search-form" style="width: 100%;">Loading</div>
 <style>

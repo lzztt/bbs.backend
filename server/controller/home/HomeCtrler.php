@@ -8,6 +8,7 @@ use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Activity;
 use site\dbobject\Image;
+use site\PageCache;
 use site\SegmentCache;
 
 class HomeCtrler extends Home
@@ -15,6 +16,8 @@ class HomeCtrler extends Home
 
    public function run()
    {
+      $this->cache = new PageCache( $this->request->uri );
+
       $content = [
          'recentActivities' => $this->_getRecentActivities(),
          'latestForumTopics' => $this->_getLatestForumTopics(),
@@ -34,7 +37,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'imageSlider' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $img = new Image();
          $images = $img->getRecentImages();
@@ -44,10 +47,12 @@ class HomeCtrler extends Home
          $ul = new Template( 'image_slider', $content );
 
          $ulCache->store( $ul );
+         
          foreach ( $images as $i )
          {
             $ulCache->addParent( '/node/' . $i[ 'nid' ] );
          }
+         $this->_getCacheEvent( 'ImageUpdate' )->addListener( $ulCache );
       }
 
       return $ul;
@@ -57,7 +62,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'latestForumTopics' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $node = new Node();
          $arr = $node->getLatestForumTopics( 15 );
@@ -71,6 +76,7 @@ class HomeCtrler extends Home
          }
          $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
+      $this->_getCacheEvent( 'ForumNode' )->addListener( $ulCache );
 
       return $ul;
    }
@@ -79,7 +85,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'hotForumTopics' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $node = new Node();
          $arr = $node->getHotForumTopics( 15, $this->request->timestamp - 604800 );
@@ -102,7 +108,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'latestYellowPages' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $node = new Node();
          $arr = $node->getLatestYellowPages( 25 );
@@ -116,7 +122,7 @@ class HomeCtrler extends Home
          }
          $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
-
+      $this->_getCacheEvent( 'YellowPageNode' )->addListener( $ulCache );
 
       return $ul;
    }
@@ -125,7 +131,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'latestImmigrationPosts' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $node = new Node();
          $arr = $node->getLatestImmigrationPosts( 25 );
@@ -139,7 +145,7 @@ class HomeCtrler extends Home
          }
          $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
-
+      $this->_getCacheEvent( 'ImmigrationNode' )->addListener( $ulCache );
 
       return $ul;
    }
@@ -148,7 +154,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'latestForumTopicReplies' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $node = new Node();
          $arr = $node->getLatestForumTopicReplies( 15 );
@@ -162,7 +168,7 @@ class HomeCtrler extends Home
          }
          $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
-
+      $this->_getCacheEvent( 'ForumComment' )->addListener( $ulCache );
 
       return $ul;
    }
@@ -171,7 +177,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'latestYellowPageReplies' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $node = new Node();
          $arr = $node->getLatestYellowPageReplies( 25 );
@@ -185,7 +191,7 @@ class HomeCtrler extends Home
          }
          $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
       }
-
+      $this->_getCacheEvent( 'YellowPageComment' )->addListener( $ulCache );
 
       return $ul;
    }
@@ -194,7 +200,7 @@ class HomeCtrler extends Home
    {
       $ulCache = $this->cache->getSegment( 'recentActivities' );
       $ul = $ulCache->fetch();
-      if ( $ul === FALSE )
+      if ( !$ul )
       {
          $activity = new Activity();
          $arr = $activity->getRecentActivities( 12, $this->request->timestamp );
@@ -206,7 +212,6 @@ class HomeCtrler extends Home
          }
          $ul = $this->_linkNodeList( $arr, $ulCache );
       }
-
 
       return $ul;
    }

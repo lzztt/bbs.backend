@@ -24,7 +24,7 @@ class EditCtrler extends Comment
       if ( $this->request->uid != 1 && $this->request->uid != $comment->uid )
       {
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
       $comment->body = $this->request->post[ 'body' ];
       $comment->lastModifiedTime = $this->request->timestamp;
@@ -43,7 +43,7 @@ class EditCtrler extends Comment
          $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
          $file = new Image();
          $file->updateFileList( $files, $this->config->path[ 'file' ], $comment->nid, $cid );
-         $this->cache->delete( 'imageSlider' );
+         $this->_getIndependentCache( 'imageSlider' )->delete();
       }
 
       // YP comments
@@ -57,9 +57,9 @@ class EditCtrler extends Comment
          }
       }
 
-      $this->cache->delete( '/node/' . $comment->nid );
+      $this->_getIndependentCache( '/node/' . $comment->nid )->delete();
 
-      $this->request->redirect( $this->request->referer );
+      $this->redirect = $this->request->referer;
    }
 
 }

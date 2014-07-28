@@ -11,7 +11,7 @@ class PHPInfoCtrler extends PHPInfo
    {
       if ($this->request->uid !== 126 && $this->request->uid !== 1)
       {
-         $this->request->pageNotFound();
+         $this->pageNotFound();
       }
       \phpinfo();
    }

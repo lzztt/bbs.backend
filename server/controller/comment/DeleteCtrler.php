@@ -20,17 +20,15 @@ class DeleteCtrler extends Comment
       if ( $this->request->uid != 1 && $this->request->uid != $comment->uid )
       {
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
 
       $node = new Node( $comment->nid, 'tid' );
-      $this->cache->delete( '/node/' . $node->id );
+      $this->_getIndependentCache( '/node/' . $node->id )->delete();
 
       if ( \in_array( $node->tid, ( new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) ) // forum tag
       {
-         $this->cache->delete( '/forum/' . $node->tid );
-         // take care by cache map
-         //$this->cache->delete('latestForumTopicReplies');
+         $this->_getIndependentCache( '/forum/' . $node->tid )->delete();
       }
 
       if ( \in_array( $node->tid, ( new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) ) // yellow page tag
@@ -43,7 +41,7 @@ class DeleteCtrler extends Comment
             $node = new Node();
             $node->deleteRating( $comment->nid, $comment->uid );
          }
-         $this->cache->delete( 'latestYellowPageReplies' );
+         $this->_getIndependentCache( 'latestYellowPageReplies' )->delete();
       }
 
       $user = new User( $comment->uid, 'points' );
@@ -52,7 +50,7 @@ class DeleteCtrler extends Comment
 
       $comment->delete();
 
-      $this->request->redirect( $this->request->referer );
+      $this->redirect = $this->request->referer;
    }
 
 }

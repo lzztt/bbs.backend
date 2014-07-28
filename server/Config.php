@@ -29,7 +29,6 @@ class Config
       $this->stage = self::STAGE_DEVELOPMENT;
       //$this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
-      $this->cache = TRUE;
 
       $this->path = [
          'server' => __DIR__,
@@ -39,14 +38,15 @@ class Config
          'log' => \dirname( __DIR__ ) . '/log',
          'file' => \dirname( __DIR__ ) . '/client',
          'backup' => \dirname( __DIR__ ) . '/backup',
-         'cache' => '/tmp/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
+         'cache' => '/tmp/' . $_SERVER[ 'SERVER_NAME' ], //note: nginx webserver also use $server_name as the cache path
       ];
+      $this->cache = ( \is_dir( $this->path[ 'cache' ] ) && \is_writable( $this->path[ 'cache' ] ) );
       $this->db = [
          'dsn' => 'hbbs',
          'user' => 'web',
          'password' => 'Ab663067',
       ];
-      $this->getkeys = ['p', 'page', 'type', 'id', 'tid', 'nid', 'nids', 'nosession', 'r', 'c', 't'];
+      $this->getkeys = ['p', 'page', 'type', 'id', 'tid', 'nid', 'nids', 'nosession', 'r', 'c', 't' ];
       $this->language = 'zh-cn';
       $this->theme = [
          'default' => 'default',
@@ -60,11 +60,11 @@ class Config
          //'domain' => $config['domain'],
          'lifetime' => 2592000,
       ];
-      $this->domain = \implode( '.', \array_slice( \explode( '.', $_SERVER['HTTP_HOST'] ), -2 ) );
+      $this->domain = \implode( '.', \array_slice( \explode( '.', $_SERVER[ 'HTTP_HOST' ] ), -2 ) );
       $this->webmaster = 'ikki3355@gmail.com';
 
       $this->image = [
-         'types' => [\IMAGETYPE_GIF, \IMAGETYPE_PNG, \IMAGETYPE_JPEG],
+         'types' => [\IMAGETYPE_GIF, \IMAGETYPE_PNG, \IMAGETYPE_JPEG ],
          'height' => 960,
          'width' => 600,
          'size' => 5242880,
@@ -76,7 +76,6 @@ class Config
       if ( $this->domain === 'houstonbbs.com' )
       {
          $this->stage = self::STAGE_PRODUCTION;
-         $this->cache = TRUE;
       }
    }
 

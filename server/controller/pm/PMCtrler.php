@@ -5,17 +5,17 @@ namespace site\controller\pm;
 use site\controller\PM;
 use site\dbobject\PrivMsg;
 use lzx\html\Template;
-use lzx\html\HTMLElement;
-use lzx\html\Form;
-use lzx\html\Input;
-use lzx\html\Hidden;
-use lzx\html\TextArea;
 
 class PMCtrler extends PM
 {
 
    public function run()
    {
+      if ( !$this->id )
+      {
+         $this->error( '错误：该条短信不存在。' );
+      }
+
       $topicID = $this->id;
 
       $pm = new PrivMsg();
@@ -43,7 +43,7 @@ class PMCtrler extends PM
          'replyTo' => $pm->getReplyTo( $topicID, $this->request->uid ),
          'userLinks' => $this->_getUserLinks( '/pm/mailbox' ),
          'mailBoxLinks' => $this->_getMailBoxLinks( '/pm/mailbox/' . $this->_getMailBox() )
-      ] );
+         ] );
    }
 
 }
