@@ -13,7 +13,7 @@ class CaptchaCtrler extends Captcha
       if ( strpos( $_SERVER[ 'HTTP_REFERER' ], $this->request->domain ) < 4 )
       {
          $this->logger->info( 'Captcha Access Error: Wrong Referer : ' . $this->request->uri . ', from: ' . $_SERVER[ 'HTTP_REFERER' ] );
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
 
       // generate a CAPTCHA code
@@ -25,7 +25,7 @@ class CaptchaCtrler extends Captcha
 
       // generate the image
       $image = $this->_generate_image( \str_split( $code ), 'jpeg' );
-      header( 'Content-type: image/jpeg' );
+      \header( 'Content-type: image/jpeg' );
       exit( $image );
    }
 

@@ -27,7 +27,7 @@ class LogoutCtrler extends User
       $this->cookie->uid = 0;
       $this->cookie->urole = Template::UROLE_GUEST;
       unset( $this->cookie->pmCount );
-      $this->request->redirect( '/' );
+      $this->redirect = '/';
    }
 
 }

@@ -18,13 +18,13 @@ class DeleteCtrler extends User
          $user->delete();
          foreach ( $user->getAllNodeIDs() as $nid )
          {
-            $this->cache->delete( '/node/' . $nid );
+            $this->_getIndependentCache( '/node/' . $nid )->delete();
          }
          $this->html->var[ 'content' ] = '用户ID: ' . $uid . '已经从系统中删除。';
       }
       else
       {
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
    }
 

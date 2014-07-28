@@ -14,7 +14,7 @@ class ActivityCtrler extends Node
 
    public function run()
    {
-      $this->cache->setStatus( FALSE );
+
       
       list($nid, $type) = $this->_getNodeType();
       $method = '_activity' . $type;
@@ -27,7 +27,7 @@ class ActivityCtrler extends Node
 
       if ( !$node->exists() )
       {
-         $this->request->pageNotFound();
+         $this->pageNotFound();
       }
 
       if ( $node->tid != 16 )
@@ -64,7 +64,7 @@ class ActivityCtrler extends Node
       }
       else
       {
-         $this->cache->setStatus( FALSE );
+
          $startTime = strtotime( $this->request->post[ 'start_time' ] );
          $endTime = strtotime( $this->request->post[ 'end_time' ] );
 

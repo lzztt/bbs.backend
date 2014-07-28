@@ -13,7 +13,7 @@ class EditCtrler extends Node
 
    public function run()
    {
-      $this->cache->setStatus( FALSE );
+
       list($nid, $type) = $this->_getNodeType();
       $method = '_edit' . $type;
       $this->$method( $nid );
@@ -37,7 +37,7 @@ class EditCtrler extends Node
       if ( $this->request->uid != 1 && $this->request->uid != $node->uid )
       {
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
 
       $node->title = $this->request->post[ 'title' ];
@@ -48,7 +48,7 @@ class EditCtrler extends Node
       {
          $node->update();
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          $this->error( $e->getMessage(), TRUE );
       }
@@ -56,12 +56,11 @@ class EditCtrler extends Node
       $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
       $file = new Image();
       $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
-      $this->cache->delete( 'imageSlider' );
 
-      $this->cache->delete( '/node/' . $nid );
+      $this->_getCacheEvent( 'ImageUpdate' . $nid )->trigger();
+      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
 
-      $this->request->redirect( $this->request->referer );
-      // refresh node content cache
+      $this->redirect = $this->request->referer;
    }
 
    private function _editYellowPage( $nid )
@@ -69,7 +68,7 @@ class EditCtrler extends Node
       if ( $this->request->uid != self::ADMIN_UID )
       {
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
 
       if ( empty( $this->request->post ) )
@@ -105,12 +104,10 @@ class EditCtrler extends Node
          $file = new Image();
          $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
 
-         $this->cache->delete( '/node/' . $nid );
-         $this->cache->delete( '/yp/' . $node->tid );
+         $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
 
-         $this->request->redirect( '/node/' . $nid );
+         $this->redirect = '/node/' . $nid;
       }
-      // refresh node content cache
    }
 
 }

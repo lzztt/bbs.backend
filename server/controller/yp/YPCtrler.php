@@ -6,14 +6,16 @@ use site\controller\YP;
 use lzx\html\Template;
 use site\dbobject\Tag;
 use site\dbobject\Node;
+use site\PageCache;
 
 class YPCtrler extends YP
 {
 
    public function run()
    {
-
-      if ( $this->id )
+      $this->cache = new PageCache( $this->request->uri );
+      
+      if ( !$this->id )
       {
          $this->_ypHome();
       }

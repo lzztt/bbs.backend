@@ -6,16 +6,19 @@ use site\controller\Forum;
 use lzx\html\Template;
 use site\dbobject\Tag;
 use site\dbobject\Node;
+use site\PageCache;
 
 class ForumCtrler extends Forum
 {
 
    public function run()
    {
+      $this->cache = new PageCache( $this->request->uri );
+
       $tag = $this->_getTagObj();
       $tagRoot = $tag->getTagRoot();
       $tagTree = $tag->getTagTree();
-      
+
       $tid = $tag->id;
       $this->html->var[ 'head_title' ] = $tagTree[ $tid ][ 'name' ] . ' - ' . $this->html->var[ 'head_title' ];
       $this->html->var[ 'head_description' ] = $tagTree[ $tid ][ 'name' ] . ', ' . $this->html->var[ 'head_description' ];
@@ -49,10 +52,9 @@ class ForumCtrler extends Forum
             {
                $groupTrees[ $group_id ][ $board_id ] = $tagTree[ $board_id ];
                $nodeInfo[ $board_id ] = $this->_nodeInfo( $board_id );
-               $this->cache->storeMap( '/forum/' . $board_id, '/forum/' . $group_id );
+               $this->cache->addParent( '/forum/' . $board_id );
             }
          }
-         $this->cache->storeMap( '/forum/' . $group_id, '/forum' );
       }
       else
       {
@@ -64,7 +66,7 @@ class ForumCtrler extends Forum
          {
             $groupTrees[ $group_id ][ $board_id ] = $tagTree[ $board_id ];
             $nodeInfo[ $board_id ] = $this->_nodeInfo( $board_id );
-            $this->cache->storeMap( '/forum/' . $board_id, '/forum/' . $group_id );
+            $this->cache->addParent( '/forum/' . $board_id );
          }
       }
       $contents = ['groups' => $groupTrees, 'nodeInfo' => $nodeInfo ];
@@ -77,6 +79,7 @@ class ForumCtrler extends Forum
 
    public function showTopicList( $tid, $tagRoot )
    {
+      $this->_getCacheEvent( 'FroumUpdate' . $tid )->addListener( $this->cache );
 
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )

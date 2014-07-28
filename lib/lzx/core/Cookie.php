@@ -91,7 +91,7 @@ class Cookie
 
     private function __construct()
     {
-        $this->now = \intval( $_SERVER['REQUEST_TIME'] );
+        $this->now = (int) $_SERVER['REQUEST_TIME'];
     }
 
     /**

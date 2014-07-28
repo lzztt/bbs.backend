@@ -7,7 +7,6 @@ use lzx\core\Request;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Cache;
 use lzx\core\Session;
 use lzx\core\Cookie;
 use site\dbobject\FFComment;
@@ -21,11 +20,9 @@ abstract class Single extends Controller
 
    protected $db;
 
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Cache $cache, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
    {
-      parent::__construct( $req, $html, $config, $logger, $cache, $session, $cookie );
-      // don't cache user page at page level
-      $this->cache->setStatus( FALSE );
+      parent::__construct( $req, $html, $config, $logger, $session, $cookie );
 
       Template::$theme = $this->config->theme[ 'single' ];
 
@@ -44,9 +41,9 @@ abstract class Single extends Controller
     * 
     * observer interface
     */
-   public function update( \SplSubject $html )
+   public function update( Template $html )
    {
-      
+      $html->detach( $this );
    }
 
    protected function _getChart( $activity )

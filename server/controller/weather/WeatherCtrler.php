@@ -9,7 +9,7 @@ class WeatherCtrler extends Weather
 
    public function run()
    {
-      $this->request->pageNotFound();
+      $this->pageNotFound();
       
       if ( $this->id )
       {
@@ -31,21 +31,21 @@ class WeatherCtrler extends Weather
       catch ( \Exception $e )
       {
          $this->logger->error( $e->getMessage() );
-         $this->cache->setStatus( FALSE );
+
          return '';
       }
    }
 
    protected function _get_weather( $zip )
    {
-      //$this->cache->setStatus(FALSE);
+
       //$key = 'weather_' . $zip;
-      //$data = $this->cache->fetch($key);
+
       //if ($data === FALSE)
       //{
       $weather = $this->_get_weather_detail( $zip );
       $data = $this->_display_weather( $weather );
-      //$this->cache->store($key, $data);
+
       //}
       return $data;
    }

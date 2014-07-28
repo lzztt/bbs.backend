@@ -10,8 +10,6 @@ class TagCtrler extends Node
 
    public function run()
    {
-      $this->cache->setStatus( FALSE );
-
       list($nid, $type) = $this->_getNodeType();
       $method = '_tag' . $type;
       $this->$method( $nid );
@@ -33,16 +31,18 @@ class TagCtrler extends Node
          $nodeObj->tid = $newTagID;
          $nodeObj->update( 'tid' );
 
-         $this->cache->delete( '/forum/' . $oldTagID );
-         $this->cache->delete( '/forum/' . $newTagID );
-         $this->cache->delete( '/node/' . $nid );
+         foreach ( ['/forum/' . $oldTagID, '/forum/' . $newTagID, '/node/' . $nid ] as $key )
+         {
+            $this->_getIndependentCache( $key )->delete();
+         }
 
-         $this->request->redirect( '/node/' . $nid );
+         $this->redirect = '/node/' . $nid;
+         return;
       }
       else
       {
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
    }
 

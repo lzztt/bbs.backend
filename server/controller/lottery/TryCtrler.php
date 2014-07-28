@@ -20,12 +20,14 @@ class TryCtrler extends Lottery
          }
          $lottery[ $this->request->timestamp ] = \mt_rand( 0, 100 );
          $this->session->lottery = $lottery;
-         $this->request->redirect( $this->request->referer );
+         $this->redirect = $this->request->referer;
+         return;
       }
       if ( $this->args[ 0 ] === 'clear' )
       {
          unset( $this->session->lottery );
-         $this->request->redirect( $this->request->referer );
+         $this->redirect = $this->request->referer;
+         return;
       }
 
       \krsort( $lottery );

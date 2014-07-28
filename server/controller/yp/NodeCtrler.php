@@ -16,13 +16,13 @@ class NodeCtrler extends YP
    {
       if ( $this->request->uid != 1 )
       {
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
-      
+
       $tid = $this->id;
       if ( $tid <= 0 )
       {
-         $this->request->pageNotFound();
+         $this->pageNotFound();
       }
 
       $tag = new Tag();
@@ -61,10 +61,12 @@ class NodeCtrler extends YP
             $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
          }
 
-         $this->cache->delete( '/yp/' . $tid );
-         $this->cache->delete( 'latestYellowPages' );
+         foreach ( ['latestYellowPages', '/yp/' . $tid ] as $key )
+         {
+            $this->_getIndependentCache( $key )->delete();
+         }
 
-         $this->request->redirect( '/node/' . $node->id );
+         $this->redirect = '/node/' . $node->id;
       }
    }
 

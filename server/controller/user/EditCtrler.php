@@ -15,11 +15,12 @@ class EditCtrler extends User
       if ( $this->request->uid == self::GUEST_UID )
       {
          $this->_displayLogin( $this->request->uri );
+         return;
       }
 
       if ( $this->id && $this->id != $this->request->uid )
       {
-         $this->request->pageForbidden();
+         $this->pageForbidden();
       }
 
       $u = new UserObject( $this->request->uid, NULL );
@@ -114,7 +115,7 @@ class EditCtrler extends User
 
          $this->html->var[ 'content' ] = '您的最新资料已被保存。';
 
-         $this->cache->delete( 'authorPanel' . $u->id );
+         $this->_getIndependentCache( 'authorPanel' . $u->id )->delete();
       }
    }
 

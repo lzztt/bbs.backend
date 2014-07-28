@@ -3,23 +3,19 @@
 namespace site;
 
 use site\Cache;
+use site\CacheHandler;
 
 /**
- * @property string $uri URI key for page cache
- * @property \site\SegmentCache "[]" $segments segments for page cache
- * @property string $data caching data
- * @property \lzx\db\DB $_db cache tree database
+ * @property \site\SegmentCache[] $segments segments for page cache
  */
 class PageCache extends Cache
 {
 
-   static public $path = '/tmp/www.houstonbbs.com/public';
    static protected $_format = '.html.gz';
    protected $_segments = [ ];
 
    /**
     * 
-    * @param type $key
     * @return SegmentCache
     */
    public function getSegment( $key )
@@ -36,16 +32,15 @@ class PageCache extends Cache
 
    public function flush()
    {
-      if ( self::$status )
+      if ( $this->_dirty )
       {
-         $this->_initDB();
-         $this->_id = $this->_getID();
+         $this->_id = self::$_handler->getID( $this->_key );
 
-         // unlink exiting parent cache nodes
-         $this->_unlinkParents();
+         // unlink existing parent cache nodes
+         self::$_handler->unlinkParents( $this->_id );
 
          // update self
-         if ( $this->_isDeleted )
+         if ( $this->_deleted )
          {
             // delete self
             $this->_deleteDataFile();
@@ -72,12 +67,14 @@ class PageCache extends Cache
                }
 
                // link to current parent nodes
-               $this->_linkParents();
+               self::$_handler->linkParents( $this->_id, $this->_parents );
             }
          }
 
          // flush/delete child cache nodes
          $this->_deleteChildren();
+
+         $this->_dirty = FALSE;
       }
    }
 

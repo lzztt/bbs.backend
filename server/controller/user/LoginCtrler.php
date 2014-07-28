@@ -19,6 +19,7 @@ class LoginCtrler extends User
       {
          // display login form
          $this->_displayLogin();
+         return;
       }
       else
       {
@@ -30,7 +31,8 @@ class LoginCtrler extends User
             {
                $this->_setUser( $user->id );
                $uri = $this->_getLoginRedirect();
-               $this->request->redirect( $uri ? $uri : '/'  );
+               $this->redirect = ( $uri ? $uri : '/'  );
+               return;
             }
             else
             {

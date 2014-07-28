@@ -31,7 +31,7 @@ class LogoutCtrler extends Wedding
       {
          $uri = $defaultRedirect;
       }
-      $this->request->redirect( $uri );
+      $this->redirect = $uri;
    }
 
 }

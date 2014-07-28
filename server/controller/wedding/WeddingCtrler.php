@@ -10,6 +10,7 @@ namespace site\controller\wedding;
 
 use site\controller\Wedding;
 use lzx\html\Template;
+use site\PageCache;
 
 /**
  * Description of Wedding
@@ -21,6 +22,8 @@ class WeddingCtrler extends Wedding
 
    public function run()
    {
+      $this->cache = new PageCache( $this->request->uri );
+      
       $this->html->var[ 'body' ] = new Template( 'join_form' );
    }
 

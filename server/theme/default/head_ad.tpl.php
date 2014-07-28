@@ -2,7 +2,7 @@
    <a href="http://www.llestudyusa.com" target="_blank"><img width="468px" height="60px" src="/data/ad/lles-1.jpg" alt=""></a>
 </div>
 <div id="ad02" class="ad0" style="width:468px; height:60px; right:468px">
-   <a href="http://www.llestudyusa.com" target="_blank"><img width="468px" height="60px" src="/data/ad/alicewang.jpg" alt=""></a>
+   <img width="468px" height="60px" src="/data/ad/alicewang.gif" alt="" />
 </div>
 <div id="ad11" class="ad1">
    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
