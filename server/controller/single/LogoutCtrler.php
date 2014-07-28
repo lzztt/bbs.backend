@@ -20,7 +20,7 @@ class LogoutCtrler extends Single
       {
          $uri = $defaultRedirect;
       }
-      $this->request->redirect( $uri );
+      $this->redirect = $uri;
    }
 
 }

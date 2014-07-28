@@ -6,7 +6,6 @@ use lzx\core\Request;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use site\PageCache;
 use lzx\core\Session;
 use lzx\core\Cookie;
 
@@ -21,10 +20,20 @@ class ControllerFactory
 
    protected static $_route = [ ];
 
-   public static function create( Request $req, Template $html, Config $config, Logger $logger, PageCache $cache, Session $session, Cookie $cookie, $forwardURI = NULL )
+   /**
+    * 
+    * @param \lzx\core\Request $req
+    * @param \lzx\html\Template $html
+    * @param \site\Config $config
+    * @param \lzx\core\Logger $logger
+    * @param \lzx\core\Session $session
+    * @param \lzx\core\Cookie $cookie
+    * @return \site\Controller
+    */
+   public static function create( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
    {
       $id = NULL;
-      $args = $req->getURIargs( $forwardURI ? $forwardURI : $req->uri  );
+      $args = $req->getURIargs( $req->uri );
       $count = \sizeof( $args );
       if ( $count == 0 )
       {
@@ -61,14 +70,14 @@ class ControllerFactory
       $ctrlerClass = static::$_route[ $ctrler ];
       if ( $ctrlerClass )
       {
-         $ctrlerObj = new $ctrlerClass( $req, $html, $config, $logger, $cache, $session, $cookie );
+         $ctrlerObj = new $ctrlerClass( $req, $html, $config, $logger, $session, $cookie );
          $ctrlerObj->args = $args;
          $ctrlerObj->id = $id;
          return $ctrlerObj;
       }
 
       // cannot find a controller
-      $req->pageNotFound( 'controller not found :(' );
+      throw new \Exception( 'controller not found :(' );
    }
 
 }

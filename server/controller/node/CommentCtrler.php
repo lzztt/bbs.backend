@@ -13,11 +13,11 @@ class CommentCtrler extends Node
 
    public function run()
    {
-      $this->cache->setStatus( FALSE );
-      
       list($nid, $type) = $this->_getNodeType();
       $method = '_comment' . $type;
       $this->$method( $nid );
+
+      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
    }
 
    private function _commentForumTopic( $nid )
@@ -98,27 +98,25 @@ class CommentCtrler extends Node
       {
          $file = new Image();
          $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $nid, $comment->id );
-         $this->cache->delete( 'imageSlider' );
+         $this->_getIndependentCache( 'imageSlider' )->delete();
       }
 
       $user->points += 1;
       $user->update( 'points' );
 
-      $this->cache->delete( '/node/' . $nid );
-      $this->cache->delete( '/forum/' . $node->tid );
-      $this->cache->delete( 'latestForumTopicReplies' );
+      $this->_getCacheEvent( 'ForumComment' )->trigger();
+      $this->_getCacheEvent( 'ForumUpdate' . $node->tid )->trigger();
+
       if ( \in_array( $nid, $node->getHotForumTopicNIDs( 15, $this->request->timestamp - 604800 ) ) )
       {
-         $this->cache->delete( 'hotForumTopics' );
+         $this->_getIndependentCache( 'hotForumTopics' )->delete();
       }
 
-      //$pageNoLast = ceil(($node->commentCount + 1) / self::COMMENTS_PER_PAGE);
-      $redirect_uri = '/node/' . $nid . '?page=last#comment' . $comment->id;
-      $this->request->redirect( $redirect_uri );
+      $this->redirect = '/node/' . $nid . '?page=last#comment' . $comment->id;
    }
 
    private function _commentYellowPage( $nid )
-   { 
+   {
       // create new comment
       $node = new NodeObject( $nid, 'status' );
 
@@ -203,11 +201,9 @@ class CommentCtrler extends Node
       $user->points += 1;
       $user->update( 'points' );
 
-      $this->cache->delete( '/node/' . $nid );
-      $this->cache->delete( 'latestYellowPageReplies' );
+      $this->_getCacheEvent( 'YellowPageComment' )->trigger();
 
-      $redirect_uri = '/node/' . $nid . '?page=last#comment' . $comment->id;
-      $this->request->redirect( $redirect_uri );
+      $this->redirect = '/node/' . $nid . '?page=last#comment' . $comment->id;
    }
 
 }

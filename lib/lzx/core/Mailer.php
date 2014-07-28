@@ -11,7 +11,7 @@ class Mailer
    public $subject;
    public $is_html = FALSE;
    public $body;
-   public $signature = "\n\n-----------------\nThe HoustonBBS Team";
+   public $signature;
 
    public function __construct( $from = 'noreply', $domain = NULL )
    {
@@ -21,26 +21,26 @@ class Mailer
       }
       else
       {
-         $this->domain = \implode( '.', \array_slice( \explode( '.', $_SERVER['HTTP_HOST'] ), -2 ) );
+         $this->domain = \implode( '.', \array_slice( \explode( '.', $_SERVER[ 'HTTP_HOST' ] ), -2 ) );
       }
       $this->from = $from;
    }
 
    public function send()
    {
-      $headers = 'From: HoustonBBS <' . $this->from . '@' . $this->domain . '>' . \PHP_EOL .
+      $headers = 'From: ' . $this->from . '@' . $this->domain . \PHP_EOL .
          'Reply-To: ' . $this->from . '@' . $this->domain . \PHP_EOL .
          'Sender: ' . $this->from . '@' . $this->domain . \PHP_EOL .
          'MIME-Version: 1.0' . \PHP_EOL .
          'Content-Type: text/' . ($this->is_html ? 'html' : 'plain') . '; charset=utf-8; format=flowed; delsp=yes' . \PHP_EOL .
-         'X-Mailer: HoustonBBSMailer';
+         'X-Mailer: WebMailer';
 
       if ( !(isset( $this->to ) && isset( $this->subject ) && isset( $this->body )) )
       {
          return FALSE;
       }
 
-      $subject = "=?UTF-8?B?" . \base64_encode( trim( str_replace( ["\r", \PHP_EOL, "\r\n"], "", $this->subject ) ) ) . "?=";
+      $subject = "=?UTF-8?B?" . \base64_encode( \trim( \str_replace( ["\r", \PHP_EOL, "\r\n" ], "", $this->subject ) ) ) . "?=";
       $body = $this->body . $this->signature;
 
       if ( \mail( $this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain ) )

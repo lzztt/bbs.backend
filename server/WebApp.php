@@ -8,17 +8,16 @@ use lzx\db\DB;
 use lzx\core\Request;
 use lzx\core\Session;
 use lzx\core\Cookie;
-use lzx\core\Cache;
 use lzx\html\Template;
 use site\Config;
 use site\SessionHandler;
 use site\ControllerRouter;
-use site\PageCache;
+use site\Cache;
+use site\CacheEvent;
 
 /**
  *
  * @property lzx\core\DB $db
- * @property lzx\core\Cache $cache
  * @property lzx\core\Request $request
  * @property lzx\core\Session $session
  * @property lzx\core\Logger $logger
@@ -44,24 +43,35 @@ class WebApp extends App
 
       // load configuration
       $this->config = new Config();
-      // display errors on page if not in production stage
-      Handler::$displayError = ($this->config->stage !== Config::STAGE_PRODUCTION);
+      // display errors on page, turn on debug for DEV stage
+      if ( $this->config->stage === Config::STAGE_DEVELOPMENT )
+      {
+         Handler::$displayError = TRUE;
+         DB::$debug = TRUE;
+         Template::$debug = TRUE;
+      }
+      else
+      {
+         Handler::$displayError = FALSE;
+         DB::$debug = FALSE;
+         Template::$debug = FALSE;
+      }
 
       $this->setLogDir( $this->config->path[ 'log' ] );
       $this->setLogMailer( $this->config->webmaster );
 
-      // enable cache if cache not set and not in developemtn stage
-      if ( \is_null( $this->config->cache ) )
-      {
-         $this->config->cache = ($this->config->stage !== Config::STAGE_DEVELOPMENT);
-      }
+      // config template
+      Template::setLogger( $this->logger );
+      Template::$path = $this->config->path[ 'theme' ];
+      Template::$theme = $this->config->theme[ 'default' ];
+      Template::$language = $this->config->language;
 
       // website is offline
       if ( $this->config->mode === Config::MODE_OFFLINE )
       {
          $offline_file = $this->config->path[ 'file' ] . '/offline.txt';
          $output = \is_file( $offline_file ) ? \file_get_contents( $offline_file ) : 'Website is currently offline. Please visit later.';
-         // page exit
+         // offline page exit
          \header( 'Content-Type: text/html; charset=UTF-8' );
          exit( $output );
       }
@@ -81,13 +91,19 @@ class WebApp extends App
       $request = $this->getRequest();
       $request->get = \array_intersect_key( $request->get, \array_flip( $this->config->getkeys ) );
 
+      // initialize database connection
       $db = DB::getInstance( $this->config->db );
 
-      if ( $this->config->stage !== Config::STAGE_PRODUCTION ) // DEV or TEST stage
+      // config cache
+      if ( $this->config->cache )
       {
-         $db->debugMode = TRUE;
+         Cache::$path = $this->config->path[ 'cache' ];
+         $cacheHandler = CacheHandler::getInstance();
+         Cache::setHandler( $cacheHandler );
+         CacheEvent::setHandler( $cacheHandler );
       }
 
+      // initialize cookie and session
       if ( !\array_key_exists( 'nosession', $request->get ) )
       {
          // get cookie
@@ -114,52 +130,42 @@ class WebApp extends App
          . ' urole=' . (isset( $cookie->urole ) ? $cookie->urole : 'guest');
       $this->logger->setUserInfo( $userinfo );
 
-      // set request uid based on session uid
-      $request->uid = \intval( $session->uid );
+      // update request uid based on session uid
+      $request->uid = (int) $session->uid;
 
-      // start cache
-      PageCache::$path = $this->config->path[ 'cache' ] . '/public';
-      SegmentCache::$path = $this->config->path[ 'cache' ] . '/private';
-      PageCache::$status = $this->config->cache;
-      $cache = new PageCache( $request->uri );
-
-      // start template
-      Template::setLogger( $this->logger );
-      Template::$theme = $this->config->theme[ 'default' ];
-      Template::$path = $this->config->path[ 'theme' ];
-      Template::$language = $this->config->language;
-      $html = new Template( 'html' );
-      $html->var[ 'domain' ] = $this->config->domain;
-
-      $ctrler = ControllerRouter::create( $request, $html, $this->config, $this->logger, $cache, $session, $cookie );
+      $ctrler = ControllerRouter::create( $request, new Template( 'html' ), $this->config, $this->logger, $session, $cookie );
       $ctrler->run();
 
+      // redirect
+      if ( $ctrler->redirect )
+      {
+         \header( 'Location: ' . $ctrler->redirect );
+      }
+      else
+      {
+         // output page content
+         \header( 'Content-Type: text/html; charset=UTF-8' );
+         echo $ctrler->html;
+      }
+      // FINISH request process
+      if ( !DB::$debug )
+      {
+         \fastcgi_finish_request();
+      }
+
+      // do extra clean up and heavy stuff here
       $session->close();
 
-      $html = (string) $html;
+      echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
+      echo $userinfo . \PHP_EOL;
+      echo \print_r( $db->queries, TRUE );
+      $db->flush();
 
-      // output page content
-      \header( 'Content-Type: text/html; charset=UTF-8' );
-      echo $html;
-      \flush();
+      // do controller cleanup
+      unset( $ctrler );
 
-      if ( $this->config->stage !== Config::STAGE_PRODUCTION ) // DEV or TEST stage
-      {
-         echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
-         echo $userinfo . \PHP_EOL;
-         echo \print_r( $db->queries, TRUE ) . '</pre>';
-      }
-
-      \fastcgi_finish_request();
-
-      // FINISH request process,
-      // do heavy clean up here
-
-      if ( Template::getStatus() === TRUE )
-      {
-         $cache->store( $html );
-         $cache->flush();
-      }
+      // print post-processing queries
+      echo \print_r( $db->queries, TRUE ) . '</pre>';
    }
 
    /**

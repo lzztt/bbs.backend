@@ -32,7 +32,8 @@ class LoginCtrler extends Wedding
             $this->session->loginStatus = TRUE;
             $uri = $this->session->loginRedirect;
             unset( $this->session->loginRedirect );
-            $this->request->redirect( $uri ? $uri : $defaultRedirect  );
+            $this->redirect = ( $uri ? $uri : $defaultRedirect );
+            return;
          }
       }
 
