@@ -21,12 +21,10 @@ class CaptchaCtrler extends Captcha
       $code_length = 5;
       $code = \substr( \str_shuffle( $chars ), 0, $code_length );
       $this->session->captcha = $code;
-      $this->session->close();
 
       // generate the image
-      $image = $this->_generate_image( \str_split( $code ), 'jpeg' );
       \header( 'Content-type: image/jpeg' );
-      exit( $image );
+      $this->html = $this->_generate_image( \str_split( $code ), 'jpeg' );
    }
 
    public static function checkCaptcha()

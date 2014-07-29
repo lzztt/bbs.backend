@@ -76,13 +76,15 @@ class WebApp extends App
     */
    public function run( $argc = 0, Array $argv = [ ] )
    {
+      // set output header
+      \header( 'Content-Type: text/html; charset=UTF-8' );
+
       // website is offline
       if ( $this->config->mode === Config::MODE_OFFLINE )
       {
          $offline_file = $this->config->path[ 'file' ] . '/offline.txt';
          $output = \is_file( $offline_file ) ? \file_get_contents( $offline_file ) : 'Website is currently offline. Please visit later.';
          // return offline page
-         \header( 'Content-Type: text/html; charset=UTF-8' );
          echo $output;
          return;
       }
@@ -144,7 +146,6 @@ class WebApp extends App
          switch ( $exCode )
          {
             case ControllerException::PAGE_NOTFOUND:
-               \header( 'Content-Type: text/html; charset=UTF-8' );
                \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
                echo ( $exMessage ? $exMessage : '404 Not Found :(' );
                // finish request processing
@@ -156,7 +157,6 @@ class WebApp extends App
                return;
                break;
             case ControllerException::PAGE_FORBIDDEN:
-               \header( 'Content-Type: text/html; charset=UTF-8' );
                \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
                echo ( $exMessage ? $exMessage : '403 Forbidden :(' );
                // finish request processing
@@ -177,7 +177,6 @@ class WebApp extends App
                break;
             default:
                // PAGE_ERROR and others
-               \header( 'Content-Type: text/html; charset=UTF-8' );
                $ctrler->html->error( $exMessage );
                echo (string) $ctrler->html;
                // finish request processing
@@ -193,7 +192,6 @@ class WebApp extends App
       // output page content, if we didn't get an exception
       if ( !isset( $exCode ) )
       {
-         \header( 'Content-Type: text/html; charset=UTF-8' );
          echo $ctrler->html;
 
          // FINISH request processing
