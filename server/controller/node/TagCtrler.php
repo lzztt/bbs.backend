@@ -36,7 +36,7 @@ class TagCtrler extends Node
             $this->_getIndependentCache( $key )->delete();
          }
 
-         $this->redirect = '/node/' . $nid;
+         $this->pageRedirect( '/node/' . $nid );
          return;
       }
       else

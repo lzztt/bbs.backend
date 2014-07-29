@@ -19,7 +19,7 @@ class AdmCtrler extends Adm
 
    public function run()
    {
-      $this->redirect = '/adm/ad';
+      $this->pageRedirect( '/adm/ad' );
    }
 
 }

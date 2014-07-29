@@ -66,7 +66,7 @@ class NodeCtrler extends YP
             $this->_getIndependentCache( $key )->delete();
          }
 
-         $this->redirect = '/node/' . $node->id;
+         $this->pageRedirect( '/node/' . $node->id );
       }
    }
 

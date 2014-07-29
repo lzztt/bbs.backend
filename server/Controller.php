@@ -46,7 +46,6 @@ abstract class Controller extends LzxCtrler
    public $id;
    public $config;
    public $cache;
-   public $redirect = NULL;
    protected $_independentCacheList = [ ];
    protected $_cacheEvents = [ ];
 

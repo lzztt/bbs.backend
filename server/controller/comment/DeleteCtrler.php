@@ -50,7 +50,7 @@ class DeleteCtrler extends Comment
 
       $comment->delete();
 
-      $this->redirect = $this->request->referer;
+      $this->pageRedirect( $this->request->referer );
    }
 
 }

@@ -16,8 +16,6 @@ class CommentCtrler extends Node
       list($nid, $type) = $this->_getNodeType();
       $method = '_comment' . $type;
       $this->$method( $nid );
-
-      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
    }
 
    private function _commentForumTopic( $nid )
@@ -91,7 +89,7 @@ class CommentCtrler extends Node
          }
 
          $this->logger->error( ' --comment-- ' . $this->request->post[ 'body' ] );
-         $this->error( $e->getMessage(), TRUE );
+         $this->error( $e->getMessage() );
       }
 
       if ( $this->request->post[ 'files' ] )
@@ -104,6 +102,7 @@ class CommentCtrler extends Node
       $user->points += 1;
       $user->update( 'points' );
 
+      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
       $this->_getCacheEvent( 'ForumComment' )->trigger();
       $this->_getCacheEvent( 'ForumUpdate' . $node->tid )->trigger();
 
@@ -112,7 +111,7 @@ class CommentCtrler extends Node
          $this->_getIndependentCache( 'hotForumTopics' )->delete();
       }
 
-      $this->redirect = '/node/' . $nid . '?page=last#comment' . $comment->id;
+      $this->pageRedirect( '/node/' . $nid . '?page=last#comment' . $comment->id );
    }
 
    private function _commentYellowPage( $nid )
@@ -186,7 +185,7 @@ class CommentCtrler extends Node
          }
 
          $this->logger->error( ' --comment-- ' . $this->request->post[ 'body' ] );
-         $this->error( $e->getMessage(), TRUE );
+         $this->error( $e->getMessage() );
       }
 
       if ( isset( $this->request->post[ 'star' ] ) && \is_numeric( $this->request->post[ 'star' ] ) )
@@ -201,9 +200,10 @@ class CommentCtrler extends Node
       $user->points += 1;
       $user->update( 'points' );
 
+      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
       $this->_getCacheEvent( 'YellowPageComment' )->trigger();
 
-      $this->redirect = '/node/' . $nid . '?page=last#comment' . $comment->id;
+      $this->pageRedirect( '/node/' . $nid . '?page=last#comment' . $comment->id );
    }
 
 }
