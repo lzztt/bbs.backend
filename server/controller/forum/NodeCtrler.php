@@ -90,7 +90,7 @@ class NodeCtrler extends Forum
          }
 
          $this->logger->error( ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ] );
-         $this->error( $e->getMessage(), TRUE );
+         $this->error( $e->getMessage() );
       }
 
 
@@ -111,7 +111,7 @@ class NodeCtrler extends Forum
          $this->_getIndependentCache( 'latestImmigrationPosts' )->delete();
       }
 
-      $this->redirect = '/node/' . $node->id;
+      $this->pageRedirect( '/node/' . $node->id );
    }
 
 }

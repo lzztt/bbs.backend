@@ -14,13 +14,11 @@ use site\SessionHandler;
 use site\ControllerRouter;
 use site\Cache;
 use site\CacheEvent;
+use lzx\core\ControllerException;
 
 /**
  *
- * @property lzx\core\DB $db
- * @property lzx\core\Request $request
  * @property lzx\core\Session $session
- * @property lzx\core\Logger $logger
  * @property site\Config $config
  */
 // cookie->uid
@@ -57,24 +55,14 @@ class WebApp extends App
          Template::$debug = FALSE;
       }
 
-      $this->setLogDir( $this->config->path[ 'log' ] );
-      $this->setLogMailer( $this->config->webmaster );
+      $this->logger->setDir( $this->config->path[ 'log' ] );
+      $this->logger->setEmail( $this->config->webmaster );
 
       // config template
       Template::setLogger( $this->logger );
       Template::$path = $this->config->path[ 'theme' ];
       Template::$theme = $this->config->theme[ 'default' ];
       Template::$language = $this->config->language;
-
-      // website is offline
-      if ( $this->config->mode === Config::MODE_OFFLINE )
-      {
-         $offline_file = $this->config->path[ 'file' ] . '/offline.txt';
-         $output = \is_file( $offline_file ) ? \file_get_contents( $offline_file ) : 'Website is currently offline. Please visit later.';
-         // offline page exit
-         \header( 'Content-Type: text/html; charset=UTF-8' );
-         exit( $output );
-      }
    }
 
    // controller will handle all exceptions and local languages
@@ -88,6 +76,17 @@ class WebApp extends App
     */
    public function run( $argc = 0, Array $argv = [ ] )
    {
+      // website is offline
+      if ( $this->config->mode === Config::MODE_OFFLINE )
+      {
+         $offline_file = $this->config->path[ 'file' ] . '/offline.txt';
+         $output = \is_file( $offline_file ) ? \file_get_contents( $offline_file ) : 'Website is currently offline. Please visit later.';
+         // return offline page
+         \header( 'Content-Type: text/html; charset=UTF-8' );
+         echo $output;
+         return;
+      }
+
       $request = $this->getRequest();
       $request->get = \array_intersect_key( $request->get, \array_flip( $this->config->getkeys ) );
 
@@ -134,31 +133,84 @@ class WebApp extends App
       $request->uid = (int) $session->uid;
 
       $ctrler = ControllerRouter::create( $request, new Template( 'html' ), $this->config, $this->logger, $session, $cookie );
-      $ctrler->run();
-
-      // redirect
-      if ( $ctrler->redirect )
+      try
       {
-         \header( 'Location: ' . $ctrler->redirect );
+         $ctrler->run();
       }
-      else
+      catch ( ControllerException $ex )
       {
-         // output page content
+         $exCode = $ex->getCode();
+         $exMessage = $ex->getMessage();
+         switch ( $exCode )
+         {
+            case ControllerException::PAGE_NOTFOUND:
+               \header( 'Content-Type: text/html; charset=UTF-8' );
+               \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
+               echo ( $exMessage ? $exMessage : '404 Not Found :(' );
+               // finish request processing
+               \fastcgi_finish_request();
+
+               // flush the log and return
+               $this->logger->flush();
+
+               return;
+               break;
+            case ControllerException::PAGE_FORBIDDEN:
+               \header( 'Content-Type: text/html; charset=UTF-8' );
+               \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
+               echo ( $exMessage ? $exMessage : '403 Forbidden :(' );
+               // finish request processing
+               \fastcgi_finish_request();
+
+               // flush the log and return
+               $this->logger->flush();
+               return;
+               break;
+            case ControllerException::PAGE_REDIRECT:
+               \header( 'Location: ' . $exMessage );
+               // finish request processing
+               \fastcgi_finish_request();
+
+               // unset output
+               $ctrler->html = NULL;
+               // continue
+               break;
+            default:
+               // PAGE_ERROR and others
+               \header( 'Content-Type: text/html; charset=UTF-8' );
+               $ctrler->html->error( $exMessage );
+               echo (string) $ctrler->html;
+               // finish request processing
+               \fastcgi_finish_request();
+
+               // flush the log and return
+               $this->logger->flush();
+               return;
+               break;
+         }
+      }
+
+      // output page content, if we didn't get an exception
+      if ( !isset( $exCode ) )
+      {
          \header( 'Content-Type: text/html; charset=UTF-8' );
          echo $ctrler->html;
-      }
-      // FINISH request process
-      if ( !DB::$debug )
-      {
-         \fastcgi_finish_request();
+
+         // FINISH request processing
+         if ( !DB::$debug )
+         {
+            \fastcgi_finish_request();
+         }
       }
 
-      // do extra clean up and heavy stuff here
+      // do extra clean up
+      // and heavy stuff here
       $session->close();
 
       echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
       echo $userinfo . \PHP_EOL;
       echo \print_r( $db->queries, TRUE );
+
       $db->flush();
 
       // do controller cleanup
@@ -166,6 +218,9 @@ class WebApp extends App
 
       // print post-processing queries
       echo \print_r( $db->queries, TRUE ) . '</pre>';
+
+      // flush logger
+      $this->logger->flush();
    }
 
    /**

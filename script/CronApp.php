@@ -32,7 +32,7 @@ class CronApp extends App
       $this->timestamp = \intval( $_SERVER['REQUEST_TIME'] );
       $this->config = new Config();
       $this->logger->setUserInfo( 'uid=cron umode=cli urole=adm' );
-      $this->logger->setLogDir( $this->config->path['log'] );
+      $this->logger->setDir( $this->config->path['log'] );
       if ( \filter_var( $this->config->webmaster, \FILTER_VALIDATE_EMAIL ) )
       {
          $mailer = new Mailer( 'logger' );

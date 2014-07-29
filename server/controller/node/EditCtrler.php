@@ -50,7 +50,8 @@ class EditCtrler extends Node
       }
       catch ( \Exception $e )
       {
-         $this->error( $e->getMessage(), TRUE );
+         $this->logger->error( $e->getMessage() );
+         $this->error( $e->getMessage() );
       }
 
       $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
@@ -60,7 +61,7 @@ class EditCtrler extends Node
       $this->_getCacheEvent( 'ImageUpdate' . $nid )->trigger();
       $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
 
-      $this->redirect = $this->request->referer;
+      $this->pageRedirect( $this->request->referer );
    }
 
    private function _editYellowPage( $nid )
@@ -106,7 +107,7 @@ class EditCtrler extends Node
 
          $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
 
-         $this->redirect = '/node/' . $nid;
+         $this->pageRedirect( '/node/' . $nid );
       }
    }
 

@@ -32,9 +32,10 @@ class EditCtrler extends Comment
       {
          $comment->update( 'body,lastModifiedTime' );
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
-         $this->error( $e->getMessage(), TRUE );
+         $this->logger->error( $e->getMessage() );
+         $this->error( $e->getMessage() );
       }
 
       // FORUM comments images
@@ -59,7 +60,7 @@ class EditCtrler extends Comment
 
       $this->_getIndependentCache( '/node/' . $comment->nid )->delete();
 
-      $this->redirect = $this->request->referer;
+      $this->pageRedirect( $this->request->referer );
    }
 
 }

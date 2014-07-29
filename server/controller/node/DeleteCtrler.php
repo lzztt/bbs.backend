@@ -51,7 +51,7 @@ class DeleteCtrler extends Node
       $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
       $this->_getCacheEvent( 'ForumUpdate' . $node->tid )->trigger();
 
-      $this->redirect = '/forum/' . $node->tid;
+      $this->pageRedirect( '/forum/' . $node->tid );
    }
 
    private function _deleteYellowPage( $nid )
@@ -71,7 +71,7 @@ class DeleteCtrler extends Node
       $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
       $this->_getCacheEvent( 'YellowPageUpdate' . $node->tid )->trigger();
 
-      $this->redirect = '/yp/' . $node->tid;
+      $this->pageRedirect( '/yp/' . $node->tid );
    }
 
 }
