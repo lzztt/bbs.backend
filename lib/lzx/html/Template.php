@@ -33,18 +33,20 @@ class Template
    public $var = [ ]; // controller need to fill this array (or an array Theme can access)
    private $_errors = [ ];
    private $_observers;
+   private $_string;
 
    /**
     * Observer design pattern interfaces
     */
    public function attach( Controller $observer )
    {
-      $this->_observers->attach($observer);;
+      $this->_observers->attach( $observer );
+      ;
    }
 
    public function detach( Controller $observer )
    {
-      $this->_observers->detach($observer);
+      $this->_observers->detach( $observer );
    }
 
    public function notify()
@@ -72,9 +74,16 @@ class Template
 
    public function __toString()
    {
+      // return from string cache
+      if ( $this->_string )
+      {
+         return $this->_string;
+      }
+
+      // build the template
       // notify observers
       $this->notify();
-      
+
       try
       {
          if ( $this->_errors )
@@ -107,10 +116,10 @@ class Template
             $urole_user = self::UROLE_USER;
             $urole_adm = self::UROLE_ADM;
 
-            \ob_start();                 // Start output buffering
-            include $tpl_file;      // Include the template file
-            $output = \ob_get_contents();   // Get the contents of the buffer
-            \ob_end_clean();                // End buffering and discard
+            \ob_start();                     // Start output buffering
+            include $tpl_file;               // Include the template file
+            $output = \ob_get_contents();    // Get the contents of the buffer
+            \ob_end_clean();                 // End buffering and discard
          }
       }
       catch ( \Exception $e )
@@ -124,6 +133,8 @@ class Template
          $output = 'template parsing error: [' . $tpl_theme . ':' . $tpl . ']';
       }
 
+      // save to cache
+      $this->_string = $output;
       return $output;
    }
 

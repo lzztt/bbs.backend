@@ -7,6 +7,7 @@ use lzx\html\Template;
 use lzx\core\Logger;
 use lzx\core\Session;
 use lzx\core\Cookie;
+use lzx\core\ControllerException;
 
 // only controller will handle all exceptions and local languages
 // other classes will report status to controller
@@ -51,30 +52,24 @@ abstract class Controller
     */
    abstract public function update( Template $html );
 
-   protected function error( $msg, $log = FALSE )
+   protected function error( $msg )
    {
-      if ( $log )
-      {
-         $this->logger->error( $msg );
-      }
-      $this->html->error( $msg );
-
-      \header( 'Content-Type: text/html; charset=UTF-8' );
-      exit( (string) $this->html );
+      throw new ControllerException( $msg, ControllerException::PAGE_ERROR );
    }
 
    public function pageNotFound( $msg = NULL )
    {
-      \header( 'Content-Type: text/html; charset=UTF-8' );
-      \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
-      exit( $msg ? $msg : '404 Not Found :('  );
+      throw new ControllerException( $msg, ControllerException::PAGE_NOTFOUND );
    }
 
    public function pageForbidden( $msg = NULL )
    {
-      \header( 'Content-Type: text/html; charset=UTF-8' );
-      \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
-      exit( $msg ? $msg : '403 Forbidden :('  );
+      throw new ControllerException( $msg, ControllerException::PAGE_FORBIDDEN );
+   }
+
+   protected function pageRedirect( $uri )
+   {
+      throw new ControllerException( $uri, ControllerException::PAGE_REDIRECT );
    }
 
 }

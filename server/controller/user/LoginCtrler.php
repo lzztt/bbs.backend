@@ -31,8 +31,7 @@ class LoginCtrler extends User
             {
                $this->_setUser( $user->id );
                $uri = $this->_getLoginRedirect();
-               $this->redirect = ( $uri ? $uri : '/'  );
-               return;
+               $this->pageRedirect( $uri ? $uri : '/'  );
             }
             else
             {

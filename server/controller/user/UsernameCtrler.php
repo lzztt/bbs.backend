@@ -14,8 +14,7 @@ class UsernameCtrler extends User
    {
       if ( $this->request->uid != self::GUEST_UID )
       {
-         $this->redirect = '/user';
-         return;
+         $this->pageRedirect( '/user' );
       }
 
       if ( empty( $this->request->post ) )

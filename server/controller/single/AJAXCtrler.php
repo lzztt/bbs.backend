@@ -100,7 +100,7 @@ class AJAXCtrler extends Single
    protected function error( $msg )
    {
       $this->ajax( ['error' => $msg ] );
-      exit( (string) $this->html );
+      parent::error( $this->html );
    }
 
 }
