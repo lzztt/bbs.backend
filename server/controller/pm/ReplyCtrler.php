@@ -48,7 +48,7 @@ class ReplyCtrler extends PM
          $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
       }
 
-      $this->redirect = '/pm/' . $topicID;
+      $this->pageRedirect( '/pm/' . $topicID );
    }
 
 }

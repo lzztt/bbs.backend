@@ -18,8 +18,7 @@ class LoginCtrler extends Single
             $this->session->loginStatus = TRUE;
             $uri = $this->session->loginRedirect;
             unset( $this->session->loginRedirect );
-            $this->redirect = ( $uri ? $uri : $defaultRedirect  );
-            return;
+            $this->pageRedirect( $uri ? $uri : $defaultRedirect  );
          }
       }
 
