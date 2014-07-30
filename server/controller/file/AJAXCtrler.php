@@ -31,13 +31,6 @@ class AJAXCtrler extends File
       {
          $res = ['error' => $res ];
       }
-      elseif ( \is_array( $res ) )
-      {
-         foreach ( $res[ 'error' ] as $i => $f )
-         {
-            $res[ 'error' ][ $i ][ 'error' ] = $f[ 'error' ];
-         }
-      }
 
       $this->ajax( $res );
    }
