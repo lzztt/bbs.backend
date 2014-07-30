@@ -12,8 +12,9 @@ use lzx\html\Template;
 use site\Config;
 use site\SessionHandler;
 use site\ControllerRouter;
-use site\Cache;
-use site\CacheEvent;
+use lzx\cache\Cache;
+use lzx\cache\CacheEvent;
+use lzx\cache\CacheHandler;
 use lzx\core\ControllerException;
 
 /**
@@ -98,7 +99,7 @@ class WebApp extends App
       // config cache
       if ( $this->config->cache )
       {
-         Cache::$path = $this->config->path[ 'cache' ];
+         CacheHandler::$path = $this->config->path[ 'cache' ];
          $cacheHandler = CacheHandler::getInstance();
          Cache::setHandler( $cacheHandler );
          CacheEvent::setHandler( $cacheHandler );
@@ -139,15 +140,14 @@ class WebApp extends App
       {
          $ctrler->run();
       }
-      catch ( ControllerException $ex )
+      catch ( ControllerException $e )
       {
-         $exCode = $ex->getCode();
-         $exMessage = $ex->getMessage();
-         switch ( $exCode )
+         $msg = $e->getMessage();
+         switch ( $e->getCode() )
          {
             case ControllerException::PAGE_NOTFOUND:
                \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
-               echo ( $exMessage ? $exMessage : '404 Not Found :(' );
+               echo ( $msg ? $msg : '404 Not Found :(' );
                // finish request processing
                \fastcgi_finish_request();
 
@@ -158,7 +158,7 @@ class WebApp extends App
                break;
             case ControllerException::PAGE_FORBIDDEN:
                \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
-               echo ( $exMessage ? $exMessage : '403 Forbidden :(' );
+               echo ( $msg ? $msg : '403 Forbidden :(' );
                // finish request processing
                \fastcgi_finish_request();
 
@@ -167,7 +167,7 @@ class WebApp extends App
                return;
                break;
             case ControllerException::PAGE_REDIRECT:
-               \header( 'Location: ' . $exMessage );
+               \header( 'Location: ' . $msg );
                // finish request processing
                \fastcgi_finish_request();
 
@@ -177,7 +177,7 @@ class WebApp extends App
                break;
             default:
                // PAGE_ERROR and others
-               $ctrler->html->error( $exMessage );
+               $ctrler->html->error( $msg );
                echo (string) $ctrler->html;
                // finish request processing
                \fastcgi_finish_request();
@@ -190,32 +190,42 @@ class WebApp extends App
       }
 
       // output page content, if we didn't get an exception
-      if ( !isset( $exCode ) )
+      $outputDebug = ( $this->config->stage == Config::STAGE_DEVELOPMENT && $ctrler->html instanceof Template );
+      if ( $ctrler->html )
       {
          echo $ctrler->html;
+      }
 
-         // FINISH request processing
-         if ( !DB::$debug )
-         {
-            \fastcgi_finish_request();
-         }
+      // FINISH request processing
+      if ( !$outputDebug )
+      {
+         \fastcgi_finish_request();
       }
 
       // do extra clean up
       // and heavy stuff here
       $session->close();
 
-      echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
-      echo $userinfo . \PHP_EOL;
-      echo \print_r( $db->queries, TRUE );
+      if ( $outputDebug )
+      {
+         echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
+         echo $userinfo . \PHP_EOL;
+         echo \print_r( $db->queries, TRUE );
+      }
 
       $db->flush();
 
       // do controller cleanup
+      $_timer = \microtime( TRUE );
       unset( $ctrler );
+      $db->flush();
+      $_timer = \microtime( TRUE ) - $_timer;
 
-      // print post-processing queries
-      echo \print_r( $db->queries, TRUE ) . '</pre>';
+      if ( $outputDebug )
+      {
+         echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
+         echo '</pre>';
+      }
 
       // flush logger
       $this->logger->flush();

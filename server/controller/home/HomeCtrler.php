@@ -8,8 +8,8 @@ use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Activity;
 use site\dbobject\Image;
-use site\PageCache;
-use site\SegmentCache;
+use lzx\cache\PageCache;
+use lzx\cache\SegmentCache;
 
 class HomeCtrler extends Home
 {

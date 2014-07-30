@@ -1,9 +1,9 @@
 <?php
 
-namespace site;
+namespace lzx\cache;
 
-use site\Cache;
-use site\CacheHandler;
+use lzx\cache\Cache;
+use lzx\cache\CacheHandlerInterface;
 
 /**
  * @property Cache[] $_listeners
@@ -19,14 +19,14 @@ class CacheEvent
    protected $_dirty = FALSE;
    protected $_triggered = FALSE;
 
-   static public function setHandler( CacheHandler $handler )
+   static public function setHandler( CacheHandlerInterface $handler )
    {
       self::$_handler = $handler;
    }
 
    public function __construct( $name )
    {
-      $this->_name = $this->_getCleanName( $name );
+      $this->_name = self::$_handler->getCleanName( $name );
    }
 
    public function getName()
@@ -71,7 +71,7 @@ class CacheEvent
             // update current listeners
             foreach ( $this->_listeners as $key )
             {
-               $c = Cache::create( $key );
+               $c = self::$_handler->createCache( $key );
                $c->delete();
                $c->flush();
             }
@@ -81,7 +81,7 @@ class CacheEvent
             // update listeners in DB
             foreach ( self::$_handler->getChildren( $this->_id ) as $key )
             {
-               $c = Cache::create( $key );
+               $c = self::$_handler->createCache( $key );
                $c->delete();
                $c->flush();
             }
@@ -92,27 +92,6 @@ class CacheEvent
          }
          $this->_dirty = FALSE;
       }
-   }
-
-   protected function _getCleanName( $name )
-   {
-      static $names = [ ];
-
-      if ( !\array_key_exists( $name, $names ) )
-      {
-         $_name = \trim( $name );
-
-         if ( \strlen( $_name ) == 0 || \strpos( $_name, ' ' ) !== FALSE )
-         {
-            throw new \Exception( 'error cache event name : ' . $name );
-         }
-
-         $_name = \preg_replace( '/[^0-9a-z\.\_\-]/i', '_', $_name );
-         $names[ $name ] = $_name;
-         return $_name;
-      }
-
-      return $names[ $name ];
    }
 
 }

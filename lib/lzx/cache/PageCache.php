@@ -1,9 +1,9 @@
 <?php
 
-namespace site;
+namespace lzx\cache;
 
-use site\Cache;
-use site\CacheHandler;
+use lzx\cache\Cache;
+use lzx\cache\SegmentCache;
 
 /**
  * @property \site\SegmentCache[] $segments segments for page cache
@@ -11,7 +11,6 @@ use site\CacheHandler;
 class PageCache extends Cache
 {
 
-   static protected $_format = '.html.gz';
    protected $_segments = [ ];
 
    /**
@@ -20,7 +19,7 @@ class PageCache extends Cache
     */
    public function getSegment( $key )
    {
-      $cleanKey = $this->_getCleanKey( $key );
+      $cleanKey = self::$_handler->getCleanName( $key );
 
       if ( !\array_key_exists( $cleanKey, $this->_segments ) )
       {

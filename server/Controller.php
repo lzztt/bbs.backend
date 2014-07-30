@@ -17,9 +17,8 @@ use site\ControllerRouter;
 use site\dbobject\User;
 use site\dbobject\Tag;
 use site\dbobject\SecureLink;
-use site\Cache;
-use site\CacheEvent;
-use lzx\db\DB;
+use lzx\cache\CacheEvent;
+use lzx\cache\CacheHandler;
 
 /**
  *
@@ -140,12 +139,6 @@ abstract class Controller extends LzxCtrler
          $return = \json_encode( $return );
       }
       $this->html = $return;
-
-      if ( DB::$debug )
-      {
-         $this->logger->debug( DB::getInstance()->queries );
-         DB::$debug = FALSE;
-      }
    }
 
    /**
@@ -154,16 +147,13 @@ abstract class Controller extends LzxCtrler
     */
    protected function _getIndependentCache( $key )
    {
-      $cache = Cache::create( $key );
-      if ( \array_key_exists( $cache->getKey(), $this->_independentCacheList ) )
+      $cacheHandler = CacheHandler::getInstance();
+      $_key = $cacheHandler->getCleanName( $key );
+      if ( !\array_key_exists( $_key, $this->_independentCacheList ) )
       {
-         return $this->_independentCacheList[ $cache->getKey() ];
+         $this->_independentCacheList[ $_key ] = $cacheHandler->createCache( $_key );
       }
-      else
-      {
-         $this->_independentCacheList[ $cache->getKey() ] = $cache;
-         return $cache;
-      }
+      return $this->_independentCacheList[ $_key ];
    }
 
    /**
@@ -172,16 +162,13 @@ abstract class Controller extends LzxCtrler
     */
    protected function _getCacheEvent( $name )
    {
-      $event = new CacheEvent( $name );
-      if ( \array_key_exists( $event->getName(), $this->_cacheEvents ) )
+      $cacheHandler = CacheHandler::getInstance();
+      $_name = $cacheHandler->getCleanName( $name );
+      if ( !\array_key_exists( $_name, $this->_cacheEvents ) )
       {
-         return $this->_cacheEvents[ $event->getName() ];
+         $this->_cacheEvents[ $_name ] = new CacheEvent( $_name );
       }
-      else
-      {
-         $this->_cacheEvents[ $event->getName() ] = $event;
-         return $event;
-      }
+      return $this->_cacheEvents[ $_name ];
    }
 
    protected function _forward( $uri )
