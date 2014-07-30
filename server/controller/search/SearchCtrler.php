@@ -3,7 +3,7 @@
 namespace site\controller\search;
 
 use site\controller\Search;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 class SearchCtrler extends Search
 {

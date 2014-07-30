@@ -1,14 +1,11 @@
 <?php
 
-namespace site;
+namespace lzx\cache;
 
-use site\Cache;
-use site\CacheHandler;
+use lzx\cache\Cache;
 
 class SegmentCache extends Cache
 {
-
-   static protected $_format = '.txt';
 
    /**
     * fetch segment data from cache
@@ -60,7 +57,7 @@ class SegmentCache extends Cache
 
    public function _fetchFromFile()
    {
-      $file = $this->_getFileName();
+      $file = self::$_handler->getFileName( $this );
       try
       {
          // read only if exist!!
@@ -68,7 +65,7 @@ class SegmentCache extends Cache
       }
       catch ( \Exception $e )
       {
-         $this->logger->warn( 'Could not read from file [' . $file . ']: ' . $e->getMessage() );
+         self::$_logger->warn( 'Could not read from file [' . $file . ']: ' . $e->getMessage() );
          return NULL;
       }
    }

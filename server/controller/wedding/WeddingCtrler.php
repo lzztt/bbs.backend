@@ -10,7 +10,7 @@ namespace site\controller\wedding;
 
 use site\controller\Wedding;
 use lzx\html\Template;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 /**
  * Description of Wedding
