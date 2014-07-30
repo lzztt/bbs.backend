@@ -4,7 +4,7 @@ namespace site\controller\term;
 
 use site\controller\Term;
 use lzx\html\Template;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 class TermCtrler extends Term
 {

@@ -6,7 +6,7 @@ use site\controller\Forum;
 use lzx\html\Template;
 use site\dbobject\Tag;
 use site\dbobject\Node;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 class ForumCtrler extends Forum
 {

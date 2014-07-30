@@ -4,7 +4,7 @@ namespace site\controller\yp;
 
 use site\controller\YP;
 use lzx\html\Template;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 class JoinCtrler extends YP
 {

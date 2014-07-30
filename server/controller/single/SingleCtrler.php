@@ -4,7 +4,7 @@ namespace site\controller\single;
 
 use site\controller\Single;
 use lzx\html\Template;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 /**
  * @property \lzx\db\DB $db database object

@@ -8,7 +8,7 @@ use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
 use site\dbobject\Tag;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 class NodeCtrler extends Node
 {
