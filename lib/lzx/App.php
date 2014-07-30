@@ -8,7 +8,7 @@ use lzx\core\Logger;
 
 /**
  *
- * @property lzx\core\Logger $logger
+ * @property Logger $logger
  */
 abstract class App
 {

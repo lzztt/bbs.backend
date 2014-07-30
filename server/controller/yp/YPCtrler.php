@@ -6,7 +6,7 @@ use site\controller\YP;
 use lzx\html\Template;
 use site\dbobject\Tag;
 use site\dbobject\Node;
-use site\PageCache;
+use lzx\cache\PageCache;
 
 class YPCtrler extends YP
 {
