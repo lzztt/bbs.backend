@@ -15,6 +15,7 @@ use lzx\db\DB;
  * @property $phone
  * @property $guests
  * @property $time
+ * @property $info
  * @property $cid
  * @property $checkin
  * @property $status
@@ -36,6 +37,7 @@ class FFAttendee extends DBObject
          'phone' => 'phone',
          'guests' => 'guests',
          'time' => 'time',
+         'info'=> 'info',
          'cid' => 'cid',
          'checkin' => 'checkin',
          'status' => 'status'

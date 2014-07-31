@@ -5,7 +5,7 @@
             <th>性别</th>
             <th>电子邮箱</th>
             <th>报名时间</th>
-            <th>留言</th>
+            <th>自我介绍</th>
          </tr>
          <?php foreach ( $attendees as $i => $a ): ?>
             <tr <?php print ($i % 2 == 0) ? '' : 'class="alt"'; ?> >
@@ -14,7 +14,7 @@
                <td><?php print $a[ 'sex' ] ? '男' : '女'; ?></td>
                <td><?php print $a[ 'email' ]; ?></td>
                <td><?php print date( 'm/d H:i', $a[ 'time' ] ); ?></td>
-               <td style="width: 40%"><?php print nl2br( $a[ 'body' ] ); ?></td>
+               <td style="width: 40%"><?php print nl2br( $a[ 'info' ] ); ?></td>
             </tr>
          <?php endforeach; ?>
       </tbody>

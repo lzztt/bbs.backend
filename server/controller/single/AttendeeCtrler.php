@@ -4,7 +4,7 @@ namespace site\controller\single;
 
 use site\controller\Single;
 use lzx\html\Template;
-
+use site\dbobject\FFAttendee;
 /**
  * @property \lzx\db\DB $db database object
  */
@@ -26,8 +26,10 @@ class AttendeeCtrler extends Single
       {
          $a = \array_pop( $this->db->query( 'CALL get_latest_single_activity()' ) );
 
+         $attendee= new FFAttendee();
+         $attendee->aid= $a['id'];
          $content = [
-            'attendees' => $this->db->query( 'CALL get_attendees_single(' . $a[ 'id' ] . ')' )
+            'attendees' => $attendee->getList('name,sex,email,info,time')
          ];
 
          $this->html->var[ 'content' ] = new Template( 'attendees', $content );
