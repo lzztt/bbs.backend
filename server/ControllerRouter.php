@@ -62,6 +62,7 @@ class ControllerRouter extends ControllerFactory
       'single/ajax'        =>  'site\\controller\\single\\AJAXCtrler',
       'single/attendee'    =>  'site\\controller\\single\\AttendeeCtrler',
       'single/checkin'     =>  'site\\controller\\single\\CheckinCtrler',
+      'single/info'        =>  'site\\controller\\single\\InfoCtrler',
       'single/login'       =>  'site\\controller\\single\\LoginCtrler',
       'single/logout'      =>  'site\\controller\\single\\LogoutCtrler',
       'term'               =>  'site\\controller\\term\\TermCtrler',
