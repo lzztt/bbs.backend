@@ -97,13 +97,10 @@ class WebApp extends App
       $db = DB::getInstance( $this->config->db );
 
       // config cache
-      if ( $this->config->cache )
-      {
-         CacheHandler::$path = $this->config->path[ 'cache' ];
-         $cacheHandler = CacheHandler::getInstance();
-         Cache::setHandler( $cacheHandler );
-         CacheEvent::setHandler( $cacheHandler );
-      }
+      CacheHandler::$path = $this->config->path[ 'cache' ];
+      $cacheHandler = CacheHandler::getInstance();
+      Cache::setHandler( $cacheHandler );
+      CacheEvent::setHandler( $cacheHandler );
 
       // initialize cookie and session
       if ( !\array_key_exists( 'nosession', $request->get ) )
