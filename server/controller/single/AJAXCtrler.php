@@ -23,11 +23,14 @@ class AJAXCtrler extends Single
          $this->error( '错误: 错误的请求' );
       }
       $method = '_' . $this->args[ 0 ];
-      if ( !\method_exists( $this, $method ) )
+      if ( \method_exists( $this, $method ) )
+      {
+         $this->$method();
+      }
+      else
       {
          $this->error( '错误: 错误的请求' );
       }
-      $this->$method();
    }
 
    protected function _attend()
@@ -97,6 +100,24 @@ class AJAXCtrler extends Single
       ] );
 
       $this->_getIndependentCache( '/single' )->delete();
+   }
+
+   protected function _checkin()
+   {
+      // not return a page
+      $this->html = NULL;
+
+      $a = new FFAttendee( $this->request->get[ 'id' ], 'name,email' );
+      $a->checkin = $this->request->timestamp;
+      $a->update( 'checkin' );
+
+      $mailer = new Mailer();
+      $mailer->subject = '七夕单身聚会 通讯录';
+
+      $url = 'http://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode( $a->id );
+      $mailer->body = new Template( 'mail/attendees', [ 'name' => $a->name, 'url' => $url ] );
+      $mailer->to = $a->email;
+      $mailer->send();
    }
 
    protected function error( $msg )
