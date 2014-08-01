@@ -76,11 +76,13 @@ class AJAXCtrler extends Single
 
       $chart = (string) $this->_getChart( $a );
 
+      $url = 'http://www.houstonbbs.com/single/info?u=' . $attendee->id . '&c=' . $this->_getCode( $attendee->id );
+
       $mailer = new Mailer();
 
       $mailer->to = $attendee->email;
       $mailer->subject = $attendee->name . '，您的单身聚会报名已经收到';
-      $mailer->body = new Template( 'mail/attendee', [ 'name' => $attendee->name ] );
+      $mailer->body = new Template( 'mail/attendee_final', [ 'name' => $attendee->name, 'url' => $url ] );
       $mailer->signature = '';
 
       if ( !$mailer->send() )
