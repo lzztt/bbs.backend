@@ -165,6 +165,11 @@ abstract class Single extends Controller
       $this->html->var[ 'content' ] = new Template( 'login', ['uri' => $this->request->uri ] );
    }
 
+   protected function _getCode( $uid )
+   {
+      return \crc32( \substr( \md5( 'alexmika' . $uid ), 5, 10 ) );
+   }
+
 }
 
 //__END_OF_FILE__
