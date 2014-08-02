@@ -35,7 +35,7 @@ class AJAXCtrler extends Single
 
    protected function _attend()
    {
-      if ( \file_exists( $this->config->path[ 'file' ] . '/single.msg' ) )
+      if ( \file_exists( $this->config->path[ 'file' ] . '/single.msg' ) && !$this->session->loginStatus )
       {
          $this->error( '错误: ' . \file_get_contents( $this->config->path[ 'file' ] . '/single.msg' ) );
       }
@@ -116,7 +116,8 @@ class AJAXCtrler extends Single
 
       $url = 'http://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode( $a->id );
       $mailer->body = new Template( 'mail/attendees', [ 'name' => $a->name, 'url' => $url ] );
-      $mailer->to = $a->email;
+      //$mailer->to = $a->email;
+      $mailer->to = 'ikki3355@gmail.com';
       $mailer->send();
    }
 
