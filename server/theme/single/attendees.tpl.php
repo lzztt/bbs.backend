@@ -1,49 +1,63 @@
-   <table id="attendees">
-      <tbody><tr>
-            <th></th>
-            <th>姓名</th>
-            <th>性别</th>
-            <th>电子邮箱</th>
-            <th>报名时间</th>
-            <th>自我介绍</th>
-         </tr>
+<div style="background-color: #76a3f0;">
+   <?php foreach ( $groups as $i => $attendees ): ?>
+      <div><h3><?php print $i ? '男生' : '女生'  ?></h3>
          <?php foreach ( $attendees as $i => $a ): ?>
-            <tr <?php print ($i % 2 == 0) ? '' : 'class="alt"'; ?> >
-               <td><?php print $i + 1; ?></td>
-               <td><?php print $a[ 'name' ]; ?></td>
-               <td><?php print $a[ 'sex' ] ? '男' : '女'; ?></td>
-               <td><?php print $a[ 'email' ]; ?></td>
-               <td><?php print date( 'm/d H:i', $a[ 'time' ] ); ?></td>
-               <td style="width: 40%"><?php print nl2br( $a[ 'info' ] ); ?></td>
-            </tr>
+            <div class="even_odd">
+               <div class="atd_name"><span class="atd_no"><?php print $i + 1; ?></span><?php print $a[ 'name' ]; ?></div>
+               <div class="atd_email"><?php print $a[ 'email' ]; ?></div>
+               <div class="atd_info"><?php print \nl2br( $a[ 'info' ] ); ?></div>
+               <div class="atd_questions"><?php print \implode( '<br />', $a[ 'questions' ] ); ?></div>               
+            </div>
          <?php endforeach; ?>
-      </tbody>
-   </table>
+      </div>
+   <?php endforeach; ?>
+</div>
 
 <style type="text/css">
-   #attendees {
-      border-collapse: collapse;
-      font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
-      width: 100%;
-      background: pink;
+   h3
+   {
+      margin: 0;
+      padding: 1em;
+      text-align: center;
    }
-
-   #attendees th {
-      background-color: #A7C942;
-      color: #FFFFFF;
-      font-size: 1.4em;
-      padding-bottom: 4px;
-      padding-top: 5px;
-      text-align: left;
-   }
-
-   #attendees td, #attendees th {
-      border: 1px solid #98BF21;
-      padding: 3px 7px 2px;
-   }
-
-   #attendees tr.alt td {
+   div.even_odd:nth-child(even)
+   {
       background-color: #EAF2D3;
-      color: #000000;
+   }
+   div.even_odd:nth-child(odd)
+   {
+      background-color: pink;
+   }
+
+   div.atd_name
+   {
+      display: inline-block;
+      width: 150px;
+      font-weight: bolder;
+      padding: 5px 0;
+   }
+
+   span.atd_no
+   {
+      display: inline-block;
+      width: 30px;
+      color: blue;
+      text-align: center;
+   }
+
+   div.atd_email
+   {
+      display: inline-block;
+   }
+
+   div.atd_info, div.atd_questions
+   {
+      margin-left: 30px;
+      padding: 5px 0;
+   }
+
+   div.atd_info
+   {
+      color: #5A005A;
    }
 </style>
