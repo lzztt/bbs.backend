@@ -4,7 +4,7 @@
 <?php if ( $debug ): ?>
    <script src="/themes/single/js/main.js"></script>
 <?php else: ?>
-   <script src="/themes/single/js/min_1405995171.js"></script>
+   <script src="/themes/single/js/min_1406956143.js"></script>
 <?php endif; ?>
 
 <!--[if IE]>
