@@ -62,7 +62,7 @@ class WebApp extends App
       // config template
       Template::setLogger( $this->logger );
       Template::$path = $this->config->path[ 'theme' ];
-      Template::$theme = $this->config->theme[ 'default' ];
+      Template::$theme = $this->config->theme[ 'roselife' ];
       Template::$language = $this->config->language;
    }
 
