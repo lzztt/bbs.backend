@@ -109,9 +109,7 @@ class Template
          else
          {
             $debug = self::$debug;
-            $umode_pc = self::UMODE_PC;
-            $umode_mobile = self::UMODE_MOBILE;
-            $umode_robot = self::UMODE_ROBOT;
+            $theme = self::$theme;
             $urole_guest = self::UROLE_GUEST;
             $urole_user = self::UROLE_USER;
             $urole_adm = self::UROLE_ADM;
