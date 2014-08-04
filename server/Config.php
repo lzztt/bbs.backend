@@ -53,7 +53,8 @@ class Config
          'wedding' => 'wedding',
          'wedding2' => 'wedding2',
          'adm' => 'adm',
-         'single' => 'single'
+         'single' => 'single',
+         'roselife' => 'roselife'
       ];
       $this->cookie = [
          //'path' => '/',
