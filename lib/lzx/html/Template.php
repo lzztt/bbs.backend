@@ -110,9 +110,6 @@ class Template
          {
             $debug = self::$debug;
             $theme = self::$theme;
-            $urole_guest = self::UROLE_GUEST;
-            $urole_user = self::UROLE_USER;
-            $urole_adm = self::UROLE_ADM;
 
             \ob_start();                     // Start output buffering
             include $tpl_file;               // Include the template file
