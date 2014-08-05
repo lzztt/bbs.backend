@@ -29,6 +29,8 @@
       <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->
 
       <?php if ( $debug ): ?>
+         <script src="/themes/<?php print $theme; ?>/js/jquery.cookie.js"></script>
+         <script src="/themes/<?php print $theme; ?>/js/coin-slider.js"></script>
          <script src="/themes/<?php print $theme; ?>/js/main.js"></script>
       <?php else: ?>
          <script src="/themes/<?php print $theme; ?>/js/min_1406956143.js"></script>
@@ -57,16 +59,21 @@
    </head>
    <body>
       <div id='page'>
-         <header>
-            <div id='logo'>
-               <a style='padding: 0pt; margin: 0pt; display: block; width: 60px; height: 60px;' href='/' title='首页' rel='home'>
-                  <img src='/themes/roselife/images/logo.png' alt='首页' id='logo-image'>
-               </a>
-            </div>
+         <header id='page_header'>
+            <a id='logo' href='/' title='首页' rel='home'>
+               <img src='/themes/roselife/images/logo.png'>
+            </a>
+            <span id='messagebox'><?php print $head_title; ?></span>
+            <ul class="sf-menu" >
+               <li class='urole_user'><a id="pm" href="/pm/mailbox" title="短信">短信</a></li>
+               <li class='urole_user'><a  href="/user/logout" title="登出">登出</a></li>
+               <li class='urole_guest'><a href="/user/register" title="首页">注册</a></li>
+               <li class='urole_guest'><a href="/user/login" title="登录">登录</a></li>
+            </ul>
          </header>
-         <nav><?php print $page_navbar; ?></nav>
-         <article><?php print $content; ?></article>>
-         <footer>
+         <nav id='page_navbar'><?php print $page_navbar; ?></nav>
+         <section id='page_body'><?php print $content; ?></section>
+         <footer id='page_footer'>
             <div id='copyright'>如有问题，请联络网站管理员
                <a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2014 HoustonBBS 版权所有 | <a href='/term'>免责声明</a>
             </div>
@@ -88,7 +95,7 @@
                  data-ad-client="ca-pub-8257334386742604"
                  data-ad-slot="2768722489"></ins>
             <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
+         (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
          </div>
          <div id="ad12" class="ad1"><a href="http://jeffreyjinteam.com/" target="_blank"><img width="272px" height="90px" src="/data/ad/jinfei.gif" alt=""></a></div>

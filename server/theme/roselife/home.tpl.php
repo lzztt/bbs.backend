@@ -1,6 +1,7 @@
+<?php print $imageSlider; ?>
 <div id="content">
    <div class="front-items">
-      <div class="item-list" style="width: 66%;"><?php print $imageSlider; ?></div>
+      <div class="item-list" style="width: 66%;"></div>
       <div class="item-list"><h2 class="title">近期活动</h2><?php print $recentActivities; ?></div>
    </div>
    <div class="front-items">
