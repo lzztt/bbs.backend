@@ -24,17 +24,16 @@
 
    <div id='navbar_user'>
       <form id="navbar-login-form_tmp" action="/user/login" accept-charset="UTF-8" method="post">
-         <ul class="sf-menu" data-urole='<?php print $urole_user; ?>'>
-            <li data-umode='<?php print $umode_mobile; ?>'><a href="/" title="首页">首页</a></li>
+         <ul class="sf-menu" class='<?php print $urole_user; ?>'>
+            <li><a href="/" title="首页">首页</a></li>
             <li><a id="pm" class="popup" href="/pm/mailbox" title="短信">短信</a></li>
             <li><a class="popup" href="/user" title="我的账户">我的账户</a></li>
             <li><a class="popup" href="/user/logout" title="登出">登出</a></li>
-            <li style="border-right:0px;"><a class="view_switch" data-umode='<?php print $umode_pc; ?>' href="#mobile" title="切换到手机版">手机版</a><a class="view_switch" data-umode='<?php print $umode_mobile; ?>' href="#pc" title="切换到电脑版">电脑版</a></li>
          </ul>
-         <ul class="sf-menu" data-urole='<?php print $urole_guest; ?>'>
-            <li data-umode='<?php print $umode_mobile; ?>'><a href="/" title="首页">首页</a></li>
-            <li data-umode='<?php print $umode_mobile; ?>'><a class="popup" href="/user/login" title="登录">登录</a></li>
-            <li data-umode='<?php print $umode_pc; ?>'>
+         <ul class="sf-menu" class='<?php print $urole_guest; ?>'>
+            <li><a href="/" title="首页">首页</a></li>
+            <li><a class="popup" href="/user/login" title="登录">登录</a></li>
+            <li>
                <label for="username">用户名:</label>
                <input id="edit-name" class="form-text" type="text" required="required" placeholder="用户名" maxlength="50" name="username" size="15" value="">
                <label for="password">密码:</label>
@@ -43,7 +42,6 @@
             </li>
             <li><a class="popup" href="/password/forget" title="重设用户密码">忘记密码</a></li>
             <li><a class="popup" href="/user/register" title="新用户注册">注册帐号</a></li>
-            <li style="border-right:0px;"><a class="view_switch" data-umode='<?php print $umode_pc; ?>' href="#mobile" title="切换到手机版">手机版</a><a class="view_switch" data-umode='<?php print $umode_mobile; ?>' href="#pc" title="切换到电脑版">电脑版</a></li>
          </ul>
       </form>
    </div>
