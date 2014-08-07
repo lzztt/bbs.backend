@@ -30,7 +30,9 @@
 
       <?php if ( $debug ): ?>
          <script src="/themes/<?php print $theme; ?>/js/jquery.cookie.js"></script>
-         <script src="/themes/<?php print $theme; ?>/js/coin-slider.js"></script>
+         <script src="/themes/<?php print $theme; ?>/js/jquery.imageslider.js"></script>
+         <script src="/themes/<?php print $theme; ?>/js/jquery.hoverIntent.js"></script>
+         <script src="/themes/<?php print $theme; ?>/js/jquery.superfish.js"></script>
          <script src="/themes/<?php print $theme; ?>/js/main.js"></script>
       <?php else: ?>
          <script src="/themes/<?php print $theme; ?>/js/min_1406956143.js"></script>
@@ -41,6 +43,8 @@
       <?php if ( $debug ): ?>
          <link href="/themes/<?php print $theme; ?>/css/normalize.css" rel="stylesheet" type="text/css" />
          <link href="/themes/<?php print $theme; ?>/css/font.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $theme; ?>/css/nav_xs.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $theme; ?>/css/nav_sm.css" rel="stylesheet" type="text/css" />
          <link href="/themes/<?php print $theme; ?>/css/main_xs.css" rel="stylesheet" type="text/css" />
          <link href="/themes/<?php print $theme; ?>/css/main_sm.css" rel="stylesheet" type="text/css" />
          <link href="/themes/<?php print $theme; ?>/css/main_md.css" rel="stylesheet" type="text/css" />
@@ -60,18 +64,16 @@
    <body>
       <div id='page'>
          <header id='page_header'>
-            <a id='logo' href='/' title='首页' rel='home'>
-               <img src='/themes/roselife/images/logo.png'>
-            </a>
+            <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
             <span id='messagebox'><?php print $head_title; ?></span>
-            <ul class="sf-menu" >
-               <li class='urole_user'><a id="pm" href="/pm/mailbox" title="短信">短信</a></li>
-               <li class='urole_user'><a  href="/user/logout" title="登出">登出</a></li>
-               <li class='urole_guest'><a href="/user/register" title="首页">注册</a></li>
-               <li class='urole_guest'><a href="/user/login" title="登录">登录</a></li>
+            <ul>
+               <li class='urole_user'><a id="pm" href="/pm/mailbox">短信</a></li>
+               <li class='urole_user'><a  href="/user/logout">登出</a></li>
+               <li class='urole_guest'><a href="/user/register">注册</a></li>
+               <li class='urole_guest'><a href="/user/login">登录</a></li>
             </ul>
          </header>
-         <nav id='page_navbar'><?php print $page_navbar; ?></nav>
+         <nav id='page_navbar' class='hidden'><?php print $page_navbar; ?></nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
             <div id='copyright'>如有问题，请联络网站管理员

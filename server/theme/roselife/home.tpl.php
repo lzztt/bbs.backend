@@ -1,49 +1,21 @@
-<?php print $imageSlider; ?>
-<div id="content">
-   <div class="front-items">
-      <div class="item-list" style="width: 66%;"></div>
-      <div class="item-list"><h2 class="title">近期活动</h2><?php print $recentActivities; ?></div>
+<div class="image_slider"><?php print $imageSlider; ?></div><section class="items">
+   <header>近期活动</header><?php print $recentActivities; ?></section><section class="items">
+   <header>最新话题</header><?php print $latestForumTopics; ?></section><section class="items">
+   <header>最新论坛回复</header><?php print $latestForumTopicReplies; ?></section><section class="items">
+   <header>本周热门</header><?php print $hotForumTopics; ?></section><section class="items">
+   <header>最新黄页</header><?php print $latestYellowPages; ?></section><section class="items">
+   <header>最新黄页回复</header><?php print $latestYellowPageReplies; ?></section><section class="items">
+   <header>签证移民信息</header><?php print $latestImmigrationPosts; ?></section>
+<div class='ajax_load' data-ajax='/home/ajax/stat?type=json&nosession'>
+   <div>当前在线用户：<span class='ajax_onlineCount'></span> (<span class='ajax_onlineUserCount'></span> 用户| <span class='ajax_onlineGuestCount'></span> 访客)</div>
+   <div><span class='ajax_onlineUsers'></span></div>
+   <div>统计</div>
+   <div>
+      <section>
+         <span class='ajax_nodeCount'></span> 主题，<span class='ajax_postCount'></span> 贴子，<span class='ajax_userCount'></span> 用户，欢迎新进会员 <span class='ajax_latestUser'></span>
+         <br />
+         今日新主题 <span class='ajax_nodeTodayCount'></span> 个，今日新评论 <span class='ajax_commentTodayCount'></span> 个，今日新用户 <span class='ajax_userTodayCount'></span> 个
+      </section>
+      <section><span class='ajax_alexa'></span></section>
    </div>
-   <div class="front-items">
-      <div class="item-list"><h2 class="title">最新话题</h2><?php print $latestForumTopics; ?></div>
-      <div class="item-list"><h2 class="title">最新论坛回复</h2><?php print $latestForumTopicReplies; ?></div>
-      <div class="item-list"><h2 class="title">本周热门</h2><?php print $hotForumTopics; ?></div>
-   </div>
-   <div class="front-items">
-      <div class="item-list"><h2 class="title">最新黄页</h2><?php print $latestYellowPages; ?></div>
-      <div class="item-list"><h2 class="title">最新黄页回复</h2><?php print $latestYellowPageReplies; ?></div>
-      <div class="item-list"><h2 class="title">签证移民信息</h2><?php print $latestImmigrationPosts; ?></div>
-   </div>
-
-   <div id="ajax_statistics">
-      <div class="forum-statistics-sub-header" id="forum-statistics-active-header">
-         当前在线用户：<span id='ajax_onlineCount'></span> (<span id='ajax_onlineUserCount'></span> 用户| <span id='ajax_onlineGuestCount'></span> 访客)
-      </div>
-      <div class="forum-statistics-sub-body" id="forum-statistics-active-body"><span id='ajax_onlineUsers'></span></div>
-
-      <div class="forum-statistics-sub-header" id="forum-statistics-statistics-header">统计</div>
-      <div class="forum-statistics-sub-body" id="forum-statistics-statistics-body">
-         <ul style="list-style-type:none; margin:0; padding:0; overflow: hidden;">
-            <li style="display:block; float:left; width:50%;">
-               <span id='ajax_nodeCount'></span> 主题，<span id='ajax_postCount'></span> 贴子，<span id='ajax_userCount'></span> 用户，欢迎新进会员 <span id='ajax_latestUser'></span>
-               <br />
-               今日新主题 <span id='ajax_nodeTodayCount'></span> 个，今日新评论 <span id='ajax_commentTodayCount'></span> 个，今日新用户 <span id='ajax_userTodayCount'></span> 个
-            </li>
-            <li style="display:block; float:left; width:45%;"><span id='ajax_alexa'></span></li>
-         </ul>
-      </div>
-   </div>
-   <script type="text/javascript">
-      $(document).ready(function() {
-         $.getJSON('/home/ajax/stat?type=json&nosession', function(data) {
-            var stat = $('#ajax_statistics');
-            for (var prop in data)
-            {
-               $('#ajax_' + prop, stat).html(data[prop]);
-            }
-         });
-      });
-   </script>
 </div>
-
-
