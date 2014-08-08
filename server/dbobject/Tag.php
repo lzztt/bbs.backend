@@ -178,7 +178,7 @@ class Tag extends DBObject
     // get the information for the latest updated node
     public function getNodeInfo()
     {
-        return \array_pop( $this->call( 'get_tag_node_info(' . $this->id . ')' ) );
+        return $this->call( 'get_tag_node_info_1(' . $this->id . ')' );
     }
 
 }
