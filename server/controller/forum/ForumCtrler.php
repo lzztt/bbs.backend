@@ -131,13 +131,26 @@ class ForumCtrler extends Forum
    protected function _nodeInfo( $tid )
    {
       $tag = new Tag( $tid, NULL );
-      $nodeInfo = $tag->getNodeInfo();
 
-      $nodeInfo[ 'title' ] = $this->html->truncate( $nodeInfo[ 'title' ], 35 );
-      $nodeInfo[ 'create_time' ] = \date( 'm/d/Y H:i', $nodeInfo[ 'create_time' ] );
-      return $nodeInfo;
+      foreach ( $tag->getNodeInfo( $tid ) as $v )
+      {
+
+         $v[ 'title' ] = $this->html->truncate( $v[ 'title' ], 35 );
+         $v[ 'create_time' ] = \date( 'm/d/Y H:i', $v[ 'create_time' ] );
+         if ( $v[ 'cid' ] == 0 )
+         {
+            $node = $v;
+         }
+         else
+         {
+            $comment = $v;
+         }
+      }
+      return [ 'node' => $node, 'comment' => $comment ];
    }
 
 }
 
 //__END_OF_FILE__
+
+   
