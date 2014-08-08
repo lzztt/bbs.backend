@@ -15,7 +15,7 @@ class Template
    const UROLE_GUEST = 'guest';
    const UROLE_USER = 'user';
    const UROLE_ADM = 'adm';
-   const EVEN_ODD_CLASS = 'js_even_odd_parent';
+   const EVEN_ODD_CLASS = 'even_odd_parent';
 
    public static $path;
    public static $theme;
