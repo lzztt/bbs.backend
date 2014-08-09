@@ -47,7 +47,7 @@ class HomeCtrler extends Home
          $ul = new Template( 'image_slider', $content );
 
          $ulCache->store( $ul );
-         
+
          foreach ( $images as $i )
          {
             $ulCache->addParent( '/node/' . $i[ 'nid' ] );
@@ -64,17 +64,15 @@ class HomeCtrler extends Home
       $ul = $ulCache->fetch();
       if ( !$ul )
       {
-         $node = new Node();
-         $arr = $node->getLatestForumTopics( 15 );
+         $arr = [ ];
 
-         $rightTagKey = 'rightTag';
-         foreach ( $arr as $i => $n )
+         foreach ( (new Node() )->getLatestForumTopics( 12 ) as $n )
          {
-            $arr[ $i ][ $rightTagKey ] = \date( 'H:i', $n[ 'create_time' ] );
-            $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
-            $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 34 );
+            $arr[] = [ 'after' => \date( 'H:i', $n[ 'create_time' ] ),
+               'uri' => '/node/' . $n[ 'nid' ],
+               'text' => $n[ 'title' ] ];
          }
-         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache );
       }
       $this->_getCacheEvent( 'ForumNode' )->addListener( $ulCache );
 
@@ -87,17 +85,15 @@ class HomeCtrler extends Home
       $ul = $ulCache->fetch();
       if ( !$ul )
       {
-         $node = new Node();
-         $arr = $node->getHotForumTopics( 15, $this->request->timestamp - 604800 );
+         $arr = [ ];
 
-         $rightTagKey = 'rightTag';
-         foreach ( $arr as $i => $n )
+         foreach ( (new Node() )->getHotForumTopics( 12, $this->request->timestamp - 604800 ) as $n )
          {
-            $arr[ $i ][ $rightTagKey ] = $n[ 'comment_count' ];
-            $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
-            $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 36 );
+            $arr[] = [ 'after' => $n[ 'comment_count' ],
+               'uri' => '/node/' . $n[ 'nid' ],
+               'text' => $n[ 'title' ] ];
          }
-         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache );
       }
 
 
@@ -110,17 +106,15 @@ class HomeCtrler extends Home
       $ul = $ulCache->fetch();
       if ( !$ul )
       {
-         $node = new Node();
-         $arr = $node->getLatestYellowPages( 25 );
+         $arr = [ ];
 
-         $rightTagKey = 'rightTag';
-         foreach ( $arr as $i => $n )
+         foreach ( (new Node() )->getLatestYellowPages( 12 ) as $n )
          {
-            $arr[ $i ][ $rightTagKey ] = \date( 'm/d', $n[ 'exp_time' ] );
-            $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
-            $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 34 );
+            $arr[] = [ 'after' => \date( 'm/d', $n[ 'exp_time' ] ),
+               'uri' => '/node/' . $n[ 'nid' ],
+               'text' => $n[ 'title' ] ];
          }
-         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache );
       }
       $this->_getCacheEvent( 'YellowPageNode' )->addListener( $ulCache );
 
@@ -133,17 +127,15 @@ class HomeCtrler extends Home
       $ul = $ulCache->fetch();
       if ( !$ul )
       {
-         $node = new Node();
-         $arr = $node->getLatestImmigrationPosts( 25 );
+         $arr = [ ];
 
-         $rightTagKey = 'rightTag';
-         foreach ( $arr as $i => $n )
+         foreach ( (new Node() )->getLatestImmigrationPosts( 12 ) as $n )
          {
-            $arr[ $i ][ $rightTagKey ] = \date( 'm/d', $n[ 'create_time' ] );
-            $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
-            $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 34 );
+            $arr[] = [ 'after' => \date( 'm/d', $n[ 'create_time' ] ),
+               'uri' => '/node/' . $n[ 'nid' ],
+               'text' => $n[ 'title' ] ];
          }
-         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache );
       }
       $this->_getCacheEvent( 'ImmigrationNode' )->addListener( $ulCache );
 
@@ -156,17 +148,15 @@ class HomeCtrler extends Home
       $ul = $ulCache->fetch();
       if ( !$ul )
       {
-         $node = new Node();
-         $arr = $node->getLatestForumTopicReplies( 15 );
+         $arr = [ ];
 
-         $rightTagKey = 'rightTag';
-         foreach ( $arr as $i => $n )
+         foreach ( (new Node() )->getLatestForumTopicReplies( 12 ) as $n )
          {
-            $arr[ $i ][ $rightTagKey ] = $n[ 'comment_count' ];
-            $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ];
-            $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 36 );
+            $arr[] = [ 'after' => $n[ 'comment_count' ],
+               'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],
+               'text' => $n[ 'title' ] ];
          }
-         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache );
       }
       $this->_getCacheEvent( 'ForumComment' )->addListener( $ulCache );
 
@@ -179,17 +169,15 @@ class HomeCtrler extends Home
       $ul = $ulCache->fetch();
       if ( !$ul )
       {
-         $node = new Node();
-         $arr = $node->getLatestYellowPageReplies( 25 );
+         $arr = [ ];
 
-         $rightTagKey = 'rightTag';
-         foreach ( $arr as $i => $n )
+         foreach ( (new Node() )->getLatestYellowPageReplies( 12 ) as $n )
          {
-            $arr[ $i ][ $rightTagKey ] = $n[ 'comment_count' ];
-            $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ];
-            $arr[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 36 );
+            $arr[] = [ 'after' => $n[ 'comment_count' ],
+               'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],
+               'text' => $n[ 'title' ] ];
          }
-         $ul = $this->_linkNodeList( $arr, $ulCache, $rightTagKey );
+         $ul = $this->_linkNodeList( $arr, $ulCache );
       }
       $this->_getCacheEvent( 'YellowPageComment' )->addListener( $ulCache );
 
@@ -202,13 +190,13 @@ class HomeCtrler extends Home
       $ul = $ulCache->fetch();
       if ( !$ul )
       {
-         $activity = new Activity();
-         $arr = $activity->getRecentActivities( 12, $this->request->timestamp );
+         $arr = [ ];
 
-         foreach ( $arr as $i => $n )
+         foreach ( (new Activity() )->getRecentActivities( 12, $this->request->timestamp ) as $n )
          {
-            $arr[ $i ][ 'uri' ] = '/node/' . $n[ 'nid' ];
-            $arr[ $i ][ 'title' ] = '<span class="activity_' . $n[ 'class' ] . '">[' . date( 'm/d', $n[ 'start_time' ] ) . ']</span> ' . $this->html->truncate( $n[ 'title' ], 32 );
+            $arr[] = [ 'after' => \date( 'm/d', $n[ 'start_time' ] ),
+               'uri' => '/node/' . $n[ 'nid' ],
+               'text' => $n[ 'title' ] ];
          }
          $ul = $this->_linkNodeList( $arr, $ulCache );
       }
@@ -216,31 +204,14 @@ class HomeCtrler extends Home
       return $ul;
    }
 
-   private function _linkNodeList( $arr, SegmentCache $ulCache, $rightTagKey = NULL )
+   private function _linkNodeList( array $arr, SegmentCache $ulCache )
    {
-      $links = [ ];
-      if ( $rightTagKey )
-      {
-         foreach ( $arr as $n )
-         {
-            $rightTag = new HTMLElement( 'span', $n[ $rightTagKey ], [ 'class' => "li_right" ] );
-            $links[] = $rightTag . $this->html->link( $n[ 'title' ], $n[ 'uri' ] );
-         }
-      }
-      else
-      {
-         foreach ( $arr as $n )
-         {
-            $links[] = $this->html->link( $n[ 'title' ], $n[ 'uri' ] );
-         }
-      }
-
-      $ul = (string) $this->html->ulist( $links );
+      $ul = (string) new Template( 'home_itemlist', ['data' => $arr ] );
 
       $ulCache->store( $ul );
       foreach ( $arr as $n )
       {
-         $ulCache->addParent( '/node/' . $n[ 'nid' ] );
+         $ulCache->addParent( \strtok( $n[ 'uri' ], '?#' ) );
       }
 
       return $ul;

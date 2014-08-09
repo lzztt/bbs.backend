@@ -159,7 +159,7 @@ class Node extends DBObject
 
    public function getLatestImmigrationPosts( $count )
    {
-      return $this->call( 'get_tag_recent_nodes("15", 17)' );
+      return $this->call( 'get_tag_recent_nodes("15", ' . $count . ')' );
    }
 
    public function getLatestForumTopicReplies( $count )
