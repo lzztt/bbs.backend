@@ -100,7 +100,7 @@ class Request
 
       if ( !\array_key_exists( $uri, $_URIargs ) )
       {
-         $_arg = \trim( \array_shift( \explode( '?', $uri ) ), ' /' );
+         $_arg = \trim( \strtok( $uri, '?' ), ' /' );
          $_URIargs[ $uri ] = empty( $_arg ) ? [ ] : \explode( '/', $_arg );
       }
 
@@ -160,7 +160,7 @@ class Request
             $city = $geo[ 'city' ];
          }
       }
-      catch ( \Exception $e )
+      catch (\Exception $e)
       {
          return 'UNKNOWN';
       }
@@ -207,7 +207,7 @@ class Request
 
          $location = $city . ', ' . $region . ', ' . $country;
       }
-      catch ( \Exception $e )
+      catch (\Exception $e)
       {
          return 'UNKNOWN';
       }
