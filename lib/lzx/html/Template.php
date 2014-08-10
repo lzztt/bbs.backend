@@ -99,8 +99,9 @@ class Template
 
          $tpl_theme = self::$theme;
          $tpl_path = self::$path . '/' . self::$theme;
-
-         $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
+         $tpl_debug = self::$debug;
+         
+         $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';         
          if ( !\is_file( $tpl_file ) || !\is_readable( $tpl_file ) )
          {
             self::$_status = FALSE;
@@ -108,9 +109,6 @@ class Template
          }
          else
          {
-            $debug = self::$debug;
-            $theme = self::$theme;
-
             \ob_start();                     // Start output buffering
             include $tpl_file;               // Include the template file
             $output = \ob_get_contents();    // Get the contents of the buffer
@@ -544,11 +542,11 @@ class Template
       $current = \array_pop( $links );
       foreach ( $links as $i )
       {
-         $list[] = $this->link( $i[ 'name' ], $i[ 'href' ], ['title' => $i[ 'title' ] ] );
+         $list[] = $this->link( $i[ 'name' ], $i[ 'href' ] );
       }
       $list[] = $current[ 'name' ];
 
-      return new HTMLElement( 'div', \implode( ' > ', $list ), ['class' => 'breadcrumb' ] );
+      return new HTMLElement( 'div', $list, ['class' => 'breadcrumb' ] );
    }
 
    public function pager( $pageNo, $pageCount, $uri )

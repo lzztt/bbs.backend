@@ -34,7 +34,6 @@ class ForumCtrler extends Forum
       {
          $breadcrumb[] = [
             'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-            'title' => $t[ 'description' ],
             'name' => $t[ 'name' ]
          ];
       }
@@ -86,7 +85,6 @@ class ForumCtrler extends Forum
       {
          $breadcrumb[] = [
             'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-            'title' => $t[ 'description' ],
             'name' => $t[ 'name' ]
          ];
       }
