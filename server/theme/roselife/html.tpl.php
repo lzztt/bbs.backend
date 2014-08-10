@@ -28,29 +28,33 @@
       <script>(typeof JSON === 'object') || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
       <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->
 
-      <?php if ( $debug ): ?>
-         <script src="/themes/<?php print $theme; ?>/js/jquery.cookie.js"></script>
-         <script src="/themes/<?php print $theme; ?>/js/jquery.imageslider.js"></script>
-         <script src="/themes/<?php print $theme; ?>/js/jquery.hoverIntent.js"></script>
-         <script src="/themes/<?php print $theme; ?>/js/jquery.superfish.js"></script>
-         <script src="/themes/<?php print $theme; ?>/js/main.js"></script>
+      <?php if ( $tpl_debug ): ?>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.cookie.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.imageslider.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.hoverIntent.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.superfish.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.bbcode.set.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script src="/themes/<?php print $theme; ?>/js/min_1406956143.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/min_1406956143.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
       <!--BEGIN CSS-->
-      <?php if ( $debug ): ?>
-         <link href="/themes/<?php print $theme; ?>/css/normalize.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $theme; ?>/css/font.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $theme; ?>/css/nav_xs.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $theme; ?>/css/nav_sm.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $theme; ?>/css/main_xs.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $theme; ?>/css/main_sm.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $theme; ?>/css/main_md.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css" />
+      <?php if ( $tpl_debug ): ?>
+         <link href="/themes/<?php print $tpl_theme; ?>/css/normalize.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/font.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.style.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.bbcode.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/nav_xs.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/nav_sm.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_xs.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_sm.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_md.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css" />
       <?php else: ?>
-         <link href="/themes/<?php print $theme; ?>/css/min_1406956143.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1406956143.css" rel="stylesheet" type="text/css" />
       <?php endif; ?>
       <!--END CSS-->
 
