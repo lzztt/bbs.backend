@@ -35,7 +35,6 @@ class MailBoxCtrler extends PM
       $tbody = [ ];
       foreach ( $msgs as $i => $m )
       {
-         $msgs[ $i ][ 'body' ] = $this->html->truncate( $m[ 'body' ] );
          $msgs[ $i ][ 'time' ] = \date( 'm/d/Y H:i', $m[ 'time' ] );
       }
 

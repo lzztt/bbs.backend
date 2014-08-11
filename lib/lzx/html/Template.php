@@ -100,8 +100,8 @@ class Template
          $tpl_theme = self::$theme;
          $tpl_path = self::$path . '/' . self::$theme;
          $tpl_debug = self::$debug;
-         
-         $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';         
+
+         $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
          if ( !\is_file( $tpl_file ) || !\is_readable( $tpl_file ) )
          {
             self::$_status = FALSE;
@@ -115,7 +115,7 @@ class Template
             \ob_end_clean();                 // End buffering and discard
          }
       }
-      catch ( \Exception $e )
+      catch (\Exception $e)
       {
          \ob_end_clean();
          self::$_status = FALSE;
@@ -319,33 +319,6 @@ class Template
 
    /**
     *
-    * @param array $links
-    * @param string $active_link
-    * @return HTMLElement
-    */
-   public function linkList( array $links, $active_link = NULL )
-   {
-      $list = [ ];
-      foreach ( $links as $link => $text )
-      {
-         if ( $link == $active_link )
-         {
-            $list[] = [
-               'text' => $this->link( $text, $link ),
-               'attributes' => ['class' => 'active' ],
-            ];
-         }
-         else
-         {
-            $list[] = $this->link( $text, $link );
-         }
-      }
-
-      return $this->ulist( $list, ['class' => 'tabs' ], FALSE );
-   }
-
-   /**
-    *
     * @param array $data
     * @param array $attributes
     * @param type $even_odd
@@ -539,14 +512,24 @@ class Template
    public function breadcrumb( array $links )
    {
       $list = [ ];
-      $current = \array_pop( $links );
-      foreach ( $links as $i )
+      $count = \count( $links ) - 1;
+      foreach ( $links as $text => $uri )
       {
-         $list[] = $this->link( $i[ 'name' ], $i[ 'href' ] );
+         $list[] = $count-- ? $this->link( $text, $uri ) : $text;
       }
-      $list[] = $current[ 'name' ];
 
-      return new HTMLElement( 'div', $list, ['class' => 'breadcrumb' ] );
+      return new HTMLElement( 'nav', $list, [ 'class' => 'breadcrumb' ] );
+   }
+
+   public function navbar( array $links, $active_link = NULL )
+   {
+      $list = [ ];
+      foreach ( $links as $text => $uri )
+      {
+         $list[] = $this->link( $text, $uri, $uri == $active_link ? [ 'class' => 'active' ] : [ ]  );
+      }
+
+      return new HTMLElement( 'nav', $list, [ 'class' => 'navbar' ] );
    }
 
    public function pager( $pageNo, $pageCount, $uri )
