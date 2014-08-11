@@ -26,7 +26,6 @@ class HomeCtrler extends Home
          'latestImmigrationPosts' => $this->_getLatestImmigrationPosts(),
          'latestForumTopicReplies' => $this->_getLatestForumTopicReplies(),
          'latestYellowPageReplies' => $this->_getLatestYellowPageReplies(),
-         'recentActivities' => $this->_getRecentActivities(),
          'imageSlider' => $this->_getImageSlider(),
       ];
 

@@ -13,10 +13,21 @@ class SearchCtrler extends Search
       $this->cache = new PageCache( $this->request->uri );
       
       $html = <<<HTML
-<div id="cse-search-form" style="width: 100%;">Loading</div>
+<div id="cse-search-form">Loading</div>
 <style>
-.gsc-search-box tbody {
+.gsc-search-box {
+width: auto !important;
+}
+tbody, tr {
 border: none !important;
+}
+.gsc-search-box td {
+width: auto !important;
+padding: 0.3em !important;
+}
+input[type=text].gsc-input
+{
+min-width: 200px;
 }
 .cse input.gsc-input,
 td.gsc-input,
@@ -43,7 +54,7 @@ display:none !important;
 </script>
 <link rel="stylesheet" href="http://www.google.com/cse/style/look/greensky.css" />
 
-<div id="cse" style="width:90%;"></div>
+<div id="cse"></div>
 HTML;
 
       $this->html->var['content'] = $html;

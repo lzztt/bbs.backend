@@ -14,7 +14,7 @@ class YPCtrler extends YP
    public function run()
    {
       $this->cache = new PageCache( $this->request->uri );
-      
+
       if ( !$this->id )
       {
          $this->_ypHome();
@@ -42,11 +42,7 @@ class YPCtrler extends YP
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[] = [
-            'href' => ($i === Tag::YP_ID ? '/yp' : ('/yp/' . $i)),
-            'title' => $t[ 'description' ],
-            'name' => $t[ 'name' ]
-         ];
+         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::YP_ID ? '/yp' : ('/yp/' . $i));
       }
 
       $node = new Node();
@@ -56,12 +52,7 @@ class YPCtrler extends YP
 
       $nodes = $node->getYellowPageNodeList( $tids, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
 
-      $nids = [ ];
-      foreach ( $nodes as $i => $n )
-      {
-         $nids[] = $n[ 'id' ];
-         $nodes[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 45 );
-      }
+      $nids = \array_column( $nodes, 'id' );
 
       $contents = [
          'tid' => $tid,

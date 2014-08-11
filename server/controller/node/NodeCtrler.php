@@ -43,13 +43,9 @@ class NodeCtrler extends Node
       $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
-         $breadcrumb[] = [
-            'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-            'title' => $t[ 'description' ],
-            'name' => $t[ 'name' ]
-         ];
+         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
       }
-      $breadcrumb[] = ['name' => $node[ 'title' ] ];
+      $breadcrumb[ $node[ 'title' ] ] = NULL;
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node[ 'id' ] );
@@ -92,7 +88,7 @@ class NodeCtrler extends Node
          {
             $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
-         catch ( \Exception $e )
+         catch (\Exception $e)
          {
             $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -124,7 +120,7 @@ class NodeCtrler extends Node
             {
                $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
             }
-            catch ( \Exception $e )
+            catch (\Exception $e)
             {
                $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -195,7 +191,7 @@ class NodeCtrler extends Node
       {
          $tmp = \explode( '.', $f[ 'path' ] );
          $type = \array_pop( $tmp );
-         switch ( $type )
+         switch ($type)
          {
             case 'jpg':
             case 'jpeg':
@@ -255,13 +251,9 @@ class NodeCtrler extends Node
       $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
-         $breadcrumb[] = [
-            'href' => ($i === Tag::YP_ID ? '/yp' : ('/yp/' . $i)),
-            'title' => $t[ 'description' ],
-            'name' => $t[ 'name' ]
-         ];
+         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::YP_ID ? '/yp' : ('/yp/' . $i));
       }
-      $breadcrumb[] = ['name' => $node[ 'title' ] ];
+      $breadcrumb[ $node[ 'title' ] ] = NULL;
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $nid );
@@ -287,7 +279,7 @@ class NodeCtrler extends Node
          {
             $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
-         catch ( \Exception $e )
+         catch (\Exception $e)
          {
             $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -315,7 +307,7 @@ class NodeCtrler extends Node
             {
                $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
             }
-            catch ( \Exception $e )
+            catch (\Exception $e)
             {
                $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );

@@ -18,7 +18,7 @@ abstract class PM extends Controller
    public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
    {
       parent::__construct( $req, $html, $config, $logger, $session, $cookie );
-      
+
       if ( $this->request->uid == self::GUEST_UID )
       {
          $this->_dispayLogin( $this->request->uri );
@@ -41,25 +41,25 @@ abstract class PM extends Controller
 
       return $this->cookie->mailbox;
    }
-   
+
    protected function _setMailBox( $mailbox )
    {
-      if( $mailbox != $this->cookie->mailbox )
+      if ( $mailbox != $this->cookie->mailbox )
       {
          if ( !\in_array( $mailbox, ['inbox', 'sent' ] ) )
          {
             $this->error( '短信文件夹[' . $mailbox . ']不存在。' );
          }
-         
+
          $this->cookie->mailbox = $mailbox;
       }
    }
 
    protected function _getMailBoxLinks( $activeLink )
    {
-      return $this->html->linkList( [
-            '/pm/mailbox/inbox' => '收件箱',
-            '/pm/mailbox/sent' => '发件箱'
+      return $this->html->navbar( [
+            '收件箱' => '/pm/mailbox/inbox',
+            '发件箱' => '/pm/mailbox/sent'
             ], $activeLink
       );
    }
