@@ -32,10 +32,7 @@ class ForumCtrler extends Forum
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[] = [
-            'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-            'name' => $t[ 'name' ]
-         ];
+         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
       }
 
       $nodeInfo = [ ];
@@ -83,10 +80,7 @@ class ForumCtrler extends Forum
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[] = [
-            'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-            'name' => $t[ 'name' ]
-         ];
+         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
       }
 
       $node = new Node();
@@ -94,12 +88,9 @@ class ForumCtrler extends Forum
       $pager = $this->html->pager( $pageNo, $pageCount, '/forum/' . $tid );
 
       $nodes = $node->getForumNodeList( $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
-
-      $nids = [ ];
+      $nids = \array_column( $nodes, 'id' );
       foreach ( $nodes as $i => $n )
       {
-         $nids[] = $n[ 'id' ];
-         $nodes[ $i ][ 'title' ] = $this->html->truncate( $n[ 'title' ], 45 );
          $nodes[ $i ][ 'create_time' ] = \date( 'm/d/Y H:i', $n[ 'create_time' ] );
          $nodes[ $i ][ 'comment_time' ] = \date( 'm/d/Y H:i', $n[ 'comment_time' ] );
       }
@@ -132,8 +123,6 @@ class ForumCtrler extends Forum
 
       foreach ( $tag->getNodeInfo( $tid ) as $v )
       {
-
-         $v[ 'title' ] = $this->html->truncate( $v[ 'title' ], 35 );
          $v[ 'create_time' ] = \date( 'm/d/Y H:i', $v[ 'create_time' ] );
          if ( $v[ 'cid' ] == 0 )
          {

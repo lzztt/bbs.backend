@@ -96,7 +96,7 @@ abstract class User extends Controller
       $tbody = [ ];
       foreach ( $posts as $n )
       {
-         $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n[ 'title' ] ), '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
+         $tbody[] = ['cells' => [$this->html->link( $n[ 'title' ], '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
       }
 
       $recent_topics = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
@@ -108,7 +108,7 @@ abstract class User extends Controller
       $tbody = [ ];
       foreach ( $posts as $n )
       {
-         $tbody[] = ['cells' => [$this->html->link( $this->html->truncate( $n[ 'title' ] ), '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
+         $tbody[] = ['cells' => [$this->html->link( $n[ 'title' ], '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
       }
 
       $recent_comments = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );

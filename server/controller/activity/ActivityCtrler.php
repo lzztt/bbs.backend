@@ -36,8 +36,8 @@ class ActivityCtrler extends Activity
 
         foreach ( $actList as $k => $n )
         {
-            $type = ($n['startTime'] < $this->request->timestamp) ? (($n['endTime'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
-            $data .= '<li class="' . (($k % 2 == 0) ? 'even' : 'odd') . '"><a href="/node/' . $n['nid'] . '"><span class="' . $type . '">[' . date( 'm/d', $n['startTime'] ) . ']</span> ' . $this->html->truncate( $n['title'], 80 ) . '</a></li>';
+            $type = ($n['start_time'] < $this->request->timestamp) ? (($n['end_time'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
+            $data .= '<a href="/node/' . $n['nid'] . '" class="' . $type . '" data-before="' . \date( 'm/d', $n['start_time'] ) . '">' . $n['title'] . '</a>';
         }
 
         $contents = [

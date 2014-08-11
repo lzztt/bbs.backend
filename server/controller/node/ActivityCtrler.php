@@ -15,7 +15,7 @@ class ActivityCtrler extends Node
    public function run()
    {
 
-      
+
       list($nid, $type) = $this->_getNodeType();
       $method = '_activity' . $type;
       $this->$method( $nid );
@@ -48,13 +48,9 @@ class ActivityCtrler extends Node
          $breadcrumb = [ ];
          foreach ( $tags as $i => $t )
          {
-            $breadcrumb[] = [
-               'href' => ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i)),
-               'title' => $t[ 'description' ],
-               'name' => $t[ 'name' ]
-            ];
+            $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
          }
-         $breadcrumb[] = ['name' => $node->title ];
+         $breadcrumb[ $node->title ] = NULL;
 
          $content = [
             'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),

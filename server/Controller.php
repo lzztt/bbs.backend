@@ -303,22 +303,22 @@ abstract class Controller extends LzxCtrler
       if ( $this->request->uid )
       {
          // user
-         return $this->html->linkList( [
-               '/user/' . $this->request->uid => '用户首页',
-               '/pm/mailbox' => '站内短信',
-               '/user/' . $this->request->uid . '/edit' => '编辑个人资料',
-               '/password/' . $this->request->uid . '/change' => '更改密码'
+         return $this->html->navbar( [
+               '用户首页' => '/user/' . $this->request->uid,
+               '站内短信' => '/pm/mailbox',
+               '编辑个人资料' => '/user/' . $this->request->uid . '/edit',
+               '更改密码' => '/password/' . $this->request->uid . '/change'
                ], $activeLink
          );
       }
       else
       {
          // guest
-         return $this->html->linkList( [
-               '/user/login' => '登录',
-               '/user/register' => '创建新帐号',
-               '/password/forget' => '忘记密码',
-               '/user/username' => '忘记用户名'
+         return $this->html->navbar( [
+               '登录' => '/user/login',
+               '创建新帐号' => '/user/register',
+               '忘记密码' => '/password/forget',
+               '忘记用户名' => '/user/username'
                ], $activeLink
          );
       }
