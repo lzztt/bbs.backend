@@ -10,7 +10,7 @@ class CaptchaCtrler extends Captcha
 
    public function run()
    {
-      if ( strpos( $_SERVER[ 'HTTP_REFERER' ], $this->request->domain ) < 4 )
+      if ( \strpos( $_SERVER[ 'HTTP_REFERER' ], $this->request->domain ) < 4 )
       {
          $this->logger->info( 'Captcha Access Error: Wrong Referer : ' . $this->request->uri . ', from: ' . $_SERVER[ 'HTTP_REFERER' ] );
          $this->pageForbidden();

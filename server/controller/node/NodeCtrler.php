@@ -212,9 +212,8 @@ class NodeCtrler extends Node
 
          if ( $isImage )
          {
-            $img = new HTMLElement( 'h4', $f[ 'name' ] );
-            $img .= new HTMLElement( 'img', NULL, ['src' => $f[ 'path' ], 'alt' => '图片加载失败 : ' . $f[ 'name' ] ] );
-            $_images[] = $img;
+            $_images[] = new HTMLElement( 'figcaption', $f[ 'name' ] );
+            $_images[] = new HTMLElement( 'img', NULL, ['src' => $f[ 'path' ], 'alt' => '图片加载失败 : ' . $f[ 'name' ] ] );
          }
          else
          {
@@ -224,11 +223,11 @@ class NodeCtrler extends Node
 
       if ( \sizeof( $_images ) > 0 )
       {
-         $attachments .= $this->html->ulist( $_images, ['class' => 'attach_images' ], FALSE );
+         $attachments .= new HTMLElement( 'div', $_images, ['class' => 'attach_images' ] );
       }
       if ( \sizeof( $_files ) > 0 )
       {
-         $attachments .= $this->html->olist( $_files, ['class' => 'attach_files' ] );
+         $attachments .= new HTMLElement( 'div', $_files, ['class' => 'attach_files' ] );
       }
 
       return $attachments;
