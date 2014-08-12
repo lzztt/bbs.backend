@@ -2,7 +2,7 @@
 <div>
    <div>
       <img class="avatar" src="/data/avatars/1-100.png" alt="HoustonBBS的头像">
-      <?php print $username; ?><br />
+      <?php print $username; ?><br>
       <?php if ( $pm ): ?>
          <a class="button" href="<?php print $pm; ?>">发送站内短信</a>
       <?php endif; ?>

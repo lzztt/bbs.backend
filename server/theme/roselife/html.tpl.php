@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang='zh' dir='ltr'>
    <head>
-      <meta charset='UTF-8' />
-      <meta name='description' content='<?php print $head_description; ?>' />      
-      <meta name='viewport' content='width=device-width, initial-scale=1' />
+      <meta charset='UTF-8'>
+      <meta name='description' content='<?php print $head_description; ?>'>      
+      <meta name='viewport' content='width=device-width, initial-scale=1'>
 
       <!--BEBIN JS-->
       <script>
@@ -43,26 +43,26 @@
 
       <!--BEGIN CSS-->
       <?php if ( $tpl_debug ): ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/normalize.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/font.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.style.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.bbcode.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/nav_xs.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/nav_sm.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/main_xs.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/main_sm.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/main_md.css" rel="stylesheet" type="text/css" />
-         <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/normalize.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/font.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.style.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.bbcode.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/nav_xs.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/nav_sm.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_xs.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_sm.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_md.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1406956143.css" rel="stylesheet" type="text/css" />
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1406956143.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
       <title><?php print $head_title; ?></title>
       <!--BEING APPLE ICON-->
-      <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
-      <link rel='apple-touch-icon' sizes='72x72' href='/apple-touch-icon-72x72.png' />
-      <link rel='apple-touch-icon' sizes='114x114' href='/apple-touch-icon-114x114.png' />
+      <link rel='apple-touch-icon' href='/apple-touch-icon.png'>
+      <link rel='apple-touch-icon' sizes='72x72' href='/apple-touch-icon-72x72.png'>
+      <link rel='apple-touch-icon' sizes='114x114' href='/apple-touch-icon-114x114.png'>
       <!--END APPLE ICON-->
    </head>
    <body>
@@ -88,10 +88,10 @@
       <div id='ad'>
          <!--BEGIN AD-->
          <div id="ad01" class="ad0" style="width:468px; height:60px;">
-            <a href="http://www.llestudyusa.com" target="_blank"><img width="468px" height="60px" src="/data/ad/lles-1.jpg" alt="" /></a>
+            <a href="http://www.llestudyusa.com" target="_blank"><img width="468px" height="60px" src="/data/ad/lles-1.jpg" alt=""></a>
          </div>
          <div id="ad02" class="ad0" style="width:468px; height:60px; right:468px">
-            <a href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img width="468px" height="60px" src="/data/ad/alicewang-1.gif" alt="" /></a>
+            <a href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img width="468px" height="60px" src="/data/ad/alicewang-1.gif" alt=""></a>
          </div>
          <div id="ad11" class="ad1">
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
