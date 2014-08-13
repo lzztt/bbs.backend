@@ -25,14 +25,14 @@
             <span class="comment_num">#<?php print $postNumStart + $index ?></span>
          <?php endif; ?>
       </header>
-      
+
       <div class="article_content">
          <?php print $p[ 'HTMLbody' ] . $p[ 'attachments' ]; ?>
       </div>
 
       <footer class='v_user'>
          <div class="actions">
-            <?php $urole = 'v_adm' . $tid . ' v_user' . $p[ 'uid' ]; ?>
+            <?php $urole = 'v_user_tagadm_' . $tid . ' v_user' . $p[ 'uid' ]; ?>
             <?php if ( $tid == 16 && $p[ 'type' ] == 'node' ): ?>
                <button class="activity <?php print $urole; ?>" data-action="/node/<?php print $p[ 'id' ]; ?>/activity">发布为活动</button>
             <?php endif; ?>
