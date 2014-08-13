@@ -1,8 +1,8 @@
 <header class="content_header">
    <?php print $breadcrumb; ?>
-   <span class='urole_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
-   <button class='urole_user' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
-   <button class='urole_user' data-action="/node/<?php print $nid; ?>/comment">回复</button>
+   <span class='v_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
+   <button class='v_user' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
+   <button class='v_user' data-action="/node/<?php print $nid; ?>/comment">回复</button>
    <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount_<?php print $nid; ?>"></span> views</span> 
    <?php print $pager; ?>
 </header>
@@ -30,9 +30,9 @@
          <?php print $p[ 'HTMLbody' ] . $p[ 'attachments' ]; ?>
       </div>
 
-      <footer class='urole_user'>
+      <footer class='v_user'>
          <div class="actions">
-            <?php $urole = 'urole_adm' . $tid . ' urole_user' . $p[ 'uid' ]; ?>
+            <?php $urole = 'v_adm' . $tid . ' v_user' . $p[ 'uid' ]; ?>
             <?php if ( $tid == 16 && $p[ 'type' ] == 'node' ): ?>
                <button class="activity <?php print $urole; ?>" data-action="/node/<?php print $p[ 'id' ]; ?>/activity">发布为活动</button>
             <?php endif; ?>

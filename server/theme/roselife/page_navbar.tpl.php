@@ -15,10 +15,10 @@
          <?php print $ypMenu; ?>
       </ul>
    </li>
-   <li class='urole_user'><a href="/user">我的账户</a></li>
-   <li class='urole_user'><a href="/password/change">更改密码</a></li>
-   <li class='urole_guest'><a href="/user/login">登录</a></li>
-   <li class='urole_guest'><a href="/password/forget">忘记密码</a></li>
-   <li class='urole_guest'><a href="/user/username">忘记用户名</a></li>
-   <li class='urole_guest'><a href="/user/register">注册帐号</a></li>
+   <li class='v_user'><a href="/user">我的账户</a></li>
+   <li class='v_user'><a href="/password/change">更改密码</a></li>
+   <li class='v_guest'><a href="/user/login">登录</a></li>
+   <li class='v_guest'><a href="/password/forget">忘记密码</a></li>
+   <li class='v_guest'><a href="/user/username">忘记用户名</a></li>
+   <li class='v_guest'><a href="/user/register">注册帐号</a></li>
 </ul>
