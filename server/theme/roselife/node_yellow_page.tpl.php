@@ -49,7 +49,7 @@
 
             <footer class='v_user'>
                <div class="actions">
-                  <?php $urole = 'v_user_tagadm' . $tid . ' v_user' . $c[ 'uid' ]; ?>
+                  <?php $urole = 'v_user_tagadm_' . $tid . ' v_user' . $c[ 'uid' ]; ?>
                   <button class="edit <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/edit'; ?>">编辑</button>
                   <button class="delete <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/delete'; ?>">删除</button>
                   <button class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
