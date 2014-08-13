@@ -316,9 +316,17 @@ class NodeCtrler extends Node
          }
       }
 
+      $editor_contents = [
+         'show_title' => FALSE,
+         'title' => $node[ 'title' ],
+         'form_handler' => '/node/' . $nid . '/comment'
+      ];
+      $editor = new Template( 'editor_bbcode', $editor_contents );
+
       $contents += [
          'node' => $node,
-         'comments' => $cmts
+         'comments' => $cmts,
+         'editor' => $editor
       ];
 
       $this->html->var[ 'content' ] = new Template( 'node_yellow_page', $contents );
