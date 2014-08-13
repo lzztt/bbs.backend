@@ -24,7 +24,6 @@ use lzx\core\ControllerException;
  */
 // cookie->uid
 // cookie->urole
-// cookie->umode
 // session->uid
 // session->urole
 require_once \dirname( __DIR__ ) . '/lib/lzx/App.php';
@@ -117,7 +116,6 @@ class WebApp extends App
          $cookie = Cookie::getInstance();
          $cookie->setNoSend();
          $cookie->uid = 0;
-         $cookie->umode = Template::UMODE_ROBOT;
          $cookie->urole = Template::UROLE_GUEST;
 
          $session = Session::getInstance( NULL );

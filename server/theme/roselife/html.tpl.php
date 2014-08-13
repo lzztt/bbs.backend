@@ -71,10 +71,10 @@
             <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
             <span id='messagebox'><?php print $head_title; ?></span>
             <ul>
-               <li class='urole_user'><a id="pm" href="/pm/mailbox">短信</a></li>
-               <li class='urole_user'><a  href="/user/logout">登出</a></li>
-               <li class='urole_guest'><a href="/user/register">注册</a></li>
-               <li class='urole_guest'><a href="/user/login">登录</a></li>
+               <li class='v_user'><a id="pm" href="/pm/mailbox">短信</a></li>
+               <li class='v_user'><a  href="/user/logout">登出</a></li>
+               <li class='v_guest'><a href="/user/register">注册</a></li>
+               <li class='v_guest'><a href="/user/login">登录</a></li>
             </ul>
          </header>
          <nav id='page_navbar' class='hidden'><?php print $page_navbar; ?></nav>

@@ -2,8 +2,8 @@
    <?php print $breadcrumb; ?>
    <div><?php print $boardDescription; ?></div>
    <div>
-      <span class='urole_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题</span>
-      <button rel="nofollow" class='urole_user' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
+      <span class='v_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题</span>
+      <button rel="nofollow" class='v_user' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
       <?php print $pager; ?>
    </div>
 </header>
