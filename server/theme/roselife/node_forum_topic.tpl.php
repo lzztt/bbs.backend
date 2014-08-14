@@ -13,7 +13,7 @@
    <?php print $p[ 'authorPanel' ]; ?>
    <article>      
       <header>
-         <a href="/user/<?php print $p[ 'uid' ]; ?>"><?php print $p[ 'username' ]; ?></a> <span class='city'><?php print $p[ 'city' ]; ?></span> @ 
+         <a href="/user/<?php print $p[ 'uid' ]; ?>"><?php print $p[ 'username' ]; ?></a> <span class='city'><?php print $p[ 'city' ]; ?></span>
          <?php
          echo $p[ 'createTime' ];
          if ( $p[ 'lastModifiedTime' ] )
@@ -32,19 +32,19 @@
 
       <footer class='v_user'>
          <div class="actions">
-            <?php $urole = 'v_user_tagadm_' . $tid . ' v_user' . $p[ 'uid' ]; ?>
+            <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user' . $p[ 'uid' ]; ?>
             <?php if ( $tid == 16 && $p[ 'type' ] == 'node' ): ?>
                <button class="activity <?php print $urole; ?>" data-action="/node/<?php print $p[ 'id' ]; ?>/activity">发布为活动</button>
             <?php endif; ?>
-            <button class="edit <?php print $urole; ?>" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/edit'; ?>">编辑</button>
+            <button class="edit <?php print $urole; ?>" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/edit'; ?>">编辑</button>
             <button class="delete <?php print $urole; ?>" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/delete'; ?>">删除</button>
             <button class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
-            <button class="quote" data-action="/node/<?php print $nid; ?>/comment">引用</button>
+            <button class="quote" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="/node/<?php print $nid; ?>/comment">引用</button>
          </div>
-         <div id="<?php print $p[ 'type' ] . '-' . $p[ 'id' ]; ?>-raw" style="display:none;">
-            <span class='username'><?php print $p[ 'username' ]; ?></span>
-            <pre class="postbody"><?php print $p[ 'body' ]; ?></pre>
-            <span class="files"><?php print $p[ 'filesJSON' ]; ?></span>
+         <div id="<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" style="display:none;">
+            <pre class='username'><?php print $p[ 'username' ]; ?></pre>
+            <pre class="body"><?php print $p[ 'body' ]; ?></pre>
+            <pre class="files"><?php print $p[ 'filesJSON' ]; ?></pre>
          </div>
       </footer>
    </article>

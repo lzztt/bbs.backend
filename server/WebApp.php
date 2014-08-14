@@ -135,10 +135,10 @@ class WebApp extends App
       {
          $ctrler->run();
       }
-      catch ( ControllerException $e )
+      catch (ControllerException $e)
       {
          $msg = $e->getMessage();
-         switch ( $e->getCode() )
+         switch ($e->getCode())
          {
             case ControllerException::PAGE_NOTFOUND:
                \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
@@ -163,9 +163,7 @@ class WebApp extends App
                break;
             case ControllerException::PAGE_REDIRECT:
                \header( 'Location: ' . $msg );
-               // finish request processing
-               \fastcgi_finish_request();
-
+               
                // unset output
                $ctrler->html = NULL;
                // continue
@@ -183,6 +181,9 @@ class WebApp extends App
                break;
          }
       }
+
+      // send cookie
+      $cookie->send();
 
       // output page content, if we didn't get an exception
       $outputDebug = ( $this->config->stage == Config::STAGE_DEVELOPMENT && $ctrler->html instanceof Template );
