@@ -75,14 +75,13 @@ class NodeCtrler extends Node
          'points' => NULL,
       ];
 
-      $timeFormat = 'l, m/d/Y - H:i T';
       if ( $pageNo == 1 )
       { // show node details as the first post
          $node[ 'type' ] = 'node';
-         $node[ 'createTime' ] = \date( $timeFormat, $node[ 'create_time' ] );
+         $node[ 'createTime' ] = \date( 'm/d/Y H:i', $node[ 'create_time' ] );
          if ( $node[ 'lastModifiedTime' ] )
          {
-            $node[ 'lastModifiedTime' ] = \date( $timeFormat, $node[ 'last_modified_time' ] );
+            $node[ 'lastModifiedTime' ] = \date( 'm/d/Y H:i', $node[ 'last_modified_time' ] );
          }
          try
          {
@@ -110,10 +109,10 @@ class NodeCtrler extends Node
          foreach ( $comments as $c )
          {
             $c[ 'type' ] = 'comment';
-            $c[ 'createTime' ] = \date( $timeFormat, $c[ 'create_time' ] );
+            $c[ 'createTime' ] = \date( 'm/d/Y H:i', $node[ 'create_time' ] );
             if ( $c[ 'lastModifiedTime' ] )
             {
-               $c[ 'lastModifiedTime' ] = \date( $timeFormat, $c[ 'last_modified_time' ] );
+               $c[ 'lastModifiedTime' ] = \date( 'm/d/Y H:i', $node[ 'last_modified_time' ] );
             }
 
             try

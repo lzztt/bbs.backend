@@ -31,7 +31,7 @@ class PMCtrler extends PM
          {
             $msgs[ $i ][ 'avatar' ] = '/data/avatars/avatar0' . \mt_rand( 1, 5 ) . '.jpg';
          }
-         $msgs[ $i ][ 'time' ] = \date( 'm/d/Y', $m[ 'time' ] ) . '<br />' . \date( 'H:i', $m[ 'time' ] );
+         $msgs[ $i ][ 'time' ] = \date( 'm/d/Y H:i', $m[ 'time' ] );
          $msgs[ $i ][ 'body' ] = \nl2br( $m[ 'body' ] );
       }
 
