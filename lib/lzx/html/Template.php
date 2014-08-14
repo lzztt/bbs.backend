@@ -171,9 +171,22 @@ class Template
 // we only store timestamp in database, for query and comparation
 // we only display local time based on timezones
 // do not use T in format, timezone info is not correct
-   public function localDate( $format, $timestamp = TIMESTAMP )
+   public function localDate( $format, $timestamp )
    {
       return \date( $format, TIMESTAMP + ($_COOKIE[ 'timezone' ] - SYSTIMEZONE) * 3600 );
+   }
+
+   // get chinese date and time 
+   static public function getWeekday( $timestamp )
+   {
+      static $weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六' ];
+
+      return $weekdays[ \date( 'w', $timestamp ) ];
+   }
+
+   static public function getDateTime( $timestamp )
+   {
+      return \date( 'Y年m月d日 H:i', $timestamp );
    }
 
 // do not use timezone info in the $time string

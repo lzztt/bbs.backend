@@ -15,101 +15,129 @@ namespace lzx\core;
 class Cookie
 {
 
-    protected static $lifetime;
-    protected static $path;
-    protected static $domain;
-    protected $now;
-    protected $send = TRUE;
+   protected static $lifetime;
+   protected static $path;
+   protected static $domain;
+   protected $_now;
+   protected $_send = TRUE;
+   protected $_cookie_dirty = [ ];
 
-    public function __get( $key )
-    {
-        return \array_key_exists( $key, $_COOKIE ) ? $_COOKIE[$key] : NULL;
-    }
+   private function __construct()
+   {
+      $this->_now = (int) $_SERVER[ 'REQUEST_TIME' ];
+   }
 
-    public function __set( $key, $val )
-    {
-        if ( $val === NULL || \strlen( $val ) == 0 )
-        {
-            $this->__unset( $key );
-        }
-        else
-        {
-            if ( $this->send )
+   /**
+    * Return the Cookie object
+    *
+    * @return Cookie
+    */
+   public static function getInstance()
+   {
+      static $instance;
+
+      if ( !isset( $instance ) )
+      {
+         $instance = new self();
+      }
+
+      return $instance;
+   }
+
+   public function __get( $key )
+   {
+      if ( \array_key_exists( $key, $this->_cookie_dirty ) )
+      {
+         return $this->_cookie_dirty[ $key ];
+      }
+      elseif ( \array_key_exists( $key, $_COOKIE ) )
+      {
+         return $_COOKIE[ $key ];
+      }
+      else
+      {
+         return NULL;
+      }
+   }
+
+   public function __set( $key, $val )
+   {
+      $this->_cookie_dirty[ $key ] = $val;
+   }
+
+   public function __isset( $key )
+   {
+      if ( \array_key_exists( $key, $this->_cookie_dirty ) )
+      {
+         return isset( $this->_cookie_dirty[ $key ] );
+      }
+      elseif ( \array_key_exists( $key, $_COOKIE ) )
+      {
+         return isset( $_COOKIE[ $key ] );
+      }
+      else
+      {
+         return FALSE;
+      }
+   }
+
+   public function __unset( $key )
+   {
+      $this->_cookie_dirty[ $key ] = NULL;
+   }
+
+   public function send()
+   {
+      if ( $this->_send )
+      {
+         foreach ( $this->_cookie_dirty as $k => $v )
+         {
+            if ( isset( $v ) )
             {
-                \setcookie( $key, $val, $this->now + self::$lifetime, self::$path, self::$domain );
+               \setcookie( $k, $v, $this->_now + self::$lifetime, self::$path, self::$domain );
+               $_COOKIE[ $k ] = $v;
             }
-            $_COOKIE[$key] = $val;
-        }
-    }
-
-    public function __isset( $key )
-    {
-        return \array_key_exists( $key, $_COOKIE ) ? isset( $_COOKIE[$key] ) : FALSE;
-    }
-
-    public function __unset( $key )
-    {
-        if ( \array_key_exists( $key, $_COOKIE ) )
-        {
-            if ( $this->send )
+            else
             {
-                \setcookie( $key, '', $this->now - self::$lifetime, self::$path, self::$domain );
+               if ( \array_key_exists( $key, $_COOKIE ) )
+               {
+                  \setcookie( $k, '', $this->_now - self::$lifetime, self::$path, self::$domain );
+               }
             }
-            unset( $_COOKIE[$key] );
-        }
-    }
+         }
+         $this->_cookie_dirty = [ ];
+      }
+   }
 
-    public static function setParams( $lifetime, $path, $domain )
-    {
-        self::$lifetime = $lifetime;
-        self::$path = $path;
-        self::$domain = $domain;
-    }
+   public static function setParams( $lifetime, $path, $domain )
+   {
+      self::$lifetime = $lifetime;
+      self::$path = $path;
+      self::$domain = $domain;
+   }
 
-    public static function getParams()
-    {
-        return [
-            'lifetime' => self::$lifetime,
-            'path' => self::$path,
-            'domain' => self::$domain,
-        ];
-    }
+   public static function getParams()
+   {
+      return [
+         'lifetime' => self::$lifetime,
+         'path' => self::$path,
+         'domain' => self::$domain,
+      ];
+   }
 
-    public function setNoSend()
-    {
-        $this->send = FALSE;
-    }
+   public function setNoSend()
+   {
+      $this->_send = FALSE;
+   }
 
-    public function clear()
-    {
-        foreach ( \array_keys( $_COOKIE ) as $key )
-        {
-            unset( $this->$key );
-        }
-        $this->uid = 0;
-    }
-
-    private function __construct()
-    {
-        $this->now = (int) $_SERVER['REQUEST_TIME'];
-    }
-
-    /**
-     * Return the Cookie object
-     *
-     * @return Cookie
-     */
-    public static function getInstance()
-    {
-        static $instance;
-
-        if ( !isset( $instance ) )
-        {
-            $instance = new self();
-        }
-
-        return $instance;
-    }
+   public function clear()
+   {
+      foreach ( \array_keys( $_COOKIE ) as $key )
+      {
+         unset( $this->$key );
+      }
+      $this->uid = 0;
+   }
 
 }
 
