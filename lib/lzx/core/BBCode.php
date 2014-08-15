@@ -11,22 +11,22 @@ class BBCode
    public static function parse( $text )
    {
       static $bbc = [
-         'code' => ['code' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<code class="code">', 'close_tag' => '</code>', 'content_handling' => [__CLASS__, '_escape']]],
+         'code' => ['code' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<code class="code">', 'close_tag' => '</code>', 'content_handling' => [__CLASS__, '_escape' ] ] ],
          'tags' => [
-            'b' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<strong>', 'close_tag' => '</strong>'],
-            'i' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<em>', 'close_tag' => '</em>'],
-            'u' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<span style="text-decoration:underline">', 'close_tag' => '</span>'],
-            's' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<del>', 'close_tag' => '</del>'],
-            'img' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '{CONTENT}', 'content_handling' => [__CLASS__, '_img']],
-            'url' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '<a href="{PARAM}">', 'close_tag' => '</a>', 'default_arg' => '{CONTENT}'],
-            'size' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="font-size:{PARAM}">', 'close_tag' => '</span>'],
-            'color' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="color:{PARAM}">', 'close_tag' => '</span>'],
-            'bgcolor' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="background-color:{PARAM}">', 'close_tag' => '</span>'],
-            'quote' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<div class="quote"><b>{PARAM} wrote:</b><blockquote class="quote-body">', 'close_tag' => '</blockquote></div>'],
-            'list' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '', 'content_handling' => [__CLASS__, '_list']],
-            'youtube' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_youtube']],
-            'tudou' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_tudou']],
-            'googlemap' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_googlemap']],
+            'b' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<strong>', 'close_tag' => '</strong>' ],
+            'i' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<em>', 'close_tag' => '</em>' ],
+            'u' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<span style="text-decoration:underline">', 'close_tag' => '</span>' ],
+            's' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '<del>', 'close_tag' => '</del>' ],
+            'img' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '{CONTENT}', 'content_handling' => [__CLASS__, '_img' ] ],
+            'url' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '<a href="{PARAM}">', 'close_tag' => '</a>', 'default_arg' => '{CONTENT}' ],
+            'size' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="font-size:{PARAM}">', 'close_tag' => '</span>' ],
+            'color' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="color:{PARAM}">', 'close_tag' => '</span>' ],
+            'bgcolor' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="background-color:{PARAM}">', 'close_tag' => '</span>' ],
+            'quote' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<div class="quote"><b>{PARAM} wrote:</b><blockquote class="quote-body">', 'close_tag' => '</blockquote></div>' ],
+            'list' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '', 'content_handling' => [__CLASS__, '_list' ] ],
+            'youtube' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_youtube' ] ],
+            'tudou' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_tudou' ] ],
+            'googlemap' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_googlemap' ] ],
          ]
       ];
 
@@ -36,19 +36,19 @@ class BBCode
          // process [code] tag
          if ( \strpos( $text, '[code]' ) !== FALSE )
          {
-            $text = \bbcode_parse( \bbcode_create( $bbc['code'] ), $text );
+            $text = \bbcode_parse( \bbcode_create( $bbc[ 'code' ] ), $text );
          }
 
          // process other BBCode tags
-         $text = \bbcode_parse( \bbcode_create( $bbc['tags'] ), $text );
+         $text = \bbcode_parse( \bbcode_create( $bbc[ 'tags' ] ), $text );
       }
 
-      return \nl2br( $text );
+      return \str_replace( [ ">\n", ">\r\n", "\n", "\r\n" ], [ '>', '>', '<br>', '<br>' ], $text );
    }
 
    private static function _escape( $content, $param )
    {
-      return \str_replace( ['[', ']'], ['&#91;', '&#93;'], $content );
+      return \str_replace( ['[', ']' ], ['&#91;', '&#93;' ], $content );
    }
 
    private static function _img( $content, $param )
@@ -87,7 +87,7 @@ class BBCode
    {
       return '<embed src="http://www.tudou.com/v/' . $content . '/v.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" wmode="opaque" width="480" height="400"></embed>';
    }
-   
+
    private static function _googlemap( $content, $param )
    {
       return '<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' . $content . '&f=d&source=s_d&output=embed"></iframe><br /><small><a href="' . $content . '" style="text-align:left">View Larger Map</a></small>';
