@@ -35,6 +35,7 @@
          <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.superfish.js"></script>
          <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.js"></script>
          <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.bbcode.set.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
          <script src="/themes/<?php print $tpl_theme; ?>/js/min_1406956143.js"></script>
