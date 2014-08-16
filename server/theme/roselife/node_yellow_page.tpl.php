@@ -1,7 +1,7 @@
 <header class="content_header">
    <?php print $breadcrumb; ?>
    <span class='v_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
-   <button class='v_user' data-action="/node/<?php print $nid; ?>/comment">评论</button>
+   <button type="button" class='v_user comment' data-action="/node/<?php print $nid; ?>/comment">评论</button>
    <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount_<?php print $nid; ?>"></span> views</span> 
    <?php print $pager; ?>
 </header>
@@ -49,16 +49,16 @@
 
             <footer class='v_user'>
                <div class="actions">
-                  <?php $urole = 'v_user_tagadm_' . $tid . ' v_user' . $c[ 'uid' ]; ?>
-                  <button class="edit <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/edit'; ?>">编辑</button>
-                  <button class="delete <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/delete'; ?>">删除</button>
-                  <button class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
-                  <button class="quote" data-action="/node/<?php print $nid; ?>/comment">引用</button>
+                  <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user' . $c[ 'uid' ]; ?>
+                  <button type="button" class="edit <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/edit'; ?>">编辑</button>
+                  <button type="button" class="delete <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/delete'; ?>">删除</button>
+                  <button type="button" class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
+                  <button type="button" class="quote" data-action="/node/<?php print $nid; ?>/comment">引用</button>
                </div>
                <div id="<?php print $c[ 'type' ] . '-' . $c[ 'id' ]; ?>-raw" style="display:none;">
-                  <span class='username'><?php print $c[ 'username' ]; ?></span>
-                  <pre class="postbody"><?php print $c[ 'body' ]; ?></pre>
-                  <span class="files"><?php print $c[ 'filesJSON' ]; ?></span>
+                  <pre class='username'><?php print $c[ 'username' ]; ?></pre>
+                  <pre class="body"><?php print $c[ 'body' ]; ?></pre>
+                  <pre class="files"><?php print $c[ 'filesJSON' ]; ?></pre>
                </div>
             </footer>
          </article>

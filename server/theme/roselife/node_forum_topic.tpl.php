@@ -1,8 +1,8 @@
 <header class="content_header">
    <?php print $breadcrumb; ?>
    <span class='v_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
-   <button class='v_user' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
-   <button class='v_user' data-action="/node/<?php print $nid; ?>/comment">回复</button>
+   <button type="button" class='v_user create_node' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
+   <button type="button" class='v_user reply' data-action="/node/<?php print $nid; ?>/comment">回复</button>
    <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount_<?php print $nid; ?>"></span> views</span> 
    <?php print $pager; ?>
 </header>
@@ -34,12 +34,12 @@
          <div class="actions">
             <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user' . $p[ 'uid' ]; ?>
             <?php if ( $tid == 16 && $p[ 'type' ] == 'node' ): ?>
-               <button class="activity <?php print $urole; ?>" data-action="/node/<?php print $p[ 'id' ]; ?>/activity">发布为活动</button>
+               <button type="button" class="activity <?php print $urole; ?>" data-action="/node/<?php print $p[ 'id' ]; ?>/activity">发布为活动</button>
             <?php endif; ?>
-            <button class="edit <?php print $urole; ?>" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/edit'; ?>">编辑</button>
-            <button class="delete <?php print $urole; ?>" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/delete'; ?>">删除</button>
-            <button class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
-            <button class="quote" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="/node/<?php print $nid; ?>/comment">引用</button>
+            <button type="button" class="edit <?php print $urole; ?>" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/edit'; ?>">编辑</button>
+            <button type="button" class="delete <?php print $urole; ?>" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/delete'; ?>">删除</button>
+            <button type="button" class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
+            <button type="button" class="quote" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="/node/<?php print $nid; ?>/comment">引用</button>
          </div>
          <div id="<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" style="display:none;">
             <pre class='username'><?php print $p[ 'username' ]; ?></pre>

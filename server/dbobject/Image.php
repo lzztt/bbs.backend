@@ -133,7 +133,7 @@ class Image extends DBObject
                   // resize image
                   $im = new \Imagick( $tmpFile );
                   $this->_autoRotateImage( $im );
-                  $im->resizeImage( $maxWidth, $maxHeight, \Imagick::FILTER_LANCZOS, 1, TRUE );
+                  $im->resizeImage( $config[ 'width' ], $config[ 'height' ], \Imagick::FILTER_LANCZOS, 1, TRUE );
                   $im->writeImage( $savePath );
                   $im->clear();
                   if ( $tmpFile )

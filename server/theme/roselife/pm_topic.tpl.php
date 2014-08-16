@@ -3,11 +3,11 @@
 <?php foreach ( $msgs as $m ): ?>
    <article>      
       <header>
-         <a href="/user/<?php print $m[ 'uid' ]; ?>"><?php print $m[ 'username' ]; ?></a>@<?php print $m[ 'time' ]; ?>
+         <a href="/user/<?php print $m[ 'uid' ]; ?>"><?php print $m[ 'username' ]; ?></a> <?php print $m[ 'time' ]; ?>
       </header>
 
       <div class="article_content"><?php print $m[ 'body' ]; ?>
-         <button href="/pm/<?php print $topicID; ?>/delete/<?php print $m[ 'id' ]; ?>"><?php print ( $m[ 'id' ] == $topicID ? '删除短信' : '删除' ); ?></button>
+         <a class="button" href="/pm/<?php print $topicID; ?>/delete/<?php print $m[ 'id' ]; ?>"><?php print ( $m[ 'id' ] == $topicID ? '删除短信' : '删除' ); ?></a>
       </div>
    </article>  
 <?php endforeach; ?>
