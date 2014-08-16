@@ -3,7 +3,7 @@
    <div><?php print $boardDescription; ?></div>
    <div>
       <span class='v_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题</span>
-      <button rel="nofollow" class='v_user' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
+      <button type="button" class='v_user create_node' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
       <?php print $pager; ?>
    </div>
 </header>

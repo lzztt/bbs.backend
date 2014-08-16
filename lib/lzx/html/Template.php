@@ -528,7 +528,7 @@ class Template
       $count = \count( $links ) - 1;
       foreach ( $links as $text => $uri )
       {
-         $list[] = $count-- ? $this->link( $text, $uri ) : $text;
+         $list[] = $count-- ? $this->link( $text, $uri ) : (string) $text;
       }
 
       return new HTMLElement( 'nav', $list, [ 'class' => 'breadcrumb' ] );

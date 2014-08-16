@@ -211,8 +211,9 @@ class NodeCtrler extends Node
 
          if ( $isImage )
          {
-            $_images[] = new HTMLElement( 'figcaption', $f[ 'name' ] );
-            $_images[] = new HTMLElement( 'img', NULL, ['src' => $f[ 'path' ], 'alt' => '图片加载失败 : ' . $f[ 'name' ] ] );
+            $_images[] = new HTMLElement( 'figure', [
+               new HTMLElement( 'figcaption', $f[ 'name' ] ),
+               new HTMLElement( 'img', NULL, ['src' => $f[ 'path' ], 'alt' => '图片加载失败 : ' . $f[ 'name' ] ] ) ] );
          }
          else
          {
