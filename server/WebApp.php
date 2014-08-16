@@ -186,7 +186,7 @@ class WebApp extends App
       $cookie->send();
 
       // output page content, if we didn't get an exception
-      $outputDebug = ( $this->config->stage == Config::STAGE_DEVELOPMENT && $ctrler->html instanceof Template );
+      $outputDebug = FALSE;//( $this->config->stage == Config::STAGE_DEVELOPMENT && $ctrler->html instanceof Template );
       if ( $ctrler->html )
       {
          echo $ctrler->html;

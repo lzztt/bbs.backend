@@ -65,10 +65,10 @@ class Config
       $this->webmaster = 'ikki3355@gmail.com';
 
       $this->image = [
-         'types' => [\IMAGETYPE_GIF, \IMAGETYPE_PNG, \IMAGETYPE_JPEG ],
+         'types' => [ \IMAGETYPE_GIF, \IMAGETYPE_PNG, \IMAGETYPE_JPEG ],
          'height' => 960,
          'width' => 600,
-         'size' => 5242880,
+         'size' => 5242880
       ];
 
       // make this file immutable

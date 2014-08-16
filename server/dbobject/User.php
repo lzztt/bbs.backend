@@ -172,11 +172,11 @@ class User extends DBObject
    {
       if ( $type == 'sent' )
       {
-         return $this->call( 'get_pm_list_sent(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+         return $this->call( 'get_pm_list_sent_2(' . $this->id . ',' . $limit . ',' . $offset . ')' );
       }
       else
       {
-         return $this->call( 'get_pm_list_inbox(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+         return $this->call( 'get_pm_list_inbox_2(' . $this->id . ',' . $limit . ',' . $offset . ')' );
       }
    }
 
