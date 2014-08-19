@@ -30,6 +30,11 @@ class UserCtrler extends User
          $this->error( '错误：用户不存在' );
       }
 
+      if ( $user->status == 0 )
+      {
+         $this->error( '错误：用户已被删除' );
+      }
+
       $sex = \is_null( $user->sex ) ? '未知' : ( $user->sex == 1 ? '男' : '女');
       if ( $user->birthday )
       {

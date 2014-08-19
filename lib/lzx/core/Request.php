@@ -139,8 +139,16 @@ class Request
 
    public function getCityFromIP( $ip )
    {
-      $city = 'N/A';
+      static $cities = [ ];
 
+      // return from cache;
+      if ( \array_key_exists( $ip, $cities ) )
+      {
+         return $cities[ $ip ];
+      }
+
+      // get city from geoip database
+      $city = 'N/A';
       try
       {
          if ( \is_null( $ip ) )
@@ -164,6 +172,9 @@ class Request
       {
          return 'UNKNOWN';
       }
+
+      // save city to cache
+      $cities[ $ip ] = $city;
 
       return $city;
    }

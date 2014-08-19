@@ -69,16 +69,25 @@
    <body>
       <div id='page'>
          <header id='page_header'>
-            <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-            <span id='messagebox'><?php print $head_title; ?></span>
-            <ul>
+            <div id="logo_div">
+               <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
+               <span id='messagebox'><?php print $head_title; ?></span>
+            </div>
+            <div id="page_header_ad"><span></span><a 
+                  href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lles-1.jpg"></a><a
+                  href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img src="/data/ad/alicewang-1.gif"></a><a 
+                  href="http://jeffreyjinteam.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a>
+            </div>
+         </header>
+         <nav id='page_navbar' class='hidden'>
+            <ul class="sf-menu" style="display: inline-block; float: right;">
                <li class='v_user'><a id="pm" href="/pm/mailbox">短信</a></li>
                <li class='v_user'><a  href="/user/logout">登出</a></li>
                <li class='v_guest'><a href="/user/register">注册</a></li>
                <li class='v_guest'><a href="/user/login">登录</a></li>
             </ul>
-         </header>
-         <nav id='page_navbar' class='hidden'><?php print $page_navbar; ?></nav>
+            <?php print $page_navbar; ?>
+         </nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
             <div id='copyright'>如有问题，请联络网站管理员
@@ -86,44 +95,22 @@
             </div>
          </footer>
       </div>
-      <div id='ad'>
-         <!--BEGIN AD-->
-         <div id="ad01" class="ad0" style="width:468px; height:60px;">
-            <a href="http://www.llestudyusa.com" target="_blank"><img width="468px" height="60px" src="/data/ad/lles-1.jpg" alt=""></a>
-         </div>
-         <div id="ad02" class="ad0" style="width:468px; height:60px; right:468px">
-            <a href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img width="468px" height="60px" src="/data/ad/alicewang-1.gif" alt=""></a>
-         </div>
-         <div id="ad11" class="ad1">
-            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- HoustonBBS leaderboard -->
-            <ins class="adsbygoogle"
-                 style="display:inline-block;width:728px;height:90px"
-                 data-ad-client="ca-pub-8257334386742604"
-                 data-ad-slot="2768722489"></ins>
-            <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-         </div>
-         <div id="ad12" class="ad1"><a href="http://jeffreyjinteam.com/" target="_blank"><img width="272px" height="90px" src="/data/ad/jinfei.gif" alt=""></a></div>
-         <!--END AD-->
-      </div>
    </body>
    <?php if ( !$debug ): ?>
       <script>
-         (function(i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function() {
-               (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o), m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+            (function(i, s, o, g, r, a, m) {
+               i['GoogleAnalyticsObject'] = r;
+               i[r] = i[r] || function() {
+                  (i[r].q = i[r].q || []).push(arguments)
+               }, i[r].l = 1 * new Date();
+               a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+               a.async = 1;
+               a.src = g;
+               m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-         ga('create', 'UA-36671672-1', 'houstonbbs.com');
-         ga('send', 'pageview');
+            ga('create', 'UA-36671672-1', 'houstonbbs.com');
+            ga('send', 'pageview');
       </script>
    <?php endif; ?>
 </html>
