@@ -27,6 +27,20 @@
       </header>
 
       <div class="article_content">
+         <?php if ( $index == 0 ): ?>
+            <style>
+               .responsive-ad { display:inline-block; float:right; width:300px; height:250px; }
+               @media(max-width: 767px) { .responsive-ad { display:none } }
+            </style>
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- responsive_ad -->
+            <ins class="adsbygoogle responsive-ad"
+                 data-ad-client="ca-pub-8257334386742604"
+                 data-ad-slot="1050744881"></ins>
+            <script>
+               (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+         <?php endif; ?>
          <?php print $p[ 'HTMLbody' ] . $p[ 'attachments' ]; ?>
       </div>
 
