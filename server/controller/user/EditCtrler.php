@@ -31,24 +31,16 @@ class EditCtrler extends User
 
          if ( $u->exists() )
          {
-            if ( $user->birthday )
+            if ( $u->birthday )
             {
-               $birthday = \sprintf( '%08u', $user->birthday );
-               $byear = \substr( $birthday, 0, 4 );
-               if ( $byear == '0000' )
-               {
-                  $byear = NULL;
-               }
-               $bmonth = \substr( $birthday, 4, 2 );
-               $bday = \substr( $birthday, 6, 2 );
             }
 
-            $userLinks = $this->_getUserLinks( '/user/' . $user->id . '/edit' );
+            $userLinks = $this->_getUserLinks( '/user/' . $u->id . '/edit' );
             $info = [
                'action' => $currentURI,
                'userLinks' => $userLinks,
                'username' => $u->username,
-               'avatar' => $u->avatar ? $user->avatar : '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg',
+               'avatar' => $u->avatar ? $u->avatar : '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg',
                'qq' => $u->qq,
                'wechat' => $u->wechat,
                'website' => $u->website,
@@ -83,7 +75,7 @@ class EditCtrler extends User
             }
             else
             {
-               $avatar = '/data/avatars/' . $user->id . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[ 2 ] );
+               $avatar = '/data/avatars/' . $u->id . '-' . \mt_rand( 0, 999 ) . \image_type_to_extension( $fileInfo[ 2 ] );
                \move_uploaded_file( $file[ 'tmp_name' ], $this->config->path[ 'file' ] . $avatar );
                $u->avatar = $avatar;
             }
