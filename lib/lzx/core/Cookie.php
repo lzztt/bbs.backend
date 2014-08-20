@@ -99,7 +99,7 @@ class Cookie
             }
             else
             {
-               if ( \array_key_exists( $key, $_COOKIE ) )
+               if ( \array_key_exists( $k, $_COOKIE ) )
                {
                   \setcookie( $k, '', $this->_now - self::$lifetime, self::$path, self::$domain );
                }
