@@ -93,7 +93,7 @@ class User extends DBObject
 
    public function isSuperUser( $uid, $cid )
    {
-      return \in_array( $uid, [1] );
+      return \in_array( $uid, [1 ] );
    }
 
    public function login( $username, $password )
@@ -113,6 +113,14 @@ class User extends DBObject
       return FALSE;
    }
 
+   public function getUserGroup()
+   {
+      if ( $this->id )
+      {
+         return \array_column( $this->call( 'get_user_group(' . $this->id . ')' ), 'name' );
+      }
+   }
+
    /*
     * delete nodes and return the node ids whose cache need to be deleted
     */
@@ -127,12 +135,12 @@ class User extends DBObject
 
    public function getAllNodeIDs()
    {
-      $nids = [];
+      $nids = [ ];
       if ( $this->id > 1 )
       {
          foreach ( $this->call( 'get_user_node_ids(' . $this->id . ')' ) as $n )
          {
-            $nids[] = $n['nid'];
+            $nids[] = $n[ 'nid' ];
          }
       }
       return $nids;
@@ -197,7 +205,7 @@ class User extends DBObject
          $list = $spamwords->getList();
          foreach ( $list as $w )
          {
-            if ( \mb_strpos( $text, $w['word'] ) !== FALSE )
+            if ( \mb_strpos( $text, $w[ 'word' ] ) !== FALSE )
             {
                // delete user
                $this->delete();
@@ -211,7 +219,7 @@ class User extends DBObject
          {
             $geo = \geoip_record_by_name( \is_numeric( $ip ) ? \long2ip( $ip ) : $ip  );
             // not from Texas
-            if ( !$geo || $geo['region'] != 'TX' )
+            if ( !$geo || $geo[ 'region' ] != 'TX' )
             {
                $oneday = \intval( $timestamp - 86400 );
                $count = \array_pop( \array_pop( $this->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
@@ -235,15 +243,15 @@ class User extends DBObject
 
       $onlines = $this->call( 'get_user_online(' . $timestamp . ')' );
 
-      $users = [];
+      $users = [ ];
       $guestCount = 0;
       if ( isset( $onlines ) )
       {
          foreach ( $onlines AS $u )
          {
-            if ( $u['uid'] > 0 )
+            if ( $u[ 'uid' ] > 0 )
             {
-               $users[] = $u['username'];
+               $users[] = $u[ 'username' ];
             }
             else
             {
@@ -253,9 +261,9 @@ class User extends DBObject
       }
 
       return [
-         'userCount' => $stats['user_count_total'],
-         'userTodayCount' => $stats['user_count_recent'],
-         'latestUser' => $stats['latest_user'],
+         'userCount' => $stats[ 'user_count_total' ],
+         'userTodayCount' => $stats[ 'user_count_recent' ],
+         'latestUser' => $stats[ 'latest_user' ],
          'onlineUsers' => \implode( ', ', $users ),
          'onlineUserCount' => \sizeof( $users ),
          'onlineGuestCount' => $guestCount,
