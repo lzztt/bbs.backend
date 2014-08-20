@@ -99,11 +99,12 @@ abstract class Controller extends LzxCtrler
       // update user info
       if ( $this->request->uid > 0 )
       {
-         $this->user = new User( $this->request->uid, NULL );
+         $this->user = new User( $this->request->uid, 'username' );
          // update access info
          $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
          // check new pm message
          $this->cookie->pmCount = \intval( $this->user->getPrivMsgsCount( 'new' ) );
+         $html->var[ 'username' ] = $this->user->username;
          $updateUserInfo = FALSE;
       }
 
