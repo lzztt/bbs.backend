@@ -26,7 +26,10 @@
       </script>
 
       <script>(typeof JSON === 'object') || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
-      <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->
+      <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
 
       <?php if ( $tpl_debug ): ?>
          <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.cookie.js"></script>
@@ -81,10 +84,15 @@
          </header>
          <nav id='page_navbar' class='hidden'>
             <ul class="sf-menu" style="display: inline-block; float: right;">
+               <li class='v_user'><a><?php print $username; ?></a></li>
                <li class='v_user'><a id="pm" href="/pm/mailbox">短信</a></li>
+               <li class='v_user'><a href="/user">我的账户</a></li>
+               <li class='v_user'><a href="/password/change">更改密码</a></li>
                <li class='v_user'><a  href="/user/logout">登出</a></li>
-               <li class='v_guest'><a href="/user/register">注册</a></li>
                <li class='v_guest'><a href="/user/login">登录</a></li>
+               <li class='v_guest'><a href="/password/forget">忘记密码</a></li>
+               <li class='v_guest'><a href="/user/username">忘记用户名</a></li>
+               <li class='v_guest'><a href="/user/register">注册帐号</a></li>
             </ul>
             <?php print $page_navbar; ?>
          </nav>
@@ -98,19 +106,19 @@
    </body>
    <?php if ( !$debug ): ?>
       <script>
-            (function(i, s, o, g, r, a, m) {
-               i['GoogleAnalyticsObject'] = r;
-               i[r] = i[r] || function() {
-                  (i[r].q = i[r].q || []).push(arguments)
-               }, i[r].l = 1 * new Date();
-               a = s.createElement(o), m = s.getElementsByTagName(o)[0];
-               a.async = 1;
-               a.src = g;
-               m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+         (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+               (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-            ga('create', 'UA-36671672-1', 'houstonbbs.com');
-            ga('send', 'pageview');
+         ga('create', 'UA-36671672-1', 'houstonbbs.com');
+         ga('send', 'pageview');
       </script>
    <?php endif; ?>
 </html>

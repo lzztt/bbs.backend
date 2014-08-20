@@ -77,7 +77,8 @@ abstract class User extends Controller
    {
       $this->session->uid = $uid;
       $this->cookie->uid = $uid;
-      $this->cookie->urole = $uid == self::GUEST_UID ? Template::UROLE_GUEST : ($uid == self::ADMIN_UID ? Template::UROLE_ADM : Template::UROLE_USER);
+      $urole = (new UserObject( $uid, NULL ) )->getUserGroup();
+      $this->cookie->urole = $urole ? \implode( '|', $urole ) : NULL;
    }
 
    protected function _recentTopics( $uid )
