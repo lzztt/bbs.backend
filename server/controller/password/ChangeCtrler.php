@@ -19,7 +19,7 @@ class ChangeCtrler extends Password
          return;
       }
 
-      $uid = $this->id;
+      $uid = $this->id ? $this->id : $this->request->uid;
       if ( $uid != $this->request->uid && $this->request->uid != self::ADMIN_UID )
       {
          $this->pageForbidden();
@@ -27,7 +27,7 @@ class ChangeCtrler extends Password
 
       if ( empty( $this->request->post ) )
       {
-         $this->html->var[ 'content' ] = new Template( 'password_change', [ 'userLinks' => $this->_getUserLinks( '/password/' . $uid . '/change' ) ] );
+         $this->html->var[ 'content' ] = new Template( 'password_change', [ 'userLinks' => $this->_getUserLinks( '/password/' . $uid . '/change' ), 'action' => '/password/' . $uid . '/change' ] );
       }
       else
       {
@@ -64,6 +64,10 @@ class ChangeCtrler extends Password
             {
                $this->error( '输入的旧密码不正确，无法更改密码!' );
             }
+         }
+         else
+         {
+            $this->error( '用户不存在!' );
          }
       }
    }

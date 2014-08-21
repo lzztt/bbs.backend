@@ -135,9 +135,9 @@ class NodeCtrler extends Node
       }
 
       $editor_contents = [
-         'show_title' => FALSE,
          'title' => $node[ 'title' ],
-         'form_handler' => '/node/' . $nid . '/comment'
+         'form_handler' => '/node/' . $nid . '/comment',
+         'hasFile' => TRUE  
       ];
       $editor = new Template( 'editor_bbcode', $editor_contents );
 
@@ -317,8 +317,6 @@ class NodeCtrler extends Node
       }
 
       $editor_contents = [
-         'show_title' => FALSE,
-         'title' => $node[ 'title' ],
          'form_handler' => '/node/' . $nid . '/comment'
       ];
       $editor = new Template( 'editor_bbcode', $editor_contents );

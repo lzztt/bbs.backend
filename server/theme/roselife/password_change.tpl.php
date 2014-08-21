@@ -1,5 +1,5 @@
 <?php print $userLinks; ?>
-<form accept-charset="UTF-8" autocomplete="off" method="post" action="/password/change">
+<form accept-charset="UTF-8" autocomplete="off" method="post" action="<?php print $action; ?>">
    <fieldset>
       <label class="label oldpassword">旧密码</label><input name="password_old" type="password" required="required">
    </fieldset> 
