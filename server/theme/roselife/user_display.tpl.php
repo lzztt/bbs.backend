@@ -1,13 +1,12 @@
 <?php print $userLinks; ?>
 <div>
-   <div>
-      <img class="avatar" src="/data/avatars/1-100.png" alt="HoustonBBS的头像">
-      <?php print $username; ?><br>
+   <figure>
+      <img class="avatar" src="<?php print $avatar; ?>" alt="HoustonBBS的头像">
+      <figcaption><?php print $username; ?></figcaption>
       <?php if ( $pm ): ?>
          <a class="button" href="<?php print $pm; ?>">发送站内短信</a>
       <?php endif; ?>
-   </div>
-
+   </figure>
    <dl>
       <?php foreach ( $info as $k => $v ): ?>
          <dt><?php print $k; ?></dt><dd><?php print $v; ?></dd>
