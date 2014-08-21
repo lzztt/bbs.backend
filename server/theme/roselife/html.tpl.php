@@ -98,9 +98,21 @@
          </nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
-            <div id='copyright'>如有问题，请联络网站管理员
-               <a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2014 HoustonBBS 版权所有 | <a href='/term'>免责声明</a>
+            <div class='google_ad_xs'>
+               <style>
+                  .responsive-ad-xs { display:none; }
+                  @media(max-width: 767px) { .responsive-ad-xs { display: block; width: 100%; height: 60px; } }
+               </style>
+               <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+               <!-- responsive_ad_xs -->
+               <ins class="adsbygoogle responsive-ad-xs"
+                    data-ad-client="ca-pub-8257334386742604"
+                    data-ad-slot="9976046082"></ins>
+               <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+               </script>
             </div>
+            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2014 HoustonBBS 版权所有 | <a href='/term'>免责声明</a></div>
          </footer>
       </div>
    </body>

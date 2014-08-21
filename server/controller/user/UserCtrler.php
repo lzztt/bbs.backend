@@ -49,7 +49,7 @@ class UserCtrler extends User
       $content = [
          'uid' => $uid,
          'username' => $user->username,
-         'avator' => $user->avatar ? $user->avatar : '/data/avatars/avatar0' . \mt_rand( 1, 5 ) . '.jpg',
+         'avatar' => $user->avatar ? $user->avatar : '/data/avatars/avatar0' . \mt_rand( 1, 5 ) . '.jpg',
          'userLinks' => $this->_getUserLinks( '/user/' . $uid, $uid ),
          'pm' => $uid != $this->request->uid ? '/user/pm/' . $uid : '',
          'info' => [

@@ -4,7 +4,6 @@
       <label class='label' data-help="您的虚拟头像。最大尺寸是 <em>120 x 120</em> 像素，最大大小为 <em>60</em> KB">用户头像</label>
       <input name="avatar" type="file"><img class="avatar" src="<?php print $avatar; ?>">
    </fieldset>
-
    <fieldset>
       <label class='label'>微信</label>
       <input name="wechat" type="text" value="<?php print $wechat; ?>">
@@ -18,7 +17,6 @@
       <label class='label'>个人网站</label>
       <input name="website" type="url" value="<?php print $website; ?>">
    </fieldset>
-
    <fieldset>
       <label class='label' data-help="不会公开显示">姓名</label>
       名 <input class='name' name="firstname"  type="text" value="<?php print $firstname; ?>">
@@ -28,8 +26,8 @@
       <label class='label'>性别</label>
       <select name="sex">
          <option value="null">未选择</option>
-         <option value="0">女</option>
-         <option value="1">男</option>
+         <option value="0" <?php if( $sex === 0 ): print 'selected="selected"'; endif; ?>>女</option>
+         <option value="1" <?php if( $sex === 1 ): print 'selected="selected"'; endif; ?>>男</option>
       </select>
    </fieldset>
    <fieldset>

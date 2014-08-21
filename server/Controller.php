@@ -103,9 +103,9 @@ abstract class Controller extends LzxCtrler
          // update access info
          $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
          // check new pm message
-         $this->cookie->pmCount = \intval( $this->user->getPrivMsgsCount( 'new' ) );
+         $this->cookie->pmCount = (int) $this->user->getPrivMsgsCount( 'new' );
+         $this->cookie->send();
          $html->var[ 'username' ] = $this->user->username;
-         $updateUserInfo = FALSE;
       }
 
       // set navbar
