@@ -31,10 +31,6 @@ class EditCtrler extends User
 
          if ( $u->exists() )
          {
-            if ( $u->birthday )
-            {
-            }
-
             $userLinks = $this->_getUserLinks( '/user/' . $u->id . '/edit' );
             $info = [
                'action' => $currentURI,
@@ -47,9 +43,7 @@ class EditCtrler extends User
                'firstname' => $u->firstname,
                'lastname' => $u->lastname,
                'sex' => $u->sex,
-               'byear' => $byear,
-               'bmonth' => $bmonth,
-               'bday' => $bday,
+               'birthday' => \date( 'Y-m-d', $u->birthday ),
                'occupation' => $u->occupation,
                'interests' => $u->interests,
                'aboutme' => $u->favoriteQuotation
@@ -101,7 +95,7 @@ class EditCtrler extends User
 
          $u->sex = \is_numeric( $this->request->post[ 'sex' ] ) ? (int) $this->request->post[ 'sex' ] : NULL;
 
-         $u->birthday = (int) ($this->request->post[ 'byear' ] . $this->request->post[ 'bmonth' ] . $this->request->post[ 'bday' ]);
+         $u->birthday = \strtotime( $this->request->post[ 'birthday' ] );
 
          $u->update();
 
