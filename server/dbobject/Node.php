@@ -98,7 +98,7 @@ class Node extends DBObject
 
    public function getYellowPageNodeComments( $id, $limit = false, $offset = false )
    {
-      return $this->call( 'get_yp_node_comments(' . $id . ', ' . $limit . ', ' . $offset . ')' );
+      return $this->call( 'get_yp_node_comments_yp(' . $id . ', ' . $limit . ', ' . $offset . ')' );
    }
 
    public function getViewCounts( $nids )
@@ -169,7 +169,7 @@ class Node extends DBObject
 
    public function getLatestYellowPageReplies( $count )
    {
-      return $this->call( 'get_tag_recent_comments("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
+      return $this->call( 'get_tag_recent_comments_yp("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
    }
 
    public function getNodeCount( $tids )

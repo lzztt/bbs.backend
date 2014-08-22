@@ -17,7 +17,7 @@
       <label class="label">收信人</label><input readonly="readonly" name="to" type="text" value="<?php print $replyTo[ 'username' ]; ?>">
    </fieldset>
    <fieldset>
-      <label class="label" data-help="最少5个字母或3个汉字">回复内容</label><textarea  name="body" required="required"></textarea>
+      <label class="label" data-help="最少5个字母或3个汉字">回复内容</label><textarea  name="body" required></textarea>
    </fieldset>
    <input name="fromUID" value="<?php print $fromUID; ?>" type="hidden">
    <input name="toUID" value="<?php print $replyTo[ 'id' ]; ?>" type="hidden">
