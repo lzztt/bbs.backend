@@ -169,10 +169,12 @@ class Image extends DBObject
 
             $p = \strrpos( $fileName, '.' );
 
+            $uri = \substr( $savePath, \strlen( $config[ 'path' ] ) );
             $savedFile[] = [
                'name' => $p > 0 ? \substr( $fileName, 0, $p ) : $fileName,
-               'path' => \substr( $savePath, \strlen( $config[ 'path' ] ) )
+               'path' => $uri
             ];
+            $this->call( 'image_add_tmp("' . $uri . '")' );
          }
       }
 
@@ -202,34 +204,30 @@ class Image extends DBObject
 
    public function updateFileList( array $files, $filePath, $nid, $cid = NULL )
    {
-      $nid = \intval( $nid );
-      $isCommment = FALSE;
-      if ( isset( $cid ) ) // comment
+      $nid = (int) $nid;
+      if ( $cid ) // comment
       {
-         $isComment = TRUE;
-         $cid = \intval( $cid );
          $arr = $this->call( 'get_comment_images(' . $cid . ')' );
       }
       else
       {
-         $cid = 'NULL';
          $arr = $this->call( 'get_node_images(' . $nid . ')' );
       }
 
       $images = [ ];
       foreach ( $arr as $r )
       {
-         $images[ $r[ 'id' ] ] = $r;
+         $images[ (int) $r[ 'id' ] ] = $r;
       }
 
       foreach ( $files as $fid => $file )
       {
          if ( \is_numeric( $fid ) )
          {
-            $fid = \intval( $fid );
+            $fid = (int) $fid;
             if ( $file[ 'name' ] != $images[ $fid ][ 'name' ] )
             {
-               $this->call( 'update_image(:fid, :name)', [':fid' => $fid, ':name' => $file[ 'name' ] ] );
+               $this->call( 'image_update(:fid, :name)', [':fid' => $fid, ':name' => $file[ 'name' ] ] );
             }
             unset( $images[ $fid ] );
          }
@@ -241,7 +239,12 @@ class Image extends DBObject
                $info = \getimagesize( $filePath . $file[ 'path' ] );
                $width = $info[ 0 ];
                $height = $info[ 1 ];
-               $insert[] = '(' . $nid . ',' . $cid . ',"' . $file[ 'name' ] . '","' . $file[ 'path' ] . '",' . $height . ',' . $width . ')';
+               $this->call( 'image_add(:nid, :cid, :name, :path, :height, :width)', [':nid' => $nid,
+                  ':cid' => $cid,
+                  ':name' => $file[ 'name' ],
+                  ':path' => $file[ 'path' ],
+                  ':height' => $height,
+                  ':width' => $width ] );
             }
             catch (\Exception $e)
             {
@@ -254,13 +257,7 @@ class Image extends DBObject
       // delete old saved files are not in new version
       if ( $images )
       {
-         $this->call( 'delete_images("' . \implode( ',', \array_keys( $images ) ) . '")' );
-      }
-
-      // insert new files
-      if ( \sizeof( $insert ) > 0 )
-      {
-         $this->call( 'insert_images(:values)', [':values' => \implode( ',', $insert ) ] );
+         $this->call( 'image_delete("' . \implode( ',', \array_keys( $images ) ) . '")' );
       }
    }
 

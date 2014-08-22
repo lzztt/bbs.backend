@@ -32,9 +32,6 @@ abstract class Single extends Controller
       }
 
       $this->db = DB::getInstance();
-
-      // set template $min varible for JS and CSS
-      $this->html->var[ 'min' ] = $this->config->stage === Config::STAGE_PRODUCTION ? TRUE : FALSE;
    }
 
    /**

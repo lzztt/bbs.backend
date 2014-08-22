@@ -1,15 +1,15 @@
 <form enctype="multipart/form-data" id="bbcode_editor" class='v_user_superadm' method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
    <fieldset>
       <label class='label' for="title">名称:</label>
-      <input type="text" name="title" value="<?php print $title; ?>" required="required" placeholder="最少5个字母或3个汉字">
+      <input type="text" name="title" value="<?php print $title; ?>" required placeholder="最少5个字母或3个汉字">
    </fieldset>
    <fieldset>
       <label class='label' for="address">地址:</label>
-      <input type="text" value="<?php print $address; ?>" name="address" required="required" />
+      <input type="text" value="<?php print $address; ?>" name="address" required />
    </fieldset>
    <fieldset>
       <label class='label' for="phone">电话:</label>
-      <input type="tel" value="<?php print $phone; ?>" name="phone" required="required" />
+      <input type="tel" value="<?php print $phone; ?>" name="phone" required />
    </fieldset>
    <fieldset>
       <label class='label' for="email">电子邮箱:</label>
@@ -21,7 +21,7 @@
    </fieldset>
    <fieldset>
       <label class='label' for="body">内容介绍</label>
-      <textarea name="body" required="required" placeholder="最少5个字母或3个汉字"><?php print $body; ?></textarea>
+      <textarea name="body" required placeholder="最少5个字母或3个汉字"><?php print $body; ?></textarea>
    </fieldset>
    <fieldset>
       <label class='label'>文件附件</label>

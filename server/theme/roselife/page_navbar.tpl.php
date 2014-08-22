@@ -5,7 +5,7 @@
    <li><a href="/single">单身交友</a></li>
    <li><a href="/forum">论坛</a>
       <ul style="display: none;">
-         <li><a href="/forum/help">论坛帮助</a></li>
+         <li><a href="/help">论坛帮助</a></li>
          <?php print $forumMenu; ?>
       </ul>
    </li>
