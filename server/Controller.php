@@ -174,9 +174,10 @@ abstract class Controller extends LzxCtrler
 
    protected function _forward( $uri )
    {
-      $newReq = $this->request;
+      $newReq = clone $this->request;
       $newReq->uri = $uri;
-      $ctrler = ControllerRouter::create( $newReq, $this->html, $this->config, $this->logger, $this->cache, $this->session, $this->cookie );
+      $ctrler = ControllerRouter::create( $newReq, $this->html, $this->config, $this->logger, $this->session, $this->cookie );
+      $ctrler->request = $this->request;
       $ctrler->run();
    }
 
@@ -212,6 +213,11 @@ abstract class Controller extends LzxCtrler
       return $slink;
    }
 
+   /**
+    * 
+    * @param type $uri
+    * @return \site\dbobject\SecureLink|null
+    */
    protected function _getSecureLink( $uri )
    {
       $arr = \explode( '?', $uri );
@@ -307,6 +313,7 @@ abstract class Controller extends LzxCtrler
          return $this->html->navbar( [
                '用户首页' => '/user/' . $this->request->uid,
                '站内短信' => '/pm/mailbox',
+               '收藏夹' => '/user/' . $this->request->uid . '/favorite',
                '编辑个人资料' => '/user/' . $this->request->uid . '/edit',
                '更改密码' => '/password/' . $this->request->uid . '/change'
                ], $activeLink

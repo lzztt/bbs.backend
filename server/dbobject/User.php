@@ -196,7 +196,7 @@ class User extends DBObject
          throw new \Exception( 'This user account cannot post message.' );
       }
 
-      $days = \intval( ($timestamp - $this->createTime) / 86400 );
+      $days = (int) ( ($timestamp - $this->createTime) / 86400 );
       // registered less than 30 days
       if ( $days < 30 )
       {
@@ -221,7 +221,7 @@ class User extends DBObject
             // not from Texas
             if ( !$geo || $geo[ 'region' ] != 'TX' )
             {
-               $oneday = \intval( $timestamp - 86400 );
+               $oneday = (int) ( $timestamp - 86400 );
                $count = \array_pop( \array_pop( $this->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
                if ( $count >= $days )
                {

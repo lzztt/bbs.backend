@@ -55,7 +55,7 @@ class ForgetCtrler extends Password
                'username' => $user->username,
                'uri' => (string) $this->_createSecureLink( $user->id, '/password/reset' ),
                'sitename' => 'HoustonBBS'
-            ];
+            ];var_dump($contents['uri']);
             $mailer->body = new Template( 'mail/password_reset', $contents );
             if ( $mailer->send() )
             {

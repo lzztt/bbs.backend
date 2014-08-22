@@ -5,7 +5,7 @@
    </fieldset>
    <fieldset>
       <label class='label' for="body">正文</label>
-      <textarea name="body" required="required" placeholder="最少5个字母或3个汉字"></textarea>
+      <textarea name="body" required placeholder="最少5个字母或3个汉字"></textarea>
    </fieldset>
    <?php if ( $hasFile ): ?>
       <fieldset>
