@@ -67,7 +67,7 @@ class RegisterCtrler extends User
          $mailer->subject = $user->username . ' 的HoustonBBS账户激活和设置密码链接';
          $contents = [
             'username' => $user->username,
-            'uri' => $this->_createSecureLink( $user->id, '/user/activate' ),
+            'uri' => (string) $this->_createSecureLink( $user->id, '/user/activate' ),
             'sitename' => 'HoustonBBS'
          ];
          $mailer->body = new Template( 'mail/newuser', $contents );

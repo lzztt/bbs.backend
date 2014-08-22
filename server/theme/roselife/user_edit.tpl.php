@@ -1,5 +1,5 @@
 <?php print $userLinks; ?>
-<form accept-charset="UTF-8" autocomplete="off" method="post" action="<?php print $action; ?>" enctype="multipart/form-data">
+<form accept-charset="UTF-8" autocomplete="off" method="post" enctype="multipart/form-data">
    <fieldset>
       <label class='label' data-help="您的虚拟头像。最大尺寸是 <em>120 x 120</em> 像素，最大大小为 <em>60</em> KB">用户头像</label>
       <input name="avatar" type="file"><img class="avatar" src="<?php print $avatar; ?>">

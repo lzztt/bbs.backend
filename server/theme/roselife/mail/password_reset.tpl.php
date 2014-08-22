@@ -1,8 +1,6 @@
-<?php print $username; ?> 您好，
+<?php print $username; ?> 你好，
 
-谢谢您注册 <?php print $sitename; ?> 网站会员
-
-请点击下面的链接激活您的帐户并且设置用户密码:
+请点击下面的链接重设用户密码:
 http://www.houstonbbs.com<?php print $uri; ?>
 
 

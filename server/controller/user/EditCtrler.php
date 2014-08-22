@@ -31,10 +31,8 @@ class EditCtrler extends User
 
          if ( $u->exists() )
          {
-            $userLinks = $this->_getUserLinks( '/user/' . $u->id . '/edit' );
             $info = [
-               'action' => $currentURI,
-               'userLinks' => $userLinks,
+               'userLinks' => $this->_getUserLinks( '/user/' . $u->id . '/edit' ),
                'username' => $u->username,
                'avatar' => $u->avatar ? $u->avatar : '/data/avatars/avatar0' . mt_rand( 1, 5 ) . '.jpg',
                'qq' => $u->qq,

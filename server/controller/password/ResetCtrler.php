@@ -26,28 +26,19 @@ class ResetCtrler extends Password
       // not an secure link page
       if ( !$slink )
       {
-         // check if the referer page is a secure link page
-         $slink = $this->_getSecureLink( $this->request->referer );
-         // referer is not a secure link either
-         if ( !$slink )
+         $this->error( '无效的网址链接!' );
+      }
+
+      // secure link
+      if ( $this->request->post )
+      {
+         // have posted data, process
+         // we don't have a secure link stored in session, or have one but not the referer
+         if ( !$this->session->secureLink || $this->request->referer != $this->session->secureLink )
          {
-            // we don't have a secure link stored in session, or have one but not the referer
-            if ( !$this->session->secureLink || $this->request->referer != $this->session->secureLink )
-            {
-               $this->error( '无效的网址链接!' );
-            }
+            $this->error( '无效的网址链接!' );
          }
-      }
 
-      if ( empty( $this->request->post ) )
-      {
-         // save link uri to session
-         $this->session->secureLink = $slink;
-
-         $this->html->var[ 'content' ] = new Template( 'password_reset' );
-      }
-      else
-      {
          if ( empty( $this->request->post[ 'password' ] ) )
          {
             $this->error( '请输入密码!' );
@@ -82,6 +73,14 @@ class ResetCtrler extends Password
          $slink->delete();
 
          $this->html->var[ 'content' ] = '您的密码已经重设成功，请用新密码登录。';
+      }
+      else
+      {
+         // no posted data, display form
+         // save link uri to session
+         $this->session->secureLink = (string) $slink;
+
+         $this->html->var[ 'content' ] = new Template( 'password_reset' );
       }
    }
 
