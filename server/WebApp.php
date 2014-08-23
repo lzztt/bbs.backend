@@ -130,15 +130,15 @@ class WebApp extends App
       // update request uid based on session uid
       $request->uid = (int) $session->uid;
 
-      $ctrler = ControllerRouter::create( $request, new Template( 'html' ), $this->config, $this->logger, $session, $cookie );
       try
       {
+         $ctrler = ControllerRouter::create( $request, new Template( 'html' ), $this->config, $this->logger, $session, $cookie );
          $ctrler->run();
       }
-      catch (ControllerException $e)
+      catch ( ControllerException $e )
       {
          $msg = $e->getMessage();
-         switch ($e->getCode())
+         switch ( $e->getCode() )
          {
             case ControllerException::PAGE_NOTFOUND:
                \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
@@ -163,7 +163,7 @@ class WebApp extends App
                break;
             case ControllerException::PAGE_REDIRECT:
                \header( 'Location: ' . $msg );
-               
+
                // unset output
                $ctrler->html = NULL;
                // continue
@@ -186,8 +186,8 @@ class WebApp extends App
       $cookie->send();
 
       // output page content, if we didn't get an exception
-      $outputDebug = FALSE;//( $this->config->stage == Config::STAGE_DEVELOPMENT && $ctrler->html instanceof Template );
-      if ( $ctrler->html )
+      $outputDebug = FALSE; //( $this->config->stage == Config::STAGE_DEVELOPMENT && $ctrler->html instanceof Template );
+      if ( $ctrler && $ctrler->html )
       {
          echo $ctrler->html;
       }
