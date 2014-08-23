@@ -120,7 +120,7 @@ class CacheHandler implements CacheHandlerInterface
          return $_filenames[ $key ];
       }
 
-      switch ( \get_class( $cache ) )
+      switch (\get_class( $cache ))
       {
          case 'lzx\cache\PageCache':
             $filename = self::$path . '/page' . $key . '.html.gz';
@@ -152,7 +152,7 @@ class CacheHandler implements CacheHandlerInterface
 
       // found from database
       $res = $this->_db->query( 'SELECT id FROM cache WHERE name = :key', [ ':key' => $name ] );
-      switch ( \count( $res ) )
+      switch (\count( $res ))
       {
          case 0:
             // add to database
@@ -184,13 +184,21 @@ class CacheHandler implements CacheHandlerInterface
       {
          \array_unique( $parents );
 
+         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(pid) AS id FROM cache_tree WHERE cid = :cid', [ ':cid' => $id ] ), 'id' );
          $values = [ ];
          foreach ( $parents as $key )
          {
-            $values[] = '(' . $this->getID( $key ) . ',' . $id . ')';
+            $pid = $this->getID( $key );
+            if ( !\in_array( $pid, $existing ) )
+            {
+               $values[] = '(' . $pid . ',' . $id . ')';
+            }
          }
 
-         $this->_db->query( 'INSERT INTO cache_tree VALUES ' . \implode( ',', $values ) );
+         if ( $values )
+         {
+            $this->_db->query( 'INSERT INTO cache_tree VALUES ' . \implode( ',', $values ) );
+         }
       }
    }
 
@@ -200,19 +208,27 @@ class CacheHandler implements CacheHandlerInterface
       {
          \array_unique( $children );
 
+         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(cid) AS id FROM cache_tree WHERE pid = :pid', [ ':pid' => $id ] ), 'id' );
          $values = [ ];
          foreach ( $children as $key )
          {
-            $values[] = '(' . $id . ',' . $this->getID( $key ) . ')';
+            $cid = $this->getID( $key );
+            if ( !\in_array( $cid, $existing ) )
+            {
+               $values[] = '(' . $id . ',' . $cid . ')';
+            }
          }
 
-         $this->_db->query( 'INSERT INTO cache_tree VALUES ' . \implode( ',', $values ) );
+         if ( $values )
+         {
+            $this->_db->query( 'INSERT INTO cache_tree VALUES ' . \implode( ',', $values ) );
+         }
       }
    }
 
    public function getChildren( $id )
    {
-      $children = $this->_db->query( 'SELECT id, name FROM cache WHERE id IN (SELECT cid FROM cache_tree WHERE pid = :pid)', [ ':pid' => $id ] );
+      $children = $this->_db->query( 'SELECT id, name FROM cache WHERE id IN (SELECT DISTINCT(cid) FROM cache_tree WHERE pid = :pid)', [ ':pid' => $id ] );
       foreach ( $children as $c )
       {
          $this->_ids[ $c[ 'name' ] ] = $c[ 'id' ];

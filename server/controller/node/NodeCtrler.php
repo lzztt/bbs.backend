@@ -109,10 +109,10 @@ class NodeCtrler extends Node
          foreach ( $comments as $c )
          {
             $c[ 'type' ] = 'comment';
-            $c[ 'createTime' ] = \date( 'm/d/Y H:i', $node[ 'create_time' ] );
+            $c[ 'createTime' ] = \date( 'm/d/Y H:i', $c[ 'create_time' ] );
             if ( $c[ 'lastModifiedTime' ] )
             {
-               $c[ 'lastModifiedTime' ] = \date( 'm/d/Y H:i', $node[ 'last_modified_time' ] );
+               $c[ 'lastModifiedTime' ] = \date( 'm/d/Y H:i', $c[ 'last_modified_time' ] );
             }
 
             try
