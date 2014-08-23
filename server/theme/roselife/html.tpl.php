@@ -6,6 +6,10 @@
       <meta name='viewport' content='width=device-width, initial-scale=1'>
 
       <!--BEBIN JS-->
+      <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
       <script>
          if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
             document.write('<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\/script>');
@@ -26,10 +30,6 @@
       </script>
 
       <script>(typeof JSON === 'object') || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
-      <!--[if lt IE 9]>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-      <![endif]-->
 
       <?php if ( $tpl_debug ): ?>
          <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.cookie.js"></script>
@@ -48,7 +48,6 @@
       <!--BEGIN CSS-->
       <?php if ( $tpl_debug ): ?>
          <link href="/themes/<?php print $tpl_theme; ?>/css/normalize.css" rel="stylesheet" type="text/css">
-         <link href="/themes/<?php print $tpl_theme; ?>/css/font.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.style.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.bbcode.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/nav_xs.css" rel="stylesheet" type="text/css">
