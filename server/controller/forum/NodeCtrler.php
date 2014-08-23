@@ -94,21 +94,22 @@ class NodeCtrler extends Forum
       }
 
 
-      if ( isset( $this->request->post[ 'files' ] ) )
+      if ( $this->request->post[ 'files' ] )
       {
          $file = new Image();
          $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
-         $this->_getIndependentCache( 'imageSlider' )->delete();
+         $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       }
 
       $user->points += 3;
       $user->update( 'points' );
 
-      $this->_getIndependentCache( '/forum/' . $tid )->delete();
-      $this->_getIndependentCache( 'latestForumTopics' )->delete();
+      $this->_getCacheEvent( 'ForumNode' )->trigger();
+      $this->_getCacheEvent( 'ForumUpdate' . $tid )->trigger();
+
       if ( $node->tid == 15 )
       {
-         $this->_getIndependentCache( 'latestImmigrationPosts' )->delete();
+         $this->_getCacheEvent( 'ImmigrationNode' )->trigger();
       }
 
       $this->pageRedirect( '/node/' . $node->id );

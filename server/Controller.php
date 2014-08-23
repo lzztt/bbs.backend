@@ -313,7 +313,7 @@ abstract class Controller extends LzxCtrler
          return $this->html->navbar( [
                '用户首页' => '/user/' . $this->request->uid,
                '站内短信' => '/pm/mailbox',
-               '收藏夹' => '/user/' . $this->request->uid . '/favorite',
+               '收藏夹' => '/user/' . $this->request->uid . '/bookmark',
                '编辑个人资料' => '/user/' . $this->request->uid . '/edit',
                '更改密码' => '/password/' . $this->request->uid . '/change'
                ], $activeLink

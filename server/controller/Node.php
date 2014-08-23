@@ -13,6 +13,11 @@ abstract class Node extends Controller
 
    protected function _getNodeType()
    {
+      static $types = [
+         Tag::FORUM_ID => 'ForumTopic',
+         Tag::YP_ID => 'YellowPage',
+      ];
+
       $nid = $this->id;
       if ( $nid <= 0 )
       {
@@ -27,11 +32,6 @@ abstract class Node extends Controller
       }
 
       $rootTagID = \array_shift( \array_keys( $tags ) );
-
-      $types = [
-         Tag::FORUM_ID => 'ForumTopic',
-         Tag::YP_ID => 'YellowPage',
-      ];
 
       if ( !\array_key_exists( $rootTagID, $types ) )
       {

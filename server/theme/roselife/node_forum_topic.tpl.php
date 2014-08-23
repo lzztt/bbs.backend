@@ -3,6 +3,7 @@
    <span class='v_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
    <button type="button" class='v_user create_node' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
    <button type="button" class='v_user reply' data-action="/node/<?php print $nid; ?>/comment">回复</button>
+   <button type="button" class='v_user bookmark' data-action="/node/<?php print $nid; ?>/bookmark">收藏</button>
    <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount_<?php print $nid; ?>"></span> views</span> 
    <?php print $pager; ?>
 </header>
