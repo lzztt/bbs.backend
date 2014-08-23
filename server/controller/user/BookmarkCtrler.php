@@ -47,6 +47,15 @@ class BookmarkCtrler extends User
    private function _delete()
    {
       $u = new UserObject( $this->request->uid, NULL );
+      if ( $this->request->get[ 'nid' ] )
+      {
+         $nids = \explode( ',', $this->request->get[ 'nid' ] );
+         foreach ( $nids as $nid )
+         {
+            $u->deleteBookmark( $nid );
+         }
+      }
+      $this->html = NULL;
    }
 
 }

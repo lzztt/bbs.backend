@@ -1,10 +1,11 @@
 <header class='content_header'>
    <?php print $userLinks; ?>
+   <button type="button" class='v_user edit_bookmark' data-action='/user/bookmark/delete'>编辑</button>
    <?php print $pager; ?>
 </header>
-<ul class='even_odd_parent'>
+<ul class='bookmarks even_odd_parent'>
    <?php foreach ( $nodes as $n ): ?>
-      <li><a href="/node/<?php print $n[ 'id' ]; ?>"><?php print $n[ 'title' ]; ?></a></li>
+      <li><button type="button" style='display: none;' class='delete_bookmark' data-nid='<?php print $n[ 'id' ]; ?>'>删除</button><a href="/node/<?php print $n[ 'id' ]; ?>"><?php print $n[ 'title' ]; ?></a></li>
    <?php endforeach; ?>
 </ul>
 <?php print $pager; ?>
