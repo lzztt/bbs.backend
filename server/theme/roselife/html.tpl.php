@@ -86,6 +86,7 @@
             <ul class="sf-menu" style="display: inline-block; float: right;">
                <li class='v_user'><a><?php print $username; ?></a></li>
                <li class='v_user'><a id="pm" href="/pm/mailbox">短信</a></li>
+               <li class='v_user'><a href="/user/bookmark">收藏夹</a></li>
                <li class='v_user'><a href="/user">我的账户</a></li>
                <li class='v_user'><a href="/password/change">更改密码</a></li>
                <li class='v_user'><a  href="/user/logout">登出</a></li>
