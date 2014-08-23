@@ -98,7 +98,7 @@ class Node extends DBObject
 
    public function getYellowPageNodeComments( $id, $limit = false, $offset = false )
    {
-      return $this->call( 'get_yp_node_comments_yp(' . $id . ', ' . $limit . ', ' . $offset . ')' );
+      return $this->call( 'get_yp_node_comments(' . $id . ', ' . $limit . ', ' . $offset . ')' );
    }
 
    public function getViewCounts( $nids )

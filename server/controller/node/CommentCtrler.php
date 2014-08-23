@@ -7,6 +7,7 @@ use site\dbobject\Node as NodeObject;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\User;
+use lzx\core\Mailer;
 
 class CommentCtrler extends Node
 {
@@ -40,6 +41,7 @@ class CommentCtrler extends Node
          $comment = new Comment();
          $comment->nid = $nid;
          $comment->uid = $this->request->uid;
+         $comment->tid = $node->tid;
          $comment->body = $this->request->post[ 'body' ];
          $comment->createTime = $this->request->timestamp;
          $comment->add();
@@ -80,9 +82,9 @@ class CommentCtrler extends Node
             }
             if ( $this->config->webmaster )
             {
-               $mailer = new \lzx\core\Mailer();
+               $mailer = new Mailer();
                $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
-               $mailer->body = ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ];
+               $mailer->body = ' --node-- ' . $this->request->post[ 'title' ] . \PHP_EOL . $this->request->post[ 'body' ];
                $mailer->to = $this->config->webmaster;
                $mailer->send();
             }
@@ -96,7 +98,7 @@ class CommentCtrler extends Node
       {
          $file = new Image();
          $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $nid, $comment->id );
-         $this->_getIndependentCache( 'imageSlider' )->delete();
+         $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       }
 
       $user->points += 1;
@@ -176,9 +178,9 @@ class CommentCtrler extends Node
             }
             if ( $this->config->webmaster )
             {
-               $mailer = new \lzx\core\Mailer();
+               $mailer = new Mailer();
                $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
-               $mailer->body = ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ];
+               $mailer->body = ' --node-- ' . $this->request->post[ 'title' ] . \PHP_EOL . $this->request->post[ 'body' ];
                $mailer->to = $this->config->webmaster;
                $mailer->send();
             }

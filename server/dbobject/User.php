@@ -271,6 +271,26 @@ class User extends DBObject
       ];
    }
 
+   public function addBookmark( $nid )
+   {
+      $this->call( 'bookmark_add(' . $this->id . ',' . $nid . ')' );
+   }
+   
+   public function deleteBookmark( $nid )
+   {
+      $this->call( 'bookmark_delete(' . $this->id . ',' . $nid . ')' );
+   }
+   
+   public function listBookmark( $limit, $offset )
+   {
+      return $this->call( 'bookmark_list(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+   }
+
+   public function countBookmark()
+   {
+      return \array_pop( \array_pop( $this->call( 'bookmark_count(' . $this->id . ')' ) ) );
+   }
+
 }
 
 //__END_OF_FILE__
