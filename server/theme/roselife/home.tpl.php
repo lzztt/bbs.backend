@@ -1,17 +1,17 @@
-<div class="image_slider"><?php print $imageSlider; ?></div><div class="google_ad">
-   <style>
-      .responsive-ad { display:inline-block; width:300px; height:250px; }
-      @media(max-width: 767px) { .responsive-ad { display:none } }
-   </style>
-   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-   <!-- responsive_ad -->
-   <ins class="adsbygoogle responsive-ad"
-        data-ad-client="ca-pub-8257334386742604"
-        data-ad-slot="1050744881"></ins>
-   <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-   </script>
-</div><section class="items">
+<div id="home_images"><div class="image_slider"><?php print $imageSlider; ?></div><div class="google_ad">
+      <style>
+         .responsive-ad { display:inline-block; width:300px; height:250px; }
+         @media(max-width: 767px) { .responsive-ad { display:none } }
+      </style>
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <!-- responsive_ad -->
+      <ins class="adsbygoogle responsive-ad"
+           data-ad-client="ca-pub-8257334386742604"
+           data-ad-slot="1050744881"></ins>
+      <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+   </div></div><section class="items">
    <header>近期活动</header><?php print $recentActivities; ?></section><section class="items"> 
    <header>最新话题</header><?php print $latestForumTopics; ?></section><section class="items">
    <header>最新论坛回复</header><?php print $latestForumTopicReplies; ?></section><section class="items">
