@@ -9,44 +9,38 @@ use site\dbobject\Activity as ActivityObject;
 class ActivityCtrler extends Activity
 {
 
-        public function run()
-        {
+   public function run()
+   {
       $act = new ActivityObject();
-        $act->status = 1;
-        $total = $act->getCount();
+      $act->status = 1;
+      $total = $act->getCount();
 
-        if ( $total == 0 )
-        {
-            $this->error( '目前没有活动。' );
-            return;
-        }
+      if ( $total == 0 )
+      {
+         $this->error( '目前没有活动。' );
+         return;
+      }
 
-        $pageNo = $this->request->get['page'] ? \intval( $this->request->get['page'] ) : 1;
-        $pageCount = \ceil( $total / self::NODES_PER_PAGE );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $total, self::NODES_PER_PAGE );
+      $pager = $this->html->pager( $pageNo, $pageCount, '/activity' );
 
-        if ( $pageNo < 1 || $pageNo > $pageCount )
-        {
-            $pageNo = $pageCount;
-        }
-        $pager = $this->html->pager( $pageNo, $pageCount, '/activity' );
+      $limit = self::NODES_PER_PAGE;
+      $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
+      $actList = $act->getActivityList( $limit, $offset );
 
-        $limit = self::NODES_PER_PAGE;
-        $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
-        $actList = $act->getActivityList( $limit, $offset );
+      foreach ( $actList as $k => $n )
+      {
+         $type = ($n[ 'start_time' ] < $this->request->timestamp) ? (($n[ 'end_time' ] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
+         $data .= '<a href="/node/' . $n[ 'nid' ] . '" class="' . $type . '" data-before="' . \date( 'm/d', $n[ 'start_time' ] ) . '">' . $n[ 'title' ] . '</a>';
+      }
 
-        foreach ( $actList as $k => $n )
-        {
-            $type = ($n['start_time'] < $this->request->timestamp) ? (($n['end_time'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
-            $data .= '<a href="/node/' . $n['nid'] . '" class="' . $type . '" data-before="' . \date( 'm/d', $n['start_time'] ) . '">' . $n['title'] . '</a>';
-        }
+      $contents = [
+         'pager' => $pager,
+         'data' => $data
+      ];
 
-        $contents = [
-            'pager' => $pager,
-            'data' => $data
-        ];
-
-        $this->html->var['content'] = new Template( 'activity_list', $contents );
-    }
+      $this->html->var[ 'content' ] = new Template( 'activity_list', $contents );
+   }
 
 }
 
