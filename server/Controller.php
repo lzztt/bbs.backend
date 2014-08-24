@@ -144,7 +144,7 @@ abstract class Controller extends LzxCtrler
 
    /**
     * 
-    * @return \site\Cache
+    * @return \lzx\cache\Cache
     */
    protected function _getIndependentCache( $key )
    {
@@ -159,7 +159,7 @@ abstract class Controller extends LzxCtrler
 
    /**
     * 
-    * @return \site\CacheEvent
+    * @return \lzx\cache\CacheEvent
     */
    protected function _getCacheEvent( $name )
    {
