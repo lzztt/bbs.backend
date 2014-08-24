@@ -6,8 +6,8 @@ use lzx\App;
 use lzx\db\DB;
 use lzx\core\Mailer;
 use lzx\html\Template;
-use lzx\core\Cache;
-use site\dbobject\User;
+use lzx\cache\Cache;
+use lzx\cache\CacheHandler;
 use site\Config;
 
 // note: cache path in php and nginx are using server_name
@@ -33,12 +33,7 @@ class CronApp extends App
       $this->config = new Config();
       $this->logger->setUserInfo( 'uid=cron umode=cli urole=adm' );
       $this->logger->setDir( $this->config->path['log'] );
-      if ( \filter_var( $this->config->webmaster, \FILTER_VALIDATE_EMAIL ) )
-      {
-         $mailer = new Mailer( 'logger' );
-         $mailer->to = $this->config->webmaster;
-         $this->logger->setMailer( $mailer );
-      }
+      $this->logger->setEmail($this->config->webmaster);
    }
 
    public function run( $argc, Array $argv = [] )
@@ -60,68 +55,23 @@ class CronApp extends App
       }
    }
 
-   protected function do_user()
-   {
-      $db = DB::getInstance( $this->config->db );
-
-      $user = new User();
-      $user->where( 'status', NULL, '=' );
-      $user->where( 'password', NULL, '=' );
-      $users = $user->getList( 'id,username,email' );
-
-      if ( \sizeof( $users ) > 0 )
-      {
-         $mailer = new Mailer();
-         Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['default'];
-         foreach ( $users as $u )
-         {
-            $password = $user->randomPW(); // will send generated password to email
-
-            $mailer->to = $u['email'];
-            $mailer->subject = $u['username'] . ' 的帐户详情（已批准）';
-            $contents = [
-               'username' => $u['username'],
-               'password' => $password,
-               'sitename' => 'HoustonBBS',
-               'lang' => $this->config->language // should get from the user record in DB
-            ];
-            $mailer->body = new Template( 'mail/activation', $contents );
-
-            if ( $mailer->send() === FALSE )
-            {
-               $this->logger->info( 'sending new user activation email error: ' . $u['email'] );
-               continue;
-            }
-
-            $db->query( 'UPDATE users SET password = :password, status = 1 WHERE id = :id', [':password' => $user->hashPW( $password ), ':id' => $u['id']] );
-            $this->logger->info( 'activate user: ' . $u['id'] . ' : ' . $password );
-            $newUsers[] = '[ID] ' . $u['id'] . ' [USERNAME] ' . $u['username'] . ' [EMAIL] ' . $u['email'];
-         }
-
-         $mailer->to = 'admin@houstonbbs.com';
-         $mailer->subject = '[用户] ' . \sizeof( $newUsers ) . '个新帐号已被系统自动激活';
-         $mailer->body = \implode( \PHP_EOL, $newUsers );
-         if ( $mailer->send() === FALSE )
-         {
-            $this->logger->info( 'sending new user activation email error.' );
-         }
-      }
-   }
-
    protected function do_activity()
    {
-      $cacheKey = 'recentActivities';
-      $cache = Cache::getInstance( $this->config->path['cache'] );
-      $cache->setLogger( $this->logger );
-      $refreshTimeFile = $this->config->path['log'] . '/activity_cache_refresh_time.txt';
-
+      // config cache
       $db = DB::getInstance( $this->config->db );
+      
+      CacheHandler::$path = $this->config->path[ 'cache' ];
+      $cacheHandler = CacheHandler::getInstance();
+      Cache::setHandler( $cacheHandler );
+      
+      $cache = $cacheHandler->createCache( 'recentActivities' );
+      $refreshTimeFile = $this->config->path['log'] . '/activity_cache_refresh_time.txt';
 
       $activities = $db->query( 'SELECT a.start_time, n.id, n.title, u.username, u.email FROM activities AS a JOIN nodes AS n ON a.nid = n.id JOIN users AS u ON n.uid = u.id WHERE a.status IS NULL' );
       if ( \sizeof( $activities ) > 0 )
       {
          $mailer = new Mailer();
-         Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['default'];
+         Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
 
          foreach ( $activities as $a )
          {
@@ -147,9 +97,9 @@ class CronApp extends App
          }
 
          // delete cache and reschedule next refresh time
-         $cache->delete( $cacheKey );
-         $refreshTime = \is_readable( $refreshTimeFile ) ? \intval( \file_get_contents( $refreshTimeFile ) ) : 0;
-         $currentTime = \intval( $_SERVER['REQUEST_TIME'] );
+         $cache->delete();
+         $refreshTime = \is_readable( $refreshTimeFile ) ? (int) \file_get_contents( $refreshTimeFile ) : 0;
+         $currentTime = (int) $_SERVER['REQUEST_TIME'];
          $newActivityStartTime = $activities[0]['start_time'];
          if ( $refreshTime < $currentTime || $refreshTime > $newActivityStartTime )
          {
@@ -168,7 +118,7 @@ class CronApp extends App
          $currentTime = \intval( $_SERVER['REQUEST_TIME'] );
          if ( $currentTime > $refreshTime )
          {
-            $cache->delete( $cacheKey );
+            $cache->delete();
             $this->updateActivityCacheRefreshTime( $refreshTimeFile, $db, $refreshTime, $currentTime );
          }
       }
@@ -204,7 +154,7 @@ class CronApp extends App
    protected function do_session()
    {
       $db = DB::getInstance( $this->config->db );
-      $currentTime = \intval( $_SERVER['REQUEST_TIME'] );
+      $currentTime = (int) $_SERVER['REQUEST_TIME'];
       $db->query( 'DELETE FROM sessions WHERE uid = 0 AND atime < ' . ($currentTime - 21600) );
       $db->query( 'DELETE FROM sessions WHERE atime < ' . ($currentTime - $this->config->cookie['lifetime']) );
    }
@@ -220,7 +170,7 @@ class CronApp extends App
       $db = $this->config->db;
       $mysqldump = '/usr/bin/mysqldump';
       $gzip = '/bin/gzip';
-      $cmd = $mysqldump . ' --opt --routines --default-character-set=utf8 --set-charset'
+      $cmd = $mysqldump . ' --opt --routines --default-character-set=utf8 --set-charset  --ignore-table=' . $db['dsn'] . '.cache --ignore-table=' . $db['dsn'] . '.cache_tree'
          . ' --user=' . $db['user'] . ' --password=' . $db['password'] . ' ' . $db['dsn']
          . ' | ' . $gzip . ' > ' . $this->config->path['backup'] . '/' . \date( 'Y-m-d', \intval( $_SERVER['REQUEST_TIME'] ) - 86400 ) . '.sql.gz';
       echo \shell_exec( $cmd );
@@ -235,7 +185,7 @@ class CronApp extends App
       if ( $count > 0 )
       {
          $mailer = new Mailer();
-         Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['default'];
+         Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
 
          $mailer->to = $this->config->webmaster;
          $mailer->subject = '[ ' . $count . ' ] 七天内过期广告';
@@ -268,7 +218,7 @@ class CronApp extends App
          {
             $rank = \number_format( intval( $p[2] ) );
             $data = 'HoustonBBS最近三个月平均访问量<a href="http://www.alexa.com/data/details/main?url=http://www.houstonbbs.com" title="HoustonBBS近三个月的访问量统计">Alexa排名</a>:<br /><a href="/node/5641" title="Houston各中文网站 月访问量 横向比较">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . \date( 'm/d/Y H:i:s T', \intval( $_SERVER['REQUEST_TIME'] ) ) . ')';
-            \file_put_contents( $this->config->path['theme'] . '/' . $this->config->theme['default'] . '/alexa.tpl.php', $data );
+            \file_put_contents( $this->config->path['theme'] . '/' . $this->config->theme['roselife'] . '/alexa.tpl.php', $data );
          }
          else
          {

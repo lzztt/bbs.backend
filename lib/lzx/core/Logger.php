@@ -39,6 +39,11 @@ class Logger
       ];
       $this->_time = \date( 'Y-m-d H:i:s T', (int) $_SERVER[ 'REQUEST_TIME' ] );
    }
+   
+   public function __destruct()
+   {
+      $this->flush();
+   }
 
    /**
     * 

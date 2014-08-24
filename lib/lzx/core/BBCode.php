@@ -29,6 +29,9 @@ class BBCode
             'googlemap' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_googlemap' ] ],
          ]
       ];
+      
+      // convert url string to links
+      $text = \preg_replace( '#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text );
 
       // only process bbcode when seeing a colse tag
       if ( \strpos( $text, '[/' ) !== FALSE )
