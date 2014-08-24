@@ -63,6 +63,7 @@ class CronApp extends App
       CacheHandler::$path = $this->config->path[ 'cache' ];
       $cacheHandler = CacheHandler::getInstance();
       Cache::setHandler( $cacheHandler );
+      Cache::setLogger( $this->logger );
       
       $cache = $cacheHandler->createCache( 'recentActivities' );
       $refreshTimeFile = $this->config->path['log'] . '/activity_cache_refresh_time.txt';
