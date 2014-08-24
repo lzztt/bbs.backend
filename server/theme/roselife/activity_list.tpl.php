@@ -3,4 +3,5 @@
    <div><a href="/help#activity">如何发布活动</a></div>
    <?php print $pager; ?>
 </header>
-<section class='even_odd_parent'><?php print $data; ?></section>
+<section class='even_odd_parent activities'><?php print $data; ?></section>
+<?php print $pager; ?>
