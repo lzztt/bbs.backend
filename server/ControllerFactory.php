@@ -8,6 +8,7 @@ use site\Config;
 use lzx\core\Logger;
 use lzx\core\Session;
 use lzx\core\Cookie;
+use lzx\core\ControllerException;
 
 /**
  * Description of ControllerFactory
@@ -77,7 +78,7 @@ class ControllerFactory
       }
 
       // cannot find a controller
-      throw new \Exception( 'controller not found :(' );
+      throw new ControllerException( NULL, ControllerException::PAGE_NOTFOUND );
    }
 
 }

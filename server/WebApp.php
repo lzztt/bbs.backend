@@ -100,6 +100,7 @@ class WebApp extends App
       $cacheHandler = CacheHandler::getInstance();
       Cache::setHandler( $cacheHandler );
       CacheEvent::setHandler( $cacheHandler );
+      Cache::setLogger( $this->logger );
 
       // initialize cookie and session
       if ( !\array_key_exists( 'nosession', $request->get ) )
@@ -130,10 +131,12 @@ class WebApp extends App
       // update request uid based on session uid
       $request->uid = (int) $session->uid;
 
+      $html = NULL;
       try
       {
          $ctrler = ControllerRouter::create( $request, new Template( 'html' ), $this->config, $this->logger, $session, $cookie );
          $ctrler->run();
+         $html = $ctrler->html;
       }
       catch ( ControllerException $e )
       {
@@ -159,24 +162,26 @@ class WebApp extends App
 
                // flush the log and return
                $this->logger->flush();
+
                return;
                break;
             case ControllerException::PAGE_REDIRECT:
                \header( 'Location: ' . $msg );
 
                // unset output
-               $ctrler->html = NULL;
+               $html = NULL;
+
                // continue
                break;
             default:
                // PAGE_ERROR and others
-               $ctrler->html->error( $msg );
-               echo (string) $ctrler->html;
+               echo $msg ? $msg : 'Page Error :(';
                // finish request processing
                \fastcgi_finish_request();
 
                // flush the log and return
                $this->logger->flush();
+
                return;
                break;
          }
@@ -186,10 +191,10 @@ class WebApp extends App
       $cookie->send();
 
       // output page content, if we didn't get an exception
-      $outputDebug = FALSE; //( $this->config->stage == Config::STAGE_DEVELOPMENT && $ctrler->html instanceof Template );
-      if ( $ctrler && $ctrler->html )
+      $outputDebug = ( $this->config->stage == Config::STAGE_DEVELOPMENT && $html instanceof Template );
+      if ( $html )
       {
-         echo $ctrler->html;
+         echo $html;
       }
 
       // FINISH request processing

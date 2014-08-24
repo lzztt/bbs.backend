@@ -28,7 +28,7 @@ class CacheEvent
    {
       $this->_name = self::$_handler->getCleanName( $name );
    }
-
+   
    public function getName()
    {
       return $this->_name;
