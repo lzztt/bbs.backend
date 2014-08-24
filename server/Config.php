@@ -26,8 +26,8 @@ class Config
 
    public function __construct()
    {
-      //$this->stage = self::STAGE_DEVELOPMENT;
-      $this->stage = self::STAGE_PRODUCTION;
+      $this->stage = self::STAGE_DEVELOPMENT;
+      //$this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
 
       $this->path = [
@@ -38,9 +38,9 @@ class Config
          'log' => \dirname( __DIR__ ) . '/log',
          'file' => \dirname( __DIR__ ) . '/client',
          'backup' => \dirname( __DIR__ ) . '/backup',
-         'cache' => '/cache/' . $_SERVER[ 'SERVER_NAME' ], //note: nginx webserver also use $server_name as the cache path
+         'cache' => '/tmp/' . $_SERVER[ 'SERVER_NAME' ], //note: nginx webserver also use $server_name as the cache path
       ];
-      $this->cache = TRUE;
+      $this->cache = FALSE;
       $this->db = [
          'dsn' => 'hbbs',
          'user' => 'web',
