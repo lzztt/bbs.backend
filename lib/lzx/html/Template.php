@@ -31,7 +31,6 @@ class Template
    //private static $tpl_cache = []; // pool for rendered templates without $var
    public $tpl;
    public $var = [ ]; // controller need to fill this array (or an array Theme can access)
-   private $_errors = [ ];
    private $_observers;
    private $_string;
 
@@ -86,17 +85,8 @@ class Template
 
       try
       {
-         if ( $this->_errors )
-         {
-            $errors = $this->_errors;
-            $tpl = 'error';
-         }
-         else
-         {
-            \extract( $this->var );
-            $tpl = $this->tpl;
-         }
-
+         \extract( $this->var );
+         $tpl = $this->tpl;
          $tpl_theme = self::$theme;
          $tpl_path = self::$path . '/' . self::$theme;
          $tpl_debug = self::$debug;
@@ -115,7 +105,7 @@ class Template
             \ob_end_clean();                 // End buffering and discard
          }
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          \ob_end_clean();
          self::$_status = FALSE;
@@ -139,12 +129,6 @@ class Template
    public static function getStatus()
    {
       return self::$_status;
-   }
-
-   public function error( $msg )
-   {
-      $this->_errors[] = $msg;
-      self::$_status = FALSE;
    }
 
    public function formatTime( $timestamp )

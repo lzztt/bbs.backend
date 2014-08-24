@@ -84,7 +84,14 @@ abstract class Cache
       }
       catch ( \Exception $e )
       {
-         self::$_logger->error( $e->getMessage() );
+         if ( self::$_logger )
+         {
+            self::$_logger->error( $e->getMessage() );
+         }
+         else
+         {
+            \error_log( $e->getMessage() );
+         }
       }
    }
 

@@ -144,12 +144,7 @@ class Node extends DBObject
 
    public function getHotForumTopicNIDs( $count, $timestamp )
    {
-      $ids = [ ];
-      foreach ( $this->getHotForumTopics( $count, $timestamp ) as $t )
-      {
-         $ids[] = $t[ 'id' ];
-      }
-      return $ids;
+      return \array_column( $this->getHotForumTopics( $count, $timestamp ), 'nid' );
    }
 
    public function getLatestYellowPages( $count )

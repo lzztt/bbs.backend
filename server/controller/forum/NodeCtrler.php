@@ -89,7 +89,7 @@ class NodeCtrler extends Forum
             }
          }
 
-         $this->logger->error( ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ] );
+         $this->logger->error( $e->getMessage() . \PHP_EOL . ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ] );
          $this->error( $e->getMessage() );
       }
 
