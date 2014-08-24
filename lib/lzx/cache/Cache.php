@@ -86,7 +86,7 @@ abstract class Cache
       {
          if ( self::$_logger )
          {
-            self::$_logger->error( $e->getMessage() );
+            self::$_logger->warn( $e->getMessage() );
          }
          else
          {
