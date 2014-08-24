@@ -69,6 +69,10 @@ class SegmentCache extends Cache
          {
             self::$_logger->warn( 'Could not read from file [' . $file . ']: ' . $e->getMessage() );
          }
+         else
+         {
+            \error_log( 'Could not read from file [' . $file . ']: ' . $e->getMessage() );
+         }
          return NULL;
       }
    }

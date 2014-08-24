@@ -41,7 +41,7 @@
          <script src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script src="/themes/<?php print $tpl_theme; ?>/js/min_1408816541.js"></script>
+         <script src="/themes/<?php print $tpl_theme; ?>/js/min_1408892908.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -57,7 +57,7 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_md.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1408816541.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1408892908.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 

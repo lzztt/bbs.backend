@@ -3,7 +3,6 @@
 namespace site\controller\home;
 
 use site\controller\Home;
-use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Activity;
@@ -65,7 +64,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopics( 12 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopics( 15 ) as $n )
          {
             $arr[] = [ 'after' => \date( 'H:i', $n[ 'create_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -86,7 +85,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getHotForumTopics( 12, $this->request->timestamp - 604800 ) as $n )
+         foreach ( (new Node() )->getHotForumTopics( 15, $this->request->timestamp - 604800 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ],
@@ -107,7 +106,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPages( 12 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPages( 15 ) as $n )
          {
             $arr[] = [ 'after' => \date( 'm/d', $n[ 'exp_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -128,7 +127,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestImmigrationPosts( 12 ) as $n )
+         foreach ( (new Node() )->getLatestImmigrationPosts( 15 ) as $n )
          {
             $arr[] = [ 'after' => \date( 'm/d', $n[ 'create_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -149,7 +148,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopicReplies( 12 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopicReplies( 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],
@@ -170,7 +169,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPageReplies( 12 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPageReplies( 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],
@@ -193,7 +192,8 @@ class HomeCtrler extends Home
 
          foreach ( (new Activity() )->getRecentActivities( 12, $this->request->timestamp ) as $n )
          {
-            $arr[] = [ 'after' => \date( 'm/d', $n[ 'start_time' ] ),
+            $arr[] = [ 'class' => 'activity_' . $n[ 'class' ],
+               'after' => \date( 'm/d', $n[ 'start_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
                'text' => $n[ 'title' ] ];
          }
