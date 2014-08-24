@@ -22,7 +22,7 @@ class BBCode
             'size' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="font-size:{PARAM}">', 'close_tag' => '</span>' ],
             'color' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="color:{PARAM}">', 'close_tag' => '</span>' ],
             'bgcolor' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<span style="background-color:{PARAM}">', 'close_tag' => '</span>' ],
-            'quote' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<div class="quote"><b>{PARAM} wrote:</b><blockquote class="quote-body">', 'close_tag' => '</blockquote></div>' ],
+            'quote' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<blockquote data-author="{PARAM}">', 'close_tag' => '</blockquote>' ],
             'list' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '', 'content_handling' => [__CLASS__, '_list' ] ],
             'youtube' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_youtube' ] ],
             'tudou' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_tudou' ] ],
