@@ -132,14 +132,14 @@ class Node extends DBObject
       return $tags[ $nid ];
    }
 
-   public function getLatestForumTopics( $count )
+   public function getLatestForumTopics( $forumRootID, $count )
    {
-      return $this->call( 'get_tag_recent_nodes("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
+      return $this->call( 'get_tag_recent_nodes("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
    }
 
-   public function getHotForumTopics( $count, $timestamp )
+   public function getHotForumTopics( $forumRootID, $count, $timestamp )
    {
-      return $this->call( 'get_tag_hot_nodes("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", ' . $timestamp . ', ' . $count . ')' );
+      return $this->call( 'get_tag_hot_nodes("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $timestamp . ', ' . $count . ')' );
    }
 
    public function getHotForumTopicNIDs( $count, $timestamp )
@@ -147,9 +147,9 @@ class Node extends DBObject
       return \array_column( $this->getHotForumTopics( $count, $timestamp ), 'nid' );
    }
 
-   public function getLatestYellowPages( $count )
+   public function getLatestYellowPages( $ypRootID, $count )
    {
-      return $this->call( 'get_tag_recent_nodes_yp("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
+      return $this->call( 'get_tag_recent_nodes_yp("' . \implode( ',', (new Tag( $ypRootID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
    }
 
    public function getLatestImmigrationPosts( $count )
@@ -157,14 +157,14 @@ class Node extends DBObject
       return $this->call( 'get_tag_recent_nodes("15", ' . $count . ')' );
    }
 
-   public function getLatestForumTopicReplies( $count )
+   public function getLatestForumTopicReplies( $forumRootID, $count )
    {
-      return $this->call( 'get_tag_recent_comments("' . \implode( ',', (new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
+      return $this->call( 'get_tag_recent_comments("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
    }
 
-   public function getLatestYellowPageReplies( $count )
+   public function getLatestYellowPageReplies( $ypRootID, $count )
    {
-      return $this->call( 'get_tag_recent_comments_yp("' . \implode( ',', (new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
+      return $this->call( 'get_tag_recent_comments_yp("' . \implode( ',', (new Tag( $ypRootID, NULL ) )->getLeafTIDs() ) . '", ' . $count . ')' );
    }
 
    public function getNodeCount( $tids )

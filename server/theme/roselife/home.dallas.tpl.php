@@ -1,0 +1,36 @@
+<div class="image_slider"><?php print $imageSlider; ?></div><section class="items">
+   <header>本周热门</header><?php print $hotForumTopics; ?></section><section class="items">
+   <header>最新话题</header><?php print $latestForumTopics; ?></section><section class="items">
+   <header>最新论坛回复</header><?php print $latestForumTopicReplies; ?></section>
+<?php foreach ( $groups as $group_id => $tags ): ?>
+   <table>
+      <thead>
+         <tr> 
+            <th><?php print $tags[ $group_id ][ 'description' ]; ?></th>
+            <th>最新话题</th>
+            <th>最新回复</th>
+         </tr>
+      </thead>
+      <tbody class='even_odd_parent'>
+         <?php foreach ( $tags[ $group_id ][ 'children' ] as $board_id ): ?>
+            <tr>
+               <td><a href="/forum/<?php print $board_id; ?>"><?php print $tags[ $board_id ][ 'name' ]; ?></a></td>
+               <td><?php if ( $nodeInfo[ $board_id ][ 'node' ] ): ?><a href="/node/<?php print $nodeInfo[ $board_id ][ 'node' ][ 'nid' ]; ?>"><?php print $nodeInfo[ $board_id ][ 'node' ][ 'title' ]; ?></a><br><?php print $nodeInfo[ $board_id ][ 'node' ][ 'username' ]; ?> <?php print $nodeInfo[ $board_id ][ 'node' ][ 'create_time' ]; ?><?php endif; ?></td>
+               <td><?php if ( $nodeInfo[ $board_id ][ 'comment' ] ): ?><a href="/node/<?php print $nodeInfo[ $board_id ][ 'comment' ][ 'nid' ]; ?>?page=last#comment<?php print $nodeInfo[ $board_id ][ 'comment' ][ 'cid' ]; ?>"><?php print $nodeInfo[ $board_id ][ 'comment' ][ 'title' ]; ?></a><br><?php print $nodeInfo[ $board_id ][ 'comment' ][ 'username' ]; ?> <?php print $nodeInfo[ $board_id ][ 'comment' ][ 'create_time' ]; ?><?php endif; ?></td>
+            </tr>
+         <?php endforeach; ?>
+      </tbody>
+   </table> 
+<?php endforeach; ?>
+<div id='site_stat' class='ajax_load' data-ajax='/home/ajax/stat?type=json&nosession'>
+   <div>当前在线用户：<span class='ajax_onlineCount'></span> (<span class='ajax_onlineUserCount'></span> 用户| <span class='ajax_onlineGuestCount'></span> 访客)</div>
+   <div><span class='ajax_onlineUsers'></span></div>
+   <div>统计</div>
+   <div>
+      <section>
+         <span class='ajax_nodeCount'></span> 主题，<span class='ajax_postCount'></span> 贴子，<span class='ajax_userCount'></span> 用户，欢迎新进会员 <span class='ajax_latestUser'></span>
+         <br>
+         今日新主题 <span class='ajax_nodeTodayCount'></span> 个，今日新评论 <span class='ajax_commentTodayCount'></span> 个，今日新用户 <span class='ajax_userTodayCount'></span> 个
+      </section><section><span class='ajax_alexa'></span></section>
+   </div>
+</div>

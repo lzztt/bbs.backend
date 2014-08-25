@@ -33,6 +33,7 @@ class Template
    public $var = [ ]; // controller need to fill this array (or an array Theme can access)
    private $_observers;
    private $_string;
+   private $_site;
 
    /**
     * Observer design pattern interfaces
@@ -60,7 +61,7 @@ class Template
     * 
     * Constructor
     */
-   public function __construct( $tpl, $var = [ ] )
+   public function __construct( $tpl, $var = [ ], $site = NULL )
    {
       $this->_observers = new \SplObjectStorage();
 
@@ -69,6 +70,12 @@ class Template
       {
          $this->var = $var;
       }
+      $this->_site = $site;
+   }
+
+   public function setSite( $site )
+   {
+      $this->_site = $site;
    }
 
    public function __toString()
@@ -80,18 +87,31 @@ class Template
       }
 
       // build the template
-      // notify observers
-      $this->notify();
-
       try
       {
+         // notify observers
+         $this->notify();
+
          \extract( $this->var );
          $tpl = $this->tpl;
          $tpl_theme = self::$theme;
          $tpl_path = self::$path . '/' . self::$theme;
          $tpl_debug = self::$debug;
 
-         $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
+         // check site files first
+         if ( $this->_site )
+         {
+            $tpl_file = $tpl_path . '/' . $tpl . '.' . $this->_site . '.tpl.php';
+            if ( !\is_file( $tpl_file ) || !\is_readable( $tpl_file ) )
+            {
+               $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
+            }
+         }
+         else
+         {
+            $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
+         }
+
          if ( !\is_file( $tpl_file ) || !\is_readable( $tpl_file ) )
          {
             self::$_status = FALSE;
