@@ -9,6 +9,7 @@ use site\dbobject\Activity;
 use site\dbobject\Image;
 use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
+use site\dbobject\Tag;
 
 class HomeCtrler extends Home
 {
@@ -17,6 +18,19 @@ class HomeCtrler extends Home
    {
       $this->cache = new PageCache( $this->request->uri );
 
+      $func = '_' . $this->site . 'Home';
+      if ( \method_exists( $this, $func ) )
+      {
+         $this->$func();
+      }
+      else
+      {
+         $this->error( 'unsupported site: ' . $this->site );
+      }
+   }
+
+   private function _houstonHome()
+   {
       $content = [
          'recentActivities' => $this->_getRecentActivities(),
          'latestForumTopics' => $this->_getLatestForumTopics(),
@@ -27,9 +41,62 @@ class HomeCtrler extends Home
          'latestYellowPageReplies' => $this->_getLatestYellowPageReplies(),
          'imageSlider' => $this->_getImageSlider(),
       ];
-
-      $this->html->var[ 'content' ] = new Template( 'home', $content );
+      $this->html->var[ 'content' ] = new Template( 'home', $content, $this->site );
    }
+
+   // BEGIN DALLAS HOME
+   private function _dallasHome()
+   {
+      $tag = new Tag( $this->_forumRootID[ $this->site ], NULL );
+      $tagTree = $tag->getTagTree();
+
+      $nodeInfo = [ ];
+      $groupTrees = [ ];
+      foreach ( $tagTree[ $tag->id ][ 'children' ] as $group_id )
+      {
+         $groupTrees[ $group_id ] = [ ];
+         $group = $tagTree[ $group_id ];
+         $groupTrees[ $group_id ][ $group_id ] = $group;
+         foreach ( $group[ 'children' ] as $board_id )
+         {
+            $groupTrees[ $group_id ][ $board_id ] = $tagTree[ $board_id ];
+            $nodeInfo[ $board_id ] = $this->_nodeInfo( $board_id );
+            $this->cache->addParent( '/forum/' . $board_id );
+         }
+      }
+
+      $content = [
+         'latestForumTopics' => $this->_getLatestForumTopics(),
+         'hotForumTopics' => $this->_getHotForumTopics(),
+         'latestForumTopicReplies' => $this->_getLatestForumTopicReplies(),
+         'imageSlider' => $this->_getImageSlider(),
+         'groups' => $groupTrees,
+         'nodeInfo' => $nodeInfo
+      ];
+
+      $this->html->var[ 'content' ] = new Template( 'home', $content, $this->site );
+   }
+
+   protected function _nodeInfo( $tid )
+   {
+      $tag = new Tag( $tid, NULL );
+
+      foreach ( $tag->getNodeInfo( $tid ) as $v )
+      {
+         $v[ 'create_time' ] = \date( 'm/d/Y H:i', $v[ 'create_time' ] );
+         if ( $v[ 'cid' ] == 0 )
+         {
+            $node = $v;
+         }
+         else
+         {
+            $comment = $v;
+         }
+      }
+      return [ 'node' => $node, 'comment' => $comment ];
+   }
+
+   // END DALLAS HOME
 
    private function _getImageSlider()
    {
@@ -64,7 +131,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopics( 15 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopics( $this->_forumRootID[ $this->site ], 15 ) as $n )
          {
             $arr[] = [ 'after' => \date( 'H:i', $n[ 'create_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -85,7 +152,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getHotForumTopics( 15, $this->request->timestamp - 604800 ) as $n )
+         foreach ( (new Node() )->getHotForumTopics( $this->_forumRootID[ $this->site ], 15, $this->request->timestamp - 604800 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ],
@@ -106,7 +173,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPages( 15 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPages( $this->_ypRootID[ $this->site ], 15 ) as $n )
          {
             $arr[] = [ 'after' => \date( 'm/d', $n[ 'exp_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -148,7 +215,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopicReplies( 15 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopicReplies( $this->_forumRootID[ $this->site ], 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],
@@ -169,7 +236,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPageReplies( 15 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPageReplies( $this->_ypRootID[ $this->site ], 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],

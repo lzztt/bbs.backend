@@ -26,12 +26,12 @@ class DeleteCtrler extends Comment
       $node = new Node( $comment->nid, 'tid' );
       $this->_getIndependentCache( '/node/' . $node->id )->delete();
 
-      if ( \in_array( $node->tid, ( new Tag( Tag::FORUM_ID, NULL ) )->getLeafTIDs() ) ) // forum tag
+      if ( \in_array( $node->tid, ( new Tag( $this->_forumRootID[$this->site], NULL ) )->getLeafTIDs() ) ) // forum tag
       {
          $this->_getIndependentCache( '/forum/' . $node->tid )->delete();
       }
 
-      if ( \in_array( $node->tid, ( new Tag( Tag::YP_ID, NULL ) )->getLeafTIDs() ) ) // yellow page tag
+      if ( \in_array( $node->tid, ( new Tag( $this->_ypRootID[$this->site], NULL ) )->getLeafTIDs() ) ) // yellow page tag
       {
          $c = new CommentObject();
          $c->nid = $comment->nid;

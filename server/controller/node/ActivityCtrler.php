@@ -7,7 +7,6 @@ use lzx\html\Template;
 use lzx\core\Mailer;
 use site\dbobject\Node as NodeObject;
 use site\dbobject\Activity;
-use site\dbobject\Tag;
 
 class ActivityCtrler extends Node
 {
@@ -51,7 +50,7 @@ class ActivityCtrler extends Node
          $breadcrumb = [ ];
          foreach ( $tags as $i => $t )
          {
-            $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
+            $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[$this->site] ? '/forum' : ('/forum/' . $i));
          }
          $breadcrumb[ $node->title ] = NULL;
 

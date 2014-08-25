@@ -39,14 +39,26 @@ abstract class Controller extends LzxCtrler
 
    const GUEST_UID = 0;
    const ADMIN_UID = 1;
+   const HOUSTON = 'houston';
+   const DALLAS = 'dallas';
+   const AUSTIN = 'austin';
 
    public $user = NULL;
    public $args;
    public $id;
    public $config;
    public $cache;
+   public $site;
    protected $_independentCacheList = [ ];
    protected $_cacheEvents = [ ];
+   protected $_forumRootID = [
+      self::HOUSTON => 1,
+      self::DALLAS => 127
+   ];
+   protected $_ypRootID = [
+      self::HOUSTON => 2,
+      self::DALLAS => 0
+   ];
 
    /**
     * public methods
@@ -54,6 +66,22 @@ abstract class Controller extends LzxCtrler
    public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
    {
       parent::__construct( $req, $html, $logger, $session, $cookie );
+
+      switch ( $this->request->domain )
+      {
+         case 'www.dallasbbs.com':
+         case 'www.dallasbbs-test.com':
+            $this->site = self::DALLAS;
+            break;
+         case 'www.austinbbs.com':
+         case 'www.austinbbs-test.com':
+            $this->site = self::AUSTIN;
+            break;
+         default :
+            $this->site = self::HOUSTON;
+      }
+      $this->html->setSite( $this->site );
+
       $this->config = $config;
       if ( !\array_key_exists( $this->class, self::$l ) )
       {
@@ -113,11 +141,25 @@ abstract class Controller extends LzxCtrler
       $navbar = $navbarCache->fetch();
       if ( !$navbar )
       {
-         $vars = [
-            'forumMenu' => $this->_createMenu( Tag::FORUM_ID ),
-            'ypMenu' => $this->_createMenu( Tag::YP_ID ),
-            'uid' => $this->request->uid
-         ];
+         if ( $this->site == self::HOUSTON )
+         {
+            $vars = [
+               'forumMenu' => $this->_createMenu( $this->_forumRootID[ $this->site ] ),
+               'ypMenu' => $this->_createMenu( $this->_ypRootID[ $this->site ] ),
+               'uid' => $this->request->uid
+            ];
+         }
+         elseif ( $this->site == self::DALLAS )
+         {
+            $vars = [
+               'forumMenu' => $this->_createMenu( $this->_forumRootID[ $this->site ] ),
+               'uid' => $this->request->uid
+            ];
+         }
+         else
+         {
+            $this->error( 'unsupport site: ' . $this->site );
+         }
          $navbar = new Template( 'page_navbar', $vars );
          $navbarCache->store( $navbar );
       }
@@ -255,11 +297,11 @@ abstract class Controller extends LzxCtrler
       $tree = $tag->getTagTree();
       $type = 'tag';
       $root_id = \array_shift( \array_keys( $tag->getTagRoot() ) );
-      if ( Tag::FORUM_ID == $root_id )
+      if ( $this->_forumRootID[ $this->site ] == $root_id )
       {
          $type = 'forum';
       }
-      else if ( Tag::YP_ID == $root_id )
+      else if ( $this->_ypRootID[ $this->site ] == $root_id )
       {
          $type = 'yp';
       }
