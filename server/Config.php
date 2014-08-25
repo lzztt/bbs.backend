@@ -26,8 +26,8 @@ class Config
 
    public function __construct()
    {
-      //$this->stage = self::STAGE_DEVELOPMENT;
-      $this->stage = self::STAGE_PRODUCTION;
+      $this->stage = self::STAGE_DEVELOPMENT;
+      //$this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
 
       $this->path = [
