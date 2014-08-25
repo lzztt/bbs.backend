@@ -25,11 +25,10 @@ class BBCode
             'quote' => ['type' => BBCODE_TYPE_ARG, 'open_tag' => '<blockquote data-author="{PARAM} :">', 'close_tag' => '</blockquote>' ],
             'list' => ['type' => BBCODE_TYPE_OPTARG, 'open_tag' => '', 'close_tag' => '', 'default_arg' => '', 'content_handling' => [__CLASS__, '_list' ] ],
             'youtube' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_youtube' ] ],
-            'tudou' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_tudou' ] ],
             'googlemap' => ['type' => BBCODE_TYPE_NOARG, 'open_tag' => '', 'close_tag' => '', 'content_handling' => [__CLASS__, '_googlemap' ] ],
          ]
       ];
-      
+
       // convert url string to links
       $text = \preg_replace( '#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text );
 
@@ -46,7 +45,8 @@ class BBCode
          $text = \bbcode_parse( \bbcode_create( $bbc[ 'tags' ] ), $text );
       }
 
-      return \str_replace( [ ">\n", ">\r\n", "\n", "\r\n" ], [ '>', '>', '<br>', '<br>' ], $text );
+      // convert new line to <br> except blockquote, iframe, ul, ol
+      return \str_replace( [ "e>\n", "e>\r\n", "l>\n", "l>\r\n", "\n", "\r\n" ], [ 'e>', 'e>', "l>", "l>", '<br>', '<br>' ], $text );
    }
 
    private static function _escape( $content, $param )
@@ -56,7 +56,7 @@ class BBCode
 
    private static function _img( $content, $param )
    {
-      return '<div class="bb-image"><img src="' . $content . '" alt="' . ($param == '{CONTENT}' ? $content : $param) . '" /></div>';
+      return '<img class="bb_image" src="' . $content . '" alt="' . ($param == '{CONTENT}' ? $content : $param) . '">';
    }
 
    private static function _list( $content, $param )
@@ -84,11 +84,6 @@ class BBCode
    private static function _youtube( $content, $param )
    {
       return '<iframe width="480" height="360" src="http://www.youtube.com/embed/' . $content . '" frameborder="0" allowfullscreen></iframe>';
-   }
-
-   private static function _tudou( $content, $param )
-   {
-      return '<embed src="http://www.tudou.com/v/' . $content . '/v.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" wmode="opaque" width="480" height="400"></embed>';
    }
 
    private static function _googlemap( $content, $param )
