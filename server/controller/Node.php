@@ -4,7 +4,6 @@ namespace site\controller;
 
 use site\Controller;
 use site\dbobject\Node as NodeObject;
-use site\dbobject\Tag;
 
 abstract class Node extends Controller
 {
@@ -13,9 +12,9 @@ abstract class Node extends Controller
 
    protected function _getNodeType()
    {
-      static $types = [
-         Tag::FORUM_ID => 'ForumTopic',
-         Tag::YP_ID => 'YellowPage',
+      $types = [
+         $this->_forumRootID[ $this->site ] => 'ForumTopic',
+         $this->_ypRootID[ $this->site ] => 'YellowPage',
       ];
 
       $nid = $this->id;

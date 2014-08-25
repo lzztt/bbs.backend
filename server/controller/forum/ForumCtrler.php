@@ -32,12 +32,12 @@ class ForumCtrler extends Forum
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[$this->site] ? '/forum' : ('/forum/' . $i));
       }
 
       $nodeInfo = [ ];
       $groupTrees = [ ];
-      if ( $tid == Tag::FORUM_ID )
+      if ( $tid == $this->_forumRootID[$this->site] )
       {
          foreach ( $tagTree[ $tid ][ 'children' ] as $group_id )
          {
@@ -80,7 +80,7 @@ class ForumCtrler extends Forum
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[$this->site] ? '/forum' : ('/forum/' . $i));
       }
 
       $node = new Node();

@@ -7,7 +7,6 @@ use lzx\core\BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
-use site\dbobject\Tag;
 use lzx\cache\PageCache;
 
 class NodeCtrler extends Node
@@ -43,7 +42,7 @@ class NodeCtrler extends Node
       $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::FORUM_ID ? '/forum' : ('/forum/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[ $this->site ] ? '/forum' : ('/forum/' . $i));
       }
       $breadcrumb[ $node[ 'title' ] ] = NULL;
 
@@ -87,7 +86,7 @@ class NodeCtrler extends Node
          {
             $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
-         catch (\Exception $e)
+         catch ( \Exception $e )
          {
             $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -119,7 +118,7 @@ class NodeCtrler extends Node
             {
                $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
             }
-            catch (\Exception $e)
+            catch ( \Exception $e )
             {
                $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -137,7 +136,7 @@ class NodeCtrler extends Node
       $editor_contents = [
          'title' => $node[ 'title' ],
          'form_handler' => '/node/' . $nid . '/comment',
-         'hasFile' => TRUE  
+         'hasFile' => TRUE
       ];
       $editor = new Template( 'editor_bbcode', $editor_contents );
 
@@ -146,7 +145,7 @@ class NodeCtrler extends Node
          'editor' => $editor
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'node_forum_topic', $contents );
+      $this->html->var[ 'content' ] = new Template( 'node_forum_topic', $contents, $this->site );
    }
 
    private function _authorPanel( $info )
@@ -190,7 +189,7 @@ class NodeCtrler extends Node
       {
          $tmp = \explode( '.', $f[ 'path' ] );
          $type = \array_pop( $tmp );
-         switch ($type)
+         switch ( $type )
          {
             case 'jpg':
             case 'jpeg':
@@ -250,7 +249,7 @@ class NodeCtrler extends Node
       $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === Tag::YP_ID ? '/yp' : ('/yp/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_ypRootID[ $this->site ] ? '/yp' : ('/yp/' . $i));
       }
       $breadcrumb[ $node[ 'title' ] ] = NULL;
 
@@ -278,7 +277,7 @@ class NodeCtrler extends Node
          {
             $node[ 'HTMLbody' ] = BBCode::parse( $node[ 'body' ] );
          }
-         catch (\Exception $e)
+         catch ( \Exception $e )
          {
             $node[ 'HTMLbody' ] = \nl2br( $node[ 'body' ] );
             $this->logger->error( $e->getMessage(), $e->getTrace() );
@@ -306,7 +305,7 @@ class NodeCtrler extends Node
             {
                $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
             }
-            catch (\Exception $e)
+            catch ( \Exception $e )
             {
                $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
                $this->logger->error( $e->getMessage(), $e->getTrace() );
