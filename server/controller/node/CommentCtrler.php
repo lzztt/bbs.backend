@@ -113,7 +113,7 @@ class CommentCtrler extends Node
       $this->_getCacheEvent( 'ForumComment' )->trigger();
       $this->_getCacheEvent( 'ForumUpdate' . $node->tid )->trigger();
 
-      if ( \in_array( $nid, $node->getHotForumTopicNIDs( 15, $this->request->timestamp - 604800 ) ) )
+      if ( \in_array( $nid, $node->getHotForumTopicNIDs( $this->_forumRootID[ $this->site ], 15, $this->request->timestamp - 604800 ) ) )
       {
          $this->_getIndependentCache( 'hotForumTopics' )->delete();
       }
