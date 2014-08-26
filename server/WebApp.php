@@ -216,16 +216,19 @@ class WebApp extends App
 
       $db->flush();
 
-      // do controller cleanup
-      $_timer = \microtime( TRUE );
-      unset( $ctrler );
-      $db->flush();
-      $_timer = \microtime( TRUE ) - $_timer;
-
-      if ( $outputDebug )
+      // controller flush cache
+      if ( $ctrler )
       {
-         echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
-         echo '</pre>';
+         $_timer = \microtime( TRUE );
+         $ctrler->flushCache();
+         $db->flush();
+         $_timer = \microtime( TRUE ) - $_timer;
+
+         if ( $outputDebug )
+         {
+            echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
+            echo '</pre>';
+         }
       }
 
       // flush logger
