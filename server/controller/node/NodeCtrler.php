@@ -145,7 +145,7 @@ class NodeCtrler extends Node
          'editor' => $editor
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'node_forum_topic', $contents, $this->site );
+      $this->html->var[ 'content' ] = new Template( 'node_forum_topic', $contents );
    }
 
    private function _authorPanel( $info )

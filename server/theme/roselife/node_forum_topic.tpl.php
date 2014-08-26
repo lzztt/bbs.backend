@@ -16,13 +16,13 @@
       <article>      
          <header>
             <a href="/user/<?php print $p[ 'uid' ]; ?>"><?php print $p[ 'username' ]; ?></a> <span class='city'><?php print $p[ 'city' ]; ?></span>
-            <?php
-            echo $p[ 'createTime' ];
-            if ( $p[ 'lastModifiedTime' ] )
-            {
-               echo ' (修改于 ' . $p[ 'lastModifiedTime' ] . ')';
-            }
-            ?>
+            <span class='time'><?php
+               print $p[ 'createTime' ];
+               if ( $p[ 'lastModifiedTime' ] )
+               {
+                  print ' (修改于 ' . $p[ 'lastModifiedTime' ] . ')';
+               }
+               ?></span>
             <?php if ( $p[ 'type' ] == 'comment' ): ?>
                <span class="comment_num">#<?php print $postNumStart + $index ?></span>
             <?php endif; ?>
