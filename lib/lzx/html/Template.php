@@ -22,6 +22,7 @@ class Template
    public static $language;
    public static $debug = FALSE;
    private static $_status = TRUE;
+   private static $_site;
 
    /**
     * @var Logger $logger
@@ -33,7 +34,6 @@ class Template
    public $var = [ ]; // controller need to fill this array (or an array Theme can access)
    private $_observers;
    private $_string;
-   private $_site;
 
    /**
     * Observer design pattern interfaces
@@ -61,7 +61,7 @@ class Template
     * 
     * Constructor
     */
-   public function __construct( $tpl, $var = [ ], $site = NULL )
+   public function __construct( $tpl, $var = [ ] )
    {
       $this->_observers = new \SplObjectStorage();
 
@@ -70,12 +70,11 @@ class Template
       {
          $this->var = $var;
       }
-      $this->_site = $site;
    }
 
-   public function setSite( $site )
+   public static function setSite( $site )
    {
-      $this->_site = $site;
+      self::$_site = $site;
    }
 
    public function __toString()
@@ -99,9 +98,9 @@ class Template
          $tpl_debug = self::$debug;
 
          // check site files first
-         if ( $this->_site )
+         if ( self::$_site )
          {
-            $tpl_file = $tpl_path . '/' . $tpl . '.' . $this->_site . '.tpl.php';
+            $tpl_file = $tpl_path . '/' . $tpl . '.' . self::$_site . '.tpl.php';
             if ( !\is_file( $tpl_file ) || !\is_readable( $tpl_file ) )
             {
                $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
