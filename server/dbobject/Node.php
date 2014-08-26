@@ -142,9 +142,9 @@ class Node extends DBObject
       return $this->call( 'get_tag_hot_nodes("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $timestamp . ', ' . $count . ')' );
    }
 
-   public function getHotForumTopicNIDs( $count, $timestamp )
+   public function getHotForumTopicNIDs( $forumRootID, $count, $timestamp )
    {
-      return \array_column( $this->getHotForumTopics( $count, $timestamp ), 'nid' );
+      return \array_column( $this->getHotForumTopics( $forumRootID, $count, $timestamp ), 'nid' );
    }
 
    public function getLatestYellowPages( $ypRootID, $count )
