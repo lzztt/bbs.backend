@@ -32,14 +32,14 @@
          <a id="comment<?php print $c[ 'id' ]; ?>"></a>
          <article>      
             <header>
-               <a href="/user/<?php print $c[ 'uid' ]; ?>"><?php print $c[ 'username' ]; ?></a> <span class='city'><?php print $c[ 'city' ]; ?></span> @ 
-               <?php
-               echo $c[ 'createTime' ];
-               if ( $c[ 'lastModifiedTime' ] )
-               {
-                  echo ' (修改于 ' . $c[ 'lastModifiedTime' ] . ')';
-               }
-               ?>
+               <a href="/user/<?php print $c[ 'uid' ]; ?>"><?php print $c[ 'username' ]; ?></a> <span class='city'><?php print $c[ 'city' ]; ?></span>
+               <span class='time'><?php
+                  print $c[ 'createTime' ];
+                  if ( $c[ 'lastModifiedTime' ] )
+                  {
+                     print ' (修改于 ' . $c[ 'lastModifiedTime' ] . ')';
+                  }
+                  ?></span>
                <?php if ( $c[ 'type' ] == 'comment' ): ?>
                   <span class="comment_num">#<?php print $postNumStart + $index ?></span>
                <?php endif; ?>

@@ -41,7 +41,7 @@ class HomeCtrler extends Home
          'latestYellowPageReplies' => $this->_getLatestYellowPageReplies(),
          'imageSlider' => $this->_getImageSlider(),
       ];
-      $this->html->var[ 'content' ] = new Template( 'home', $content, $this->site );
+      $this->html->var[ 'content' ] = new Template( 'home', $content );
    }
 
    // BEGIN DALLAS HOME
@@ -74,7 +74,7 @@ class HomeCtrler extends Home
          'nodeInfo' => $nodeInfo
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'home', $content, $this->site );
+      $this->html->var[ 'content' ] = new Template( 'home', $content );
    }
 
    protected function _nodeInfo( $tid )

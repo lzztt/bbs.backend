@@ -22,8 +22,8 @@
          <?php foreach ( $nodes as $node ): ?>
             <tr class="<?php print ($node[ 'weight' ] >= 2) ? 'topic-sticky' : ''; ?>">
                <td><a href="/node/<?php print $node[ 'id' ]; ?>"><?php print $node[ 'title' ]; ?></a></td>
-               <td><?php print $node[ 'creater_name' ]; ?> <?php print ($node[ 'create_time' ] ); ?></td>
-               <td><?php if ( $node[ 'comment_count' ] > 0 ): ?><?php print $node[ 'commenter_name' ]; ?> <?php print ($node[ 'comment_time' ] ); ?><?php endif; ?></td>
+               <td><?php print $node[ 'creater_name' ]; ?> <span class='time'><?php print ($node[ 'create_time' ] ); ?></span></td>
+               <td><?php if ( $node[ 'comment_count' ] > 0 ): ?><?php print $node[ 'commenter_name' ]; ?> <span class='time'><?php print ($node[ 'comment_time' ] ); ?></span><?php endif; ?></td>
                <td><?php print $node[ 'comment_count' ]; ?> / <span class="ajax_viewCount_<?php print $node[ 'id' ]; ?>"></span></td>
             </tr>
          <?php endforeach; ?>

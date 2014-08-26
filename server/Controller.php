@@ -80,7 +80,7 @@ abstract class Controller extends LzxCtrler
          default :
             $this->site = self::HOUSTON;
       }
-      $this->html->setSite( $this->site );
+      Template::setSite( $this->site );
 
       $this->config = $config;
       if ( !\array_key_exists( $this->class, self::$l ) )
@@ -167,7 +167,15 @@ abstract class Controller extends LzxCtrler
 
       // set headers
       $html->var[ 'head_description' ] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
-      $html->var[ 'head_title' ] = '缤纷休斯顿华人网';
+
+      if ( $this->site == self::HOUSTON )
+      {
+         $html->var[ 'head_title' ] = '缤纷休斯顿华人网';
+      }
+      elseif ( $this->site == self::DALLAS )
+      {
+         $html->var[ 'head_title' ] = '缤纷达拉斯华人网';
+      }
 
       // remove this controller from the subject's observer list
       $html->detach( $this );
