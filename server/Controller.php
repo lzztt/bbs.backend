@@ -97,7 +97,7 @@ abstract class Controller extends LzxCtrler
       $this->html->attach( $this );
    }
 
-   public function __destruct()
+   public function flushCache()
    {
       if ( $this->config->cache )
       {
