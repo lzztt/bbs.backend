@@ -257,7 +257,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Activity() )->getRecentActivities( 12, $this->request->timestamp ) as $n )
+         foreach ( (new Activity() )->getRecentActivities( 10, $this->request->timestamp ) as $n )
          {
             $arr[] = [ 'class' => 'activity_' . $n[ 'class' ],
                'after' => \date( 'm/d', $n[ 'start_time' ] ),
