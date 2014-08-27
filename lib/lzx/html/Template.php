@@ -578,14 +578,14 @@ class Template
 
       if ( $pageNo != 1 )
       {
-         $pager[] = ['text' => $this->link( '<<', $uri ), 'attributes' => ['class' => 'pageFirst' ] ];
-         $pager[] = ['text' => $this->link( '<', $uri . '?page=' . ($pageNo - 1) ), 'attributes' => ['class' => 'pagePrevious' ] ];
+         $pager[] = $this->link( '<<', $uri );
+         $pager[] = $this->link( '<', $uri . '?page=' . ($pageNo - 1) );
       }
       for ( $i = $pageFirst; $i <= $pageLast; $i++ )
       {
          if ( $i == $pageNo )
          {
-            $pager[] = ['text' => $this->link( (string) $i, $uri . '?page=' . $i ), 'attributes' => ['class' => 'pageActive' ] ];
+            $pager[] = $this->link( (string) $i, $uri . '?page=' . $i, ['class' => 'active' ] );
          }
          else
          {
@@ -594,13 +594,10 @@ class Template
       }
       if ( $pageNo != $pageCount )
       {
-         $pager[] = ['text' => $this->link( '>', $uri . '?page=' . ($pageNo + 1) ), 'attributes' => ['class' => 'pageNext' ] ];
-         $pager[] = ['text' => $this->link( '>>', $uri . '?page=' . $pageCount ), 'attributes' => ['class' => 'pageLast' ] ];
+         $pager[] = $this->link( '>', $uri . '?page=' . ($pageNo + 1) );
+         $pager[] = $this->link( '>>', $uri . '?page=' . $pageCount );
       }
-
-      $pager = $this->ulist( $pager, ['class' => 'pager' ], FALSE );
-
-      return $pager;
+      return new HTMLElement( 'nav', $pager, [ 'class' => 'pager' ] );
    }
 
 }
