@@ -8,7 +8,7 @@ use site\dbobject\Tag;
 abstract class Forum extends Controller
 {
 
-   const NODES_PER_PAGE = 25;
+   const NODES_PER_PAGE = 30;
 
    protected function _getTagObj()
    {

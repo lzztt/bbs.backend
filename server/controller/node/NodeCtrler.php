@@ -12,8 +12,6 @@ use lzx\cache\PageCache;
 class NodeCtrler extends Node
 {
 
-   const COMMENTS_PER_PAGE = 10;
-
    public function run()
    {
       $this->cache = new PageCache( $this->request->uri );
