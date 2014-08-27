@@ -59,7 +59,7 @@
          <header id='page_header'>
             <div id="logo_div">
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-               <span id='messagebox'><?php print $head_title; ?></span>
+               <span id='messagebox'><?php print $head_title; ?></span> <span class='slogan'>Simple Peaceful Beautiful</span>
             </div>
          </header>
          <nav id='page_navbar' class='hidden'>
