@@ -8,8 +8,6 @@ use site\dbobject\Node as NodeObject;
 class AJAXCtrler extends Node
 {
 
-   const COMMENTS_PER_PAGE = 10;
-
    public function run()
    {
       // url = /node/ajax/viewcount?nid=<nid>

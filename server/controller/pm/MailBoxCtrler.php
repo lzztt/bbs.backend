@@ -9,8 +9,6 @@ use lzx\html\Template;
 class MailBoxCtrler extends PM
 {
 
-   const PM_PER_PAGE = 25;
-
    public function run()
    {
       $user = new User( $this->request->uid, NULL );
@@ -29,7 +27,7 @@ class MailBoxCtrler extends PM
       $mailBoxLinks = $this->_getMailBoxLinks( '/pm/mailbox/' . $mailbox );
 
       list($pageNo, $pager) = $this->_getPager( $pmCount, $activeLink );
-      $msgs = $user->getPrivMsgs( $mailbox, 25, ($pageNo - 1) * 25 );
+      $msgs = $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE );
 
       $thead = ['cells' => ['短信', '联系人', '时间' ] ];
       $tbody = [ ];
