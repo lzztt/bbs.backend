@@ -96,10 +96,8 @@ class ForumCtrler extends Forum
       }
 
       $editor_contents = [
-         'display' => FALSE,
-         'title_display' => TRUE,
-         'node_title' => '',
          'form_handler' => '/forum/' . $tid . '/node',
+         'hasFile' => TRUE
       ];
       $editor = new Template( 'editor_bbcode', $editor_contents );
 
