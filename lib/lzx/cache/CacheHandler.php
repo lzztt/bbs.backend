@@ -120,7 +120,7 @@ class CacheHandler implements CacheHandlerInterface
          return $_filenames[ $key ];
       }
 
-      switch (\get_class( $cache ))
+      switch ( \get_class( $cache ) )
       {
          case 'lzx\cache\PageCache':
             $filename = self::$path . '/page' . $key . '.html.gz';
@@ -151,12 +151,12 @@ class CacheHandler implements CacheHandlerInterface
       }
 
       // found from database
-      $res = $this->_db->query( 'SELECT id FROM cache WHERE name = :key', [ ':key' => $name ] );
-      switch (\count( $res ))
+      $res = $this->_db->query( 'SELECT id FROM cache_names WHERE name = :key', [ ':key' => $name ] );
+      switch ( \count( $res ) )
       {
          case 0:
             // add to database
-            $this->_db->query( 'INSERT INTO cache (name) VALUEs (:key)', [ ':key' => $name ] );
+            $this->_db->query( 'INSERT INTO cache_names (name) VALUEs (:key)', [ ':key' => $name ] );
             // save to id cache
             $id = (int) $this->_db->insert_id();
             break;
@@ -178,7 +178,7 @@ class CacheHandler implements CacheHandlerInterface
       $this->_db->query( 'DELETE FROM cache_tree WHERE cid = :cid', [ ':cid' => $id ] );
    }
 
-   public function linkParents( $id, Array $parents )
+   public function linkParents( $id, array $parents )
    {
       if ( $parents )
       {
@@ -202,39 +202,55 @@ class CacheHandler implements CacheHandlerInterface
       }
    }
 
-   public function linkChildren( $id, Array $children )
-   {
-      if ( $children )
-      {
-         \array_unique( $children );
-
-         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(cid) AS id FROM cache_tree WHERE pid = :pid', [ ':pid' => $id ] ), 'id' );
-         $values = [ ];
-         foreach ( $children as $key )
-         {
-            $cid = $this->getID( $key );
-            if ( !\in_array( $cid, $existing ) )
-            {
-               $values[] = '(' . $id . ',' . $cid . ')';
-            }
-         }
-
-         if ( $values )
-         {
-            $this->_db->query( 'INSERT INTO cache_tree VALUES ' . \implode( ',', $values ) );
-         }
-      }
-   }
-
    public function getChildren( $id )
    {
-      $children = $this->_db->query( 'SELECT id, name FROM cache WHERE id IN (SELECT DISTINCT(cid) FROM cache_tree WHERE pid = :pid)', [ ':pid' => $id ] );
+      $children = $this->_db->query( 'SELECT id, name FROM cache_names WHERE id IN (SELECT DISTINCT(cid) FROM cache_tree WHERE pid = :pid)', [ ':pid' => $id ] );
       foreach ( $children as $c )
       {
          $this->_ids[ $c[ 'name' ] ] = $c[ 'id' ];
       }
 
       return \array_column( $children, 'name' );
+   }
+
+   public function unlinkEvents( $id )
+   {
+      $this->_db->query( 'DELETE FROM cache_event_listeners WHERE lid = :lid', [ ':lid' => $id ] );
+   }
+
+   public function getEventListeners( $eid, $oid )
+   {
+      $children = $this->_db->query( 'SELECT id, name FROM cache_names WHERE id IN (SELECT DISTINCT(lid) FROM cache_event_listeners WHERE eid = :eid AND oid = :oid)', [ ':eid' => $eid, ':oid' => $oid ] );
+      foreach ( $children as $c )
+      {
+         $this->_ids[ $c[ 'name' ] ] = $c[ 'id' ];
+      }
+
+      return \array_column( $children, 'name' );
+   }
+
+   public function addEventListeners( $eid, $oid, array $listeners )
+   {
+      if ( $listeners )
+      {
+         \array_unique( $listeners );
+
+         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(lid) AS id FROM cache_event_listeners WHERE eid = :eid AND oid = :oid', [ ':eid' => $eid, ':oid' => $oid ] ), 'id' );
+         $values = [ ];
+         foreach ( $listeners as $key )
+         {
+            $lid = $this->getID( $key );
+            if ( !\in_array( $lid, $existing ) )
+            {
+               $values[] = '(' . $eid . ',' . $oid . ',' . $lid . ')';
+            }
+         }
+
+         if ( $values )
+         {
+            $this->_db->query( 'INSERT INTO cache_event_listeners VALUES ' . \implode( ',', $values ) );
+         }
+      }
    }
 
 }

@@ -41,7 +41,6 @@ class Template
    public function attach( Controller $observer )
    {
       $this->_observers->attach( $observer );
-      ;
    }
 
    public function detach( Controller $observer )
@@ -216,31 +215,6 @@ class Template
 
       return $this->render( 'html' );
    }
-
-   /**
-    *
-    * @param type $url
-    * @param type $type 'html' or 'json' data
-    * @return type
-    */
-   /*
-     public function ajax($url, $js_callback)
-     {
-     $attributes = [
-     'class' => 'ajax_action',
-     'style' => 'display: none;',
-     'rel' => 'nofollow',
-     'href' => $url,
-     'title' => $js_callback
-     );
-     $link = new HTMLElement('a', '', $attributes);
-     $callback = '<script type="text/javascript">' . $this->loadJS('ajax/' . $js_callback) . '</script>';
-     return $link . $callback;
-     }
-    *
-    */
-
-   // text link
 
    /**
     *
@@ -579,23 +553,23 @@ class Template
       if ( $pageNo != 1 )
       {
          $pager[] = $this->link( '<<', $uri );
-         $pager[] = $this->link( '<', $uri . '?page=' . ($pageNo - 1) );
+         $pager[] = $this->link( '<', $uri . '?p=' . ($pageNo - 1) );
       }
       for ( $i = $pageFirst; $i <= $pageLast; $i++ )
       {
          if ( $i == $pageNo )
          {
-            $pager[] = $this->link( (string) $i, $uri . '?page=' . $i, ['class' => 'active' ] );
+            $pager[] = $this->link( (string) $i, $uri . '?p=' . $i, ['class' => 'active' ] );
          }
          else
          {
-            $pager[] = $this->link( (string) $i, $uri . '?page=' . $i );
+            $pager[] = $this->link( (string) $i, $uri . '?p=' . $i );
          }
       }
       if ( $pageNo != $pageCount )
       {
-         $pager[] = $this->link( '>', $uri . '?page=' . ($pageNo + 1) );
-         $pager[] = $this->link( '>>', $uri . '?page=' . $pageCount );
+         $pager[] = $this->link( '>', $uri . '?p=' . ($pageNo + 1) );
+         $pager[] = $this->link( '>>', $uri . '?p=' . $pageCount );
       }
       return new HTMLElement( 'nav', $pager, [ 'class' => 'pager' ] );
    }

@@ -51,8 +51,8 @@ class DeleteCtrler extends Node
       $user->points -= 3;
       $user->update( 'points' );
 
-      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
-      $this->_getCacheEvent( 'ForumUpdate' . $node->tid )->trigger();
+      $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
+      $this->_getCacheEvent( 'ForumUpdate', $node->tid )->trigger();
 
       $this->pageRedirect( '/forum/' . $node->tid );
    }
@@ -71,8 +71,8 @@ class DeleteCtrler extends Node
          $node->update( 'status' );
       }
 
-      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
-      $this->_getCacheEvent( 'YellowPageUpdate' . $node->tid )->trigger();
+      $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
+      $this->_getCacheEvent( 'YellowPageUpdate', $node->tid )->trigger();
 
       $this->pageRedirect( '/yp/' . $node->tid );
    }

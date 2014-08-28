@@ -15,6 +15,7 @@ class CacheEvent
    static protected $_handler;
    protected $_id;
    protected $_name;
+   protected $_objID;
    protected $_listeners = [ ];
    protected $_dirty = FALSE;
    protected $_triggered = FALSE;
@@ -24,14 +25,20 @@ class CacheEvent
       self::$_handler = $handler;
    }
 
-   public function __construct( $name )
+   public function __construct( $name, $objectID = 0 )
    {
       $this->_name = self::$_handler->getCleanName( $name );
+
+      $this->_objID = (int) $objectID;
+      if ( $this->_objID < 0 )
+      {
+         $this->_objID = 0;
+      }
    }
-   
+
    public function getName()
    {
-      return $this->_name;
+      return $this->_objID ? $this->_name . '<' . $this->_objID . '>' : $this->_name;
    }
 
    /**
@@ -79,7 +86,7 @@ class CacheEvent
             $this->_listeners = [ ];
 
             // update listeners in DB
-            foreach ( self::$_handler->getChildren( $this->_id ) as $key )
+            foreach ( self::$_handler->getEventListeners( $this->_id, $this->_objID ) as $key )
             {
                $c = self::$_handler->createCache( $key );
                $c->delete();
@@ -88,7 +95,7 @@ class CacheEvent
          }
          else
          {
-            self::$_handler->linkChildren( $this->_id, $this->_listeners );
+            self::$_handler->addEventListeners( $this->_id, $this->_objID, $this->_listeners );
          }
          $this->_dirty = FALSE;
       }

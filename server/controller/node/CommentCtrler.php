@@ -109,16 +109,16 @@ class CommentCtrler extends Node
       $user->points += 1;
       $user->update( 'points' );
 
-      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
+      $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
       $this->_getCacheEvent( 'ForumComment' )->trigger();
-      $this->_getCacheEvent( 'ForumUpdate' . $node->tid )->trigger();
+      $this->_getCacheEvent( 'ForumUpdate', $node->tid )->trigger();
 
       if ( \in_array( $nid, $node->getHotForumTopicNIDs( $this->_forumRootID[ $this->site ], 15, $this->request->timestamp - 604800 ) ) )
       {
          $this->_getIndependentCache( 'hotForumTopics' )->delete();
       }
 
-      $this->pageRedirect( '/node/' . $nid . '?page=last#comment' . $comment->id );
+      $this->pageRedirect( '/node/' . $nid . '?p=l#comment' . $comment->id );
    }
 
    private function _commentYellowPage( $nid )
@@ -207,10 +207,10 @@ class CommentCtrler extends Node
       $user->points += 1;
       $user->update( 'points' );
 
-      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
+      $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
       $this->_getCacheEvent( 'YellowPageComment' )->trigger();
 
-      $this->pageRedirect( '/node/' . $nid . '?page=last#comment' . $comment->id );
+      $this->pageRedirect( '/node/' . $nid . '?p=l#commentomment' . $comment->id );
    }
 
 }

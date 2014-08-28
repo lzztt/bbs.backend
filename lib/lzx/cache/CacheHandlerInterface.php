@@ -23,9 +23,13 @@ interface CacheHandlerInterface
 
    public function linkParents( $id, array $parents );
 
-   public function linkChildren( $id, array $children );
-
    public function getChildren( $id );
+
+   public function unlinkEvents( $id );
+
+   public function getEventListeners( $eid, $oid );
+
+   public function addEventListeners( $eid, $oid, array $listeners );
 }
 
 //__END_OF_FILE__
