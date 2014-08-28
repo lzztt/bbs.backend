@@ -125,12 +125,13 @@ class WebApp extends App
       // set user info for logger
       $userinfo = 'uid=' . $session->uid
          . ' umode=' . $this->getUmode( $cookie )
-         . ' urole=' . (isset( $cookie->urole ) ? $cookie->urole : 'guest');
+         . ($cookie->urole ? ' urole=' . $cookie->urole : '');
       $this->logger->setUserInfo( $userinfo );
 
       // update request uid based on session uid
       $request->uid = (int) $session->uid;
 
+      $ctrler = NULL;
       $html = NULL;
       try
       {
@@ -167,8 +168,11 @@ class WebApp extends App
                break;
             case ControllerException::PAGE_REDIRECT:
                \header( 'Location: ' . $msg );
+               // send cookie and finish request processing
+               $cookie->send();
+               \fastcgi_finish_request();
 
-               // unset output
+               // unset output and continue
                $html = NULL;
 
                // continue
@@ -187,15 +191,16 @@ class WebApp extends App
          }
       }
 
-      // send cookie
+      // normal execution
+      // send cookie and page content
       $cookie->send();
-
-      // output page content, if we didn't get an exception
-      $outputDebug = ( $this->config->stage == Config::STAGE_DEVELOPMENT && $html instanceof Template );
       if ( $html )
       {
          echo $html;
       }
+
+      // output debug message?
+      $outputDebug = ( $this->config->stage == Config::STAGE_DEVELOPMENT && $html instanceof Template );
 
       // FINISH request processing
       if ( !$outputDebug )
@@ -203,32 +208,39 @@ class WebApp extends App
          \fastcgi_finish_request();
       }
 
-      // do extra clean up
-      // and heavy stuff here
-      $session->close();
-
-      if ( $outputDebug )
+      // do extra clean up and heavy stuff here
+      try
       {
-         echo '<pre>' . $request->datetime . \PHP_EOL . $this->config->stage . \PHP_EOL;
-         echo $userinfo . \PHP_EOL;
-         echo \print_r( $db->queries, TRUE );
-      }
-
-      $db->flush();
-
-      // controller flush cache
-      if ( $ctrler )
-      {
-         $_timer = \microtime( TRUE );
-         $ctrler->flushCache();
-         $db->flush();
-         $_timer = \microtime( TRUE ) - $_timer;
+         // flush session
+         $session->close();
 
          if ( $outputDebug )
          {
-            echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
-            echo '</pre>';
+            echo '<pre>' . $request->datetime . \PHP_EOL . 'stage=' . $this->config->stage . ' ' . $userinfo . \PHP_EOL;
+            echo \print_r( $db->queries, TRUE );
          }
+
+         // flush database
+         $db->flush();
+
+         // controller flush cache
+         if ( $ctrler )
+         {
+            $_timer = \microtime( TRUE );
+            $ctrler->flushCache();
+            $db->flush();
+            $_timer = \microtime( TRUE ) - $_timer;
+
+            if ( $outputDebug )
+            {
+               echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
+               echo '</pre>';
+            }
+         }
+      }
+      catch ( \Exception $e )
+      {
+         $this->logger->error( $e->getMessage() );
       }
 
       // flush logger
