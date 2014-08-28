@@ -75,7 +75,7 @@ class ForumCtrler extends Forum
 
    public function showTopicList( $tid, $tagRoot )
    {
-      $this->_getCacheEvent( 'FroumUpdate' . $tid )->addListener( $this->cache );
+      $this->_getCacheEvent( 'FroumUpdate', $tid )->addListener( $this->cache );
 
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )

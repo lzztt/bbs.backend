@@ -105,7 +105,7 @@ class NodeCtrler extends Forum
       $user->update( 'points' );
 
       $this->_getCacheEvent( 'ForumNode' )->trigger();
-      $this->_getCacheEvent( 'ForumUpdate' . $tid )->trigger();
+      $this->_getCacheEvent( 'ForumUpdate', $tid )->trigger();
 
       if ( $node->tid == 15 )
       {
