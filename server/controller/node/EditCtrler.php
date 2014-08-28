@@ -58,8 +58,8 @@ class EditCtrler extends Node
       $file = new Image();
       $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
 
-      $this->_getCacheEvent( 'ImageUpdate' . $nid )->trigger();
-      $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
+      $this->_getCacheEvent( 'ImageUpdate' )->trigger();
+      $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
 
       $this->pageRedirect( $this->request->referer );
    }
@@ -105,7 +105,7 @@ class EditCtrler extends Node
          $file = new Image();
          $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
 
-         $this->_getCacheEvent( 'NodeUpdate' . $nid )->trigger();
+         $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
 
          $this->pageRedirect( '/node/' . $nid );
       }

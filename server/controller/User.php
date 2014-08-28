@@ -3,7 +3,6 @@
 namespace site\controller;
 
 use site\Controller;
-use lzx\html\Template;
 use site\dbobject\User as UserObject;
 use lzx\html\HTMLElement;
 
@@ -26,7 +25,7 @@ abstract class User extends Controller
             {
                $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
                $this->session->suid = $this->session->uid;
-               $this->_setUser( $user->id );
+               $this->_setUser( $user );
                $this->html->var[ 'content' ] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
             }
             else
@@ -46,8 +45,9 @@ abstract class User extends Controller
          unset( $this->session->suid );
          if ( $suid == self::ADMIN_UID )
          {
-            $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $suid );
-            $this->_setUser( $suid );
+            $user = new UserObject( $suid, 'username' );
+            $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $user->username );
+            $this->_setUser( $user );
             $this->html->var[ 'content' ] = 'not logged out, just switched back to super user';
          }
       }
@@ -73,12 +73,13 @@ abstract class User extends Controller
       return FALSE;
    }
 
-   protected function _setUser( $uid )
+   protected function _setUser( UserObject $user )
    {
-      $this->session->uid = $uid;
-      $this->cookie->uid = $uid;
-      $urole = (new UserObject( $uid, NULL ) )->getUserGroup();
+      $this->session->uid = $user->id;
+      $this->cookie->uid = $user->id;
+      $urole = $user->getUserGroup();
       $this->cookie->urole = $urole ? \implode( '|', $urole ) : NULL;
+      $this->cookie->username = $user->username;
    }
 
    protected function _recentTopics( $uid )

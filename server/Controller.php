@@ -200,26 +200,43 @@ abstract class Controller extends LzxCtrler
    {
       $cacheHandler = CacheHandler::getInstance();
       $_key = $cacheHandler->getCleanName( $key );
-      if ( !\array_key_exists( $_key, $this->_independentCacheList ) )
+      if ( \array_key_exists( $_key, $this->_independentCacheList ) )
       {
-         $this->_independentCacheList[ $_key ] = $cacheHandler->createCache( $_key );
+         return $this->_independentCacheList[ $_key ];
       }
-      return $this->_independentCacheList[ $_key ];
+      else
+      {
+         $cache = $cacheHandler->createCache( $_key );
+         $this->_independentCacheList[ $_key ] = $cache;
+         return $cache;
+      }
    }
 
    /**
     * 
     * @return \lzx\cache\CacheEvent
     */
-   protected function _getCacheEvent( $name )
+   protected function _getCacheEvent( $name, $objectID = 0 )
    {
       $cacheHandler = CacheHandler::getInstance();
       $_name = $cacheHandler->getCleanName( $name );
-      if ( !\array_key_exists( $_name, $this->_cacheEvents ) )
+      $_objID = (int) $objectID;
+      if ( $_objID < 0 )
       {
-         $this->_cacheEvents[ $_name ] = new CacheEvent( $_name );
+         $_objID = 0;
       }
-      return $this->_cacheEvents[ $_name ];
+
+      $key = $_name . $_objID;
+      if ( \array_key_exists( $key, $this->_cacheEvents ) )
+      {
+         return $this->_cacheEvents[ $key ];
+      }
+      else
+      {
+         $event = new CacheEvent( $_name, $_objID );
+         $this->_cacheEvents[ $key ] = $event;
+         return $event;
+      }
    }
 
    protected function _forward( $uri )
@@ -345,14 +362,14 @@ abstract class Controller extends LzxCtrler
          throw new \Exception( 'invalid value for number of items per page: ' . $nPerPage );
       }
 
-      $pageNo = $this->request->get[ 'page' ] ? (int) $this->request->get[ 'page' ] : 1;
+      $pageNo = (int) $this->request->get[ 'p' ];
       $pageCount = $nTotal > 0 ? \ceil( $nTotal / $nPerPage ) : 1;
       if ( $pageNo < 1 || $pageNo > $pageCount )
       {
          $pageNo = $pageCount;
       }
 
-      return [$pageNo, $pageCount ];
+      return [ $pageNo, $pageCount ];
    }
 
    protected function _getUserLinks( $activeLink )

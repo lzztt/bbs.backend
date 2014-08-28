@@ -218,7 +218,7 @@ class HomeCtrler extends Home
          foreach ( (new Node() )->getLatestForumTopicReplies( $this->_forumRootID[ $this->site ], 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
-               'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],
+               'uri' => '/node/' . $n[ 'nid' ] . '?p=l#comment' . $n[ 'last_cid' ],
                'text' => $n[ 'title' ] ];
          }
          $ul = $this->_linkNodeList( $arr, $ulCache );
@@ -239,7 +239,7 @@ class HomeCtrler extends Home
          foreach ( (new Node() )->getLatestYellowPageReplies( $this->_ypRootID[ $this->site ], 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
-               'uri' => '/node/' . $n[ 'nid' ] . '?page=last#comment' . $n[ 'last_cid' ],
+               'uri' => '/node/' . $n[ 'nid' ] . '?p=l#comment' . $n[ 'last_cid' ],
                'text' => $n[ 'title' ] ];
          }
          $ul = $this->_linkNodeList( $arr, $ulCache );
