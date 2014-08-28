@@ -20,7 +20,7 @@ class NodeCtrler extends Node
       $method = '_display' . $type;
       $this->$method( $nid );
 
-      $this->_getCacheEvent( 'NodeUpdate' . $nid )->addListener( $this->cache );
+      $this->_getCacheEvent( 'NodeUpdate', $nid )->addListener( $this->cache );
    }
 
    private function _displayForumTopic( $nid )

@@ -37,6 +37,7 @@ class PageCache extends Cache
 
          // unlink existing parent cache nodes
          self::$_handler->unlinkParents( $this->_id );
+         self::$_handler->unlinkEvents( $this->_id );
 
          // update self
          if ( $this->_deleted )

@@ -28,7 +28,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1409095436.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1409191409.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -44,7 +44,7 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_md.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1409095436.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1409191409.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
@@ -66,10 +66,9 @@
          </header>
          <nav id='page_navbar' class='hidden'>
             <ul class="sf-menu" style="display: inline-block; float: right;">
-               <li class='v_user'><a><?php print $username; ?></a></li>
-               <li class='v_user'><a id="pm" href="/pm/mailbox">短信</a></li>
+               <li class='v_user'><a id='username' href="/user">我的账户</a></li>
+               <li class='v_user'><a id='pm' href="/pm/mailbox">短信</a></li>
                <li class='v_user'><a href="/user/bookmark">收藏夹</a></li>
-               <li class='v_user'><a href="/user">我的账户</a></li>
                <li class='v_user'><a href="/password/change">更改密码</a></li>
                <li class='v_user'><a  href="/user/logout">登出</a></li>
                <li class='v_guest'><a href="/user/login">登录</a></li>
