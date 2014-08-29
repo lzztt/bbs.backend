@@ -44,6 +44,7 @@ abstract class Controller extends LzxCtrler
    const AUSTIN = 'austin';
 
    private static $_requestProcessed = FALSE;
+   private static $_cacheHandler;
    public $user = NULL;
    public $args;
    public $id;
@@ -85,6 +86,15 @@ abstract class Controller extends LzxCtrler
                $this->site = self::HOUSTON;
          }
          Template::setSite( $this->site );
+
+         self::$_cacheHandler = CacheHandler::getInstance();
+         switch ( $this->site )
+         {
+            case self::DALLAS:
+            case self::AUSTIN:
+               self::$_cacheHandler->setCacheTreeTable( self::$_cacheHandler->getCacheTreeTable() . '_' . $this->site );
+               self::$_cacheHandler->setCacheEventTable( self::$_cacheHandler->getCacheEventTable() . '_' . $this->site );
+         }
 
          // update user info
          if ( $this->request->uid > 0 )
@@ -208,15 +218,14 @@ abstract class Controller extends LzxCtrler
     */
    protected function _getIndependentCache( $key )
    {
-      $cacheHandler = CacheHandler::getInstance();
-      $_key = $cacheHandler->getCleanName( $key );
+      $_key = self::$_cacheHandler->getCleanName( $key );
       if ( \array_key_exists( $_key, $this->_independentCacheList ) )
       {
          return $this->_independentCacheList[ $_key ];
       }
       else
       {
-         $cache = $cacheHandler->createCache( $_key );
+         $cache = self::$_cacheHandler->createCache( $_key );
          $this->_independentCacheList[ $_key ] = $cache;
          return $cache;
       }
@@ -228,8 +237,7 @@ abstract class Controller extends LzxCtrler
     */
    protected function _getCacheEvent( $name, $objectID = 0 )
    {
-      $cacheHandler = CacheHandler::getInstance();
-      $_name = $cacheHandler->getCleanName( $name );
+      $_name = self::$_cacheHandler->getCleanName( $name );
       $_objID = (int) $objectID;
       if ( $_objID < 0 )
       {

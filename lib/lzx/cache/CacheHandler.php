@@ -50,9 +50,14 @@ class CacheHandler implements CacheHandlerInterface
       return $instance;
    }
 
-   public function setCacheNameTable( $nameTable )
+   public function getCacheTreeTable()
    {
-      $this->_tName = $nameTable;
+      return $this->_tTree;
+   }
+
+   public function getCacheEventTable()
+   {
+      return $this->_tEvent;
    }
 
    public function setCacheTreeTable( $treeTable )
