@@ -25,8 +25,8 @@ class LogoutCtrler extends User
       //session_destroy();
       $this->session->clear(); // keep session record but clear the whole $_SESSION variable
       $this->cookie->uid = 0;
-      $this->cookie->urole = Template::UROLE_GUEST;
-      unset( $this->cookie->pmCount );
+      $this->cookie->urole = NULL;
+      $this->cookie->pmCount = 0;
       $this->pageRedirect( '/' );
    }
 

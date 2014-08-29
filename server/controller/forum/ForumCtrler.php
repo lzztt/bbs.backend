@@ -110,7 +110,7 @@ class ForumCtrler extends Forum
          'pager' => $pager,
          'nodes' => (empty( $nodes ) ? NULL : $nodes),
          'editor' => $editor,
-         'ajaxURI' => '/forum/ajax/viewcount?type=json&tid=' . $tid . '&nids=' . \implode( '_', $nids ) . '&nosession',
+         'ajaxURI' => '/forum/ajax/viewcount?tid=' . $tid . '&nids=' . \implode( '_', $nids ) . '',
       ];
       $this->html->var[ 'content' ] = new Template( 'topic_list', $contents );
    }
