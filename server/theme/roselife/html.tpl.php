@@ -52,6 +52,7 @@
       <meta name='description' content='<?php print $head_description; ?>'> 
    </head>
    <body>
+      <a style="display:none; position:absolute; z-index:-999; top:-999px; left:-999px;" href="http://www.dallasbbs.com">缤纷达拉斯</a>
       <div id='page'>
          <header id='page_header'>
             <div id="logo_div">

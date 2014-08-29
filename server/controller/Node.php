@@ -34,8 +34,8 @@ abstract class Node extends Controller
 
       if ( !\array_key_exists( $rootTagID, $types ) )
       {
-         $this->logger->error( 'wrong root tag : nid = ' . $nid );
-         $this->error( 'wrong node type' );
+         //$this->logger->error( 'wrong root tag : nid = ' . $nid );
+         $this->pageNotFound( 'wrong node type' );
       }
 
       return [$nid, $types[ $rootTagID ] ];
