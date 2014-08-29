@@ -9,12 +9,6 @@ use lzx\core\Controller;
 class Template
 {
 
-   const UMODE_PC = 'pc';
-   const UMODE_MOBILE = 'mobile';
-   const UMODE_ROBOT = 'robot';
-   const UROLE_GUEST = 'guest';
-   const UROLE_USER = 'user';
-   const UROLE_ADM = 'adm';
    const EVEN_ODD_CLASS = 'even_odd_parent';
 
    public static $path;

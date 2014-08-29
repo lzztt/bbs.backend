@@ -61,7 +61,7 @@ class YPCtrler extends YP
          'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'nodes' => (empty( $nodes ) ? NULL : $nodes),
-         'ajaxURI' => '/yp/ajax/viewcount?type=json&tid=' . $tid . '&nids=' . \implode( '_', $nids ) . '&nosession',
+         'ajaxURI' => '/yp/ajax/viewcount?tid=' . $tid . '&nids=' . \implode( '_', $nids ) . '',
       ];
       $this->html->var[ 'content' ] = new Template( 'yp_list', $contents );
    }
