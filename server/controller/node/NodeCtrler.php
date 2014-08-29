@@ -57,7 +57,7 @@ class NodeCtrler extends Node
          'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
-         'ajaxURI' => '/node/ajax/viewcount?type=json&nid=' . $nid . '&nosession',
+         'ajaxURI' => '/node/ajax/viewcount?nid=' . $nid . '',
       ];
 
       $posts = [ ];
@@ -157,11 +157,11 @@ class NodeCtrler extends Node
 
       if ( !\array_key_exists( $info[ 'uid' ], $authorPanels ) )
       {
-         $authorPanelCache = $this->_getIndependentCache( 'authorPanel' . $info[ 'uid' ] );
+         $authorPanelCache = $this->_getIndependentCache( 'ap' . $info[ 'uid' ] );
          $authorPanel = $authorPanelCache->fetch();
          if ( !$authorPanel )
          {
-            $info[ 'joinTime' ] = date( 'm/d/Y', $info[ 'join_time' ] );
+            $info[ 'joinTime' ] = \date( 'm/d/Y', $info[ 'join_time' ] );
             $info[ 'sex' ] = isset( $info[ 'sex' ] ) ? ($info[ 'sex' ] == 1 ? '男' : '女') : '未知';
             if ( empty( $info[ 'avatar' ] ) )
             {
@@ -264,7 +264,7 @@ class NodeCtrler extends Node
          'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
-         'ajaxURI' => '/node/ajax/viewcount?type=json&nid=' . $nid . '&nosession',
+         'ajaxURI' => '/node/ajax/viewcount?nid=' . $nid . '',
       ];
 
       $node[ 'type' ] = 'node';
