@@ -100,7 +100,7 @@ class WebApp extends App
 
       // config cache
       CacheHandler::$path = $this->config->path[ 'cache' ];
-      $cacheHandler = CacheHandler::getInstance();
+      $cacheHandler = CacheHandler::getInstance( $db );
       Cache::setHandler( $cacheHandler );
       CacheEvent::setHandler( $cacheHandler );
       Cache::setLogger( $this->logger );

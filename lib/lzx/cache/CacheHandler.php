@@ -14,9 +14,9 @@ class CacheHandler implements CacheHandlerInterface
    static public $path;
    protected $_db;
 
-   private function __construct()
+   private function __construct( DB $db )
    {
-      $this->_db = DB::getInstance();
+      $this->_db = $db;
    }
 
    /**
@@ -25,13 +25,20 @@ class CacheHandler implements CacheHandlerInterface
     * @staticvar self $instance
     * @return \lzx\cache\CacheHandler
     */
-   public static function getInstance()
+   public static function getInstance( DB $db = NULL )
    {
       static $instance;
 
       if ( !isset( $instance ) )
       {
-         $instance = new self();
+         if ( $db )
+         {
+            $instance = new self( $db );
+         }
+         else
+         {
+            throw new \Exception( 'no instance is available. a DB object is required for creating a new instance.' );
+         }
       }
       return $instance;
    }
