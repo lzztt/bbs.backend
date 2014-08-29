@@ -19,7 +19,7 @@
    <header>最新黄页</header><?php print $latestYellowPages; ?></section><section class="items">
    <header>最新黄页回复</header><?php print $latestYellowPageReplies; ?></section><section class="items">
    <header>签证移民信息</header><?php print $latestImmigrationPosts; ?></section>
-<div id='site_stat' class='ajax_load' data-ajax='/home/ajax/stat?type=json&nosession'>
+<div id='site_stat' class='ajax_load' data-ajax='/home/ajax/stat'>
    <div>当前在线用户：<span class='ajax_onlineCount'></span> (<span class='ajax_onlineUserCount'></span> 用户| <span class='ajax_onlineGuestCount'></span> 访客)</div>
    <div><span class='ajax_onlineUsers'></span></div>
    <div>统计</div>

@@ -43,6 +43,7 @@ abstract class Controller extends LzxCtrler
    const DALLAS = 'dallas';
    const AUSTIN = 'austin';
 
+   private static $_requestProcessed = FALSE;
    public $user = NULL;
    public $args;
    public $id;
@@ -67,28 +68,49 @@ abstract class Controller extends LzxCtrler
    {
       parent::__construct( $req, $html, $logger, $session, $cookie );
 
-      switch ( $this->request->domain )
+      if ( !self::$_requestProcessed )
       {
-         case 'www.dallasbbs.com':
-         case 'www.dallasbbs-test.com':
-            $this->site = self::DALLAS;
-            break;
-         case 'www.austinbbs.com':
-         case 'www.austinbbs-test.com':
-            $this->site = self::AUSTIN;
-            break;
-         default :
-            $this->site = self::HOUSTON;
-      }
-      Template::setSite( $this->site );
+         // set site info
+         switch ( $this->request->domain )
+         {
+            case 'www.dallasbbs.com':
+            case 'www.dallasbbs-test.com':
+               $this->site = self::DALLAS;
+               break;
+            case 'www.austinbbs.com':
+            case 'www.austinbbs-test.com':
+               $this->site = self::AUSTIN;
+               break;
+            default :
+               $this->site = self::HOUSTON;
+         }
+         Template::setSite( $this->site );
 
+         // update user info
+         if ( $this->request->uid > 0 )
+         {
+            $this->user = new User( $this->request->uid, NULL );
+            // update access info
+            $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
+            // check new pm message
+            $pmCount = $this->user->getPrivMsgsCount( 'new' );
+            if ( $pmCount != $this->cookie->pmCount )
+            {
+               $this->cookie->pmCount = (int) $pmCount;
+            }
+         }
+
+         self::$_requestProcessed = TRUE;
+      }
+
+      // language info
       $this->config = $config;
       if ( !\array_key_exists( $this->class, self::$l ) )
       {
          $lang_file = $lang_path . \str_replace( '\\', '/', $this->_class ) . '.' . Template::$language . '.php';
          if ( \is_file( $lang_file ) )
          {
-            include $lang_file;
+            include_once $lang_file;
          }
          self::$l[ $this->_class ] = isset( $language ) ? $language : [ ];
       }
@@ -124,18 +146,6 @@ abstract class Controller extends LzxCtrler
     */
    public function update( Template $html )
    {
-      // update user info
-      if ( $this->request->uid > 0 )
-      {
-         $this->user = new User( $this->request->uid, 'username' );
-         // update access info
-         $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
-         // check new pm message
-         $this->cookie->pmCount = (int) $this->user->getPrivMsgsCount( 'new' );
-         $this->cookie->send();
-         $html->var[ 'username' ] = $this->user->username;
-      }
-
       // set navbar
       $navbarCache = $this->_getIndependentCache( 'page_navbar' );
       $navbar = $navbarCache->fetch();
@@ -241,6 +251,7 @@ abstract class Controller extends LzxCtrler
 
    protected function _forward( $uri )
    {
+      $this->html->detach( $this );
       $newReq = clone $this->request;
       $newReq->uri = $uri;
       $ctrler = ControllerRouter::create( $newReq, $this->html, $this->config, $this->logger, $this->session, $this->cookie );

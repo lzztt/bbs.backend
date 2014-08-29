@@ -31,6 +31,9 @@ require_once \dirname( __DIR__ ) . '/lib/lzx/App.php';
 class WebApp extends App
 {
 
+   const UMODE_BROWSER = 'browser';
+   const UMODE_ROBOT = 'robot';
+
    protected $config;
 
    public function __construct()
@@ -103,28 +106,12 @@ class WebApp extends App
       Cache::setLogger( $this->logger );
 
       // initialize cookie and session
-      if ( !\array_key_exists( 'nosession', $request->get ) )
-      {
-         // get cookie
-         $cookie = $this->getCookie();
-
-         // start session
-         $session = $this->getSession( $cookie );
-      }
-      else
-      {
-         // get fake cookie and session, when "nosession" option appears in uri
-         $cookie = Cookie::getInstance();
-         $cookie->setNoSend();
-         $cookie->uid = 0;
-         $cookie->urole = Template::UROLE_GUEST;
-
-         $session = Session::getInstance( NULL );
-      }
+      $cookie = $this->getCookie();
+      $session = $this->getSession( $cookie );
 
       // set user info for logger
       $userinfo = 'uid=' . $session->uid
-         . ' umode=' . $this->getUmode( $cookie )
+         . ' umode=' . $this->_getUmode( $cookie )
          . ($cookie->urole ? ' urole=' . $cookie->urole : '');
       $this->logger->setUserInfo( $userinfo );
 
@@ -250,7 +237,7 @@ class WebApp extends App
    /**
     * @param Cookie $cookie
     */
-   private function getUmode( Cookie $cookie )
+   private function _getUmode( Cookie $cookie )
    {
       static $umode;
 
@@ -258,22 +245,16 @@ class WebApp extends App
       {
          $umode = $cookie->umode;
 
-         if ( !\in_array( $umode, [Template::UMODE_PC, Template::UMODE_MOBILE, Template::UMODE_ROBOT ] ) )
+         if ( !\in_array( $umode, [ self::UMODE_ROBOT, self::UMODE_BROWSER ] ) )
          {
             $agent = $_SERVER[ 'HTTP_USER_AGENT' ];
             if ( \preg_match( '/(http|Yahoo|bot|pider)/i', $agent ) )
             {
-               $umode = Template::UMODE_ROBOT;
-               //}if ($http_user_agent ~ '(http|Yahoo|bot)') {
-            }
-            elseif ( \preg_match( '/(iPhone|Android|BlackBerry)/i', $agent ) )
-            {
-               // if ($http_user_agent ~ '(iPhone|Android|BlackBerry)') {
-               $umode = Template::UMODE_MOBILE;
+               $umode = self::UMODE_ROBOT;
             }
             else
             {
-               $umode = Template::UMODE_PC;
+               $umode = self::UMODE_BROWSER;
             }
             $cookie->umode = $umode;
          }
@@ -306,9 +287,9 @@ class WebApp extends App
 
       if ( !isset( $session ) )
       {
-         $umode = $this->getUmode( $cookie );
+         $umode = $this->_getUmode( $cookie );
 
-         if ( $umode == Template::UMODE_ROBOT )
+         if ( $umode == self::UMODE_ROBOT )
          {
             $handler = NULL;
          }
@@ -351,12 +332,12 @@ class WebApp extends App
 
          $cookie = Cookie::getInstance();
 
-         // check cookie for robot agent
-         $umode = $this->getUmode( $cookie );
-         if ( $umode == Template::UMODE_ROBOT && ($cookie->uid != 0 || isset( $cookie->urole )) )
+         // check cookie for robot agent, mark as guest
+         $umode = $this->_getUmode( $cookie );
+         if ( $umode == self::UMODE_ROBOT && $cookie->uid != 0 )
          {
+            $cookie->setNoSend();
             $cookie->uid = 0;
-            unset( $cookie->urole );
          }
 
          // check role for guest
