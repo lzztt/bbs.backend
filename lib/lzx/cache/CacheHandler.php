@@ -13,10 +13,17 @@ class CacheHandler implements CacheHandlerInterface
 
    static public $path;
    protected $_db;
+   // Cache tables
+   protected $_tName;
+   protected $_tTree;
+   protected $_tEvent;
 
    private function __construct( DB $db )
    {
       $this->_db = $db;
+      $this->_tName = 'cache_names';
+      $this->_tTree = 'cache_tree';
+      $this->_tEvent = 'cache_event_listeners';
    }
 
    /**
@@ -41,6 +48,21 @@ class CacheHandler implements CacheHandlerInterface
          }
       }
       return $instance;
+   }
+
+   public function setCacheNameTable( $nameTable )
+   {
+      $this->_tName = $nameTable;
+   }
+
+   public function setCacheTreeTable( $treeTable )
+   {
+      $this->_tTree = $treeTable;
+   }
+
+   public function setCacheEventTable( $eventTable )
+   {
+      $this->_tEvent = $eventTable;
    }
 
    /**
@@ -158,12 +180,12 @@ class CacheHandler implements CacheHandlerInterface
       }
 
       // found from database
-      $res = $this->_db->query( 'SELECT id FROM cache_names WHERE name = :key', [ ':key' => $name ] );
+      $res = $this->_db->query( 'SELECT id FROM ' . $this->_tName . ' WHERE name = :key', [ ':key' => $name ] );
       switch ( \count( $res ) )
       {
          case 0:
             // add to database
-            $this->_db->query( 'INSERT INTO cache_names (name) VALUEs (:key)', [ ':key' => $name ] );
+            $this->_db->query( 'INSERT INTO ' . $this->_tName . ' (name) VALUEs (:key)', [ ':key' => $name ] );
             // save to id cache
             $id = (int) $this->_db->insert_id();
             break;
@@ -182,7 +204,7 @@ class CacheHandler implements CacheHandlerInterface
 
    public function unlinkParents( $id )
    {
-      $this->_db->query( 'DELETE FROM cache_tree WHERE cid = :cid', [ ':cid' => $id ] );
+      $this->_db->query( 'DELETE FROM ' . $this->_tTree . ' WHERE cid = :cid', [ ':cid' => $id ] );
    }
 
    public function linkParents( $id, array $parents )
@@ -191,7 +213,7 @@ class CacheHandler implements CacheHandlerInterface
       {
          \array_unique( $parents );
 
-         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(pid) AS id FROM cache_tree WHERE cid = :cid', [ ':cid' => $id ] ), 'id' );
+         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(pid) AS id FROM ' . $this->_tTree . ' WHERE cid = :cid', [ ':cid' => $id ] ), 'id' );
          $values = [ ];
          foreach ( $parents as $key )
          {
@@ -204,14 +226,14 @@ class CacheHandler implements CacheHandlerInterface
 
          if ( $values )
          {
-            $this->_db->query( 'INSERT INTO cache_tree VALUES ' . \implode( ',', $values ) );
+            $this->_db->query( 'INSERT INTO ' . $this->_tTree . ' VALUES ' . \implode( ',', $values ) );
          }
       }
    }
 
    public function getChildren( $id )
    {
-      $children = $this->_db->query( 'SELECT id, name FROM cache_names WHERE id IN (SELECT DISTINCT(cid) FROM cache_tree WHERE pid = :pid)', [ ':pid' => $id ] );
+      $children = $this->_db->query( 'SELECT id, name FROM ' . $this->_tName . ' WHERE id IN (SELECT DISTINCT(cid) FROM ' . $this->_tTree . ' WHERE pid = :pid)', [ ':pid' => $id ] );
       foreach ( $children as $c )
       {
          $this->_ids[ $c[ 'name' ] ] = $c[ 'id' ];
@@ -222,12 +244,12 @@ class CacheHandler implements CacheHandlerInterface
 
    public function unlinkEvents( $id )
    {
-      $this->_db->query( 'DELETE FROM cache_event_listeners WHERE lid = :lid', [ ':lid' => $id ] );
+      $this->_db->query( 'DELETE FROM ' . $this->_tEvent . ' WHERE lid = :lid', [ ':lid' => $id ] );
    }
 
    public function getEventListeners( $eid, $oid )
    {
-      $children = $this->_db->query( 'SELECT id, name FROM cache_names WHERE id IN (SELECT DISTINCT(lid) FROM cache_event_listeners WHERE eid = :eid AND oid = :oid)', [ ':eid' => $eid, ':oid' => $oid ] );
+      $children = $this->_db->query( 'SELECT id, name FROM ' . $this->_tName . ' WHERE id IN (SELECT DISTINCT(lid) FROM ' . $this->_tEvent . ' WHERE eid = :eid AND oid = :oid)', [ ':eid' => $eid, ':oid' => $oid ] );
       foreach ( $children as $c )
       {
          $this->_ids[ $c[ 'name' ] ] = $c[ 'id' ];
@@ -242,7 +264,7 @@ class CacheHandler implements CacheHandlerInterface
       {
          \array_unique( $listeners );
 
-         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(lid) AS id FROM cache_event_listeners WHERE eid = :eid AND oid = :oid', [ ':eid' => $eid, ':oid' => $oid ] ), 'id' );
+         $existing = \array_column( $this->_db->query( 'SELECT DISTINCT(lid) AS id FROM ' . $this->_tEvent . ' WHERE eid = :eid AND oid = :oid', [ ':eid' => $eid, ':oid' => $oid ] ), 'id' );
          $values = [ ];
          foreach ( $listeners as $key )
          {
@@ -255,7 +277,7 @@ class CacheHandler implements CacheHandlerInterface
 
          if ( $values )
          {
-            $this->_db->query( 'INSERT INTO cache_event_listeners VALUES ' . \implode( ',', $values ) );
+            $this->_db->query( 'INSERT INTO ' . $this->_tEvent . ' VALUES ' . \implode( ',', $values ) );
          }
       }
    }
