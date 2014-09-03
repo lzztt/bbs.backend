@@ -23,25 +23,27 @@ class DeleteCtrler extends Comment
          $this->pageForbidden();
       }
 
-      $node = new Node( $comment->nid, 'tid' );
-      $this->_getIndependentCache( '/node/' . $node->id )->delete();
+      $this->_getCacheEvent( 'NodeUpdate', $comment->nid )->trigger();
 
-      if ( \in_array( $node->tid, ( new Tag( $this->_forumRootID[$this->site], NULL ) )->getLeafTIDs() ) ) // forum tag
+      $node = new Node( $comment->nid, 'tid' );
+      if ( \in_array( $node->tid, ( new Tag( $this->_forumRootID[ $this->site ], NULL ) )->getLeafTIDs() ) ) // forum tag
       {
-         $this->_getIndependentCache( '/forum/' . $node->tid )->delete();
+         $this->_getCacheEvent( 'ForumComment' )->trigger();
+         $this->_getCacheEvent( 'ForumUpdate', $node->tid )->trigger();
       }
 
-      if ( \in_array( $node->tid, ( new Tag( $this->_ypRootID[$this->site], NULL ) )->getLeafTIDs() ) ) // yellow page tag
+      if ( \in_array( $node->tid, ( new Tag( $this->_ypRootID[ $this->site ], NULL ) )->getLeafTIDs() ) ) // yellow page tag
       {
-         $c = new CommentObject();
-         $c->nid = $comment->nid;
-         $c->uid = $comment->uid;
-         if ( $c->getCount() == 0 )
-         {
-            $node = new Node();
-            $node->deleteRating( $comment->nid, $comment->uid );
-         }
-         $this->_getIndependentCache( 'latestYellowPageReplies' )->delete();
+         $this->_getCacheEvent( 'YellowPageComment', $node->tid )->trigger();
+         /*
+           $c = new CommentObject();
+           $c->nid = $comment->nid;
+           $c->uid = $comment->uid;
+           if ( $c->getCount() == 0 )
+           {
+           $node = new Node();
+           $node->deleteRating( $comment->nid, $comment->uid );
+           } */
       }
 
       $user = new User( $comment->uid, 'points' );
