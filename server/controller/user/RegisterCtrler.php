@@ -58,7 +58,6 @@ class RegisterCtrler extends User
          }
          catch ( \PDOException $e )
          {
-            $this->logger->error( $e->getMessage(), $e->getTrace() );
             $this->error( $e->errorInfo[ 2 ] );
          }
          // create user action and send out email

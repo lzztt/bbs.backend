@@ -225,7 +225,7 @@ class User extends DBObject
                $count = \array_pop( \array_pop( $this->call( 'get_user_post_count(' . $this->id . ',' . $oneday . ')' ) ) );
                if ( $count >= $days )
                {
-                  throw new \Exception( 'Quota limitation reached!<br />Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours. <br /> You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.' );
+                  throw new \Exception( 'Quota limitation reached for non-Texas user!<br>Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours.<br>You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.' );
                }
             }
          }
