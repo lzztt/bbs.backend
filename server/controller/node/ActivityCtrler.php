@@ -99,6 +99,8 @@ class ActivityCtrler extends Node
 
          $activity = new Activity();
          $activity->addActivity( $nid, $startTime, $endTime );
+         
+         $this->_getIndependentCache('recentActivities')->delete();
 
          $this->html->var[ 'content' ] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
       }
