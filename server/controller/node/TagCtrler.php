@@ -37,7 +37,6 @@ class TagCtrler extends Node
          }
 
          $this->pageRedirect( '/node/' . $nid );
-         return;
       }
       else
       {
