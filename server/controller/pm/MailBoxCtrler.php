@@ -26,7 +26,9 @@ class MailBoxCtrler extends PM
 
       $mailBoxLinks = $this->_getMailBoxLinks( '/pm/mailbox/' . $mailbox );
 
-      list($pageNo, $pager) = $this->_getPager( $pmCount, $activeLink );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $pmCount, self::TOPIC_PER_PAGE );
+      $pager = $this->html->pager( $pageNo, $pageCount, $activeLink );
+      
       $msgs = $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE );
 
       $thead = ['cells' => ['短信', '联系人', '时间' ] ];
@@ -45,21 +47,6 @@ class MailBoxCtrler extends PM
       ];
 
       $this->html->var[ 'content' ] = new Template( 'pm_list', $content );
-   }
-
-   protected function _getPager( $pmCount, $link )
-   {
-      $pageNo = $this->request->get[ 'page' ] ? (int) $this->request->get[ 'page' ] : 1;
-      $pageCount = \ceil( $pmCount / self::TOPIC_PER_PAGE );
-
-      if ( $pageNo < 1 || $pageNo > $pageCount )
-      {
-         $pageNo = $pageCount;
-      }
-      return [
-         $pageNo,
-         $this->html->pager( $pageNo, $pageCount, $link )
-      ];
    }
 
 }
