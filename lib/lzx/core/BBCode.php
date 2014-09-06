@@ -30,7 +30,7 @@ class BBCode
       ];
 
       // convert url string to links
-      $text = \preg_replace( '#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text );
+      $text = \preg_replace( '#(?<=^|\s)(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text );
 
       // only process bbcode when seeing a colse tag
       if ( \strpos( $text, '[/' ) !== FALSE )
@@ -83,12 +83,12 @@ class BBCode
 
    private static function _youtube( $content, $param )
    {
-      return '<iframe width="480" height="360" src="http://www.youtube.com/embed/' . $content . '" frameborder="0" allowfullscreen></iframe>';
+      return '<iframe src="http://www.youtube.com/embed/' . $content . '" width="480" height="360" frameborder="0" allowfullscreen></iframe>';
    }
 
    private static function _googlemap( $content, $param )
    {
-      return '<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' . $content . '&f=d&source=s_d&output=embed"></iframe><br /><small><a href="' . $content . '" style="text-align:left">View Larger Map</a></small>';
+      return '<iframe src="' . $content . '" width="400" height="300" frameborder="0"></iframe>';
    }
 
 }
