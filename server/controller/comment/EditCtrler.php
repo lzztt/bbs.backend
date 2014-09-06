@@ -58,7 +58,7 @@ class EditCtrler extends Comment
          }
       }
 
-      $this->_getIndependentCache( '/node/' . $comment->nid )->delete();
+      $this->_getCacheEvent( 'NodeUpdate', $comment->nid )->trigger();
 
       $this->pageRedirect( $this->request->referer );
    }
