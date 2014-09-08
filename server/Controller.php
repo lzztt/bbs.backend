@@ -19,6 +19,8 @@ use site\dbobject\Tag;
 use site\dbobject\SecureLink;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
+use site\dbobject\City;
+use site\dbobject\Session as SessionObj;
 
 /**
  *
@@ -28,24 +30,24 @@ use lzx\cache\CacheHandler;
  * @property \lzx\core\Session $session
  * @property \lzx\core\Cookie $cookie
  * @property \site\Config $config
- * @property \site\dbobject\User $user
  * @property \site\PageCache $cache
  * @property \site\Cache[]  $_independentCacheList
  * @property \site\CacheEvent[] $_cacheEvents
+ * @property \site\dbobject\City $_city
  *
  */
 abstract class Controller extends LzxCtrler
 {
 
-   const GUEST_UID = 0;
-   const ADMIN_UID = 1;
+   const UID_GUEST = 0;
+   const UID_ADMIN = 1;
    const HOUSTON = 'houston';
    const DALLAS = 'dallas';
    const AUSTIN = 'austin';
 
+   protected static $_city;
    private static $_requestProcessed = FALSE;
    private static $_cacheHandler;
-   public $user = NULL;
    public $args;
    public $id;
    public $config;
@@ -72,38 +74,53 @@ abstract class Controller extends LzxCtrler
       if ( !self::$_requestProcessed )
       {
          // set site info
-         switch ( $this->request->domain )
-         {
-            case 'www.dallasbbs.com':
-            case 'www.dallasbbs-test.com':
-               $this->site = self::DALLAS;
-               break;
-            case 'www.austinbbs.com':
-            case 'www.austinbbs-test.com':
-               $this->site = self::AUSTIN;
-               break;
-            default :
-               $this->site = self::HOUSTON;
-         }
-         Template::setSite( $this->site );
+         $site = preg_replace( ['/\w*\./', '/bbs.*/' ], '', $this->request->domain, 1 );
+
+         Template::setSite( $site );
 
          self::$_cacheHandler = CacheHandler::getInstance();
-         switch ( $this->site )
+         self::$_cacheHandler->setCacheTreeTable( self::$_cacheHandler->getCacheTreeTable() . '_' . $site );
+         self::$_cacheHandler->setCacheEventTable( self::$_cacheHandler->getCacheEventTable() . '_' . $site );
+
+         // validate site for session
+         self::$_city = new City();
+         self::$_city->uriName = $site;
+         self::$_city->load();
+         if ( self::$_city->exists() )
          {
-            case self::DALLAS:
-            case self::AUSTIN:
-               self::$_cacheHandler->setCacheTreeTable( self::$_cacheHandler->getCacheTreeTable() . '_' . $this->site );
-               self::$_cacheHandler->setCacheEventTable( self::$_cacheHandler->getCacheEventTable() . '_' . $this->site );
+            $session = new SessionObj( \session_id() );
+            // not a robot
+            if ( $session->exists() )
+            {
+               if ( $session->cid == 0 )
+               {
+                  $session->cid = self::$_city->id;
+                  $session->update( 'cid' );
+               }
+               else
+               {
+                  // session city mismatch, clear current cookie and session
+                  if ( $session->cid != self::$_city->id )
+                  {
+                     $this->session->clear();
+                     $this->cookie->clear();
+                  }
+               }
+            }
+         }
+         else
+         {
+            $this->error( 'unsupported website: ' . $this->request->domain );
          }
 
          // update user info
          if ( $this->request->uid > 0 )
          {
-            $this->user = new User( $this->request->uid, NULL );
+            $user = new User( $this->request->uid, NULL );
             // update access info
-            $this->user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
+            $user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
             // check new pm message
-            $pmCount = $this->user->getPrivMsgsCount( 'new' );
+            $pmCount = $user->getPrivMsgsCount( 'new' );
             if ( $pmCount != $this->cookie->pmCount )
             {
                $this->cookie->pmCount = (int) $pmCount;
@@ -161,41 +178,31 @@ abstract class Controller extends LzxCtrler
       $navbar = $navbarCache->fetch();
       if ( !$navbar )
       {
-         if ( $this->site == self::HOUSTON )
+         if ( self::$_city->YPRootID )
          {
             $vars = [
-               'forumMenu' => $this->_createMenu( $this->_forumRootID[ $this->site ] ),
-               'ypMenu' => $this->_createMenu( $this->_ypRootID[ $this->site ] ),
-               'uid' => $this->request->uid
-            ];
-         }
-         elseif ( $this->site == self::DALLAS )
-         {
-            $vars = [
-               'forumMenu' => $this->_createMenu( $this->_forumRootID[ $this->site ] ),
+               'forumMenu' => $this->_createMenu( self::$_city->ForumRootID ),
+               'ypMenu' => $this->_createMenu( self::$_city->YPRootID ),
                'uid' => $this->request->uid
             ];
          }
          else
          {
-            $this->error( 'unsupport site: ' . $this->site );
+            $vars = [
+               'forumMenu' => $this->_createMenu( self::$_city->ForumRootID ),
+               'uid' => $this->request->uid
+            ];
          }
+
          $navbar = new Template( 'page_navbar', $vars );
          $navbarCache->store( $navbar );
       }
       $html->var[ 'page_navbar' ] = $navbar;
 
       // set headers
-      $html->var[ 'head_description' ] = '休斯顿 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, Houston Chinese, 休斯敦, 休士頓';
+      $html->var[ 'head_description' ] = self::$_city->name . ' 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, ' . self::$_city->uriName . ' Chinese';
 
-      if ( $this->site == self::HOUSTON )
-      {
-         $html->var[ 'head_title' ] = '缤纷休斯顿华人网';
-      }
-      elseif ( $this->site == self::DALLAS )
-      {
-         $html->var[ 'head_title' ] = '缤纷达拉斯华人网';
-      }
+      $html->var[ 'head_title' ] = '缤纷' . self::$_city->name . '华人网';
 
       // remove this controller from the subject's observer list
       $html->detach( $this );
@@ -341,11 +348,11 @@ abstract class Controller extends LzxCtrler
       $tree = $tag->getTagTree();
       $type = 'tag';
       $root_id = \array_shift( \array_keys( $tag->getTagRoot() ) );
-      if ( $this->_forumRootID[ $this->site ] == $root_id )
+      if ( self::$_city->ForumRootID == $root_id )
       {
          $type = 'forum';
       }
-      else if ( $this->_ypRootID[ $this->site ] == $root_id )
+      else if ( self::$_city->YPRootID == $root_id )
       {
          $type = 'yp';
       }

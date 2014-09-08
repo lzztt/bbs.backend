@@ -18,6 +18,7 @@ use lzx\core\Logger;
  * @property $path
  * @property $height
  * @property $width
+ * @property $cityID
  */
 class Image extends DBObject
 {
@@ -33,7 +34,8 @@ class Image extends DBObject
          'name' => 'name',
          'path' => 'path',
          'height' => 'height',
-         'width' => 'width'
+         'width' => 'width',
+         'cityID' => 'city_id'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
@@ -44,7 +46,7 @@ class Image extends DBObject
       {
          \unlink( $file );
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          $logger = Logger::getInstance();
          $logger->error( $e->getMessage() . ' : ' . $file );
@@ -147,7 +149,7 @@ class Image extends DBObject
                   \move_uploaded_file( $tmpFile, $savePath );
                }
             }
-            catch (\Exception $e)
+            catch ( \Exception $e )
             {
                if ( isset( $im ) )
                {
@@ -185,7 +187,7 @@ class Image extends DBObject
    {
       $orientation = $img->getImageOrientation();
 
-      switch ($orientation)
+      switch ( $orientation )
       {
          case \Imagick::ORIENTATION_BOTTOMRIGHT:
             $img->rotateimage( "#000", 180 ); // rotate 180 degrees 
@@ -239,14 +241,15 @@ class Image extends DBObject
                $info = \getimagesize( $filePath . $file[ 'path' ] );
                $width = $info[ 0 ];
                $height = $info[ 1 ];
-               $this->call( 'image_add(:nid, :cid, :name, :path, :height, :width)', [':nid' => $nid,
+               $this->call( 'image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [':nid' => $nid,
                   ':cid' => $cid,
                   ':name' => $file[ 'name' ],
                   ':path' => $file[ 'path' ],
                   ':height' => $height,
-                  ':width' => $width ] );
+                  ':width' => $width,
+                  ':city_id' => $this->cityID ] );
             }
-            catch (\Exception $e)
+            catch ( \Exception $e )
             {
                $logger = Logger::getInstance();
                $logger->error( $e->getMessage() );
@@ -261,9 +264,9 @@ class Image extends DBObject
       }
    }
 
-   public function getRecentImages()
+   public function getRecentImages( $city_id )
    {
-      return $this->call( 'get_recent_images()' );
+      return $this->call( 'get_recent_images(' . $city_id . ')' );
    }
 
 }

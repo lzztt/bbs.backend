@@ -12,7 +12,7 @@ class ChangeCtrler extends Password
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->_setLoginRedirect( $this->request->uri );
          $this->_displayLogin();
@@ -20,7 +20,7 @@ class ChangeCtrler extends Password
       }
 
       $uid = $this->id ? $this->id : $this->request->uid;
-      if ( $uid != $this->request->uid && $this->request->uid != self::ADMIN_UID )
+      if ( $uid != $this->request->uid && $this->request->uid != self::UID_ADMIN )
       {
          $this->pageForbidden();
       }
@@ -54,8 +54,9 @@ class ChangeCtrler extends Password
                // send an email to user
                $m = new Mailer();
                $m->to = $user->email;
-               $m->subject = '您在HoustonBBS网的密码已经更改成功';
-               $m->body = new Template( 'mail/password_changed' );
+               $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
+               $m->subject = '您在' . $siteName . '网的密码已经更改成功';
+               $m->body = new Template( 'mail/password_changed', [ 'sitename' => $siteName ] );
                $m->send();
 
                $this->html->var[ 'content' ] = '您的密码已经更改成功。';

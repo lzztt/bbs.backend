@@ -18,14 +18,14 @@ class HomeCtrler extends Home
    {
       $this->cache = new PageCache( $this->request->uri );
 
-      $func = '_' . $this->site . 'Home';
+      $func = '_' . self::$_city->uriName . 'Home';
       if ( \method_exists( $this, $func ) )
       {
          $this->$func();
       }
       else
       {
-         $this->error( 'unsupported site: ' . $this->site );
+         $this->error( 'unsupported site: ' . self::$_city->uriName );
       }
    }
 
@@ -47,7 +47,7 @@ class HomeCtrler extends Home
    // BEGIN DALLAS HOME
    private function _dallasHome()
    {
-      $tag = new Tag( $this->_forumRootID[ $this->site ], NULL );
+      $tag = new Tag( self::$_city->ForumRootID, NULL );
       $tagTree = $tag->getTagTree();
 
       $nodeInfo = [ ];
@@ -105,7 +105,7 @@ class HomeCtrler extends Home
       if ( !$ul )
       {
          $img = new Image();
-         $images = $img->getRecentImages();
+         $images = $img->getRecentImages( self::$_city->id );
          \shuffle( $images );
 
          $content[ 'images' ] = $images;
@@ -131,7 +131,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopics( $this->_forumRootID[ $this->site ], 15 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopics( self::$_city->ForumRootID, 15 ) as $n )
          {
             $arr[] = [ 'after' => \date( 'H:i', $n[ 'create_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -152,7 +152,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getHotForumTopics( $this->_forumRootID[ $this->site ], 15, $this->request->timestamp - 604800 ) as $n )
+         foreach ( (new Node() )->getHotForumTopics( self::$_city->ForumRootID, 15, $this->request->timestamp - 604800 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ],
@@ -173,7 +173,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPages( $this->_ypRootID[ $this->site ], 15 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPages( self::$_city->YPRootID, 15 ) as $n )
          {
             $arr[] = [ 'after' => \date( 'm/d', $n[ 'exp_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -215,7 +215,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopicReplies( $this->_forumRootID[ $this->site ], 15 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopicReplies( self::$_city->ForumRootID, 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?p=l#comment' . $n[ 'last_cid' ],
@@ -236,7 +236,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPageReplies( $this->_ypRootID[ $this->site ], 15 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPageReplies( self::$_city->YPRootID, 15 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?p=l#comment' . $n[ 'last_cid' ],

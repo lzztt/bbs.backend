@@ -27,7 +27,7 @@ abstract class Adm extends Controller
    {
       parent::__construct( $req, $html, $config, $logger, $session, $cookie );
 
-      if ( $this->request->uid !== self::ADMIN_UID )
+      if ( $this->request->uid !== self::UID_ADMIN )
       {
          $this->pageNotFound();
       }

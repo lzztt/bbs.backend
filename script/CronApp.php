@@ -82,6 +82,7 @@ class CronApp extends App
                'nid' => $a[ 'id' ],
                'title' => $a[ 'title' ],
                'username' => $a[ 'username' ],
+               'domain' => 'www.houstonbbs.com',
                'sitename' => 'HoustonBBS'
             ];
             $mailer->body = new Template( 'mail/activity', $contents );
@@ -99,6 +100,7 @@ class CronApp extends App
 
          // delete cache and reschedule next refresh time
          $cache->delete();
+         $cache->flush();
          $refreshTime = \is_readable( $refreshTimeFile ) ? (int) \file_get_contents( $refreshTimeFile ) : 0;
          $currentTime = (int) $_SERVER[ 'REQUEST_TIME' ];
          $newActivityStartTime = $activities[ 0 ][ 'start_time' ];
@@ -120,6 +122,7 @@ class CronApp extends App
          if ( $currentTime > $refreshTime )
          {
             $cache->delete();
+            $cache->flush();
             $this->updateActivityCacheRefreshTime( $refreshTimeFile, $db, $refreshTime, $currentTime );
          }
       }
@@ -212,7 +215,7 @@ class CronApp extends App
    // daily at 23:55 CDT
    protected function do_alexa()
    {
-      foreach ( ['houston', 'dallas' ] as $city )
+      foreach ( ['houston', 'dallas', 'austin' ] as $city )
       {
          $this->_updateAlexa( $city );
       }

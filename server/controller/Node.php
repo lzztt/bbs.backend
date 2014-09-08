@@ -13,8 +13,8 @@ abstract class Node extends Controller
    protected function _getNodeType()
    {
       $types = [
-         $this->_forumRootID[ $this->site ] => 'ForumTopic',
-         $this->_ypRootID[ $this->site ] => 'YellowPage',
+         self::$_city->ForumRootID => 'ForumTopic',
+         self::$_city->YPRootID => 'YellowPage',
       ];
 
       $nid = $this->id;

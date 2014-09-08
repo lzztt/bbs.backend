@@ -14,7 +14,7 @@ class ResetCtrler extends Password
     */
    public function run()
    {
-      if ( $this->request->uid != self::GUEST_UID )
+      if ( $this->request->uid != self::UID_GUEST )
       {
          $this->error( '错误：用户已经登录，不能重设密码。' );
       }

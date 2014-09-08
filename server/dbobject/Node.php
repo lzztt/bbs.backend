@@ -44,9 +44,9 @@ class Node extends DBObject
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
 
-   public function getForumNodeList( $tid, $limit = 25, $offset = 0 )
+   public function getForumNodeList( $cid, $tid, $limit = 25, $offset = 0 )
    {
-      return $this->call( 'get_tag_nodes_forum(' . $tid . ', ' . $limit . ', ' . $offset . ')' );
+      return $this->call( 'get_tag_nodes_forum(' . $cid . ', ' . $tid . ', ' . $limit . ', ' . $offset . ')' );
    }
 
    public function getForumNode( $id )
@@ -172,10 +172,10 @@ class Node extends DBObject
       return \intval( \array_pop( \array_pop( $this->call( 'get_tag_node_count("' . $tids . '")' ) ) ) );
    }
 
-   public function getNodeStat()
+   public function getNodeStat( $forumRootID )
    {
       $today = \strtotime( \date( "m/d/Y" ) );
-      $stats = \array_pop( $this->call( 'get_node_stat(' . $today . ')' ) );
+      $stats = \array_pop( $this->call( 'get_node_stat("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $today . ')' ) );
       return [
          'nodeCount' => $stats[ 'node_count_total' ],
          'nodeTodayCount' => $stats[ 'node_count_recent' ],

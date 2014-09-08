@@ -43,6 +43,7 @@ class EditCtrler extends Comment
       {
          $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
          $file = new Image();
+         $file->cityID = self::$_city->id;
          $file->updateFileList( $files, $this->config->path[ 'file' ], $comment->nid, $cid );
          $this->_getIndependentCache( 'imageSlider' )->delete();
       }

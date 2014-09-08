@@ -12,7 +12,7 @@ class ForgetCtrler extends Password
 
    public function run()
    {
-      if ( $this->request->uid != self::GUEST_UID )
+      if ( $this->request->uid != self::UID_GUEST )
       {
          $this->_forward( '/password/change' );
          return;
@@ -50,12 +50,14 @@ class ForgetCtrler extends Password
 
             $mailer = new Mailer();
             $mailer->to = $user->email;
-            $mailer->subject = $user->username . ' 请求重设HoustonBBS的帐号密码';
+            $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
+            $mailer->subject = $user->username . ' 请求重设' . $siteName . '的帐号密码';
             $contents = [
                'username' => $user->username,
                'uri' => (string) $this->_createSecureLink( $user->id, '/password/reset' ),
-               'sitename' => 'HoustonBBS'
-            ];var_dump($contents['uri']);
+               'domain' => $this->request->domain,
+               'sitename' => $siteName
+            ];
             $mailer->body = new Template( 'mail/password_reset', $contents );
             if ( $mailer->send() )
             {

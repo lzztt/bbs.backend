@@ -20,13 +20,13 @@ class AJAXCtrler extends Home
       try
       {
          $node = new Node();
-         $r = $node->getNodeStat();
+         $r = $node->getNodeStat( self::$_city->ForumRootID );
 
-         $r[ 'alexa' ] = \strval( new Template( 'alexa' ) );
+         $r[ 'alexa' ] = (string) new Template( 'alexa' );
 
 
          $user = new User();
-         $return = \array_merge( $r, $user->getUserStat( $this->request->timestamp - 300 ) );
+         $return = \array_merge( $r, $user->getUserStat( $this->request->timestamp - 300, self::$_city->id ) );
       }
       catch ( \Exception $e )
       {

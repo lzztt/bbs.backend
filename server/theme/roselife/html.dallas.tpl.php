@@ -29,7 +29,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1409974595.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1410152412.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -46,8 +46,8 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/main.dallas.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1409974595.css" rel="stylesheet" type="text/css">
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1409974595.dallas.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410152412.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410152412.dallas.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
@@ -78,7 +78,7 @@
          </nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
-            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@dallasbbs.com">admin@dallasbbs.com</a> | © 2009-2014 HoustonBBS 版权所有 | <a href='/term'>免责声明</a></div>
+            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@dallasbbs.com">admin@dallasbbs.com</a> | © 2014 DallasBBS 版权所有 | <a href='/term'>免责声明</a></div>
          </footer>
       </div>
    </body>
