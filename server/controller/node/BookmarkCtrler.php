@@ -12,7 +12,7 @@ class BookmarkCtrler extends Node
    public function run()
    {
 
-      if ( $this->request->uid == self::GUEST_UID || !$this->id )
+      if ( $this->request->uid == self::UID_GUEST || !$this->id )
       {
          $this->pageForbidden();
       }

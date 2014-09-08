@@ -12,7 +12,7 @@ class EditCtrler extends User
    //logged in user
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->_displayLogin( $this->request->uri );
          return;

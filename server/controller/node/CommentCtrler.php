@@ -14,7 +14,7 @@ class CommentCtrler extends Node
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->pageForbidden();
       }
@@ -102,6 +102,7 @@ class CommentCtrler extends Node
       if ( $this->request->post[ 'files' ] )
       {
          $file = new Image();
+         $file->cityID = self::$_city->id;
          $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $nid, $comment->id );
          $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       }
@@ -113,7 +114,7 @@ class CommentCtrler extends Node
       $this->_getCacheEvent( 'ForumComment' )->trigger();
       $this->_getCacheEvent( 'ForumUpdate', $node->tid )->trigger();
 
-      if ( \in_array( $nid, $node->getHotForumTopicNIDs( $this->_forumRootID[ $this->site ], 15, $this->request->timestamp - 604800 ) ) )
+      if ( \in_array( $nid, $node->getHotForumTopicNIDs( self::$_city->ForumRootID, 15, $this->request->timestamp - 604800 ) ) )
       {
          $this->_getIndependentCache( 'hotForumTopics' )->delete();
       }

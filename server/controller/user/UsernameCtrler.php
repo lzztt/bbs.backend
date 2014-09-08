@@ -12,7 +12,7 @@ class UsernameCtrler extends User
 
    public function run()
    {
-      if ( $this->request->uid != self::GUEST_UID )
+      if ( $this->request->uid != self::UID_GUEST )
       {
          $this->pageRedirect( '/user' );
       }
@@ -38,8 +38,9 @@ class UsernameCtrler extends User
 
             $mailer = new Mailer();
             $mailer->to = $user->email;
-            $mailer->subject = $user->username . 'HoustonBBS的账户名';
-            $mailer->body = '你在HoustonBBS的用户名是: ' . $user->username;
+            $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
+            $mailer->subject = $user->username . '在' . $siteName . '的用户名';
+            $mailer->body = '你在' . $siteName . '的用户名是: ' . $user->username;
 
             if ( $mailer->send() )
             {

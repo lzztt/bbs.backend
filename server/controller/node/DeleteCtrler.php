@@ -12,7 +12,7 @@ class DeleteCtrler extends Node
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->pageForbidden();
       }

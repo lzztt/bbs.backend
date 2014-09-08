@@ -11,7 +11,10 @@ class SearchCtrler extends Search
    public function run()
    {
       $this->cache = new PageCache( $this->request->uri );
-      
+
+      $searchEngineIDs = ['houston' => 'ff_lfzbzonw', 'dallas' => 'gznplywzy7a' ];
+      $seid = $searchEngineIDs[ self::$_city->uriName ];
+
       $html = <<<HTML
 <div id="cse-search-form">Loading</div>
 <style>
@@ -43,7 +46,7 @@ display:none !important;
 <script type="text/javascript">
   google.load('search', '1', {language : 'en'});
   google.setOnLoadCallback(function() {
-    var customSearchControl = new google.search.CustomSearchControl('011972505836335581212:ff_lfzbzonw');
+    var customSearchControl = new google.search.CustomSearchControl('011972505836335581212:$seid');
     customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
     var options = new google.search.DrawOptions();
     options.setSearchFormRoot('cse-search-form');
@@ -57,7 +60,7 @@ display:none !important;
 <div id="cse"></div>
 HTML;
 
-      $this->html->var['content'] = $html;
+      $this->html->var[ 'content' ] = $html;
    }
 
 }

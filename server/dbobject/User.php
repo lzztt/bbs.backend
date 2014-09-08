@@ -37,6 +37,7 @@ use lzx\db\DB;
  * @property $role
  * @property $badge
  * @property $points
+ * @property $cid
  */
 class User extends DBObject
 {
@@ -74,7 +75,8 @@ class User extends DBObject
          'type' => 'type',
          'role' => 'role',
          'badge' => 'badge',
-         'points' => 'points'
+         'points' => 'points',
+         'cid' => 'cid'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
@@ -146,14 +148,14 @@ class User extends DBObject
       return $nids;
    }
 
-   public function getRecentNodes( $limit )
+   public function getRecentNodes( $forumRootID, $limit )
    {
-      return $this->call( 'get_user_recent_nodes(' . $this->id . ',10)' );
+      return $this->call( 'get_user_recent_nodes("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $this->id . ', 10)'  );
    }
 
-   public function getRecentComments( $limit )
+   public function getRecentComments( $forumRootID, $limit )
    {
-      return $this->call( 'get_user_recent_comments(' . $this->id . ',10)' );
+      return $this->call( 'get_user_recent_comments("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $this->id . ', 10)'  );
    }
 
    public function getPrivMsgsCount( $mailbox = 'inbox' )
@@ -237,11 +239,11 @@ class User extends DBObject
       return $this->_isSpammer;
    }
 
-   public function getUserStat( $timestamp )
+   public function getUserStat( $timestamp, $cid )
    {
-      $stats = \array_pop( $this->call( 'get_user_stat(' . \strtotime( \date( "m/d/Y" ) ) . ')' ) );
+      $stats = \array_pop( $this->call( 'get_user_stat(' . \strtotime( \date( "m/d/Y" ) ) . ',' . $cid . ')' ) );
 
-      $onlines = $this->call( 'get_user_online(' . $timestamp . ')' );
+      $onlines = $this->call( 'get_user_online(' . $timestamp . ',' . $cid . ')' );
 
       $users = [ ];
       $guestCount = 0;
@@ -275,12 +277,12 @@ class User extends DBObject
    {
       $this->call( 'bookmark_add(' . $this->id . ',' . $nid . ')' );
    }
-   
+
    public function deleteBookmark( $nid )
    {
       $this->call( 'bookmark_delete(' . $this->id . ',' . $nid . ')' );
    }
-   
+
    public function listBookmark( $limit, $offset )
    {
       return $this->call( 'bookmark_list(' . $this->id . ',' . $limit . ',' . $offset . ')' );

@@ -28,7 +28,7 @@ class YPCtrler extends YP
 // $yp, $groups, $boards are arrays of category id
    protected function _ypHome()
    {
-      $tag = new Tag( $this->_ypRootID[$this->site], NULL );
+      $tag = new Tag( self::$_city->YPRootID, NULL );
       $yp = $tag->getTagTree();
       $this->html->var[ 'content' ] = new Template( 'yp_home', ['tid' => $tag->id, 'yp' => $yp ] );
    }
@@ -42,7 +42,7 @@ class YPCtrler extends YP
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_ypRootID[$this->site] ? '/yp' : ('/yp/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === self::$_city->YPRootID ? '/yp' : ('/yp/' . $i));
       }
 
       $node = new Node();

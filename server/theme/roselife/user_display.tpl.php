@@ -1,7 +1,7 @@
 <?php print $userLinks; ?>
 <div>
    <figure>
-      <img class="avatar" src="<?php print $avatar; ?>" alt="HoustonBBS的头像">
+      <img class="avatar" src="<?php print $avatar; ?>" alt="<?php print $username; ?>的头像">
       <figcaption><?php print $username; ?></figcaption>
       <?php if ( $pm ): ?>
          <a class="button" href="<?php print $pm; ?>">发送站内短信</a>

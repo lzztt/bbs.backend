@@ -58,6 +58,7 @@ class NodeCtrler extends YP
          if ( isset( $this->request->post[ 'files' ] ) )
          {
             $file = new Image();
+            $file->cityID = self::$_city->id;
             $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
          }
 

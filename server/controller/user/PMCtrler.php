@@ -15,7 +15,7 @@ class PMCtrler extends User
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->_displayLogin( $this->request->uri );
          return;
@@ -74,7 +74,7 @@ class PMCtrler extends User
          $mailer = new Mailer();
          $mailer->to = $user->email;
          $mailer->subject = $user->username . ' 您有一封新的站内短信';
-         $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://www.houstonbbs.com/pm/' . $pm->id;
+         $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://' . $this->request->domain . '/pm/' . $pm->id;
          if ( !$mailer->send() )
          {
             $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );

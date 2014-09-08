@@ -11,7 +11,7 @@ class UserCtrler extends User
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->_displayLogin( $this->request->uri );
          return;
@@ -19,7 +19,7 @@ class UserCtrler extends User
 
       $uid = $this->id ? $this->id : $this->request->uid;
       // user are not allowed to view ADMIN's info
-      if ( $uid == self::ADMIN_UID && $this->request->uid != self::ADMIN_UID )
+      if ( $uid == self::UID_ADMIN && $this->request->uid != self::UID_ADMIN )
       {
          $this->pageForbidden();
       }
@@ -65,8 +65,8 @@ class UserCtrler extends User
             '上次登录时间' => \date( 'm/d/Y H:i:s T', $user->lastAccessTime ),
             '上次登录地点' => $this->request->getLocationFromIP( $user->lastAccessIP )
          ],
-         'topics' => $user->getRecentNodes( 10 ),
-         'comments' => $user->getRecentComments( 10 )
+         'topics' => $user->getRecentNodes( self::$_city->ForumRootID, 10 ),
+         'comments' => $user->getRecentComments( self::$_city->ForumRootID, 10 )
       ];
 
       $this->html->var[ 'content' ] = new Template( 'user_display', $content );

@@ -72,7 +72,7 @@ class CacheHandler implements CacheHandlerInterface
 
    /**
     * Factory design patern
-    * @return \lzx\core\Cache
+    * @return \lzx\cache\Cache
     */
    public function createCache( $key )
    {
