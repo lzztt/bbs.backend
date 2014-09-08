@@ -19,7 +19,7 @@ abstract class PM extends Controller
    {
       parent::__construct( $req, $html, $config, $logger, $session, $cookie );
 
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->_dispayLogin( $this->request->uri );
       }

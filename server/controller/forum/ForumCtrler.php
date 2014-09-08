@@ -32,12 +32,12 @@ class ForumCtrler extends Forum
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[$this->site] ? '/forum' : ('/forum/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === self::$_city->ForumRootID ? '/forum' : ('/forum/' . $i));
       }
 
       $nodeInfo = [ ];
       $groupTrees = [ ];
-      if ( $tid == $this->_forumRootID[$this->site] )
+      if ( $tid == self::$_city->ForumRootID )
       {
          foreach ( $tagTree[ $tid ][ 'children' ] as $group_id )
          {
@@ -80,14 +80,14 @@ class ForumCtrler extends Forum
       $breadcrumb = [ ];
       foreach ( $tagRoot as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[$this->site] ? '/forum' : ('/forum/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === self::$_city->ForumRootID ? '/forum' : ('/forum/' . $i));
       }
 
       $node = new Node();
       list($pageNo, $pageCount) = $this->_getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, '/forum/' . $tid );
 
-      $nodes = $node->getForumNodeList( $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
+      $nodes = $node->getForumNodeList( self::$_city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
       $nids = \array_column( $nodes, 'id' );
       foreach ( $nodes as $i => $n )
       {

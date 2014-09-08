@@ -12,7 +12,7 @@ class RegisterCtrler extends User
 
    public function run()
    {
-      if ( $this->request->uid != self::GUEST_UID )
+      if ( $this->request->uid != self::UID_GUEST )
       {
          $this->error( '错误：用户已经登录，不能注册新用户' );
       }
@@ -52,6 +52,7 @@ class RegisterCtrler extends User
          $user->email = $this->request->post[ 'email' ];
          $user->createTime = $this->request->timestamp;
          $user->lastAccessIP = (int) \ip2long( $this->request->ip );
+         $user->cid = self::$_city->id;
          try
          {
             $user->add();
@@ -63,11 +64,13 @@ class RegisterCtrler extends User
          // create user action and send out email
          $mailer = new Mailer();
          $mailer->to = $user->email;
-         $mailer->subject = $user->username . ' 的HoustonBBS账户激活和设置密码链接';
+         $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
+         $mailer->subject = $user->username . ' 的' . $siteName . '账户激活和设置密码链接';
          $contents = [
             'username' => $user->username,
             'uri' => (string) $this->_createSecureLink( $user->id, '/user/activate' ),
-            'sitename' => 'HoustonBBS'
+            'domain' => $this->request->domain,
+            'sitename' => $siteName
          ];
          $mailer->body = new Template( 'mail/newuser', $contents );
 

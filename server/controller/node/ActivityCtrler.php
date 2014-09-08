@@ -13,7 +13,7 @@ class ActivityCtrler extends Node
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->pageForbidden();
       }
@@ -50,7 +50,7 @@ class ActivityCtrler extends Node
          $breadcrumb = [ ];
          foreach ( $tags as $i => $t )
          {
-            $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[$this->site] ? '/forum' : ('/forum/' . $i));
+            $breadcrumb[ $t[ 'name' ] ] = ($i === self::$_city->ForumRootID ? '/forum' : ('/forum/' . $i));
          }
          $breadcrumb[ $node->title ] = NULL;
 
@@ -88,7 +88,7 @@ class ActivityCtrler extends Node
          {
 
             $mailer = new Mailer();
-            $mailer->to = 'admin@houstonbbs.com';
+            $mailer->to = 'admin@' . $this->config->domain;
             $mailer->subject = '新活动 ' . $nid . ' 长于一天 (请检查)';
             $mailer->body = $node->title . ' : ' . \date( 'm/d/Y H:i', $startTime ) . ' - ' . \date( 'm/d/Y H:i', $endTime );
             if ( $mailer->send() === FALSE )

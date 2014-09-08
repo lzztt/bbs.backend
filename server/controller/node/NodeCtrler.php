@@ -40,7 +40,7 @@ class NodeCtrler extends Node
       $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_forumRootID[ $this->site ] ? '/forum' : ('/forum/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === self::$_city->ForumRootID ? '/forum' : ('/forum/' . $i));
       }
       $breadcrumb[ $node[ 'title' ] ] = NULL;
 
@@ -247,7 +247,7 @@ class NodeCtrler extends Node
       $breadcrumb = [ ];
       foreach ( $tags as $i => $t )
       {
-         $breadcrumb[ $t[ 'name' ] ] = ($i === $this->_ypRootID[ $this->site ] ? '/yp' : ('/yp/' . $i));
+         $breadcrumb[ $t[ 'name' ] ] = ($i === self::$_city->YPRootID ? '/yp' : ('/yp/' . $i));
       }
       $breadcrumb[ $node[ 'title' ] ] = NULL;
 

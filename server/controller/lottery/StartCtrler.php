@@ -12,7 +12,7 @@ class StartCtrler extends Lottery
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->html->var[ 'content' ] = '<div class="messagebox">您需要拥有HoustonBBS帐号，登录后才能开始正式抽奖<br />'
             . '<a class="bigbutton" href="/user/login">登录</a><a class="bigbutton" href="/user/register">注册</a></div>';
