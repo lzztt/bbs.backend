@@ -16,7 +16,7 @@ abstract class User extends Controller
    protected function _switchUser()
    {
       // switch to user from super user
-      if ( $this->session->uid == self::ADMIN_UID )
+      if ( $this->session->uid == self::UID_ADMIN )
       {
          if ( $this->id > 1 )
          {
@@ -43,7 +43,7 @@ abstract class User extends Controller
       {
          $suid = $this->session->suid;
          unset( $this->session->suid );
-         if ( $suid == self::ADMIN_UID )
+         if ( $suid == self::UID_ADMIN )
          {
             $user = new UserObject( $suid, 'username' );
             $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $user->username );

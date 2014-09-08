@@ -12,7 +12,7 @@ class NodeCtrler extends Forum
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->_displayLogin( $this->request->uri );
          return;
@@ -97,6 +97,7 @@ class NodeCtrler extends Forum
       if ( $this->request->post[ 'files' ] )
       {
          $file = new Image();
+         $file->cityID = self::$_city->id;
          $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
          $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       }

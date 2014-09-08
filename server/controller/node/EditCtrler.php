@@ -56,6 +56,7 @@ class EditCtrler extends Node
 
       $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
       $file = new Image();
+      $file->cityID = self::$_city->id;
       $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
 
       $this->_getCacheEvent( 'ImageUpdate' )->trigger();
@@ -66,7 +67,7 @@ class EditCtrler extends Node
 
    private function _editYellowPage( $nid )
    {
-      if ( $this->request->uid != self::ADMIN_UID )
+      if ( $this->request->uid != self::UID_ADMIN )
       {
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
          $this->pageForbidden();
@@ -103,6 +104,7 @@ class EditCtrler extends Node
 
          $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
          $file = new Image();
+         $file->cityID = self::$_city->id;
          $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
 
          $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();

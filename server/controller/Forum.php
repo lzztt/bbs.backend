@@ -26,7 +26,7 @@ abstract class Forum extends Controller
             }
 
             $tagRoot = $tag->getTagRoot();
-            if ( !\array_key_exists( $this->_forumRootID[ $this->site ], $tagRoot ) )
+            if ( !\array_key_exists( self::$_city->ForumRootID, $tagRoot ) )
             {
                $this->pageNotFound();
             }
@@ -39,7 +39,7 @@ abstract class Forum extends Controller
       else
       {
          // main forum
-         $tag = new Tag( $this->_forumRootID[ $this->site ], NULL );
+         $tag = new Tag( self::$_city->ForumRootID, NULL );
       }
 
       return $tag;

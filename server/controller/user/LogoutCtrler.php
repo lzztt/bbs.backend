@@ -10,7 +10,7 @@ class LogoutCtrler extends User
 
    public function run()
    {
-      if ( $this->request->uid == self::GUEST_UID )
+      if ( $this->request->uid == self::UID_GUEST )
       {
          $this->error( '错误：您尚未成功登录，不能登出。' );
       }
