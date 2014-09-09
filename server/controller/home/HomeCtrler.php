@@ -33,12 +33,12 @@ class HomeCtrler extends Home
    {
       $content = [
          'recentActivities' => $this->_getRecentActivities(),
-         'latestForumTopics' => $this->_getLatestForumTopics(),
-         'hotForumTopics' => $this->_getHotForumTopics(),
-         'latestYellowPages' => $this->_getLatestYellowPages(),
-         'latestImmigrationPosts' => $this->_getLatestImmigrationPosts(),
-         'latestForumTopicReplies' => $this->_getLatestForumTopicReplies(),
-         'latestYellowPageReplies' => $this->_getLatestYellowPageReplies(),
+         'latestForumTopics' => $this->_getLatestForumTopics( 15 ),
+         'hotForumTopics' => $this->_getHotForumTopics( 15 ),
+         'latestYellowPages' => $this->_getLatestYellowPages( 15 ),
+         'latestImmigrationPosts' => $this->_getLatestImmigrationPosts( 15 ),
+         'latestForumTopicReplies' => $this->_getLatestForumTopicReplies( 15 ),
+         'latestYellowPageReplies' => $this->_getLatestYellowPageReplies( 15 ),
          'imageSlider' => $this->_getImageSlider(),
       ];
       $this->html->var[ 'content' ] = new Template( 'home', $content );
@@ -66,9 +66,9 @@ class HomeCtrler extends Home
       }
 
       $content = [
-         'latestForumTopics' => $this->_getLatestForumTopics(),
-         'hotForumTopics' => $this->_getHotForumTopics(),
-         'latestForumTopicReplies' => $this->_getLatestForumTopicReplies(),
+         'latestForumTopics' => $this->_getLatestForumTopics( 10 ),
+         'hotForumTopics' => $this->_getHotForumTopics( 10 ),
+         'latestForumTopicReplies' => $this->_getLatestForumTopicReplies( 10 ),
          'imageSlider' => $this->_getImageSlider(),
          'groups' => $groupTrees,
          'nodeInfo' => $nodeInfo
@@ -123,7 +123,7 @@ class HomeCtrler extends Home
       return $ul;
    }
 
-   private function _getLatestForumTopics()
+   private function _getLatestForumTopics( $count )
    {
       $ulCache = $this->cache->getSegment( 'latestForumTopics' );
       $ul = $ulCache->fetch();
@@ -131,7 +131,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopics( self::$_city->ForumRootID, 15 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopics( self::$_city->ForumRootID, $count ) as $n )
          {
             $arr[] = [ 'after' => \date( 'H:i', $n[ 'create_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -144,7 +144,7 @@ class HomeCtrler extends Home
       return $ul;
    }
 
-   private function _getHotForumTopics()
+   private function _getHotForumTopics( $count )
    {
       $ulCache = $this->cache->getSegment( 'hotForumTopics' );
       $ul = $ulCache->fetch();
@@ -152,7 +152,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getHotForumTopics( self::$_city->ForumRootID, 15, $this->request->timestamp - 604800 ) as $n )
+         foreach ( (new Node() )->getHotForumTopics( self::$_city->ForumRootID, $count, $this->request->timestamp - 604800 ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ],
@@ -165,7 +165,7 @@ class HomeCtrler extends Home
       return $ul;
    }
 
-   private function _getLatestYellowPages()
+   private function _getLatestYellowPages( $count )
    {
       $ulCache = $this->cache->getSegment( 'latestYellowPages' );
       $ul = $ulCache->fetch();
@@ -173,7 +173,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPages( self::$_city->YPRootID, 15 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPages( self::$_city->YPRootID, $count ) as $n )
          {
             $arr[] = [ 'after' => \date( 'm/d', $n[ 'exp_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -186,7 +186,7 @@ class HomeCtrler extends Home
       return $ul;
    }
 
-   private function _getLatestImmigrationPosts()
+   private function _getLatestImmigrationPosts( $count )
    {
       $ulCache = $this->cache->getSegment( 'latestImmigrationPosts' );
       $ul = $ulCache->fetch();
@@ -194,7 +194,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestImmigrationPosts( 15 ) as $n )
+         foreach ( (new Node() )->getLatestImmigrationPosts( $count ) as $n )
          {
             $arr[] = [ 'after' => \date( 'm/d', $n[ 'create_time' ] ),
                'uri' => '/node/' . $n[ 'nid' ],
@@ -207,7 +207,7 @@ class HomeCtrler extends Home
       return $ul;
    }
 
-   private function _getLatestForumTopicReplies()
+   private function _getLatestForumTopicReplies( $count )
    {
       $ulCache = $this->cache->getSegment( 'latestForumTopicReplies' );
       $ul = $ulCache->fetch();
@@ -215,7 +215,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestForumTopicReplies( self::$_city->ForumRootID, 15 ) as $n )
+         foreach ( (new Node() )->getLatestForumTopicReplies( self::$_city->ForumRootID, $count ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?p=l#comment' . $n[ 'last_cid' ],
@@ -228,7 +228,7 @@ class HomeCtrler extends Home
       return $ul;
    }
 
-   private function _getLatestYellowPageReplies()
+   private function _getLatestYellowPageReplies( $count )
    {
       $ulCache = $this->cache->getSegment( 'latestYellowPageReplies' );
       $ul = $ulCache->fetch();
@@ -236,7 +236,7 @@ class HomeCtrler extends Home
       {
          $arr = [ ];
 
-         foreach ( (new Node() )->getLatestYellowPageReplies( self::$_city->YPRootID, 15 ) as $n )
+         foreach ( (new Node() )->getLatestYellowPageReplies( self::$_city->YPRootID, $count ) as $n )
          {
             $arr[] = [ 'after' => $n[ 'comment_count' ],
                'uri' => '/node/' . $n[ 'nid' ] . '?p=l#comment' . $n[ 'last_cid' ],
