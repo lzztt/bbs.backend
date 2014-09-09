@@ -99,7 +99,7 @@ class EditCtrler extends User
 
          $this->html->var[ 'content' ] = '您的最新资料已被保存。';
 
-         $this->_getIndependentCache( 'authorPanel' . $u->id )->delete();
+         $this->_getIndependentCache( 'ap' . $u->id )->delete();
       }
    }
 
