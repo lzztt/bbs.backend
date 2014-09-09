@@ -35,6 +35,14 @@ class RegisterCtrler extends User
          {
             $this->error( '请填写用户名' );
          }
+         else
+         {
+            $username = \strtolower( $this->request->post[ 'username' ] );
+            if ( \strpos( $username, 'admin' ) !== FALSE || \strpos( $username, 'bbs' ) !== FALSE )
+            {
+               $this->error( '不合法的用户名，请选择其他用户名' );
+            }
+         }
 
          if ( !\filter_var( $this->request->post[ 'email' ], \FILTER_VALIDATE_EMAIL ) )
          {

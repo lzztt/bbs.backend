@@ -41,9 +41,6 @@ abstract class Controller extends LzxCtrler
 
    const UID_GUEST = 0;
    const UID_ADMIN = 1;
-   const HOUSTON = 'houston';
-   const DALLAS = 'dallas';
-   const AUSTIN = 'austin';
 
    protected static $_city;
    private static $_requestProcessed = FALSE;
@@ -55,14 +52,6 @@ abstract class Controller extends LzxCtrler
    public $site;
    protected $_independentCacheList = [ ];
    protected $_cacheEvents = [ ];
-   protected $_forumRootID = [
-      self::HOUSTON => 1,
-      self::DALLAS => 127
-   ];
-   protected $_ypRootID = [
-      self::HOUSTON => 2,
-      self::DALLAS => 0
-   ];
 
    /**
     * public methods
@@ -154,6 +143,7 @@ abstract class Controller extends LzxCtrler
          {
             $this->cache->store( $this->html );
             $this->cache->flush();
+            $this->cache = NULL;
          }
 
          foreach ( $this->_independentCacheList as $s )
