@@ -155,14 +155,29 @@ class WebApp extends App
                break;
             case ControllerException::PAGE_REDIRECT:
                \header( 'Location: ' . $msg );
-               // send cookie and finish request processing
+               // send cookie, flush cache and finish request processing
                $cookie->send();
+               if ( $ctrler )
+               {
+                  try
+                  {
+                     $ctrler->flushCache();
+                  }
+                  catch ( \Exception $e )
+                  {
+                     $this->logger->error( $e->getMessage() );
+                  }
+               }
                \fastcgi_finish_request();
 
-               // unset output and continue
-               $html = NULL;
+               // flush session
+               $session->close();
+               // flush database
+               $db->flush();
+               // flush logger
+               $this->logger->flush();
 
-               // continue
+               return;
                break;
             default:
                // PAGE_ERROR and others
@@ -211,18 +226,15 @@ class WebApp extends App
          $db->flush();
 
          // controller flush cache
-         if ( $ctrler )
-         {
-            $_timer = \microtime( TRUE );
-            $ctrler->flushCache();
-            $db->flush();
-            $_timer = \microtime( TRUE ) - $_timer;
+         $_timer = \microtime( TRUE );
+         $ctrler->flushCache();
+         $db->flush();
+         $_timer = \microtime( TRUE ) - $_timer;
 
-            if ( $outputDebug )
-            {
-               echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
-               echo '</pre>';
-            }
+         if ( $outputDebug )
+         {
+            echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
+            echo '</pre>';
          }
       }
       catch ( \Exception $e )

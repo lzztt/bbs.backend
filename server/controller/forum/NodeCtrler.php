@@ -34,7 +34,7 @@ class NodeCtrler extends Forum
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
+         // $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
          $node = new Node();
          $node->tid = $tid;
          $node->uid = $this->request->uid;

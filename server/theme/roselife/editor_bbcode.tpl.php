@@ -1,5 +1,5 @@
 <form enctype="multipart/form-data" id="bbcode_editor" class='v_user' method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
-   <fieldset class="node_title" style='display: none;'>
+   <fieldset class="node_title"<?php if ( !$displayTitle ): ?> style='display: none;'<?php endif; ?>>
       <label class='label' for="title">标题</label>
       <input type="text" name="title" value="<?php print $title; ?>" placeholder="最少5个字母或3个汉字">
    </fieldset>
