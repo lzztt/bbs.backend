@@ -47,7 +47,7 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main.dallas.css" rel="stylesheet" type="text/css">
       <?php else: ?>
          <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410152412.css" rel="stylesheet" type="text/css">
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410152412.dallas.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410281920.dallas.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
