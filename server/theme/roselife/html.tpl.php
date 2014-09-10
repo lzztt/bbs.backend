@@ -28,7 +28,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1410152412.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1410306440.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -44,7 +44,7 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_md.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410152412.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410306440.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
@@ -57,7 +57,7 @@
          <header id='page_header'>
             <div id="logo_div">
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-               <span id='messagebox'><?php print $head_title; ?></span>
+               <span id='messagebox'><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad"><span></span><a 
                   href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lles-1.jpg"></a><a

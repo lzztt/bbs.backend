@@ -83,12 +83,12 @@ class BBCode
 
    private static function _youtube( $content, $param )
    {
-      return '<iframe src="http://www.youtube.com/embed/' . $content . '" width="480" height="360" frameborder="0" allowfullscreen></iframe>';
+      return '<iframe class="youtube" src="//www.youtube.com/embed/' . $content . '" frameborder="0" allowfullscreen></iframe>';
    }
 
    private static function _googlemap( $content, $param )
    {
-      return '<iframe src="' . $content . '" width="400" height="300" frameborder="0"></iframe>';
+      return '<iframe class="googlemap" src="' . $content . '" frameborder="0"></iframe>';
    }
 
 }

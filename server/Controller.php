@@ -190,9 +190,20 @@ abstract class Controller extends LzxCtrler
       $html->var[ 'page_navbar' ] = $navbar;
 
       // set headers
-      $html->var[ 'head_description' ] = self::$_city->name . ' 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, ' . self::$_city->uriName . ' Chinese';
+      if ( !$html->var[ 'head_title' ] )
+      {
+         $html->var[ 'head_title' ] = '缤纷' . self::$_city->name . '华人网';
+      }
 
-      $html->var[ 'head_title' ] = '缤纷' . self::$_city->name . '华人网';
+      if ( !$this->html->var[ 'head_description' ] )
+      {
+         $html->var[ 'head_description' ] = self::$_city->name . ' 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, UTD, UT-Dallas, University of Texas at Dallas, ' . \ucfirst( self::$_city->uriName ) . ' Chinese, ' . self::$_city->uriName . 'bbs';
+      }
+      else
+      {
+         $html->var[ 'head_description' ] = $html->var[ 'head_description' ] . ', ' . self::$_city->name . ' 华人, ' . \ucfirst( self::$_city->uriName ) . ' Chinese, ' . self::$_city->uriName . 'bbs';
+      }
+      $html->var['sitename'] = '缤纷' . self::$_city->name . '华人网';
 
       // remove this controller from the subject's observer list
       $html->detach( $this );
