@@ -1,6 +1,6 @@
 <div class="image_slider"><?php print $imageSlider; ?></div><section class="items">
    <header>最新话题</header><?php print $latestForumTopics; ?></section><section class="items">
-   <header>最新论坛回复</header><?php print $latestForumTopicReplies; ?></section><section class="items">
+   <header>最新论坛回复</header><?php print $latestForumTopicReplies; ?></section><section class="items home_hot_nodes">
    <header>本周热门</header><?php print $hotForumTopics; ?></section>
 <?php foreach ( $groups as $group_id => $tags ): ?>
    <table>
