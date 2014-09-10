@@ -23,6 +23,7 @@
 <div style="border:1px solid #DDDDDD; margin-top:15px; clear: both;">
    <div style="padding:0.4em 0.7em;">友情链接</div>
    <div style="padding:0.4em 0.7em; background:#EEEEEE none repeat scroll 0 0;">
+      <a style="padding: 4px;" target="_blank" href="http://www.dallasbbs.com">缤纷达拉斯</a>
       <a style="padding: 4px;" target="_blank" href="http://www.utcssa.net">UT Austin CSSA</a>
       <a style="padding: 4px;" target="_blank" href="http://www.uslifes.com">海外生活</a>
       <a style="padding: 4px;" target="_blank" href="http://www.xibian.net">西边摄影</a>
