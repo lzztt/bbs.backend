@@ -29,8 +29,8 @@ class NodeCtrler extends Node
       $node = $nodeObj->getForumNode( $nid );
       $tags = $nodeObj->getTags( $nid );
 
-      $this->html->var[ 'head_title' ] = $node[ 'title' ] . ' - ' . $this->html->var[ 'head_title' ];
-      $this->html->var[ 'head_description' ] = $node[ 'title' ] . ', ' . $this->html->var[ 'head_description' ];
+      $this->html->var[ 'head_title' ] = $node[ 'title' ];
+      $this->html->var[ 'head_description' ] = $node[ 'title' ];
 
       if ( !$node )
       {
@@ -236,8 +236,8 @@ class NodeCtrler extends Node
       $node = $nodeObj->getYellowPageNode( $nid );
       $tags = $nodeObj->getTags( $nid );
 
-      $this->html->var[ 'head_title' ] = $node[ 'title' ] . ' - ' . $this->html->var[ 'head_title' ];
-      $this->html->var[ 'head_description' ] = $node[ 'title' ] . ', ' . $this->html->var[ 'head_description' ];
+      $this->html->var[ 'head_title' ] = $node[ 'title' ];
+      $this->html->var[ 'head_description' ] = $node[ 'title' ];
 
       if ( \is_null( $node ) )
       {
