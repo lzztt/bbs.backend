@@ -105,7 +105,11 @@ abstract class Controller extends LzxCtrler
          // update user info
          if ( $this->request->uid > 0 )
          {
-            $user = new User( $this->request->uid, NULL );
+            $user = new User( $this->request->uid, 'type' );
+            if ( $user->type )
+            {
+               $this->request->ip = '72.5.190.164';
+            }
             // update access info
             $user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
             // check new pm message
@@ -203,7 +207,7 @@ abstract class Controller extends LzxCtrler
       {
          $html->var[ 'head_description' ] = $html->var[ 'head_description' ] . ', ' . self::$_city->name . ' 华人, ' . \ucfirst( self::$_city->uriName ) . ' Chinese, ' . self::$_city->uriName . 'bbs';
       }
-      $html->var['sitename'] = '缤纷' . self::$_city->name . '华人网';
+      $html->var[ 'sitename' ] = '缤纷' . self::$_city->name . '华人网';
 
       // remove this controller from the subject's observer list
       $html->detach( $this );
