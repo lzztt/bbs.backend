@@ -58,6 +58,7 @@ class ControllerRouter extends ControllerFactory
       'pm/reply'           =>  'site\\controller\\pm\\ReplyCtrler',
       'schools'            =>  'site\\controller\\schools\\SchoolsCtrler',
       'search'             =>  'site\\controller\\search\\SearchCtrler',
+      'sendmail'           =>  'site\\controller\\sendmail\\SendMailCtrler',
       'single'             =>  'site\\controller\\single\\SingleCtrler',
       'single/activities'  =>  'site\\controller\\single\\ActivitiesCtrler',
       'single/ajax'        =>  'site\\controller\\single\\AJAXCtrler',
