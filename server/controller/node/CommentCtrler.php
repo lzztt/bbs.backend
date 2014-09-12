@@ -42,7 +42,12 @@ class CommentCtrler extends Node
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         // $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
+         // validate post for houston
+         if ( self::$_city->id == 1 )
+         {
+            $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
+         }
+         
          $comment = new Comment();
          $comment->nid = $nid;
          $comment->uid = $this->request->uid;
@@ -140,7 +145,12 @@ class CommentCtrler extends Node
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         // $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
+         // validate post for houston
+         if ( self::$_city->id == 1 )
+         {
+            $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ] );
+         }
+
          $comment = new Comment();
          $comment->nid = $nid;
          $comment->uid = $this->request->uid;
