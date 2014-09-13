@@ -393,11 +393,30 @@ abstract class Controller extends LzxCtrler
          throw new \Exception( 'invalid value for number of items per page: ' . $nPerPage );
       }
 
-      $pageNo = $this->request->get[ 'p' ] ? (int) $this->request->get[ 'p' ] : 1;
       $pageCount = $nTotal > 0 ? \ceil( $nTotal / $nPerPage ) : 1;
-      if ( $pageNo < 1 || $pageNo > $pageCount )
+      if ( $this->request->get[ 'p' ] )
       {
-         $pageNo = $pageCount;
+         if ( $this->request->get[ 'p' ] === 'l' )
+         {
+            $pageNo = $pageCount;
+         }
+         elseif ( \is_integer( $this->request->get[ 'p' ] ) )
+         {
+            $pageNo = (int) $this->request->get[ 'p' ];
+            
+            if ( $pageNo < 1 || $pageNo > $pageCount )
+            {
+               $this->pageNotFound();
+            }
+         }
+         else
+         {
+            $this->pageNotFound();
+         }
+      }
+      else
+      {
+         $pageNo = 1;
       }
 
       return [ $pageNo, $pageCount ];
