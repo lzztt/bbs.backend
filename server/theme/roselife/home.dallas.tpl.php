@@ -40,6 +40,5 @@
       <a style="padding: 4px;" target="_blank" href="http://www.houstonbbs.com">缤纷休斯顿</a>
       <a style="padding: 4px;" target="_blank" href="http://www.utswcssa.org">西南医学中心学生学者联谊会</a>
       <a style="padding: 4px;" target="_blank" href="http://www.dallas8.net">达拉斯吧</a>
-      <a style="padding: 4px;" target="_blank" href="http://bbs.facss.us">UTD-FACSS</a>
    </div>
 </div>
