@@ -207,7 +207,7 @@ abstract class Controller extends LzxCtrler
       {
          $html->var[ 'head_description' ] = $html->var[ 'head_description' ] . ', ' . self::$_city->name . ' 华人, ' . \ucfirst( self::$_city->uriName ) . ' Chinese, ' . self::$_city->uriName . 'bbs';
       }
-      $html->var[ 'sitename' ] = '缤纷' . self::$_city->name . '华人网';
+      $html->var[ 'sitename' ] = '缤纷' . self::$_city->name;
 
       // remove this controller from the subject's observer list
       $html->detach( $this );
