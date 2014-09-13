@@ -400,10 +400,10 @@ abstract class Controller extends LzxCtrler
          {
             $pageNo = $pageCount;
          }
-         elseif ( \is_integer( $this->request->get[ 'p' ] ) )
+         elseif ( \is_numeric( $this->request->get[ 'p' ] ) )
          {
             $pageNo = (int) $this->request->get[ 'p' ];
-            
+
             if ( $pageNo < 1 || $pageNo > $pageCount )
             {
                $this->pageNotFound();
