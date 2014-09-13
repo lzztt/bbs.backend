@@ -93,7 +93,16 @@ class WebApp extends App
       }
 
       $request = $this->getRequest();
-      $request->get = \array_intersect_key( $request->get, \array_flip( $this->config->getkeys ) );
+      $get_count = \count( $request->get );
+      if ( $get_count )
+      {
+         $request->get = \array_intersect_key( $request->get, \array_flip( $this->config->getkeys ) );
+         // do not cache page with unsupport get keys
+         if ( \count( $request->get ) != $get_count )
+         {
+            $this->config->cache = FALSE;
+         }
+      }
 
       // initialize database connection
       $db = DB::getInstance( $this->config->db );
