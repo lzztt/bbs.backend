@@ -29,7 +29,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1410581834.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1410616076.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -47,8 +47,8 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main.dallas.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/fontello.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410581834.css" rel="stylesheet" type="text/css">
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410581834.dallas.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410616076.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1410616076.dallas.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
@@ -59,7 +59,7 @@
       <div id='page'>
          <header id='page_header'>
             <div class="nav_mobile">
-               <a class="icon-home" href="/">首页</a><a class="icon-left-big" href="#">后退</a><a class="icon-right-big" href="#">前进</a><a class="icon-cw" href="#">刷新</a><a class="icon-th-list" href="#">菜单</a>
+               <a class="icon-home" href="/">首页</a><a class="icon-left-big" href="#">后退</a><a class="icon-right-big" href="#">前进</a><a class="icon-cw" href="#">刷新</a><a class="icon-menu" href="#">菜单</a>
             </div>
             <div id="logo_div">
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
