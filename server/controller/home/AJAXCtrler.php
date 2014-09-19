@@ -26,7 +26,15 @@ class AJAXCtrler extends Home
 
 
          $user = new User();
-         $return = \array_merge( $r, $user->getUserStat( $this->request->timestamp - 300, self::$_city->id ) );
+         $u = $user->getUserStat( $this->request->timestamp - 300, self::$_city->id );
+         // make some fake guest :)
+         if ( $u[ 'onlineCount' ] > 1 )
+         {
+            $ratio = self::$_city->id == 1 ? 1.2 : 1.5;
+            $u[ 'onlineCount' ] = \ceil( $u[ 'onlineCount' ] * $ratio );
+            $u[ 'onlineGuestCount' ] = $u[ 'onlineCount' ] - $u[ 'onlineUserCount' ];
+         }
+         $return = \array_merge( $r, $u );
       }
       catch ( \Exception $e )
       {
