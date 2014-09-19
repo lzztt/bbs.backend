@@ -20,8 +20,8 @@ class ForumCtrler extends Forum
       $tagTree = $tag->getTagTree();
 
       $tid = $tag->id;
-      $this->html->var[ 'head_title' ] = $tagTree[ $tid ][ 'name' ] . ' - ' . $this->html->var[ 'head_title' ];
-      $this->html->var[ 'head_description' ] = $tagTree[ $tid ][ 'name' ] . ', ' . $this->html->var[ 'head_description' ];
+      $this->html->var[ 'head_title' ] = $tagTree[ $tid ][ 'name' ];
+      $this->html->var[ 'head_description' ] = $tagTree[ $tid ][ 'name' ];
 
       \sizeof( $tagTree[ $tid ][ 'children' ] ) ? $this->showForumList( $tid, $tagRoot, $tagTree ) : $this->showTopicList( $tid, $tagRoot );
    }
