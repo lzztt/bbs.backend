@@ -77,6 +77,38 @@ class HomeCtrler extends Home
       $this->html->var[ 'content' ] = new Template( 'home', $content );
    }
 
+   protected function _austinHome()
+   {
+      $tag = new Tag( self::$_city->ForumRootID, NULL );
+      $tagTree = $tag->getTagTree();
+
+      $nodeInfo = [ ];
+      $groupTrees = [ ];
+      foreach ( $tagTree[ $tag->id ][ 'children' ] as $group_id )
+      {
+         $groupTrees[ $group_id ] = [ ];
+         $group = $tagTree[ $group_id ];
+         $groupTrees[ $group_id ][ $group_id ] = $group;
+         foreach ( $group[ 'children' ] as $board_id )
+         {
+            $groupTrees[ $group_id ][ $board_id ] = $tagTree[ $board_id ];
+            $nodeInfo[ $board_id ] = $this->_nodeInfo( $board_id );
+            $this->cache->addParent( '/forum/' . $board_id );
+         }
+      }
+
+      $content = [
+         'latestForumTopics' => $this->_getLatestForumTopics( 10 ),
+         'hotForumTopics' => $this->_getHotForumTopics( 10 ),
+         'latestForumTopicReplies' => $this->_getLatestForumTopicReplies( 10 ),
+         'imageSlider' => $this->_getImageSlider(),
+         'groups' => $groupTrees,
+         'nodeInfo' => $nodeInfo
+      ];
+
+      $this->html->var[ 'content' ] = new Template( 'home', $content );
+   }
+
    protected function _nodeInfo( $tid )
    {
       $tag = new Tag( $tid, NULL );
