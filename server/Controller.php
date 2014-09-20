@@ -201,11 +201,11 @@ abstract class Controller extends LzxCtrler
 
       if ( !$this->html->var[ 'head_description' ] )
       {
-         $html->var[ 'head_description' ] = self::$_city->name . ' 华人, 黄页, 移民, 周末活动, 旅游, 单身 交友, UTD, UT-Dallas, University of Texas at Dallas, ' . \ucfirst( self::$_city->uriName ) . ' Chinese, ' . self::$_city->uriName . 'bbs';
+         $html->var[ 'head_description' ] = self::$_city->name . ' 华人 旅游 黄页 移民 周末活动 单身 交友 ' . \ucfirst( self::$_city->uriName ) . ' Chinese ' . self::$_city->uriName . 'bbs';
       }
       else
       {
-         $html->var[ 'head_description' ] = $html->var[ 'head_description' ] . ', ' . self::$_city->name . ' 华人, ' . \ucfirst( self::$_city->uriName ) . ' Chinese, ' . self::$_city->uriName . 'bbs';
+         $html->var[ 'head_description' ] = $html->var[ 'head_description' ] . ' ' . self::$_city->name . ' 华人 ' . \ucfirst( self::$_city->uriName ) . ' Chinese ' . self::$_city->uriName . 'bbs';
       }
       $html->var[ 'sitename' ] = '缤纷' . self::$_city->name;
 
