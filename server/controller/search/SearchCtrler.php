@@ -12,7 +12,7 @@ class SearchCtrler extends Search
    {
       $this->cache = new PageCache( $this->request->uri );
 
-      $searchEngineIDs = ['houston' => 'ff_lfzbzonw', 'dallas' => 'gznplywzy7a' ];
+      $searchEngineIDs = ['houston' => 'ff_lfzbzonw', 'dallas' => 'gznplywzy7a', 'austin' => 'ihghalygyj8' ];
       $seid = $searchEngineIDs[ self::$_city->uriName ];
 
       $html = <<<HTML
