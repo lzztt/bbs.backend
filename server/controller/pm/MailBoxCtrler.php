@@ -11,6 +11,12 @@ class MailBoxCtrler extends PM
 
    public function run()
    {
+      if ( $this->request->uid == self::UID_GUEST )
+      {
+         $this->_displayLogin( $this->request->uri );
+         return;
+      }
+
       $user = new User( $this->request->uid, NULL );
 
       $mailbox = $this->args ? $this->args[ 0 ] : 'inbox';
@@ -28,7 +34,7 @@ class MailBoxCtrler extends PM
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $pmCount, self::TOPIC_PER_PAGE );
       $pager = $this->html->pager( $pageNo, $pageCount, $activeLink );
-      
+
       $msgs = $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE );
 
       $thead = ['cells' => ['短信', '联系人', '时间' ] ];

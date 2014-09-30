@@ -11,6 +11,12 @@ class PMCtrler extends PM
 
    public function run()
    {
+      if ( $this->request->uid == self::UID_GUEST )
+      {
+         $this->_displayLogin( $this->request->uri );
+         return;
+      }
+
       if ( !$this->id )
       {
          $this->error( '错误：该条短信不存在。' );
