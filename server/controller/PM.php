@@ -15,16 +15,6 @@ abstract class PM extends Controller
 
    const TOPIC_PER_PAGE = 25;
 
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
-   {
-      parent::__construct( $req, $html, $config, $logger, $session, $cookie );
-
-      if ( $this->request->uid == self::UID_GUEST )
-      {
-         $this->_dispayLogin( $this->request->uri );
-      }
-   }
-
    protected function _getMailBox()
    {
       if ( $this->cookie->mailbox )

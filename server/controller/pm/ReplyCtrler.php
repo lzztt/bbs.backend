@@ -12,6 +12,12 @@ class ReplyCtrler extends PM
 
    public function run()
    {
+      if ( $this->request->uid == self::UID_GUEST )
+      {
+         $this->_displayLogin( $this->request->uri );
+         return;
+      }
+
       $topicID = $this->id;
 
       if ( $this->request->uid != $this->request->post[ 'fromUID' ] )
