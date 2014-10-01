@@ -63,7 +63,7 @@
                <span id='messagebox'><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad"><span></span><a 
-                  href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lles-1.jpg"></a><a
+                  href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.jpg"></a><a
                   href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img src="/data/ad/alicewang-1.gif"></a><a 
                   href="http://jeffreyjinteam.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a>
             </div>
