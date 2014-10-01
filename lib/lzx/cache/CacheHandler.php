@@ -238,7 +238,7 @@ class CacheHandler implements CacheHandlerInterface
 
    public function getChildren( $id )
    {
-      $children = $this->_db->query( 'SELECT id, name FROM ' . $this->_tName . ' WHERE id IN (SELECT DISTINCT(cid) FROM ' . $this->_tTree . ' WHERE pid = :pid)', [ ':pid' => $id ] );
+      $children = $this->_db->query( 'SELECT DISTINCT(c.id), c.name FROM ' . $this->_tName . ' AS c JOIN ' . $this->_tTree . ' AS t ON c.id = t.cid WHERE t.pid = :pid', [ ':pid' => $id ] );
       foreach ( $children as $c )
       {
          $this->_ids[ $c[ 'name' ] ] = $c[ 'id' ];
@@ -254,7 +254,7 @@ class CacheHandler implements CacheHandlerInterface
 
    public function getEventListeners( $eid, $oid )
    {
-      $children = $this->_db->query( 'SELECT id, name FROM ' . $this->_tName . ' WHERE id IN (SELECT DISTINCT(lid) FROM ' . $this->_tEvent . ' WHERE eid = :eid AND oid = :oid)', [ ':eid' => $eid, ':oid' => $oid ] );
+      $children = $this->_db->query( 'SELECT DISTINCT(c.id), c.name FROM ' . $this->_tName . ' AS c JOIN ' . $this->_tEvent . ' AS e ON c.id = e.lid WHERE e.eid = :eid AND e.oid = :oid', [ ':eid' => $eid, ':oid' => $oid ] );
       foreach ( $children as $c )
       {
          $this->_ids[ $c[ 'name' ] ] = $c[ 'id' ];
