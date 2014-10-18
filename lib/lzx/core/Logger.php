@@ -39,7 +39,7 @@ class Logger
       ];
       $this->_time = \date( 'Y-m-d H:i:s T', (int) $_SERVER[ 'REQUEST_TIME' ] );
    }
-   
+
    public function __destruct()
    {
       $this->flush();
@@ -175,6 +175,7 @@ class Logger
          $this->_mailer->subject = 'web error: ' . $_SERVER[ 'REQUEST_URI' ];
          $this->_mailer->body = $log;
          $this->_mailer->send();
+         $log = $log . \print_r( $_SERVER, TRUE ) . \PHP_EOL;
       }
 
       $this->_logCache[ $type ] .= $log;

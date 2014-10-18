@@ -51,7 +51,7 @@ class UserCtrler extends User
          'username' => $user->username,
          'avatar' => $user->avatar ? $user->avatar : '/data/avatars/avatar0' . \mt_rand( 1, 5 ) . '.jpg',
          'userLinks' => $this->_getUserLinks( '/user/' . $uid, $uid ),
-         'pm' => $uid != $this->request->uid ? '/user/' . $uid . '/pm' : '',
+         'pm' => ( $uid != $this->request->uid ),
          'info' => [
             '微信' => $user->wechat,
             'QQ' => $user->qq,

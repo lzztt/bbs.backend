@@ -60,25 +60,24 @@
             </div>
             <div id="logo_div">
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-               <span id='messagebox'><?php print $sitename; ?></span>
+               <span><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad"><span><a href="http://jeffreyjinteam.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a></span><span><a
+                     href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img src="/data/ad/alicewang-1.gif"></a><a
                      href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lles-1.jpg"></a><a
-                     href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.jpg"></a><a
-                     href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img src="/data/ad/alicewang-1.gif"></a></span>                 
-            </div>
+                     href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.gif"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
             <ul class="sf-menu" style="display: inline-block; float: right;">
                <li class='v_user'><a id='username' href="/user">我的账户</a></li>
                <li class='v_user'><a id='pm' href="/pm/mailbox">短信</a></li>
                <li class='v_user'><a href="/user/bookmark">收藏夹</a></li>
-               <li class='v_user'><a href="/password/change">更改密码</a></li>
-               <li class='v_user'><a  href="/user/logout">登出</a></li>
-               <li class='v_guest'><a href="/user/login">登录</a></li>
-               <li class='v_guest'><a href="/password/forget">忘记密码</a></li>
-               <li class='v_guest'><a href="/user/username">忘记用户名</a></li>
-               <li class='v_guest'><a href="/user/register">注册帐号</a></li>
+               <li class='v_user'><a class='popup' href="#/password/change">更改密码</a></li>
+               <li class='v_user'><a href="/user/logout">登出</a></li>
+               <li class='v_guest'><a class='popup' href="#/user/login">登录</a></li>
+               <li class='v_guest'><a class='popup' href="#/password/forget">忘记密码</a></li>
+               <li class='v_guest'><a class='popup' href="#/user/username">忘记用户名</a></li>
+               <li class='v_guest'><a class='popup' href="#/user/register">注册帐号</a></li>
             </ul>
             <?php print $page_navbar; ?>
          </nav>
@@ -101,6 +100,9 @@
             <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2014 HoustonBBS 版权所有 | <a href='/term'>免责声明</a></div>
          </footer>
       </div>
+      <div id="messagebox"></div>
+      <div id="popupbox"></div>
+      <a id="goTop" class="button">返回顶部</a>
    </body>
    <?php if ( !$debug ): ?>
       <script>

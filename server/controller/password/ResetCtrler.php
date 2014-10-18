@@ -36,6 +36,7 @@ class ResetCtrler extends Password
          // we don't have a secure link stored in session, or have one but not the referer
          if ( !$this->session->secureLink || $this->request->referer != $this->session->secureLink )
          {
+            $this->logger->error( 'SecureLink Access Error: Post' );
             $this->error( '无效的网址链接!' );
          }
 

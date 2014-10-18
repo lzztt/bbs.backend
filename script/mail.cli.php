@@ -21,7 +21,7 @@ require_once $_LZXROOT . '/App.php';
 class MailApp extends App
 {
 
-    public function run( $argc, Array $argv )
+    public function run( $argc, array $argv )
     {
         $uid = $argc;
         $db = MySQL::getInstance( $this->config->database, TRUE );
@@ -134,7 +134,7 @@ if ( \file_exists( $flag ) )
         \touch( $lock );
 
         $uid = \intval( \file_get_contents( $flag ) );
-        $app = new MailApp( $_SERVERDIR . '/config.php', array(__NAMESPACE__ => $_SERVERDIR) );
+        $app = new MailApp( $_SERVERDIR . '/config.php', [__NAMESPACE__ => $_SERVERDIR] );
         $uid_new = \intval( $app->run( $uid, [] ) );
         if ( $uid_new > $uid )
         {
