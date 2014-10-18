@@ -18,12 +18,7 @@ abstract class App
    protected $loader;
 
    public function __construct()
-   {
-      if ( \mb_internal_encoding( "UTF-8" ) === FALSE )
-      {
-         throw new \Exception( 'failed to set utf-8 encoding' );
-      }
-
+   {      
       // start auto loader
       $_file = __DIR__ . '/core/ClassLoader.php';
       if ( \is_file( $_file ) && \is_readable( $_file ) )
