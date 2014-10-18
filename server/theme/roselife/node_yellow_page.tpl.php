@@ -1,6 +1,6 @@
 <header class="content_header">
    <?php print $breadcrumb; ?>
-   <span class='v_guest'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
+   <span class='v_guest'>您需要先<a class='popup' href="#/user/login">登录</a>或<a class='popup' href="#/user/register">注册</a>才能发表新话题或回复</span>
    <button type="button" class='v_user comment' data-action="/node/<?php print $nid; ?>/comment">评论</button>
    <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount_<?php print $nid; ?>"></span> views</span> 
    <?php print $pager; ?>
@@ -30,7 +30,7 @@
       <h2 id="comments-title">评论</h2>
       <?php foreach ( $comments as $index => $c ): ?>
          <a id="comment<?php print $c[ 'id' ]; ?>"></a>
-         <article>      
+         <article>
             <header>
                <a href="/user/<?php print $c[ 'uid' ]; ?>"><?php print $c[ 'username' ]; ?></a> <span class='city'><?php print $c[ 'city' ]; ?></span>
                <span class='time'><?php
