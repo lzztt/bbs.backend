@@ -15,6 +15,6 @@
       <span>金币</span>: <?php print $points; ?>
    </div>
    <div>
-      <a href="/user/<?php print $uid; ?>/pm"><img title="发送站内短信" alt="发送站内短信" src="/themes/default/images/forum/pm.gif"></a>
+      <a href="#/pm/send" class="popup" data-vars='{"uid":<?php print $uid; ?>,"username":"<?php print $username; ?>"}'><img title="发送站内短信" alt="发送站内短信" src="/themes/default/images/forum/pm.gif"></a>
    </div>
 </aside>
