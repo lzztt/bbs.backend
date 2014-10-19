@@ -431,19 +431,7 @@ abstract class Controller extends LzxCtrler
                '用户首页' => '/user/' . $this->request->uid,
                '站内短信' => '/pm/mailbox',
                '收藏夹' => '/user/' . $this->request->uid . '/bookmark',
-               '编辑个人资料' => '/user/' . $this->request->uid . '/edit',
-               '更改密码' => '/password/' . $this->request->uid . '/change'
-               ], $activeLink
-         );
-      }
-      else
-      {
-         // guest
-         return $this->html->navbar( [
-               '登录' => '/user/login',
-               '创建新帐号' => '/user/register',
-               '忘记密码' => '/password/forget',
-               '忘记用户名' => '/user/username'
+               '编辑个人资料' => '/user/' . $this->request->uid . '/edit'
                ], $activeLink
          );
       }
