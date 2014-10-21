@@ -15,7 +15,7 @@ class Logger
    const WARNING = 'WARNING';
    const ERROR = 'ERROR';
 
-   private $_userinfo;
+   private $_userinfo = [ ];
    private $_dir;
    private $_file;
    private $_time;
@@ -103,7 +103,7 @@ class Logger
       }
    }
 
-   public function setUserInfo( $userinfo )
+   public function setUserInfo( array $userinfo )
    {
       $this->_userinfo = $userinfo;
    }
@@ -161,24 +161,29 @@ class Logger
 
    private function _log( $str, $type, array $traces = NULL )
    {
-      $log = '[' . $this->_time . '] [' . $this->_userinfo . ']' . \PHP_EOL
-         . '[URI] ' . $_SERVER[ 'REQUEST_URI' ] . ' <' . $_SERVER[ 'REMOTE_ADDR' ] . '> ' . $_SERVER[ 'HTTP_USER_AGENT' ] . \PHP_EOL
-         . '[' . $type . '] ' . $str . \PHP_EOL;
+      $log = ['time' => $this->_time, 'type' => $type ];
+      foreach ( $this->_userinfo as $k => $v )
+      {
+         $log[ $k ] = $v;
+      }
+      $log[ 'uri' ] = $_SERVER[ 'REQUEST_URI' ];
+      $log[ 'client' ] = $_SERVER[ 'REMOTE_ADDR' ] . ' : ' . $_SERVER[ 'HTTP_USER_AGENT' ];
+      $log[ 'message' ] = $str;
 
       if ( $traces !== NULL )
       {
-         $log .= $this->_get_debug_print_backtrace( $traces ) . \PHP_EOL;
+         $log[ 'trace' ] = $this->_get_debug_print_backtrace( $traces );
       }
 
       if ( $type == self::ERROR && isset( $this->_mailer ) )
       {
          $this->_mailer->subject = 'web error: ' . $_SERVER[ 'REQUEST_URI' ];
-         $this->_mailer->body = $log;
+         $this->_mailer->body = \json_encode( $log, \JSON_NUMERIC_CHECK|\JSON_PRETTY_PRINT|\JSON_UNESCAPED_SLASHES );
          $this->_mailer->send();
-         $log = $log . \print_r( $_SERVER, TRUE ) . \PHP_EOL;
+         $log[ '_SERVER' ] = $_SERVER;
       }
 
-      $this->_logCache[ $type ] .= $log;
+      $this->_logCache[ $type ] .= \json_encode( $log, \JSON_NUMERIC_CHECK|\JSON_PRETTY_PRINT|\JSON_UNESCAPED_SLASHES ) . \PHP_EOL;
    }
 
    private function _get_debug_print_backtrace( array $traces )
