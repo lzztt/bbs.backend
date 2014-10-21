@@ -119,9 +119,10 @@ class WebApp extends App
       $session = $this->getSession( $cookie );
 
       // set user info for logger
-      $userinfo = 'uid=' . $session->uid
-         . ' umode=' . $this->_getUmode( $cookie )
-         . ($cookie->urole ? ' urole=' . $cookie->urole : '');
+      $userinfo = [
+         'uid' => $session->uid,
+         'mode' => $this->_getUmode( $cookie ),
+         'role' => $cookie->urole ];
       $this->logger->setUserInfo( $userinfo );
 
       // update request uid based on session uid
