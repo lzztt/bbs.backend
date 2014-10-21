@@ -57,8 +57,7 @@ class Handler
 
    public static function exceptionHandler( \Exception $e )
    {
-      $type = \get_class( $e );
-      $msg = '[longzox] Uncaught exception: [' . $type . '] ' . $e->getMessage();
+      $msg = 'Uncaught exception: [' . \get_class( $e ) . '] ' . $e->getMessage();
       if ( self::$logger instanceof Logger )
       {
          self::$logger->error( $msg, $e->getTrace() );
