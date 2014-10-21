@@ -178,12 +178,12 @@ class Logger
       if ( $type == self::ERROR && isset( $this->_mailer ) )
       {
          $this->_mailer->subject = 'web error: ' . $_SERVER[ 'REQUEST_URI' ];
-         $this->_mailer->body = \json_encode( $log, \JSON_NUMERIC_CHECK|\JSON_PRETTY_PRINT|\JSON_UNESCAPED_SLASHES );
+         $this->_mailer->body = \json_encode( $log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE );
          $this->_mailer->send();
          $log[ '_SERVER' ] = $_SERVER;
       }
 
-      $this->_logCache[ $type ] .= \json_encode( $log, \JSON_NUMERIC_CHECK|\JSON_PRETTY_PRINT|\JSON_UNESCAPED_SLASHES ) . \PHP_EOL;
+      $this->_logCache[ $type ] .= \json_encode( $log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE ) . \PHP_EOL;
    }
 
    private function _get_debug_print_backtrace( array $traces )
@@ -196,13 +196,12 @@ class Logger
 
       foreach ( $traces as $i => $call )
       {
-         $object = isset( $call[ 'class' ] ) ? $call[ 'class' ] . $call[ 'type' ] : '';
          $ret[] = '#' . \str_pad( $i, 3, ' ' )
-            . '[' . $object . $call[ 'function' ] . ']'
-            . ' called at [' . $call[ 'file' ] . ': ' . $call[ 'line' ] . ']';
+            . ($call[ 'class' ] ? $call[ 'class' ] . $call[ 'type' ] . $call[ 'function' ] : $call[ 'function' ])
+            . ' @ ' . $call[ 'file' ] . ':' . $call[ 'line' ];
       }
 
-      return \implode( \PHP_EOL, $ret );
+      return $ret;
    }
 
 }
