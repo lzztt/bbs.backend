@@ -4,18 +4,17 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\core\Request;
-use lzx\html\Template;
+use lzx\core\Response;
 use site\Config;
 use lzx\core\Logger;
 use lzx\core\Session;
-use lzx\core\Cookie;
 
 abstract class Comment extends Controller
 {
 
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
-      parent::__construct( $req, $html, $config, $logger, $session, $cookie );
+      parent::__construct( $req, $response, $config, $logger, $session );
       
       if ( $this->request->uid == 0 )
       {

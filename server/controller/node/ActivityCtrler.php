@@ -55,10 +55,10 @@ class ActivityCtrler extends Node
          $breadcrumb[ $node->title ] = NULL;
 
          $content = [
-            'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
+            'breadcrumb' => Template::breadcrumb( $breadcrumb ),
             'exampleDate' => $this->request->timestamp - ($this->request->timestamp % 3600) + 259200
          ];
-         $this->html->var[ 'content' ] = new Template( 'activity_create', $content );
+         $this->_var[ 'content' ] = new Template( 'activity_create', $content );
       }
       else
       {
@@ -102,7 +102,7 @@ class ActivityCtrler extends Node
          
          $this->_getIndependentCache('recentActivities')->delete();
 
-         $this->html->var[ 'content' ] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
+         $this->_var[ 'content' ] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
       }
    }
 

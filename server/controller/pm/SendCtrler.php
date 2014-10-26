@@ -61,7 +61,7 @@ class SendCtrler extends PM
          $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
       }
 
-      $this->html = '您的短信已经发送给用户 <i>' . $user->username . '</i>';
+      $this->response->setContent( '您的短信已经发送给用户 <i>' . $user->username . '</i>' );
    }
 
 }

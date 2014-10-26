@@ -79,7 +79,7 @@ class EditCtrler extends Node
          $nodeObj = new NodeObject();
          $contents = $nodeObj->getYellowPageNode( $nid );
 
-         $this->html->var[ 'content' ] = new Template( 'editor_bbcode_yp', $contents );
+         $this->_var[ 'content' ] = new Template( 'editor_bbcode_yp', $contents );
       }
       else
       {

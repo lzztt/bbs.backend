@@ -105,7 +105,7 @@ class AJAXCtrler extends Single
    protected function _checkin()
    {
       // not return a page
-      $this->html = NULL;
+      $this->response->setContent( NULL );
 
       $a = new FFAttendee( $this->request->get[ 'id' ], 'name,email' );
       $a->checkin = $this->request->timestamp;
@@ -123,8 +123,8 @@ class AJAXCtrler extends Single
 
    protected function error( $msg )
    {
-      $this->ajax( ['error' => $msg ] );
-      parent::error( $this->html );
+      $this->ajax( [ 'error' => $msg ] );
+      throw new \Exception();
    }
 
 }

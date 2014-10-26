@@ -47,7 +47,7 @@ class EditCtrler extends User
                'aboutme' => $u->favoriteQuotation
             ];
 
-            $this->html->var[ 'content' ] = new Template( 'user_edit', $info );
+            $this->_var[ 'content' ] = new Template( 'user_edit', $info );
          }
          else
          {
@@ -97,7 +97,7 @@ class EditCtrler extends User
 
          $u->update();
 
-         $this->html->var[ 'content' ] = '您的最新资料已被保存。';
+         $this->_var[ 'content' ] = '您的最新资料已被保存。';
 
          $this->_getIndependentCache( 'ap' . $u->id )->delete();
       }

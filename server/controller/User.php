@@ -26,7 +26,7 @@ abstract class User extends Controller
                $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
                $this->session->suid = $this->session->uid;
                $this->_setUser( $user );
-               $this->html->var[ 'content' ] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
+               $this->_var[ 'content' ] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
             }
             else
             {
@@ -48,7 +48,7 @@ abstract class User extends Controller
             $user = new UserObject( $suid, 'username' );
             $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $user->username );
             $this->_setUser( $user );
-            $this->html->var[ 'content' ] = 'not logged out, just switched back to super user';
+            $this->_var[ 'content' ] = 'not logged out, just switched back to super user';
          }
       }
       // hide from normal user
@@ -76,10 +76,10 @@ abstract class User extends Controller
    protected function _setUser( UserObject $user )
    {
       $this->session->uid = $user->id;
-      $this->cookie->uid = $user->id;
+      $this->response->cookie->uid = $user->id;
       $urole = $user->getUserGroup();
-      $this->cookie->urole = $urole ? \implode( '|', $urole ) : NULL;
-      $this->cookie->username = $user->username;
+      $this->response->cookie->urole = $urole ? \implode( '|', $urole ) : NULL;
+      $this->response->cookie->username = $user->username;
    }
 
    protected function _recentTopics( $uid )
@@ -98,10 +98,10 @@ abstract class User extends Controller
       $tbody = [ ];
       foreach ( $posts as $n )
       {
-         $tbody[] = ['cells' => [$this->html->link( $n[ 'title' ], '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
+         $tbody[] = ['cells' => [Template::link( $n[ 'title' ], '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
       }
 
-      $recent_topics = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
+      $recent_topics = Template::table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
 
       $posts = $user->getRecentComments( 10 );
 
@@ -110,10 +110,10 @@ abstract class User extends Controller
       $tbody = [ ];
       foreach ( $posts as $n )
       {
-         $tbody[] = ['cells' => [$this->html->link( $n[ 'title' ], '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
+         $tbody[] = ['cells' => [Template::link( $n[ 'title' ], '/node/' . $n[ 'nid' ] ), \date( 'm/d/Y H:i', $n[ 'create_time' ] ) ] ];
       }
 
-      $recent_comments = $this->html->table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
+      $recent_comments = Template::table( ['caption' => $caption, 'thead' => $thead, 'tbody' => $tbody ] );
 
       return new HTMLElement( 'div', [$recent_topics, $recent_comments ], ['class' => 'user_recent_topics' ] );
    }

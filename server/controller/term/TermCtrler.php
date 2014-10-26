@@ -18,7 +18,7 @@ class TermCtrler extends Term
          'site_en_us' => \ucfirst( self::$_city->uriName ) . 'BBS.com'
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'term', $sitename );
+      $this->_var[ 'content' ] = new Template( 'term', $sitename );
    }
 
 }

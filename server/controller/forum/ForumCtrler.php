@@ -20,8 +20,8 @@ class ForumCtrler extends Forum
       $tagTree = $tag->getTagTree();
 
       $tid = $tag->id;
-      $this->html->var[ 'head_title' ] = $tagTree[ $tid ][ 'name' ];
-      $this->html->var[ 'head_description' ] = $tagTree[ $tid ][ 'name' ];
+      $this->_var[ 'head_title' ] = $tagTree[ $tid ][ 'name' ];
+      $this->_var[ 'head_description' ] = $tagTree[ $tid ][ 'name' ];
 
       \sizeof( $tagTree[ $tid ][ 'children' ] ) ? $this->showForumList( $tid, $tagRoot, $tagTree ) : $this->showTopicList( $tid, $tagRoot );
    }
@@ -68,9 +68,9 @@ class ForumCtrler extends Forum
       $contents = ['groups' => $groupTrees, 'nodeInfo' => $nodeInfo ];
       if ( \sizeof( $breadcrumb ) > 1 )
       {
-         $contents[ 'breadcrumb' ] = $this->html->breadcrumb( $breadcrumb );
+         $contents[ 'breadcrumb' ] = Template::breadcrumb( $breadcrumb );
       }
-      $this->html->var[ 'content' ] = new Template( 'forum_list', $contents );
+      $this->_var[ 'content' ] = new Template( 'forum_list', $contents );
    }
 
    public function showTopicList( $tid, $tagRoot )
@@ -85,7 +85,7 @@ class ForumCtrler extends Forum
 
       $node = new Node();
       list($pageNo, $pageCount) = $this->_getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
-      $pager = $this->html->pager( $pageNo, $pageCount, '/forum/' . $tid );
+      $pager = Template::pager( $pageNo, $pageCount, '/forum/' . $tid );
 
       $nodes = $node->getForumNodeList( self::$_city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
       $nids = \array_column( $nodes, 'id' );
@@ -107,13 +107,13 @@ class ForumCtrler extends Forum
       $contents = [
          'tid' => $tid,
          'boardDescription' => $tagRoot[ $tid ][ 'description' ],
-         'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
+         'breadcrumb' => Template::breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'nodes' => (empty( $nodes ) ? NULL : $nodes),
          'editor' => $editor,
          'ajaxURI' => '/forum/ajax/viewcount?tid=' . $tid . '&nids=' . \implode( '_', $nids ) . '',
       ];
-      $this->html->var[ 'content' ] = new Template( 'topic_list', $contents );
+      $this->_var[ 'content' ] = new Template( 'topic_list', $contents );
    }
 
    protected function _nodeInfo( $tid )

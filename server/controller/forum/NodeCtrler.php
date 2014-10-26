@@ -6,6 +6,7 @@ use site\controller\Forum;
 use site\dbobject\Node;
 use site\dbobject\Image;
 use site\dbobject\User;
+use lzx\core\Mailer;
 
 class NodeCtrler extends Forum
 {
@@ -85,7 +86,7 @@ class NodeCtrler extends Forum
 
             if ( $this->config->webmaster )
             {
-               $mailer = new \lzx\core\Mailer();
+               $mailer = new Mailer();
                $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
                $mailer->body = ' --node-- ' . $this->request->post[ 'title' ] . PHP_EOL . $this->request->post[ 'body' ];
                $mailer->to = $this->config->webmaster;
