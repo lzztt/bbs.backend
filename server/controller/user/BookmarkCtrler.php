@@ -38,10 +38,10 @@ class BookmarkCtrler extends User
       $u = new UserObject( $this->request->uid, NULL );
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $u->countBookmark(), $nodePerPage );
-      $pager = $this->html->pager( $pageNo, $pageCount, '/user/' . $u->id . '/bookmark' );
+      $pager = Template::pager( $pageNo, $pageCount, '/user/' . $u->id . '/bookmark' );
 
       $nodes = $u->listBookmark( $nodePerPage, ($pageNo - 1) * $nodePerPage );
-      $this->html->var[ 'content' ] = new Template( 'bookmark_list', ['nodes' => $nodes, 'pager' => $pager, 'userLinks' => $this->_getUserLinks( '/user/' . $u->id . '/bookmark' ) ] );
+      $this->_var[ 'content' ] = new Template( 'bookmark_list', ['nodes' => $nodes, 'pager' => $pager, 'userLinks' => $this->_getUserLinks( '/user/' . $u->id . '/bookmark' ) ] );
    }
 
    private function _delete()
@@ -55,7 +55,7 @@ class BookmarkCtrler extends User
             $u->deleteBookmark( $nid );
          }
       }
-      $this->html = NULL;
+      $this->response->setContent( NULL );
    }
 
 }

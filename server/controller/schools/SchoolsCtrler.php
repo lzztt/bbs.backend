@@ -14,7 +14,7 @@ class SchoolsCtrler extends Schools
 
    public function run()
    {
-      $this->html->var['content'] = $this->getSchoolList();
+      $this->_var['content'] = $this->getSchoolList();
    }
 
    //put your code here

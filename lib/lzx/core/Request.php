@@ -50,11 +50,6 @@ class Request
       return $instance;
    }
 
-   private function _getAgent()
-   {
-      
-   }
-
    /*
     * build a list of uploaded files
     */

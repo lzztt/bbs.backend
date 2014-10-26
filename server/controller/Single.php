@@ -4,11 +4,11 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\core\Request;
+use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
 use lzx\core\Session;
-use lzx\core\Cookie;
 use site\dbobject\FFComment;
 use lzx\db\DB;
 
@@ -20,9 +20,9 @@ abstract class Single extends Controller
 
    protected $db;
 
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
-      parent::__construct( $req, $html, $config, $logger, $session, $cookie );
+      parent::__construct( $req, $response, $config, $logger, $session );
 
       Template::$theme = $this->config->theme[ 'single' ];
 
@@ -40,6 +40,8 @@ abstract class Single extends Controller
     */
    public function update( Template $html )
    {
+      // populate template variables and remove self as an observer
+      $html->setVar( $this->_var );
       $html->detach( $this );
    }
 
@@ -159,7 +161,7 @@ abstract class Single extends Controller
          $this->session->loginRedirect = $defaultRedirect;
       }
 
-      $this->html->var[ 'content' ] = new Template( 'login', ['uri' => $this->request->uri ] );
+      $this->_var[ 'content' ] = new Template( 'login', ['uri' => $this->request->uri ] );
    }
 
    protected function _getCode( $uid )

@@ -60,11 +60,11 @@ class AttendeeCtrler extends Single
             $confirmed_groups[ (int) $attendee[ 'sex' ] ][] = $attendee;
          }
 
-         $this->html->var[ 'content' ] = new Template( 'attendees', [ 'groups' => $confirmed_groups ] );
+         $this->_var[ 'content' ] = new Template( 'attendees', [ 'groups' => $confirmed_groups ] );
       }
       else
       {
-         $this->html->var[ 'content' ] = "<p>ERROR: The page you request is not available anymore</p>";
+         $this->_var[ 'content' ] = "<p>ERROR: The page you request is not available anymore</p>";
       }
    }
 

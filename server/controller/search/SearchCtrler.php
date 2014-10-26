@@ -60,7 +60,7 @@ display:none !important;
 <div id="cse"></div>
 HTML;
 
-      $this->html->var[ 'content' ] = $html;
+      $this->_var[ 'content' ] = $html;
    }
 
 }

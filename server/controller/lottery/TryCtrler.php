@@ -30,7 +30,7 @@ class TryCtrler extends Lottery
 
       \krsort( $lottery );
 
-      $this->html->var[ 'content' ] = new Template( 'lotteryTry', ['lottery' => $lottery ] );
+      $this->_var[ 'content' ] = new Template( 'lotteryTry', ['lottery' => $lottery ] );
    }
 
 }

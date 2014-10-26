@@ -19,8 +19,8 @@ class SingleCtrler extends Single
       
       $a = \array_pop( $this->db->query( 'CALL get_latest_single_activity()' ) );
 
-      $this->html->var[ 'title' ] = $a[ 'name' ];
-      $this->html->var[ 'content' ] = new Template( 'home', [
+      $this->_var[ 'title' ] = $a[ 'name' ];
+      $this->_var[ 'content' ] = new Template( 'home', [
          'activity' => new Template( 'join_form', ['activity' => $a ] ),
          'comments' => $this->_getComments( $a[ 'id' ] ),
          'statistics' => $this->_getChart( $a )

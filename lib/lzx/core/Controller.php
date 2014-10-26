@@ -6,8 +6,6 @@ use lzx\core\Request;
 use lzx\html\Template;
 use lzx\core\Logger;
 use lzx\core\Session;
-use lzx\core\Cookie;
-use lzx\core\ControllerException;
 
 // only controller will handle all exceptions and local languages
 // other classes will report status to controller
@@ -16,33 +14,26 @@ use lzx\core\ControllerException;
 
 /**
  *
- * @property \lzx\Core\Cache $cache
  * @property \lzx\core\Logger $logger
- * @property \lzx\html\Template $html
+ * @property \lzx\core\Response $response
  * @property \lzx\core\Request $request
  * @property \lzx\core\Session $session
- * @property \lzx\core\Cookie $cookie
  *
  */
 abstract class Controller
 {
 
-   protected static $l = [ ];
    public $logger;
-   public $html;
    public $request;
+   public $response;
    public $session;
-   public $cookie;
-   protected $_class;
 
-   public function __construct( Request $req, Template $html, Logger $logger, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Response $response, Logger $logger, Session $session )
    {
-      $this->class = \get_class( $this );
       $this->request = $req;
-      $this->html = $html;
+      $this->response = $response;
       $this->logger = $logger;
       $this->session = $session;
-      $this->cookie = $cookie;
    }
 
    abstract public function run();
@@ -54,22 +45,28 @@ abstract class Controller
 
    protected function error( $msg )
    {
-      throw new ControllerException( $msg, ControllerException::PAGE_ERROR );
+      $this->response->setContent( $msg );
+      throw new \Exception();
    }
 
    public function pageNotFound( $msg = NULL )
    {
-      throw new ControllerException( $msg, ControllerException::PAGE_NOTFOUND );
+      $this->response->setContent( $msg );
+      $this->response->pageNotFound();
+      throw new \Exception();
    }
 
    public function pageForbidden( $msg = NULL )
    {
-      throw new ControllerException( $msg, ControllerException::PAGE_FORBIDDEN );
+      $this->response->setContent( $msg );
+      $this->response->pageForbidden();
+      throw new \Exception();
    }
 
    protected function pageRedirect( $uri )
    {
-      throw new ControllerException( $uri, ControllerException::PAGE_REDIRECT );
+      $this->response->pageRedirect( $uri );
+      throw new \Exception();
    }
 
 }

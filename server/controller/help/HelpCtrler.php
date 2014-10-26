@@ -10,7 +10,7 @@ class HelpCtrler extends Help
 
     public function run()
     {
-        $this->html->var['content'] = new Template('help');
+        $this->_var['content'] = new Template('help');
     }
 
 }

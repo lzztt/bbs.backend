@@ -38,7 +38,7 @@ class CheckinCtrler extends Single
          $unconfirmed_groups[ (int) $attendee[ 'sex' ] ][] = $attendee;
       }
 
-      $this->html->var[ 'content' ] = new Template( 'checkin', ['confirmed_groups' => $confirmed_groups, 'unconfirmed_groups' => $unconfirmed_groups ] );
+      $this->_var[ 'content' ] = new Template( 'checkin', ['confirmed_groups' => $confirmed_groups, 'unconfirmed_groups' => $unconfirmed_groups ] );
    }
 
 }

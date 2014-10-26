@@ -3,12 +3,10 @@
 namespace site;
 
 use lzx\core\Request;
-use lzx\html\Template;
+use lzx\core\Response;
 use site\Config;
 use lzx\core\Logger;
 use lzx\core\Session;
-use lzx\core\Cookie;
-use lzx\core\ControllerException;
 
 /**
  * Description of ControllerFactory
@@ -28,10 +26,9 @@ class ControllerFactory
     * @param \site\Config $config
     * @param \lzx\core\Logger $logger
     * @param \lzx\core\Session $session
-    * @param \lzx\core\Cookie $cookie
     * @return \site\Controller
     */
-   public static function create( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
+   public static function create( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
       $id = NULL;
       $args = $req->getURIargs( $req->uri );
@@ -71,14 +68,15 @@ class ControllerFactory
       $ctrlerClass = static::$_route[ $ctrler ];
       if ( $ctrlerClass )
       {
-         $ctrlerObj = new $ctrlerClass( $req, $html, $config, $logger, $session, $cookie );
+         $ctrlerObj = new $ctrlerClass( $req, $response, $config, $logger, $session );
          $ctrlerObj->args = $args;
          $ctrlerObj->id = $id;
          return $ctrlerObj;
       }
 
       // cannot find a controller
-      throw new ControllerException( NULL, ControllerException::PAGE_NOTFOUND );
+      $response->pageNotFound();
+      throw new \Exception();
    }
 
 }

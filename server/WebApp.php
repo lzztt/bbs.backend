@@ -6,6 +6,7 @@ use lzx\App;
 use lzx\core\Handler;
 use lzx\db\DB;
 use lzx\core\Request;
+use lzx\core\Response;
 use lzx\core\Session;
 use lzx\core\Cookie;
 use lzx\html\Template;
@@ -15,17 +16,11 @@ use site\ControllerRouter;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
-use lzx\core\ControllerException;
 
 /**
- *
- * @property lzx\core\Session $session
  * @property site\Config $config
  */
-// cookie->uid
-// cookie->urole
-// session->uid
-// session->urole
+
 require_once \dirname( __DIR__ ) . '/lib/lzx/App.php';
 
 class WebApp extends App
@@ -79,9 +74,6 @@ class WebApp extends App
     */
    public function run( $argc = 0, Array $argv = [ ] )
    {
-      // set output header
-      \header( 'Content-Type: text/html; charset=UTF-8' );
-
       // website is offline
       if ( $this->config->mode === Config::MODE_OFFLINE )
       {
@@ -128,128 +120,67 @@ class WebApp extends App
       // update request uid based on session uid
       $request->uid = (int) $session->uid;
 
+      // set response cookie
+      $response = Response::getInstance();
+      $response->cookie = $cookie;
+
+      // run controller
       $ctrler = NULL;
-      $html = NULL;
       try
       {
-         $ctrler = ControllerRouter::create( $request, new Template( 'html' ), $this->config, $this->logger, $session, $cookie );
+         $ctrler = ControllerRouter::create( $request, $response, $this->config, $this->logger, $session );
          $ctrler->run();
-         $html = $ctrler->html;
-      }
-      catch ( ControllerException $e )
-      {
-         $msg = $e->getMessage();
-         switch ( $e->getCode() )
-         {
-            case ControllerException::PAGE_NOTFOUND:
-               \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
-               echo ( $msg ? $msg : '404 Not Found :(' );
-               // finish request processing
-               \fastcgi_finish_request();
-
-               // flush the log and return
-               $this->logger->flush();
-
-               return;
-               break;
-            case ControllerException::PAGE_FORBIDDEN:
-               \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
-               echo ( $msg ? $msg : '403 Forbidden :(' );
-               // finish request processing
-               \fastcgi_finish_request();
-
-               // flush the log and return
-               $this->logger->flush();
-
-               return;
-               break;
-            case ControllerException::PAGE_REDIRECT:
-               \header( 'Location: ' . $msg );
-               // send cookie, flush cache and finish request processing
-               $cookie->send();
-               if ( $ctrler )
-               {
-                  try
-                  {
-                     $ctrler->flushCache();
-                  }
-                  catch ( \Exception $e )
-                  {
-                     $this->logger->error( $e->getMessage() );
-                  }
-               }
-               \fastcgi_finish_request();
-
-               // flush session
-               $session->close();
-               // flush database
-               $db->flush();
-               // flush logger
-               $this->logger->flush();
-
-               return;
-               break;
-            default:
-               // PAGE_ERROR and others
-               echo $msg ? $msg : 'Page Error :(';
-               // finish request processing
-               \fastcgi_finish_request();
-
-               // flush the log and return
-               $this->logger->flush();
-
-               return;
-               break;
-         }
-      }
-
-      // normal execution
-      // send cookie and page content
-      $cookie->send();
-      if ( $html )
-      {
-         echo $html;
-      }
-
-      // output debug message?
-      $outputDebug = ( $this->config->stage == Config::STAGE_DEVELOPMENT && $html instanceof Template );
-
-      // FINISH request processing
-      if ( !$outputDebug )
-      {
-         \fastcgi_finish_request();
-      }
-
-      // do extra clean up and heavy stuff here
-      try
-      {
-         // flush session
-         $session->close();
-
-         if ( $outputDebug )
-         {
-            echo '<pre>' . $request->datetime . \PHP_EOL . 'stage=' . $this->config->stage . ' ' . $userinfo . \PHP_EOL;
-            echo \print_r( $db->queries, TRUE );
-         }
-
-         // flush database
-         $db->flush();
-
-         // controller flush cache
-         $_timer = \microtime( TRUE );
-         $ctrler->flushCache();
-         $db->flush();
-         $_timer = \microtime( TRUE ) - $_timer;
-
-         if ( $outputDebug )
-         {
-            echo \sprintf( 'cache flush time: %8.6f', $_timer ) . \PHP_EOL;
-            echo '</pre>';
-         }
       }
       catch ( \Exception $e )
       {
-         $this->logger->error( $e->getMessage() );
+         if ( $e->getMessage() )
+         {
+            $this->logger->error( $e->getMessage(), $e->getTrace() );
+            $this->logger->flush();
+         }
+      }
+
+      // send out response
+      $response->send();
+
+      // do extra clean up and heavy stuff here
+      if ( $response->getStatus() < 400 )
+      {
+         try
+         {
+            // flush session
+            $session->close();
+
+            // output debug message?
+            $debug = ( $this->config->stage == Config::STAGE_DEVELOPMENT );
+
+            if ( $debug )
+            {
+               $this->logger->info( $db->queries );
+            }
+
+            // flush database
+            $db->flush();
+
+            // controller flush cache
+            if ( $debug )
+            {
+               $_timer = \microtime( TRUE );
+               $ctrler->flushCache();
+               $db->flush();
+               $_timer = \microtime( TRUE ) - $_timer;
+               $this->logger->info( \sprintf( 'cache flush time: %8.6f', $_timer ) );
+            }
+            else
+            {
+               $ctrler->flushCache();
+               $db->flush();
+            }
+         }
+         catch ( \Exception $e )
+         {
+            $this->logger->error( $e->getMessage() );
+         }
       }
 
       // flush logger

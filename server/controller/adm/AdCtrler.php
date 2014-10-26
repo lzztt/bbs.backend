@@ -26,7 +26,7 @@ class AdCtrler extends Adm
 
       if ( \method_exists( $this, $function ) )
       {
-         $this->html->var[ 'content' ] = $this->$function();
+         $this->_var[ 'content' ] = $this->$function();
       }
       else
       {

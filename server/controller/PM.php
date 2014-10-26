@@ -17,37 +17,37 @@ abstract class PM extends Controller
 
    protected function _getMailBox()
    {
-      if ( $this->cookie->mailbox )
+      if ( $this->response->cookie->mailbox )
       {
-         if ( !\in_array( $this->cookie->mailbox, ['inbox', 'sent' ] ) )
+         if ( !\in_array( $this->response->cookie->mailbox, ['inbox', 'sent' ] ) )
          {
-            $this->error( '短信文件夹[' . $this->cookie->mailbox . ']不存在。' );
+            $this->error( '短信文件夹[' . $this->response->cookie->mailbox . ']不存在。' );
          }
       }
       else
       {
-         $this->cookie->mailbox = 'inbox';
+         $this->response->cookie->mailbox = 'inbox';
       }
 
-      return $this->cookie->mailbox;
+      return $this->response->cookie->mailbox;
    }
 
    protected function _setMailBox( $mailbox )
    {
-      if ( $mailbox != $this->cookie->mailbox )
+      if ( $mailbox != $this->response->cookie->mailbox )
       {
          if ( !\in_array( $mailbox, ['inbox', 'sent' ] ) )
          {
             $this->error( '短信文件夹[' . $mailbox . ']不存在。' );
          }
 
-         $this->cookie->mailbox = $mailbox;
+         $this->response->cookie->mailbox = $mailbox;
       }
    }
 
    protected function _getMailBoxLinks( $activeLink )
    {
-      return $this->html->navbar( [
+      return Template::navbar( [
             '收件箱' => '/pm/mailbox/inbox',
             '发件箱' => '/pm/mailbox/sent'
             ], $activeLink

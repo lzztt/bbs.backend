@@ -54,7 +54,7 @@ class ForgetCtrler extends Password
          $mailer->body = new Template( 'mail/password_reset', $contents );
          if ( $mailer->send() )
          {
-            $this->html = '重设密码的网址链接已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示重设密码。<br />如果您的收件箱内没有重设密码的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。';
+            $this->response->setContent( '重设密码的网址链接已经成功发送到您的注册邮箱 ' . $user->email . ' ，请检查email并且按其中提示重设密码。<br />如果您的收件箱内没有重设密码的电子邮件，请检查电子邮件的垃圾箱，或者与网站管理员联系。' );
          }
          else
          {

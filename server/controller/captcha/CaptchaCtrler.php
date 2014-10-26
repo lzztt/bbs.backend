@@ -4,6 +4,7 @@ namespace site\controller\captcha;
 
 use site\controller\Captcha;
 use lzx\html\Template;
+use lzx\core\Response;
 
 class CaptchaCtrler extends Captcha
 {
@@ -23,8 +24,8 @@ class CaptchaCtrler extends Captcha
       $this->session->captcha = $code;
 
       // generate the image
-      \header( 'Content-type: image/jpeg' );
-      $this->html = $this->_generate_image( \str_split( $code ), 'jpeg' );
+      $this->response->type = Response::JPEG;
+      $this->response->setContent( $this->_generate_image( \str_split( $code ), 'jpeg' ) );
    }
 
    public static function checkCaptcha()

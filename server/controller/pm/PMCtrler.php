@@ -42,7 +42,7 @@ class PMCtrler extends PM
       }
 
 
-      $this->html->var[ 'content' ] = new Template( 'pm_topic', [
+      $this->_var[ 'content' ] = new Template( 'pm_topic', [
          'topicID' => $topicID,
          'msgs' => $msgs,
          'fromUID' => $this->request->uid,

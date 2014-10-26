@@ -10,11 +10,11 @@ namespace site\controller;
 
 use site\Controller;
 use lzx\core\Request;
+use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
 use lzx\core\Session;
-use lzx\core\Cookie;
 
 /**
  * Description of Wedding
@@ -26,9 +26,9 @@ abstract class Wedding extends Controller
 
    private $_register_end = FALSE;
 
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
-      parent::__construct( $req, $html, $config, $logger, $session, $cookie );
+      parent::__construct( $req, $response, $config, $logger, $session, $cookie );
 
       Template::$theme = $this->config->theme[ 'wedding' ];
 
@@ -74,7 +74,7 @@ abstract class Wedding extends Controller
          $this->session->loginRedirect = $defaultRedirect;
       }
 
-      $this->html->var[ 'body' ] = new Template( 'login', ['uri' => $this->request->uri ] );
+      $this->_var[ 'body' ] = new Template( 'login', ['uri' => $this->request->uri ] );
    }
 
 }

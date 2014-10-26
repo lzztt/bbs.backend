@@ -19,7 +19,7 @@ class WeatherCtrler extends Weather
       {
          $zip = '77036';
       }
-      $this->html->var['content'] = $this->_get_weather( $zip );
+      $this->_var['content'] = $this->_get_weather( $zip );
    }
 
    protected function _get_weather_div( $zip )
