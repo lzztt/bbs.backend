@@ -34,7 +34,7 @@ class NodeCtrler extends YP
 
       if ( empty( $this->request->post ) )
       {
-         $this->html->var[ 'content' ] = new Template( 'editor_bbcode_yp' );
+         $this->_var[ 'content' ] = new Template( 'editor_bbcode_yp' );
       }
       else
       {

@@ -30,7 +30,7 @@ class EditCtrler extends Wedding
          return;
       }
 
-      $this->html->var[ 'navbar' ] = new Template( 'navbar' );
+      $this->_var[ 'navbar' ] = new Template( 'navbar' );
       $a = new WeddingAttendee();
       if ( $this->request->post )
       {
@@ -40,7 +40,7 @@ class EditCtrler extends Wedding
             $a->$k = $v;
          }
          $a->update();
-         $this->html->var[ 'body' ] = $a->name . '的更新信息已经被保存';
+         $this->_var[ 'body' ] = $a->name . '的更新信息已经被保存';
       }
       else
       {
@@ -48,13 +48,13 @@ class EditCtrler extends Wedding
          {
             // edit one guest
             $a->id = $this->id;
-            $this->html->var[ 'body' ] = new Template( 'edit', \array_pop( $a->getList() ) );
+            $this->_var[ 'body' ] = new Template( 'edit', \array_pop( $a->getList() ) );
          }
          else
          {
             // all guests in a list;
             $a->order( 'tid' );
-            $this->html->var[ 'body' ] = new Template( 'edit_list', ['attendees' => $a->getList( 'name' ) ] );
+            $this->_var[ 'body' ] = new Template( 'edit_list', ['attendees' => $a->getList( 'name' ) ] );
          }
       }
    }

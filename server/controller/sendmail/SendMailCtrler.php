@@ -32,7 +32,7 @@ class SendMailCtrler extends SendMail
       }
 
       // display page
-      $this->html->var[ 'content' ] = new Template( 'send_mail', [ 'message' => $message ] );
+      $this->_var[ 'content' ] = new Template( 'send_mail', [ 'message' => $message ] );
    }
 
    public function send( array $post )

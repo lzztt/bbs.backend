@@ -18,11 +18,10 @@ class ActivityCtrler extends Activity
       if ( $total == 0 )
       {
          $this->error( '目前没有活动。' );
-         return;
       }
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $total, self::NODES_PER_PAGE );
-      $pager = $this->html->pager( $pageNo, $pageCount, '/activity' );
+      $pager = Template::pager( $pageNo, $pageCount, '/activity' );
 
       $limit = self::NODES_PER_PAGE;
       $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
@@ -39,7 +38,7 @@ class ActivityCtrler extends Activity
          'data' => $data
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'activity_list', $contents );
+      $this->_var[ 'content' ] = new Template( 'activity_list', $contents );
    }
 
 }

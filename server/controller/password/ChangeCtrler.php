@@ -51,7 +51,7 @@ class ChangeCtrler extends Password
             $m->body = new Template( 'mail/password_changed', [ 'sitename' => $siteName ] );
             $m->send();
 
-            $this->html = '您的密码已经更改成功。';
+            $this->response->setContent( '您的密码已经更改成功。' );
          }
          else
          {

@@ -25,7 +25,7 @@ class Template
    private static $_logger = NULL;
    //private static $tpl_cache = []; // pool for rendered templates without $var
    public $tpl;
-   public $var = [ ]; // controller need to fill this array (or an array Theme can access)
+   private $_var = [ ];
    private $_observers;
    private $_string;
 
@@ -54,15 +54,20 @@ class Template
     * 
     * Constructor
     */
-   public function __construct( $tpl, $var = [ ] )
+   public function __construct( $tpl, array $var = [ ] )
    {
       $this->_observers = new \SplObjectStorage();
 
       $this->tpl = $tpl;
-      if ( !empty( $var ) )
+      if ( $var )
       {
-         $this->var = $var;
+         $this->_var = $var;
       }
+   }
+
+   public function setVar( array $var )
+   {
+      $this->_var = \array_merge( $this->_var, $var );
    }
 
    public static function setSite( $site )
@@ -83,8 +88,8 @@ class Template
       {
          // notify observers
          $this->notify();
-
-         \extract( $this->var );
+         
+         \extract( $this->_var );
          $tpl = $this->tpl;
          $tpl_theme = self::$theme;
          $tpl_path = self::$path . '/' . self::$theme;
@@ -143,12 +148,12 @@ class Template
       return self::$_status;
    }
 
-   public function formatTime( $timestamp )
+   public static function formatTime( $timestamp )
    {
       return \date( 'm/d/Y H:i', $timestamp );
    }
 
-   public function truncate( $str, $len = 45 )
+   public static function truncate( $str, $len = 45 )
    {
       if ( \strlen( $str ) < $len / 2 )
       {
@@ -167,47 +172,28 @@ class Template
 // we only store timestamp in database, for query and comparation
 // we only display local time based on timezones
 // do not use T in format, timezone info is not correct
-   public function localDate( $format, $timestamp )
+   public static function localDate( $format, $timestamp )
    {
       return \date( $format, TIMESTAMP + ($_COOKIE[ 'timezone' ] - SYSTIMEZONE) * 3600 );
    }
 
    // get chinese date and time 
-   static public function getWeekday( $timestamp )
+   public static function getWeekday( $timestamp )
    {
       static $weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六' ];
 
       return $weekdays[ \date( 'w', $timestamp ) ];
    }
 
-   static public function getDateTime( $timestamp )
+   public static function getDateTime( $timestamp )
    {
       return \date( 'Y年m月d日 H:i', $timestamp );
    }
 
 // do not use timezone info in the $time string
-   public function localStrToTime( $time )
+   public static function localStrToTime( $time )
    {
       return (\strtotime( $time ) - ($_COOKIE[ 'timezone' ] - SYSTIMEZONE) * 3600);
-   }
-
-   public function renderPage()
-   {
-      $css = '';
-      foreach ( $this->css as $i )
-      {
-         $css .= '<link rel="stylesheet" media="all" href="' . $i . '" />';
-      }
-      $this->var[ 'head_css' ] = $css;
-
-      $js = '';
-      foreach ( $this->js as $i )
-      {
-         $js .= '<script src="' . $i . '"></script>';
-      }
-      $this->var[ 'head_js' ] = $js;
-
-      return $this->render( 'html' );
    }
 
    /**
@@ -217,7 +203,7 @@ class Template
     * @param array $attributes
     * @return \lzx\core\HTMLElement
     */
-   public function link( $name, $url, array $attributes = [ ] )
+   public static function link( $name, $url, array $attributes = [ ] )
    {
       $attributes[ 'href' ] = $url;
       return new HTMLElement( 'a', $name, $attributes );
@@ -232,7 +218,7 @@ class Template
     * @param boolean $even_odd
     * @return \lzx\core\HTMLElement
     */
-   public function ulist( array $list, array $attributes = [ ], $even_odd = TRUE )
+   public static function ulist( array $list, array $attributes = [ ], $even_odd = TRUE )
    {
       if ( $even_odd )
       {
@@ -245,7 +231,7 @@ class Template
             $attributes[ 'class' ] = self::EVEN_ODD_CLASS;
          }
       }
-      return new HTMLElement( 'ul', $this->_li( $list ), $attributes );
+      return new HTMLElement( 'ul', self::_li( $list ), $attributes );
    }
 
    /**
@@ -254,12 +240,12 @@ class Template
     * @param array $attributes
     * @return \lzx\core\HTMLElement
     */
-   public function olist( array $list, array $attributes = [ ] )
+   public static function olist( array $list, array $attributes = [ ] )
    {
-      return new HTMLElement( 'ol', $this->_li( $list ), $attributes );
+      return new HTMLElement( 'ol', self::_li( $list ), $attributes );
    }
 
-   private function _li( $list )
+   private static function _li( $list )
    {
       $_list = [ ];
       foreach ( $list as $li )
@@ -287,7 +273,7 @@ class Template
       return $_list;
    }
 
-   public function dlist( array $list, array $attributes = [ ] )
+   public static function dlist( array $list, array $attributes = [ ] )
    {
       $dl = new HTMLElement( 'dl', NULL, $attributes );
       foreach ( $list as $li )
@@ -325,7 +311,7 @@ class Template
     *    'text' => string
     * );
     */
-   public function table( array $data, array $attributes = [ ], $even_odd = TRUE )
+   public static function table( array $data, array $attributes = [ ], $even_odd = TRUE )
    {
       $table = new HTMLElement( 'table', NULL, $attributes );
       if ( array_key_exists( 'caption', $data ) && strlen( $data[ 'caption' ] ) > 0 )
@@ -359,7 +345,7 @@ class Template
       return $table;
    }
 
-   private function _table_row( $row, $isHeader = FALSE )
+   private static function _table_row( $row, $isHeader = FALSE )
    {
       if ( !\array_key_exists( 'cells', $row ) )
       {
@@ -405,7 +391,7 @@ class Template
     * $form
     */
 
-   public function form( $inputs, $action, $method = 'get', $attributes = [ ] )
+   public static function form( $inputs, $action, $method = 'get', $attributes = [ ] )
    {
       //input text, radio, checkbox, textarea,
       $attributes[ 'action' ] = $action;
@@ -440,7 +426,7 @@ class Template
     * );
     */
 
-   public function select( $name, $type, $label, array $options, $attributes )
+   public static function select( $name, $type, $label, array $options, $attributes )
    {
       if ( $type == 'checkbox' || $type == 'radio' )
       {
@@ -464,7 +450,7 @@ class Template
       }
    }
 
-   public function input( $name, $type, $label = '', $attributes = [ ] )
+   public static function input( $name, $type, $label = '', $attributes = [ ] )
    {
       if ( $type == 'radio' || $type == 'checkbox' )
       {
@@ -481,7 +467,7 @@ class Template
       //  </div>
    }
 
-   public function uri( array $args = [ ], array $get = [ ] )
+   public static function uri( array $args = [ ], array $get = [ ] )
    {
       $conditions = [ ];
       foreach ( $get as $k => $v )
@@ -493,30 +479,30 @@ class Template
       return \htmlspecialchars( '/' . \implode( '/', $args ) . ($query ? '?' . $query : '') );
    }
 
-   public function breadcrumb( array $links )
+   public static function breadcrumb( array $links )
    {
       $list = [ ];
       $count = \count( $links ) - 1;
       foreach ( $links as $text => $uri )
       {
-         $list[] = $count-- ? $this->link( $text, $uri ) : (string) $text;
+         $list[] = $count-- ? self::link( $text, $uri ) : (string) $text;
       }
 
       return new HTMLElement( 'nav', $list, [ 'class' => 'breadcrumb' ] );
    }
 
-   public function navbar( array $links, $active_link = NULL )
+   public static function navbar( array $links, $active_link = NULL )
    {
       $list = [ ];
       foreach ( $links as $text => $uri )
       {
-         $list[] = $this->link( $text, $uri, $uri == $active_link ? [ 'class' => 'active' ] : [ ]  );
+         $list[] = self::link( $text, $uri, $uri == $active_link ? [ 'class' => 'active' ] : [ ]  );
       }
 
       return new HTMLElement( 'nav', $list, [ 'class' => 'navbar' ] );
    }
 
-   public function pager( $pageNo, $pageCount, $uri )
+   public static function pager( $pageNo, $pageCount, $uri )
    {
       if ( $pageCount < 2 )
       {
@@ -546,24 +532,24 @@ class Template
 
       if ( $pageNo != 1 )
       {
-         $pager[] = $this->link( '<<', $uri );
-         $pager[] = $this->link( '<', $uri . '?p=' . ($pageNo - 1) );
+         $pager[] = self::link( '<<', $uri );
+         $pager[] = self::link( '<', $uri . '?p=' . ($pageNo - 1) );
       }
       for ( $i = $pageFirst; $i <= $pageLast; $i++ )
       {
          if ( $i == $pageNo )
          {
-            $pager[] = $this->link( (string) $i, $uri . '?p=' . $i, ['class' => 'active' ] );
+            $pager[] = self::link( (string) $i, $uri . '?p=' . $i, ['class' => 'active' ] );
          }
          else
          {
-            $pager[] = $this->link( (string) $i, $uri . '?p=' . $i );
+            $pager[] = self::link( (string) $i, $uri . '?p=' . $i );
          }
       }
       if ( $pageNo != $pageCount )
       {
-         $pager[] = $this->link( '>', $uri . '?p=' . ($pageNo + 1) );
-         $pager[] = $this->link( '>>', $uri . '?p=' . $pageCount );
+         $pager[] = self::link( '>', $uri . '?p=' . ($pageNo + 1) );
+         $pager[] = self::link( '>>', $uri . '?p=' . $pageCount );
       }
       return new HTMLElement( 'nav', $pager, [ 'class' => 'pager' ] );
    }

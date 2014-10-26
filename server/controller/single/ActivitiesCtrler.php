@@ -25,7 +25,7 @@ class ActivitiesCtrler extends Single
          $activities[ $i ][ 'comments' ] = $this->_getComments( $a[ 'id' ], 'ASC' );
       }
 
-      $this->html->var[ 'content' ] = new Template( 'activities', ['activities' => $activities ] );
+      $this->_var[ 'content' ] = new Template( 'activities', ['activities' => $activities ] );
    }
 
 }

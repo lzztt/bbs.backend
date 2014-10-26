@@ -69,11 +69,11 @@ class InfoCtrler extends Single
             $a->update( 'info' );
          }
 
-         $this->html->var[ 'content' ] = '<div id="activity">您的信息已经被保存。<br /><a href="/single">返回首页</a></div>';
+         $this->_var[ 'content' ] = '<div id="activity">您的信息已经被保存。<br /><a href="/single">返回首页</a></div>';
       }
       else
       {
-         $this->html->var[ 'content' ] = new Template( 'info', [ 'uid' => $uid, 'action' => $this->request->uri ] );
+         $this->_var[ 'content' ] = new Template( 'info', [ 'uid' => $uid, 'action' => $this->request->uri ] );
       }
    }
 
@@ -103,7 +103,7 @@ class InfoCtrler extends Single
       $mailer->to = 'ikki3355@gmail.com';
       $mailer->send();
 
-      $this->html->var[ 'content' ] = '<div id="activity">email sent<br /><a href="/single">返回首页</a></div>';
+      $this->_var[ 'content' ] = '<div id="activity">email sent<br /><a href="/single">返回首页</a></div>';
    }
 
 }

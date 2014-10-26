@@ -22,7 +22,7 @@ class LoginCtrler extends User
          if ( $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] ) )
          {
             $this->_setUser( $user );
-            $this->html = '<script>location.reload();</script>';
+            $this->response->setContent( '<script>location.reload();</script>' );
          }
          else
          {

@@ -73,7 +73,7 @@ class ResetCtrler extends Password
          unset( $this->session->secureLink );
          $slink->delete();
 
-         $this->html->var[ 'content' ] = '您的密码已经重设成功，请用新密码登录。';
+         $this->_var[ 'content' ] = '您的密码已经重设成功，请用新密码登录。';
       }
       else
       {
@@ -81,7 +81,7 @@ class ResetCtrler extends Password
          // save link uri to session
          $this->session->secureLink = (string) $slink;
 
-         $this->html->var[ 'content' ] = new Template( 'password_reset' );
+         $this->_var[ 'content' ] = new Template( 'password_reset' );
       }
    }
 

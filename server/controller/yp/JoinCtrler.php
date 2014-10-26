@@ -13,7 +13,7 @@ class JoinCtrler extends YP
    {
       $this->cache = new PageCache( $this->request->uri );
       
-      $this->html->var[ 'content' ] = new Template( 'yp_join' );
+      $this->_var[ 'content' ] = new Template( 'yp_join' );
    }
 
 }

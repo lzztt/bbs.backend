@@ -20,7 +20,7 @@ class DeleteCtrler extends User
          {
             $this->_getIndependentCache( '/node/' . $nid )->delete();
          }
-         $this->html->var[ 'content' ] = '用户ID: ' . $uid . '已经从系统中删除。';
+         $this->_var[ 'content' ] = '用户ID: ' . $uid . '已经从系统中删除。';
       }
       else
       {
