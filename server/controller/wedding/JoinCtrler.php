@@ -60,7 +60,7 @@ class JoinCtrler extends Wedding
       $mailer->body = new Template( 'mail/attendee', ['name' => $a->name ] );
       $mailer->send();
 
-      $this->html->var[ 'body' ] = '<div class="center">谢谢' . $a->name . '!</div>'
+      $this->_var[ 'body' ] = '<div class="center">谢谢' . $a->name . '!</div>'
          . '<div class="down">新婚答谢宴将于6月28日晚上6点28分举行<br />地点等详情已经通过email发送到您的邮箱 ' . $a->email . '<br />请查收~</div>';
    }
 

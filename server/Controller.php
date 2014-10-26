@@ -8,11 +8,11 @@ namespace site;
 // WebApp object will call Theme to display the content
 use lzx\core\Controller as LzxCtrler;
 use lzx\core\Request;
+use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
 use lzx\core\Session;
-use lzx\core\Cookie;
 use site\ControllerRouter;
 use site\dbobject\User;
 use site\dbobject\Tag;
@@ -25,14 +25,12 @@ use site\dbobject\Session as SessionObj;
 /**
  *
  * @property \lzx\core\Logger $logger
- * @property \lzx\html\Template $html
  * @property \lzx\core\Request $request
  * @property \lzx\core\Session $session
- * @property \lzx\core\Cookie $cookie
  * @property \site\Config $config
- * @property \site\PageCache $cache
- * @property \site\Cache[]  $_independentCacheList
- * @property \site\CacheEvent[] $_cacheEvents
+ * @property \lzx\cache\PageCache $cache
+ * @property \lzx\cache\Cache[]  $_independentCacheList
+ * @property \lzx\cache\CacheEvent[] $_cacheEvents
  * @property \site\dbobject\City $_city
  *
  */
@@ -42,6 +40,7 @@ abstract class Controller extends LzxCtrler
    const UID_GUEST = 0;
    const UID_ADMIN = 1;
 
+   protected static $l = [ ];
    protected static $_city;
    private static $_requestProcessed = FALSE;
    private static $_cacheHandler;
@@ -50,20 +49,21 @@ abstract class Controller extends LzxCtrler
    public $config;
    public $cache;
    public $site;
+   protected $_var = [ ];
    protected $_independentCacheList = [ ];
    protected $_cacheEvents = [ ];
 
    /**
     * public methods
     */
-   public function __construct( Request $req, Template $html, Config $config, Logger $logger, Session $session, Cookie $cookie )
+   public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
-      parent::__construct( $req, $html, $logger, $session, $cookie );
+      parent::__construct( $req, $response, $logger, $session );
 
       if ( !self::$_requestProcessed )
       {
          // set site info
-         $site = preg_replace( ['/\w*\./', '/bbs.*/' ], '', $this->request->domain, 1 );
+         $site = \preg_replace( ['/\w*\./', '/bbs.*/' ], '', $this->request->domain, 1 );
 
          Template::setSite( $site );
 
@@ -92,7 +92,7 @@ abstract class Controller extends LzxCtrler
                   if ( $session->cid != self::$_city->id )
                   {
                      $this->session->clear();
-                     $this->cookie->clear();
+                     $this->response->cookie->clear();
                   }
                }
             }
@@ -114,9 +114,9 @@ abstract class Controller extends LzxCtrler
             $user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
             // check new pm message
             $pmCount = $user->getPrivMsgsCount( 'new' );
-            if ( $pmCount != $this->cookie->pmCount )
+            if ( $pmCount != $this->response->cookie->pmCount )
             {
-               $this->cookie->pmCount = (int) $pmCount;
+               $this->response->cookie->pmCount = (int) $pmCount;
             }
          }
 
@@ -125,18 +125,22 @@ abstract class Controller extends LzxCtrler
 
       // language info
       $this->config = $config;
-      if ( !\array_key_exists( $this->class, self::$l ) )
+      $class = \get_class( $this );
+      if ( !\array_key_exists( $class, self::$l ) )
       {
-         $lang_file = $lang_path . \str_replace( '\\', '/', $this->_class ) . '.' . Template::$language . '.php';
+         // GetText: use po language file
+         $lang_file = $lang_path . \str_replace( '\\', '/', $class ) . '.' . Template::$language . '.po';
          if ( \is_file( $lang_file ) )
          {
             include_once $lang_file;
          }
-         self::$l[ $this->_class ] = isset( $language ) ? $language : [ ];
+         self::$l[ $class ] = isset( $language ) ? $language : [ ];
       }
 
       // register this controller as an observer of the HTML template
-      $this->html->attach( $this );
+      $html = new Template( 'html' );
+      $html->attach( $this );
+      $this->response->setContent( $html );
    }
 
    public function flushCache()
@@ -145,7 +149,7 @@ abstract class Controller extends LzxCtrler
       {
          if ( $this->cache && Template::getStatus() === TRUE )
          {
-            $this->cache->store( $this->html );
+            $this->response->cacheContent( $this->cache );
             $this->cache->flush();
             $this->cache = NULL;
          }
@@ -191,37 +195,38 @@ abstract class Controller extends LzxCtrler
          $navbar = new Template( 'page_navbar', $vars );
          $navbarCache->store( $navbar );
       }
-      $html->var[ 'page_navbar' ] = $navbar;
+      $this->_var[ 'page_navbar' ] = $navbar;
 
       // set headers
-      if ( !$html->var[ 'head_title' ] )
+      if ( !$this->_var[ 'head_title' ] )
       {
-         $html->var[ 'head_title' ] = '缤纷' . self::$_city->name . '华人网';
+         $this->_var[ 'head_title' ] = '缤纷' . self::$_city->name . '华人网';
       }
 
-      if ( !$this->html->var[ 'head_description' ] )
+      if ( !$this->_var[ 'head_description' ] )
       {
-         $html->var[ 'head_description' ] = self::$_city->name . ' 华人 旅游 黄页 移民 周末活动 单身 交友 ' . \ucfirst( self::$_city->uriName ) . ' Chinese ' . self::$_city->uriName . 'bbs';
+         $this->_var[ 'head_description' ] = self::$_city->name . ' 华人 旅游 黄页 移民 周末活动 单身 交友 ' . \ucfirst( self::$_city->uriName ) . ' Chinese ' . self::$_city->uriName . 'bbs';
       }
       else
       {
-         $html->var[ 'head_description' ] = $html->var[ 'head_description' ] . ' ' . self::$_city->name . ' 华人 ' . \ucfirst( self::$_city->uriName ) . ' Chinese ' . self::$_city->uriName . 'bbs';
+         $this->_var[ 'head_description' ] = $this->_var[ 'head_description' ] . ' ' . self::$_city->name . ' 华人 ' . \ucfirst( self::$_city->uriName ) . ' Chinese ' . self::$_city->uriName . 'bbs';
       }
-      $html->var[ 'sitename' ] = '缤纷' . self::$_city->name;
+      $this->_var[ 'sitename' ] = '缤纷' . self::$_city->name;
 
-      // remove this controller from the subject's observer list
+      // populate template variables and remove self as an observer
+      $html->setVar( $this->_var );
       $html->detach( $this );
    }
 
    protected function ajax( $return )
    {
-      $return = \json_encode( $return );
-      if ( $return === FALSE )
+      $json = \json_encode( $return, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE );
+      if ( $json === FALSE )
       {
-         $return = [ 'error' => 'ajax json encode error' ];
-         $return = \json_encode( $return );
+         $json = '{"error":"ajax json encode error"}';
       }
-      $this->html = $return;
+      $this->response->type = Response::JSON;
+      $this->response->setContent( $json );
    }
 
    /**
@@ -271,23 +276,22 @@ abstract class Controller extends LzxCtrler
 
    protected function _forward( $uri )
    {
-      $this->html->detach( $this );
       $newReq = clone $this->request;
       $newReq->uri = $uri;
-      $ctrler = ControllerRouter::create( $newReq, $this->html, $this->config, $this->logger, $this->session, $this->cookie );
+      $ctrler = ControllerRouter::create( $newReq, $this->response, $this->config, $this->logger, $this->session );
       $ctrler->request = $this->request;
       $ctrler->run();
    }
 
    protected function _setLoginRedirect( $uri )
    {
-      $this->cookie->loginRedirect = $uri;
+      $this->response->cookie->loginRedirect = $uri;
    }
 
    protected function _getLoginRedirect()
    {
-      $uri = $this->cookie->loginRedirect;
-      unset( $this->cookie->loginRedirect );
+      $uri = $this->response->cookie->loginRedirect;
+      unset( $this->response->cookie->loginRedirect );
       return $uri;
    }
 
@@ -297,7 +301,7 @@ abstract class Controller extends LzxCtrler
       {
          $this->_setLoginRedirect( $redirect );
       }
-      $this->html->var[ 'content' ] = new Template( 'user_login', ['userLinks' => $this->_getUserLinks( '/user/login' ) ] );
+      $this->_var[ 'content' ] = new Template( 'user_login', ['userLinks' => $this->_getUserLinks( '/user/login' ) ] );
    }
 
    protected function _createSecureLink( $uid, $uri )
@@ -427,7 +431,7 @@ abstract class Controller extends LzxCtrler
       if ( $this->request->uid )
       {
          // user
-         return $this->html->navbar( [
+         return Template::navbar( [
                '用户首页' => '/user/' . $this->request->uid,
                '站内短信' => '/pm/mailbox',
                '收藏夹' => '/user/' . $this->request->uid . '/bookmark',

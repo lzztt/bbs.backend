@@ -21,7 +21,7 @@ class IOStatCtrler extends IOStat
    public function run()
    {
       $this->error( 'not available yet :(' );
-      $this->html->var[ 'content' ] = $this->sarChart();
+      $this->_var[ 'content' ] = $this->sarChart();
    }
 
    protected function sarChart()

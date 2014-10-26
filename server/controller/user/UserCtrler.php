@@ -69,7 +69,7 @@ class UserCtrler extends User
          'comments' => $user->getRecentComments( self::$_city->ForumRootID, 10 )
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'user_display', $content );
+      $this->_var[ 'content' ] = new Template( 'user_display', $content );
    }
 
 }

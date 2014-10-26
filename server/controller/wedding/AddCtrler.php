@@ -31,7 +31,7 @@ class AddCtrler extends Wedding
       }
 
       // logged in      
-      $this->html->var[ 'navbar' ] = new Template( 'navbar' );
+      $this->_var[ 'navbar' ] = new Template( 'navbar' );
       if ( $this->request->post )
       {
          // save changes for one guest
@@ -44,11 +44,11 @@ class AddCtrler extends Wedding
          $a->time = $this->request->timestamp;
          $a->status = 1;
          $a->add();
-         $this->html->var[ 'body' ] = $a->name . '已经被添加';
+         $this->_var[ 'body' ] = $a->name . '已经被添加';
       }
       else
       {
-         $this->html->var[ 'body' ] = new Template( 'join_form' );
+         $this->_var[ 'body' ] = new Template( 'join_form' );
       }
    }
 

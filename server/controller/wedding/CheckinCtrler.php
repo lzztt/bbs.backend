@@ -33,7 +33,7 @@ class CheckinCtrler extends Wedding
       $a = new WeddingAttendee();
       $a->where( 'tid', 0, '>' );
       list($table_guests, $table_counts, $total) = $this->_getTableGuests( $a->getList( 'name,guests,checkin,tid' ), 'guests' );
-      $this->html->var[ 'body' ] = new Template( 'checkin', ['tables' => $table_guests ] );
+      $this->_var[ 'body' ] = new Template( 'checkin', ['tables' => $table_guests ] );
    }
 
 }

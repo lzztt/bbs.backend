@@ -11,7 +11,7 @@ class CacheCtrler extends Adm
    {
       $key = $this->request->post[ 'key' ];
       $form = '<div><form action="" method="post" accept-charset="UTF-8">Search Cache Key: <input type="text" value="' . $key . '" name="key" /><br /><input type="submit" value="Submit" /></form></div>';
-      $this->html->var[ 'content' ] = $form;
+      $this->_var[ 'content' ] = $form;
 
       // list file cache
       if ( $key )
@@ -27,11 +27,11 @@ class CacheCtrler extends Adm
             }
 
             $form = '<div><form action="" method="post" accept-charset="UTF-8"><ol>' . $li . '</ol><input type="submit" value="Delete" /></form></div>';
-            $this->html->var[ 'content' ] .= $form;
+            $this->_var[ 'content' ] .= $form;
          }
          else
          {
-            $this->html->var[ 'content' ] .= 'No Cache File Found :(';
+            $this->_var[ 'content' ] .= 'No Cache File Found :(';
          }
       }
       // delete file cache
@@ -42,7 +42,7 @@ class CacheCtrler extends Adm
             \unlink( $this->cache->path . $f );
          }
 
-         $this->html->var[ 'content' ] .= '<div>The following cache files have been deleted:<br />' . \implode( '<br />', $this->request->post[ 'cache' ] ) . '</div>';
+         $this->_var[ 'content' ] .= '<div>The following cache files have been deleted:<br />' . \implode( '<br />', $this->request->post[ 'cache' ] ) . '</div>';
       }
    }
 

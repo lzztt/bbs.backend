@@ -29,8 +29,8 @@ class NodeCtrler extends Node
       $node = $nodeObj->getForumNode( $nid );
       $tags = $nodeObj->getTags( $nid );
 
-      $this->html->var[ 'head_title' ] = $node[ 'title' ];
-      $this->html->var[ 'head_description' ] = $node[ 'title' ];
+      $this->_var[ 'head_title' ] = $node[ 'title' ];
+      $this->_var[ 'head_description' ] = $node[ 'title' ];
 
       if ( !$node )
       {
@@ -45,7 +45,7 @@ class NodeCtrler extends Node
       $breadcrumb[ $node[ 'title' ] ] = NULL;
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
-      $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $node[ 'id' ] );
+      $pager = Template::pager( $pageNo, $pageCount, '/node/' . $node[ 'id' ] );
 
       $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
 
@@ -54,7 +54,7 @@ class NodeCtrler extends Node
          'tid' => $node[ 'tid' ],
          'commentCount' => $node[ 'comment_count' ],
          'status' => $node[ 'status' ],
-         'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
+         'breadcrumb' => Template::breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
          'ajaxURI' => '/node/ajax/viewcount?nid=' . $nid . '',
@@ -143,7 +143,7 @@ class NodeCtrler extends Node
          'editor' => $editor
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'node_forum_topic', $contents );
+      $this->_var[ 'content' ] = new Template( 'node_forum_topic', $contents );
    }
 
    private function _authorPanel( $info )
@@ -214,7 +214,7 @@ class NodeCtrler extends Node
          }
          else
          {
-            $_files[] = $this->html->link( $f[ 'name' ], $f[ 'path' ] );
+            $_files[] = Template::link( $f[ 'name' ], $f[ 'path' ] );
          }
       }
 
@@ -236,8 +236,8 @@ class NodeCtrler extends Node
       $node = $nodeObj->getYellowPageNode( $nid );
       $tags = $nodeObj->getTags( $nid );
 
-      $this->html->var[ 'head_title' ] = $node[ 'title' ];
-      $this->html->var[ 'head_description' ] = $node[ 'title' ];
+      $this->_var[ 'head_title' ] = $node[ 'title' ];
+      $this->_var[ 'head_description' ] = $node[ 'title' ];
 
       if ( \is_null( $node ) )
       {
@@ -252,7 +252,7 @@ class NodeCtrler extends Node
       $breadcrumb[ $node[ 'title' ] ] = NULL;
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $node[ 'comment_count' ], self::COMMENTS_PER_PAGE );
-      $pager = $this->html->pager( $pageNo, $pageCount, '/node/' . $nid );
+      $pager = Template::pager( $pageNo, $pageCount, '/node/' . $nid );
 
       $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
 
@@ -261,7 +261,7 @@ class NodeCtrler extends Node
          'cid' => $tags[ 2 ][ 'cid' ],
          'commentCount' => $node[ 'comment_count' ],
          'status' => $node[ 'status' ],
-         'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
+         'breadcrumb' => Template::breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
          'ajaxURI' => '/node/ajax/viewcount?nid=' . $nid . '',
@@ -324,7 +324,7 @@ class NodeCtrler extends Node
          'editor' => $editor
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'node_yellow_page', $contents );
+      $this->_var[ 'content' ] = new Template( 'node_yellow_page', $contents );
    }
 
 }

@@ -2,6 +2,7 @@
 
 namespace site\controller\file;
 
+use lzx\core\Response;
 use site\controller\File;
 use site\dbobject\Image;
 
@@ -33,6 +34,9 @@ class AJAXCtrler extends File
       }
 
       $this->ajax( $res );
+      
+      // use iframe and html to return the JSON result
+      $this->response->type = Response::HTML;
    }
 
 }

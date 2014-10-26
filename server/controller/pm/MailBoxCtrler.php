@@ -33,7 +33,7 @@ class MailBoxCtrler extends PM
       $mailBoxLinks = $this->_getMailBoxLinks( '/pm/mailbox/' . $mailbox );
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $pmCount, self::TOPIC_PER_PAGE );
-      $pager = $this->html->pager( $pageNo, $pageCount, $activeLink );
+      $pager = Template::pager( $pageNo, $pageCount, $activeLink );
 
       $msgs = $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE );
 
@@ -52,7 +52,7 @@ class MailBoxCtrler extends PM
          'msgs' => $msgs,
       ];
 
-      $this->html->var[ 'content' ] = new Template( 'pm_list', $content );
+      $this->_var[ 'content' ] = new Template( 'pm_list', $content );
    }
 
 }

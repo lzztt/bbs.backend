@@ -30,7 +30,7 @@ class YPCtrler extends YP
    {
       $tag = new Tag( self::$_city->YPRootID, NULL );
       $yp = $tag->getTagTree();
-      $this->html->var[ 'content' ] = new Template( 'yp_home', ['tid' => $tag->id, 'yp' => $yp ] );
+      $this->_var[ 'content' ] = new Template( 'yp_home', ['tid' => $tag->id, 'yp' => $yp ] );
    }
 
    protected function _nodeList( $tid )
@@ -48,7 +48,7 @@ class YPCtrler extends YP
       $node = new Node();
       $nodeCount = $node->getNodeCount( $tids );
       list($pageNo, $pageCount) = $this->_getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
-      $pager = $this->html->pager( $pageNo, $pageCount, '/yp/' . $tid );
+      $pager = Template::pager( $pageNo, $pageCount, '/yp/' . $tid );
 
       $nodes = $node->getYellowPageNodeList( $tids, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
 
@@ -58,12 +58,12 @@ class YPCtrler extends YP
          'tid' => $tid,
          'cateName' => $tag->name,
          'cateDescription' => $tag->description,
-         'breadcrumb' => $this->html->breadcrumb( $breadcrumb ),
+         'breadcrumb' => Template::breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'nodes' => (empty( $nodes ) ? NULL : $nodes),
          'ajaxURI' => '/yp/ajax/viewcount?tid=' . $tid . '&nids=' . \implode( '_', $nids ) . '',
       ];
-      $this->html->var[ 'content' ] = new Template( 'yp_list', $contents );
+      $this->_var[ 'content' ] = new Template( 'yp_list', $contents );
    }
 
 }

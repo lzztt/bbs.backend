@@ -31,12 +31,12 @@ class ListAllCtrler extends Wedding
       }
 
       // logged in      
-      $this->html->var[ 'navbar' ] = new Template( 'navbar' );
+      $this->_var[ 'navbar' ] = new Template( 'navbar' );
       $a = new WeddingAttendee();
       $a->where( 'tid', 0, '>' );
       list($table_guests, $table_counts, $total) = $this->_getTableGuests( $a->getList( 'name,tid,guests,email,phone,time,checkin' ), 'guests' );
 
-      $this->html->var[ 'body' ] = new Template( 'attendees', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total ] );
+      $this->_var[ 'body' ] = new Template( 'attendees', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total ] );
    }
 
 }
