@@ -15,7 +15,6 @@ class Request
    public $uid;
    public $language;
    public $timestamp;
-   public $datetime;
 
    private function __construct()
    {
@@ -24,7 +23,6 @@ class Request
       $this->uri = \strtolower( $_SERVER[ 'REQUEST_URI' ] );
 
       $this->timestamp = \intval( $_SERVER[ 'REQUEST_TIME' ] );
-      $this->datetime = \date( 'Y-m-d H:i:s T', $this->timestamp );
 
       $this->post = $this->_toUTF8( $_POST );
       $this->get = $this->_toUTF8( $_GET );
