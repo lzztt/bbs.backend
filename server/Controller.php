@@ -147,7 +147,7 @@ abstract class Controller extends LzxCtrler
    {
       if ( $this->config->cache )
       {
-         if ( $this->cache && Template::getStatus() === TRUE )
+         if ( $this->cache && $this->response->getStatus() < 300 && Template::getStatus() === TRUE )
          {
             $this->response->cacheContent( $this->cache );
             $this->cache->flush();
