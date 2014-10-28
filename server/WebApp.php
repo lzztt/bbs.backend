@@ -20,7 +20,6 @@ use lzx\cache\CacheHandler;
 /**
  * @property site\Config $config
  */
-
 require_once \dirname( __DIR__ ) . '/lib/lzx/App.php';
 
 class WebApp extends App
@@ -74,16 +73,6 @@ class WebApp extends App
     */
    public function run( $argc = 0, Array $argv = [ ] )
    {
-      // website is offline
-      if ( $this->config->mode === Config::MODE_OFFLINE )
-      {
-         $offline_file = $this->config->path[ 'file' ] . '/offline.txt';
-         $output = \is_file( $offline_file ) ? \file_get_contents( $offline_file ) : 'Website is currently offline. Please visit later.';
-         // return offline page
-         echo $output;
-         return;
-      }
-
       $request = $this->getRequest();
       $get_count = \count( $request->get );
       if ( $get_count )
