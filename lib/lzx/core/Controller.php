@@ -3,6 +3,7 @@
 namespace lzx\core;
 
 use lzx\core\Request;
+use lzx\core\Response;
 use lzx\html\Template;
 use lzx\core\Logger;
 use lzx\core\Session;
@@ -49,16 +50,14 @@ abstract class Controller
       throw new \Exception();
    }
 
-   public function pageNotFound( $msg = NULL )
+   protected function pageNotFound()
    {
-      $this->response->setContent( $msg );
       $this->response->pageNotFound();
       throw new \Exception();
    }
 
-   public function pageForbidden( $msg = NULL )
+   protected function pageForbidden()
    {
-      $this->response->setContent( $msg );
       $this->response->pageForbidden();
       throw new \Exception();
    }

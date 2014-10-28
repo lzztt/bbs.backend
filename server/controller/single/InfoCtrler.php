@@ -82,7 +82,7 @@ class InfoCtrler extends Single
       // check the email flag
       if ( !\file_exists( '/tmp/single_mail' ) )
       {
-         $this->pageForbidden( 'wrong action!' );
+         $this->pageForbidden();
       }
 
       $act = \array_pop( $this->db->query( 'CALL get_latest_single_activity()' ) );

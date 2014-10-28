@@ -58,7 +58,7 @@ class Response
 
    public function cacheContent( PageCache $cache )
    {
-      if ( $this->_status < 400 && $this->_data instanceof Template )
+      if ( $this->_status < 300 && $this->_data instanceof Template )
       {
          $cache->store( $this->_data );
       }
@@ -70,33 +70,27 @@ class Response
 
    public function pageNotFound()
    {
+      $this->_data = NULL;
       $this->_status = 404;
       \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
-      if ( !$this->_data )
-      {
-         $this->_data = '404 Not Found :(';
-      }
       // not send cookie
       $this->cookie->setNoSend();
    }
 
    public function pageForbidden()
    {
+      $this->_data = NULL;
       $this->_status = 403;
       \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
-      if ( !$this->_data )
-      {
-         $this->_data = '403 Forbidden :(';
-      }
       // not send cookie
       $this->cookie->setNoSend();
    }
 
    public function pageRedirect( $uri )
    {
-      $this->_status = 302;
-      \header( 'Location: ' . $uri );
       $this->_data = NULL;
+      $this->_status = 302;
+      \header( 'Location: ' . $uri );      
    }
 
    public function send()

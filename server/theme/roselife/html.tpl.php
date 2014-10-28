@@ -28,7 +28,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1413757230.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1414458709.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -45,7 +45,7 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/fontello.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1413757230.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1414458709.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
@@ -63,7 +63,6 @@
                <span><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad"><span><a href="http://jeffreyjinteam.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a></span><span><a
-                     href="http://www.har.com/AWS/aws.cfm?agent_number=634860" target="_blank"><img src="/data/ad/alicewang-1.gif"></a><a
                      href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lles-1.jpg"></a><a
                      href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.gif"></a></span></div>
          </header>
