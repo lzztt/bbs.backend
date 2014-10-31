@@ -278,7 +278,7 @@ abstract class Controller extends LzxCtrler
    {
       $newReq = clone $this->request;
       $newReq->uri = $uri;
-      $ctrler = ControllerRouter::create( $newReq, $this->response, $this->config, $this->logger, $this->session );
+      $ctrler = ControllerRouter::createController( $newReq, $this->response, $this->config, $this->logger, $this->session );
       $ctrler->request = $this->request;
       $ctrler->run();
    }

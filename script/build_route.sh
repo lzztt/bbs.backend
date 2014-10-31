@@ -1,6 +1,6 @@
 #!/bin/bash
 
-serverdir=/home/web/www.houstonbbs.com/server
+serverdir=/home/web/bbs/server
 out_file=ControllerRouter.php
 
 tmp_file=/tmp/$out_file
@@ -39,12 +39,20 @@ class ControllerRouter extends ControllerFactory
    protected static $_route = [
 EOF
 
+{
 for i in $serverdir/controller/*/*Ctrler.php; do
     ctrler=$(echo $i | sed -e "s!^$serverdir/controller/!!" -e 's!.php$!!')
     uri=$(echo $ctrler | sed 's!Ctrler$!!' | tr '[:upper:]' '[:lower:]' | awk -F '/' '{ if($1 == $2) print $1; else print $1"/"$2; }')
 
     echo \'$uri\'' => '\''site\\controller\\'$(echo $ctrler | sed 's!/!\\\\!g')\'','
-done | sort -t \' -k 2,2 | column -t | sed 's/^/      /' >> $tmp_file
+done | sort -t \' -k 2,2
+
+for i in $serverdir/api/*.php; do
+    api=$(echo $i | sed -e "s!^$serverdir/!!" -e 's!.php$!!')
+    uri=$(echo $api | sed 's!API$!!' | tr '[:upper:]' '[:lower:]')
+    echo \'$uri\'' => '\''site\\'$(echo $api | sed 's!/!\\\\!g')\'','
+done | sort -t \' -k 2,2
+} | column -t | sed 's/^/      /' >> $tmp_file
 
 cat >> $tmp_file <<'EOF'
    ];

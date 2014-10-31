@@ -2,7 +2,7 @@
    <?php print $breadcrumb; ?>
    <span class='v_guest'>您需要先<a class='popup' href="#/user/login">登录</a>或<a class='popup' href="#/user/register">注册</a>才能发表新话题或回复</span>
    <button type="button" class='v_user comment' data-action="/node/<?php print $nid; ?>/comment">评论</button>
-   <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount_<?php print $nid; ?>"></span> views</span> 
+   <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount<?php print $nid; ?>"></span> views</span> 
    <?php print $pager; ?>
 </header>
 
