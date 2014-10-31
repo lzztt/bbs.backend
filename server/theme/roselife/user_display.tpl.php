@@ -19,7 +19,7 @@
    <tbody class="even_odd_parent">
       <?php foreach ( $topics as $t ): ?>
          <tr>
-            <td><a href="/node/<?php print $t[ 'nid' ]; ?>"><?php print $t[ 'title' ]; ?></a></td><td><?php print \date( 'm/d/Y H:i', $t[ 'create_time' ] ); ?></td>
+            <td><a href="/node/<?php print $t[ 'nid' ]; ?>"><?php print $t[ 'title' ]; ?></a></td><td><?php print \date( 'm/d/Y H:i', $t[ 'createTime' ] ); ?></td>
          </tr>
       <?php endforeach; ?>
    </tbody>
@@ -30,7 +30,7 @@
    <tbody class="even_odd_parent">
       <?php foreach ( $comments as $c ): ?>
          <tr>
-            <td><a href="/node/<?php print $c[ 'nid' ]; ?>"><?php print $c[ 'title' ]; ?></a></td><td><?php print \date( 'm/d/Y H:i', $c[ 'create_time' ] ); ?></td>
+            <td><a href="/node/<?php print $c[ 'nid' ]; ?>"><?php print $c[ 'title' ]; ?></a></td><td><?php print \date( 'm/d/Y H:i', $c[ 'createTime' ] ); ?></td>
          </tr>
       <?php endforeach; ?>
    </tbody>

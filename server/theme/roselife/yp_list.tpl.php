@@ -22,7 +22,7 @@
                   <li data-before='网站'><?php print $n[ 'website' ]; ?></li>
                <?php endif; ?>
             </ul>
-            <footer><span class="ajax_viewCount_<?php print $n[ 'id' ]; ?>"></span>次浏览，<?php print $n[ 'rating_count' ]; ?>人评分，<?php print $n[ 'comment_count' ]; ?>条评论</footer>
+            <footer><span class="ajax_viewCount<?php print $n[ 'id' ]; ?>"></span>次浏览，<?php print $n[ 'rating_count' ]; ?>人评分，<?php print $n[ 'comment_count' ]; ?>条评论</footer>
          </div>
       <?php endforeach; ?>
    </div>

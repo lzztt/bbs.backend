@@ -24,7 +24,7 @@
                <td><a href="/node/<?php print $node[ 'id' ]; ?>"><?php print $node[ 'title' ]; ?></a></td>
                <td><?php print $node[ 'creater_name' ]; ?> <span class='time'><?php print ($node[ 'create_time' ] ); ?></span></td>
                <td><?php if ( $node[ 'comment_count' ] > 0 ): ?><?php print $node[ 'commenter_name' ]; ?> <span class='time'><?php print ($node[ 'comment_time' ] ); ?></span><?php endif; ?></td>
-               <td><?php print $node[ 'comment_count' ]; ?> / <span class="ajax_viewCount_<?php print $node[ 'id' ]; ?>"></span></td>
+               <td><?php print $node[ 'comment_count' ]; ?> / <span class="ajax_viewCount<?php print $node[ 'id' ]; ?>"></span></td>
             </tr>
          <?php endforeach; ?>
       </tbody>
