@@ -123,9 +123,9 @@ class Logger
       $this->_log( \trim( $str ), self::DEBUG );
    }
 
-   public function warn( $str, array $traces = [ ] )
+   public function warn( $str )
    {
-      $this->_log( $str, self::WARNING, $traces );
+      $this->_log( $str, self::WARNING );
    }
 
    public function error( $str, array $traces = [ ] )

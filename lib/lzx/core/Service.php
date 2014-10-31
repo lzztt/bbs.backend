@@ -34,8 +34,6 @@ abstract class Service
       $this->session = $session;
    }
 
-   abstract public function run();
-
    protected function _json( $return )
    {
       $json = \json_encode( $return, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE );
@@ -51,6 +49,11 @@ abstract class Service
    {
       $this->_json( [ 'error' => $msg ] );
       throw new \Exception();
+   }
+
+   protected function forbidden()
+   {
+      $this->error( 'forbidden' );
    }
 
 }

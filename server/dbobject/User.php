@@ -137,25 +137,29 @@ class User extends DBObject
 
    public function getAllNodeIDs()
    {
-      $nids = [ ];
-      if ( $this->id > 1 )
-      {
-         foreach ( $this->call( 'get_user_node_ids(' . $this->id . ')' ) as $n )
-         {
-            $nids[] = $n[ 'nid' ];
-         }
-      }
-      return $nids;
+      return $this->id > 1 ? \array_column( $this->call( 'get_user_node_ids(' . $this->id . ')' ), 'nid' ) : [ ];
    }
 
    public function getRecentNodes( $forumRootID, $limit )
    {
-      return $this->call( 'get_user_recent_nodes("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $this->id . ', 10)'  );
+      $fields = [
+         'nid' => 'nid',
+         'title' => 'title',
+         'createTime' => 'create_time'
+      ];
+
+      return $this->_convertFields( $this->call( 'get_user_recent_nodes("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $this->id . ', 10)' ), $fields );
    }
 
    public function getRecentComments( $forumRootID, $limit )
    {
-      return $this->call( 'get_user_recent_comments("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $this->id . ', 10)'  );
+      $fields = [
+         'nid' => 'nid',
+         'title' => 'title',
+         'createTime' => 'create_time'
+      ];
+      
+      return $this->_convertFields( $this->call( 'get_user_recent_comments("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $this->id . ', 10)' ), $fields );
    }
 
    public function getPrivMsgsCount( $mailbox = 'inbox' )

@@ -57,7 +57,7 @@ class NodeCtrler extends Node
          'breadcrumb' => Template::breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
-         'ajaxURI' => '/node/ajax/viewcount?nid=' . $nid . '',
+         'ajaxURI' => '/api/viewcount/'. $nid
       ];
 
       $posts = [ ];
@@ -264,7 +264,7 @@ class NodeCtrler extends Node
          'breadcrumb' => Template::breadcrumb( $breadcrumb ),
          'pager' => $pager,
          'postNumStart' => $postNumStart,
-         'ajaxURI' => '/node/ajax/viewcount?nid=' . $nid . '',
+         'ajaxURI' => '/api/viewcount/'. $nid
       ];
 
       $node[ 'type' ] = 'node';
