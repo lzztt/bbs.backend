@@ -22,13 +22,13 @@ class ControllerFactory
    /**
     * 
     * @param \lzx\core\Request $req
-    * @param \lzx\html\Template $html
+    * @param \lzx\core\Response $response
     * @param \site\Config $config
     * @param \lzx\core\Logger $logger
     * @param \lzx\core\Session $session
     * @return \site\Controller
     */
-   public static function create( Request $req, Response $response, Config $config, Logger $logger, Session $session )
+   public static function createController( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
       $id = NULL;
       $args = $req->getURIargs( $req->uri );
@@ -75,6 +75,33 @@ class ControllerFactory
       }
 
       // cannot find a controller
+      $response->pageNotFound();
+      throw new \Exception();
+   }
+
+   /**
+    * 
+    * @param \lzx\core\Request $req
+    * @param \lzx\core\Response $response
+    * @param \lzx\core\Logger $logger
+    * @param \lzx\core\Session $session
+    * @return \site\Service
+    */
+   public static function createService( Request $req, Response $response, Logger $logger, Session $session )
+   {
+      $args = $req->getURIargs( $req->uri );
+      if ( \sizeof( $args ) > 1 )
+      {
+         $apiClass = static::$_route[ 'api/' . $args[ 1 ] ];
+         if ( $apiClass )
+         {
+            $api = new $apiClass( $req, $response, $logger, $session );
+            $api->args = \array_slice( $args, 2 );
+            return $api;
+         }
+      }
+
+      // cannot find a service
       $response->pageNotFound();
       throw new \Exception();
    }

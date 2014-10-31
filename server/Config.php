@@ -23,11 +23,12 @@ class Config
    public $cookie;
    public $domain;
    public $webmaster;
+   public $image;
 
-   public function __construct()
+   private function __construct()
    {
       $this->stage = self::STAGE_DEVELOPMENT;
-      //$this->stage = self::STAGE_PRODUCTION;
+      $this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
 
       $this->path = [
@@ -40,13 +41,13 @@ class Config
          'backup' => \dirname( __DIR__ ) . '/backup',
          'cache' => '/tmp/' . $_SERVER[ 'SERVER_NAME' ], //note: nginx webserver also use $server_name as the cache path
       ];
-      $this->cache = FALSE;
+      $this->cache = TRUE;
       $this->db = [
          'dsn' => 'hbbs',
          'user' => 'web',
          'password' => 'Ab663067',
       ];
-      $this->getkeys = ['p', 'type', 'id', 'tid', 'nid', 'nids', 'r', 'u', 'c', 't' ];
+      $this->getkeys = ['p', 'r', 'u', 'c', 't', 'action' ];
       $this->language = 'zh-cn';
       $this->theme = [
          'default' => 'default',
@@ -78,6 +79,22 @@ class Config
       {
          $this->stage = self::STAGE_PRODUCTION;
       }
+   }
+
+   /**
+    *
+    * @staticvar self $instance
+    * @return \site\Config
+    */
+   public static function getInstance()
+   {
+      static $instance;
+
+      if ( !isset( $instance ) )
+      {
+         $instance = new self();
+      }
+      return $instance;
    }
 
 }

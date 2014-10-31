@@ -37,7 +37,7 @@ class WebApp extends App
       $this->loader->registerNamespace( __NAMESPACE__, __DIR__ );
 
       // load configuration
-      $this->config = new Config();
+      $this->config = Config::getInstance();
       // display errors on page, turn on debug for DEV stage
       if ( $this->config->stage === Config::STAGE_DEVELOPMENT )
       {
@@ -113,12 +113,24 @@ class WebApp extends App
       $response = Response::getInstance();
       $response->cookie = $cookie;
 
-      // run controller
+      $args = $request->getURIargs( $request->uri );
+
       $ctrler = NULL;
+
       try
       {
-         $ctrler = ControllerRouter::create( $request, $response, $this->config, $this->logger, $session );
-         $ctrler->run();
+         if ( $args && $args[ 0 ] === 'api' )
+         {
+            // service api controller
+            $ctrler = ControllerRouter::createService( $request, $response, $this->logger, $session );
+            $ctrler->{$ctrler->action}();
+         }
+         else
+         {
+            // MVC controller         
+            $ctrler = ControllerRouter::createController( $request, $response, $this->config, $this->logger, $session );
+            $ctrler->run();
+         }
       }
       catch ( \Exception $e )
       {
@@ -155,14 +167,20 @@ class WebApp extends App
             if ( $debug )
             {
                $_timer = \microtime( TRUE );
-               $ctrler->flushCache();
+               if ( $ctrler )
+               {
+                  $ctrler->flushCache();
+               }
                $db->flush();
                $_timer = \microtime( TRUE ) - $_timer;
                $this->logger->info( \sprintf( 'cache flush time: %8.6f', $_timer ) );
             }
             else
             {
-               $ctrler->flushCache();
+               if ( $ctrler )
+               {
+                  $ctrler->flushCache();
+               }
                $db->flush();
             }
          }

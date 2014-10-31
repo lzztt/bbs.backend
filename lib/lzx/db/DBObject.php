@@ -200,6 +200,33 @@ abstract class DBObject
       return $this->_db->query( 'CALL ' . $proc, $params );
    }
 
+   // convert array keys from column names to field names
+   protected function _convertFields( array $arr, array $fields )
+   {
+      if ( $arr )
+      {
+         foreach ( $fields as $name => $column )
+         {
+            if ( $name != $column )
+            {
+               if ( \array_key_exists( $column, $arr[ 0 ] ) )
+               {
+                  foreach ( $arr as $i => $r )
+                  {
+                     $arr[ $i ][ $name ] = $r[ $column ];
+                     unset( $arr[ $i ][ $column ] );
+                  }
+               }
+               else
+               {
+                  throw new \Exception( 'cannot convert non-exist column: ' . $column );
+               }
+            }
+         }
+      }
+      return $arr;
+   }
+
    /**
     * Loads values to instance from DB
     *

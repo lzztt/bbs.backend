@@ -1,20 +1,20 @@
 <?php
 
-namespace site\controller\captcha;
+namespace site\api;
 
-use site\controller\Captcha;
-use lzx\html\Template;
+use site\Service;
+use site\Config;
 use lzx\core\Response;
 
-class CaptchaCtrler extends Captcha
+class CaptchaAPI extends Service
 {
 
-   public function run()
+   public function get()
    {
-      if ( \strpos( $_SERVER[ 'HTTP_REFERER' ], $this->request->domain ) < 4 )
+      if ( !( $this->request->referer && $this->args ) )
       {
-         $this->logger->info( 'Captcha Access Error: Wrong Referer : ' . $this->request->uri . ', from: ' . $_SERVER[ 'HTTP_REFERER' ] );
-         $this->pageForbidden();
+         $this->response->pageForbidden();
+         throw new \Exception();
       }
 
       // generate a CAPTCHA code
@@ -26,17 +26,6 @@ class CaptchaCtrler extends Captcha
       // generate the image
       $this->response->type = Response::JPEG;
       $this->response->setContent( $this->_generate_image( \str_split( $code ), 'jpeg' ) );
-   }
-
-   public static function checkCaptcha()
-   {
-      if ( \strtolower( $this->session->captcha ) != \strtolower( $this->request->post[ 'captcha' ] ) )
-      {
-         return FALSE;
-      }
-
-      unset( $this->session->captcha, $this->request->post[ 'captcha' ] );
-      return TRUE;
    }
 
    private function _get_rand_color()
@@ -51,7 +40,8 @@ class CaptchaCtrler extends Captcha
    private function _generate_image( $code, $format )
    {
       // Get font.
-      $font = $this->config->path[ 'file' ] . '/themes/' . Template::$theme . '/images/Tuffy.ttf';
+      $config = Config::getInstance();
+      $font = $config->path[ 'file' ] . '/fonts/Tuffy.ttf';
 
       // get other settings
       $font_size = 36;
