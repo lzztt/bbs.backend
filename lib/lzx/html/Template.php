@@ -15,7 +15,7 @@ class Template
    public static $theme;
    public static $language;
    public static $debug = FALSE;
-   private static $_status = TRUE;
+   private static $_hasError = FALSE;
    private static $_site;
 
    /**
@@ -111,7 +111,7 @@ class Template
 
          if ( !\is_file( $tpl_file ) || !\is_readable( $tpl_file ) )
          {
-            self::$_status = FALSE;
+            self::$_hasError = TRUE;
             $output = 'template loading error: [' . $tpl_theme . ':' . $tpl . ']';
          }
          else
@@ -125,7 +125,7 @@ class Template
       catch ( \Exception $e )
       {
          \ob_end_clean();
-         self::$_status = FALSE;
+         self::$_hasError = TRUE;
          if ( isset( self::$_logger ) )
          {
             self::$_logger->error( $e->getMessage(), $e->getTrace() );
@@ -143,9 +143,9 @@ class Template
       self::$_logger = $logger;
    }
 
-   public static function getStatus()
+   public static function hasError()
    {
-      return self::$_status;
+      return self::$_hasError;
    }
 
    public static function formatTime( $timestamp )
