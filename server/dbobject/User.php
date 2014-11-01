@@ -189,7 +189,8 @@ class User extends DBObject
          'body' => 'body',
          'uid' => 'uid',
          'user' => 'user',
-         'time' => 'time'
+         'time' => 'time',
+         'isNew' => 'is_new'
       ];
 
       if ( $type == 'sent' )
