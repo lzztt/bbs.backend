@@ -54,6 +54,15 @@ class RegisterCtrler extends User
       $user->createTime = $this->request->timestamp;
       $user->lastAccessIP = (int) \ip2long( $this->request->ip );
       $user->cid = self::$_city->id;
+      // spammer from Nanning
+      $geo = \geoip_record_by_name( $this->request->ip );
+      // from Nanning
+      if ( $geo && $geo[ 'city' ] === 'Nanning' )
+      {
+         // mark as disabled
+         $user->status = 0;
+      }
+
       try
       {
          $user->add();

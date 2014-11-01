@@ -158,7 +158,7 @@ class User extends DBObject
          'title' => 'title',
          'createTime' => 'create_time'
       ];
-      
+
       return $this->_convertFields( $this->call( 'get_user_recent_comments("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $this->id . ', 10)' ), $fields );
    }
 
@@ -224,6 +224,13 @@ class User extends DBObject
          if ( $days < 10 )
          {
             $geo = \geoip_record_by_name( \is_numeric( $ip ) ? \long2ip( $ip ) : $ip  );
+            // from Nanning
+            if ( $geo && $geo[ 'city' ] === 'Nanning' )
+            {
+               $this->delete();
+               $this->_isSpammer = TRUE;
+               throw new \Exception( 'User is blocked! You cannot post any message!' );
+            }
             // not from Texas
             if ( !$geo || $geo[ 'region' ] != 'TX' )
             {

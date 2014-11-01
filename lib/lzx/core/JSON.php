@@ -2,43 +2,49 @@
 
 namespace lzx\core;
 
-/**
- * Description of JSON
- *
- * @author ikki
- */
 class JSON
 {
 
-   private $_error = FALSE;
-   private $_data = [ ];
+   private $_data;
    private $_string;
 
    public function __construct( array $data )
    {
+      $this->setData( $data );
+   }
+
+   public function setData( array $data )
+   {
       if ( $data )
       {
          $this->_data = $data;
+         $this->_string = NULL;
       }
+      else
+      {
+         $this->_data = [ ];
+         $this->_string = 'null';
+      }
+   }
+
+   public function hasError()
+   {
+      return \array_key_exists( 'error', $this->_data ) ? (bool) $this->_data[ 'error' ] : FALSE;
    }
 
    public function __toString()
    {
-      if ( $this->_string )
+      // string cache
+      if ( !$this->_string )
       {
-         return $this->_string;
+         $this->_string = \json_encode( $this->_data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE );
+         if ( $this->_string === FALSE )
+         {
+            $this->
+               $this->_string = '{"error":"json encode error"}';
+         }
       }
-
-      if ( $this->error )
-      {
-         $this->_data[ 'error' ] = $this->_error;
-      }
-
-      $json = \json_encode( $return, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE );
-      if ( $json === FALSE )
-      {
-         $json = '{"error":"json encode error"}';
-      }
+      return $this->_string;
    }
 
 }
