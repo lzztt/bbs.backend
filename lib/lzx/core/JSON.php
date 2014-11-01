@@ -23,7 +23,7 @@ class JSON
       else
       {
          $this->_data = [ ];
-         $this->_string = 'null';
+         $this->_string = '{}';
       }
    }
 
