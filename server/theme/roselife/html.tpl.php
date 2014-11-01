@@ -62,7 +62,7 @@
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
                <span><?php print $sitename; ?></span>
             </div>
-            <div id="page_header_ad"><span><a href="http://jeffreyjinteam.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a></span><span><a
+            <div id="page_header_ad"><span><a href="http://teamjin.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a></span><span><a
                      href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lles-1.jpg"></a><a
                      href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.gif"></a></span></div>
          </header>

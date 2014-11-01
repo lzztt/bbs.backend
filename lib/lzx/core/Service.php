@@ -6,6 +6,7 @@ use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\Logger;
 use lzx\core\Session;
+use lzx\core\JSON;
 
 // service will populate response with JSON data
 // handle all exceptions and local languages
@@ -34,15 +35,10 @@ abstract class Service
       $this->session = $session;
    }
 
-   protected function _json( $return )
+   protected function _json( array $return )
    {
-      $json = \json_encode( $return, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE );
-      if ( $json === FALSE )
-      {
-         $json = '{"error":"json encode error"}';
-      }
       $this->response->type = Response::JSON;
-      $this->response->setContent( $json );
+      $this->response->setContent( new JSON( $return ) );
    }
 
    protected function error( $msg )
