@@ -9,6 +9,7 @@ use lzx\core\Logger;
 /**
  *
  * @property Logger $logger
+ * @property ClassLoader $loader
  */
 abstract class App
 {
