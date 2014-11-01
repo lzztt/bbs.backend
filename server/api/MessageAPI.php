@@ -4,6 +4,7 @@ namespace site\api;
 
 use site\Service;
 use site\dbobject\PrivMsg;
+use site\dbobject\User;
 
 class MessageAPI extends Service
 {

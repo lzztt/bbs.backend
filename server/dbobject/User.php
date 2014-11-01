@@ -184,13 +184,21 @@ class User extends DBObject
 
    public function getPrivMsgs( $type = 'inbox', $limit, $offset = 0 )
    {
+      $fields = [
+         'mid' => 'msg_id',
+         'body' => 'body',
+         'uid' => 'uid',
+         'user' => 'user',
+         'time' => 'time'
+      ];
+
       if ( $type == 'sent' )
       {
-         return $this->call( 'get_pm_list_sent_2(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+         return $this->_convertFields( $this->call( 'get_pm_list_sent_2(' . $this->id . ',' . $limit . ',' . $offset . ')' ), $fields );
       }
       else
       {
-         return $this->call( 'get_pm_list_inbox_2(' . $this->id . ',' . $limit . ',' . $offset . ')' );
+         return $this->_convertFields( $this->call( 'get_pm_list_inbox_2(' . $this->id . ',' . $limit . ',' . $offset . ')' ), $fields );
       }
    }
 
