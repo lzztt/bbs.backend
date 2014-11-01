@@ -87,6 +87,7 @@ class ControllerRouter extends ControllerFactory
       'yp'                 =>  'site\\controller\\yp\\YPCtrler',
       'yp/join'            =>  'site\\controller\\yp\\JoinCtrler',
       'yp/node'            =>  'site\\controller\\yp\\NodeCtrler',
+      'api/bookmark'       =>  'site\\api\\BookmarkAPI',
       'api/bug'            =>  'site\\api\\BugAPI',
       'api/captcha'        =>  'site\\api\\CaptchaAPI',
       'api/file'           =>  'site\\api\\FileAPI',

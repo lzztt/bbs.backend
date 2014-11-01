@@ -172,6 +172,42 @@ abstract class Service extends LzxService
       }
    }
 
+   protected function _getPagerInfo( $nTotal, $nPerPage )
+   {
+      if ( $nPerPage <= 0 )
+      {
+         throw new \Exception( 'invalid value for number of items per page: ' . $nPerPage );
+      }
+
+      $pageCount = $nTotal > 0 ? \ceil( $nTotal / $nPerPage ) : 1;
+      if ( $this->request->get[ 'p' ] )
+      {
+         if ( $this->request->get[ 'p' ] === 'l' )
+         {
+            $pageNo = $pageCount;
+         }
+         elseif ( \is_numeric( $this->request->get[ 'p' ] ) )
+         {
+            $pageNo = (int) $this->request->get[ 'p' ];
+
+            if ( $pageNo < 1 || $pageNo > $pageCount )
+            {
+               $this->pageNotFound();
+            }
+         }
+         else
+         {
+            $this->pageNotFound();
+         }
+      }
+      else
+      {
+         $pageNo = 1;
+      }
+
+      return [ $pageNo, $pageCount ];
+   }
+
 }
 
 //__END_OF_FILE__
