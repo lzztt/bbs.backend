@@ -10,7 +10,7 @@
    <tbody class="even_odd_parent">
       <?php foreach ( $msgs as $m ): ?>
          <tr>
-            <td><?php if ( $m[ 'is_new' ] ): ?><span style="color:red;">new </span><?php endif; ?><a href="/pm/<?php print $m[ 'msg_id' ]; ?>"><?php print $m[ 'body' ]; ?></a></td>
+            <td><?php if ( $m[ 'isNew' ] ): ?><span style="color:red;">new </span><?php endif; ?><a href="/pm/<?php print $m[ 'mid' ]; ?>"><?php print $m[ 'body' ]; ?></a></td>
             <td><a href="/user/<?php print $m[ 'uid' ]; ?>"><?php print $m[ 'user' ]; ?></a></td>
             <td><?php print $m[ 'time' ]; ?></td>
          </tr>
