@@ -8,7 +8,7 @@ use site\dbobject\User;
 class BookmarkAPI extends Service
 {
 
-   const NODE_PER_PAGE = 50;
+   const NODE_PER_PAGE = 20;
    /**
     * get bookmarks for a user
     * uri: /api/bookmark/<uid>

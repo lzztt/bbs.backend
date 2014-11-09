@@ -189,8 +189,7 @@ class User extends DBObject
          'body' => 'body',
          'uid' => 'uid',
          'user' => 'user',
-         'time' => 'time',
-         'isNew' => 'is_new'
+         'time' => 'time'
       ];
 
       if ( $type == 'sent' )
@@ -199,6 +198,7 @@ class User extends DBObject
       }
       else
       {
+         $fields[ 'isNew' ] = 'is_new';
          return $this->_convertFields( $this->call( 'get_pm_list_inbox_2(' . $this->id . ',' . $limit . ',' . $offset . ')' ), $fields );
       }
    }
