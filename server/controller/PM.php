@@ -41,7 +41,7 @@ abstract class PM extends Controller
             $this->error( '短信文件夹[' . $mailbox . ']不存在。' );
          }
 
-         $this->response->cookie->mailbox = $mailbox;
+         // $this->response->cookie->mailbox = $mailbox;
       }
    }
 

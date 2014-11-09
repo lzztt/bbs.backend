@@ -2,6 +2,7 @@
 
 namespace site\api;
 
+use lzx\core\Mailer;
 use site\Service;
 use site\dbobject\PrivMsg;
 use site\dbobject\User;
@@ -44,9 +45,11 @@ class MessageAPI extends Service
     * send a private message to user
     * uri: /api/message?action=post
     * post: toUID=<toUID>&body=<body>(&topicMID=<topicMID>)
+    * return: new created message
     */
+    
    public function post()
-   {
+   { 
       if ( !$this->request->uid )
       {
          $this->error( '您必须先登录，才能发送站内短信' );
@@ -57,12 +60,13 @@ class MessageAPI extends Service
       {
          $topicMID = (int) $this->request->post[ 'topicMID' ];
       }
-
+      $pm = new PrivMsg();
       $toUID = NULL;
       if ( $topicMID )
-      {
+      {     
          // reply an existing message topic
-         $toUID = $pm->getReplyTo( $topicID, $this->request->uid );
+         $toUID = $pm->getReplyTo( $topicMID, $this->request->uid );
+         
          if ( !$toUID )
          {
             $this->error( '短信不存在，未找到短信收信人' );
@@ -97,10 +101,7 @@ class MessageAPI extends Service
       {
          $this->error( '短信正文需最少5个字母或3个汉字' );
       }
-
-
-
-      $pm = new PrivMsg();
+     
       $pm->fromUID = $this->request->uid;
       $pm->toUID = $user->id;
       $pm->body = $this->request->post[ 'body' ];
@@ -129,7 +130,14 @@ class MessageAPI extends Service
          $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
       }
 
-      $this->_json( ['body' => '您的短信已经发送给用户 <i>' . $user->username . '</i>' ] );
+      $sender = new User( $this->request->uid, 'username,avatar');
+      $this->_json( [ 
+         'avatar' => $sender->avatar,
+         'body' => $pm->body,
+         'id' => $pm->id,
+         'time' => $pm->time,
+         'username' => $sender->username,
+      ] );
    }
 
    /**
@@ -190,7 +198,7 @@ class MessageAPI extends Service
             }
          }
 
-         return $msgs;
+         return [ 'msgs' => $msgs, 'replyTo' => $pm->getReplyTo( $mid, $this->request->uid ) ];
       }
       else
       {
