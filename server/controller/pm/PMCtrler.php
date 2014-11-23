@@ -41,14 +41,13 @@ class PMCtrler extends PM
          $msgs[ $i ][ 'body' ] = \nl2br( $m[ 'body' ] );
       }
 
-
       $this->_var[ 'content' ] = new Template( 'pm_topic', [
          'topicID' => $topicID,
          'msgs' => $msgs,
          'fromUID' => $this->request->uid,
          'replyTo' => $pm->getReplyTo( $topicID, $this->request->uid ),
          'userLinks' => $this->_getUserLinks( '/pm/mailbox' ),
-         'mailBoxLinks' => $this->_getMailBoxLinks( '/pm/mailbox/' . $this->_getMailBox() )
+         'mailBoxLinks' => $this->_getMailBoxLinks( '/pm/mailbox/' . $this->session->mailbox )
          ] );
    }
 

@@ -19,7 +19,7 @@ class Cookie
    protected static $path;
    protected static $domain;
    protected $_now;
-   protected $_send = TRUE;
+   protected $_send = FALSE;
    protected $_cookie_dirty = [ ];
 
    private function __construct()
@@ -94,14 +94,14 @@ class Cookie
          {
             if ( isset( $v ) )
             {
-               \setcookie( $k, $v, $this->_now + self::$lifetime, self::$path, self::$domain );
+               //\setcookie( $k, $v, $this->_now + self::$lifetime, self::$path, self::$domain );
                $_COOKIE[ $k ] = $v;
             }
             else
             {
                if ( \array_key_exists( $k, $_COOKIE ) )
                {
-                  \setcookie( $k, '', $this->_now - self::$lifetime, self::$path, self::$domain );
+                  //\setcookie( $k, '', $this->_now - self::$lifetime, self::$path, self::$domain );
                }
             }
          }
@@ -136,7 +136,6 @@ class Cookie
       {
          unset( $this->$key );
       }
-      $this->uid = 0;
    }
 
 }

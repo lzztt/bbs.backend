@@ -8,7 +8,7 @@ use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Session;
+use site\Session;
 
 /*
  * To change this template, choose Tools | Templates

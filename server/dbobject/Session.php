@@ -14,6 +14,7 @@ use lzx\db\DB;
  * @property $atime
  * @property $uid
  * @property $cid
+ * @property $crc
  */
 class Session extends DBObject
 {
@@ -26,7 +27,8 @@ class Session extends DBObject
          'id' => 'id',
          'atime' => 'atime',
          'uid' => 'uid',
-         'cid' => 'cid'
+         'cid' => 'cid',
+         'crc' => 'crc'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }

@@ -21,6 +21,9 @@ class MessageAPI extends Service
     * 
     * get private message
     * uri: /api/message/<mid>
+    * 
+    * get new message count
+    * uri: /api/message/new
     */
    public function get()
    {
@@ -35,7 +38,14 @@ class MessageAPI extends Service
       }
       else
       {
-         $return = $this->_getMessageList( $this->args[ 0 ] );
+         if ( $this->args[ 0 ] == 'new' )
+         {
+            $return = $this->_getNewMessageCount();
+         }
+         else
+         {
+            $return = $this->_getMessageList( $this->args[ 0 ] );
+         }
       }
 
       $this->_json( $return );
@@ -47,9 +57,8 @@ class MessageAPI extends Service
     * post: toUID=<toUID>&body=<body>(&topicMID=<topicMID>)
     * return: new created message
     */
-    
    public function post()
-   { 
+   {
       if ( !$this->request->uid )
       {
          $this->error( '您必须先登录，才能发送站内短信' );
@@ -63,10 +72,10 @@ class MessageAPI extends Service
       $pm = new PrivMsg();
       $toUID = NULL;
       if ( $topicMID )
-      {     
+      {
          // reply an existing message topic
          $toUID = $pm->getReplyTo( $topicMID, $this->request->uid );
-         
+
          if ( !$toUID )
          {
             $this->error( '短信不存在，未找到短信收信人' );
@@ -101,7 +110,7 @@ class MessageAPI extends Service
       {
          $this->error( '短信正文需最少5个字母或3个汉字' );
       }
-     
+
       $pm->fromUID = $this->request->uid;
       $pm->toUID = $user->id;
       $pm->body = $this->request->post[ 'body' ];
@@ -130,8 +139,8 @@ class MessageAPI extends Service
          $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );
       }
 
-      $sender = new User( $this->request->uid, 'username,avatar');
-      $this->_json( [ 
+      $sender = new User( $this->request->uid, 'username,avatar' );
+      $this->_json( [
          'avatar' => $sender->avatar,
          'body' => $pm->body,
          'id' => $pm->id,
@@ -217,13 +226,19 @@ class MessageAPI extends Service
       $pmCount = $user->getPrivMsgsCount( $mailbox );
       if ( $pmCount == 0 )
       {
-         $this->error( $mailbox == 'sent' ? '您的发件箱里还没有短信。' : '您的收件箱里还没有短信。'  );
+         return [ 'msgs' => [ ] ];
       }
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $pmCount, self::TOPIC_PER_PAGE );
       $msgs = $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE );
 
       return [ 'msgs' => $msgs, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount ] ];
+   }
+
+   private function _getNewMessageCount()
+   {
+      $user = new User( $this->request->uid, NULL );
+      return ['count' => $user->getPrivMsgsCount( 'new' ) ];
    }
 
 }

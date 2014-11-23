@@ -21,8 +21,8 @@ class LoginCtrler extends User
          $user = new UserObject();
          if ( $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] ) )
          {
-            $this->_setUser( $user );
-            $this->response->setContent( '<script>location.pathname !== "' . $this->request->uri . '"? location.reload() : location.assign("/");</script>' );
+            $this->session->setUserID( $user->id );
+            $this->response->setContent( '<script>localStorage.removeItem("sessionID"); location.pathname !== "' . $this->request->uri . '"? location.reload() : location.assign("/");</script>' );
          }
          else
          {

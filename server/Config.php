@@ -20,7 +20,6 @@ class Config
    public $getkeys;
    public $language;
    public $theme;
-   public $cookie;
    public $domain;
    public $webmaster;
    public $image;
@@ -28,7 +27,7 @@ class Config
    private function __construct()
    {
       $this->stage = self::STAGE_DEVELOPMENT;
-      //$this->stage = self::STAGE_PRODUCTION;
+      $this->stage = self::STAGE_PRODUCTION;
       $this->mode = self::MODE_FULL;
 
       $this->path = [
@@ -41,7 +40,7 @@ class Config
          'backup' => \dirname( __DIR__ ) . '/backup',
          'cache' => '/tmp/' . $_SERVER[ 'SERVER_NAME' ], //note: nginx webserver also use $server_name as the cache path
       ];
-      $this->cache = TRUE;
+      $this->cache = FALSE;
       $this->db = [
          'dsn' => 'hbbs',
          'user' => 'web',
@@ -56,11 +55,6 @@ class Config
          'adm' => 'adm',
          'single' => 'single',
          'roselife' => 'roselife'
-      ];
-      $this->cookie = [
-         //'path' => '/',
-         //'domain' => $config['domain'],
-         'lifetime' => 2592000,
       ];
       $this->domain = \implode( '.', \array_slice( \explode( '.', $_SERVER[ 'HTTP_HOST' ] ), -2 ) );
       $this->webmaster = 'ikki3355@gmail.com';

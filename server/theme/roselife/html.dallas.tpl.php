@@ -29,7 +29,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1414646518.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1416723024.js"></script>
       <?php endif; ?>
       <!--END JS-->
 

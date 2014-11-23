@@ -28,7 +28,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1414646518.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1416723024.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -63,7 +63,7 @@
                <span><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad"><span><a href="http://teamjin.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a></span><span><a
-                     href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lles-1.jpg"></a><a
+                     href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lle_2.gif"></a><a
                      href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.gif"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>

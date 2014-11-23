@@ -14,7 +14,7 @@ use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Session;
+use site\Session;
 
 /**
  * Description of Wedding
@@ -28,7 +28,7 @@ abstract class Wedding extends Controller
 
    public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
-      parent::__construct( $req, $response, $config, $logger, $session, $cookie );
+      parent::__construct( $req, $response, $config, $logger, $session );
 
       Template::$theme = $this->config->theme[ 'wedding' ];
 
