@@ -8,12 +8,12 @@ class JSON
    private $_data;
    private $_string;
 
-   public function __construct( array $data )
+   public function __construct( array $data = NULL )
    {
       $this->setData( $data );
    }
 
-   public function setData( array $data )
+   public function setData( array $data = NULL )
    {
       if ( $data )
       {

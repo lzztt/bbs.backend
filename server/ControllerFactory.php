@@ -6,7 +6,7 @@ use lzx\core\Request;
 use lzx\core\Response;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Session;
+use site\Session;
 
 /**
  * Description of ControllerFactory
@@ -25,7 +25,7 @@ class ControllerFactory
     * @param \lzx\core\Response $response
     * @param \site\Config $config
     * @param \lzx\core\Logger $logger
-    * @param \lzx\core\Session $session
+    * @param \site\Session $session
     * @return \site\Controller
     */
    public static function createController( Request $req, Response $response, Config $config, Logger $logger, Session $session )
@@ -84,7 +84,7 @@ class ControllerFactory
     * @param \lzx\core\Request $req
     * @param \lzx\core\Response $response
     * @param \lzx\core\Logger $logger
-    * @param \lzx\core\Session $session
+    * @param \site\Session $session
     * @return \site\Service
     */
    public static function createService( Request $req, Response $response, Logger $logger, Session $session )

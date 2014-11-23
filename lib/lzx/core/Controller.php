@@ -6,7 +6,6 @@ use lzx\core\Request;
 use lzx\core\Response;
 use lzx\html\Template;
 use lzx\core\Logger;
-use lzx\core\Session;
 
 // only controller will handle all exceptions and local languages
 // other classes will report status to controller
@@ -18,7 +17,6 @@ use lzx\core\Session;
  * @property \lzx\core\Logger $logger
  * @property \lzx\core\Response $response
  * @property \lzx\core\Request $request
- * @property \lzx\core\Session $session
  *
  */
 abstract class Controller
@@ -27,14 +25,12 @@ abstract class Controller
    public $logger;
    public $request;
    public $response;
-   public $session;
 
-   public function __construct( Request $req, Response $response, Logger $logger, Session $session )
+   public function __construct( Request $req, Response $response, Logger $logger )
    {
       $this->request = $req;
       $this->response = $response;
-      $this->logger = $logger;
-      $this->session = $session;
+      $this->logger = $logger;      
    }
 
    abstract public function run();
