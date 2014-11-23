@@ -4,7 +4,7 @@
    <button type="button" class='v_user create_node' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
    <button type="button" class='v_user reply' data-action="/node/<?php print $nid; ?>/comment">回复</button>
    <button type="button" class='v_user bookmark' data-action="/node/<?php print $nid; ?>/bookmark">收藏</button>
-   <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount_<?php print $nid; ?>"></span> views</span> 
+   <span class="ajax_load" data-ajax='<?php print $ajaxURI; ?>'><?php print $commentCount; ?> replies, <span class="ajax_viewCount<?php print $nid; ?>"></span> views</span> 
    <?php print $pager; ?>
 </header>
 

@@ -3,7 +3,6 @@
 namespace site\api;
 
 use site\Service;
-use lzx\cache\SegmentCache;
 use site\dbobject\User;
 use site\dbobject\Node;
 

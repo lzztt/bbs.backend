@@ -7,11 +7,9 @@ use lzx\core\Handler;
 use lzx\db\DB;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\core\Session;
-use lzx\core\Cookie;
+use site\Session;
 use lzx\html\Template;
 use site\Config;
-use site\SessionHandler;
 use site\ControllerRouter;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
@@ -24,9 +22,6 @@ require_once \dirname( __DIR__ ) . '/lib/lzx/App.php';
 
 class WebApp extends App
 {
-
-   const UMODE_BROWSER = 'browser';
-   const UMODE_ROBOT = 'robot';
 
    protected $config;
 
@@ -73,13 +68,18 @@ class WebApp extends App
     */
    public function run( $argc = 0, Array $argv = [ ] )
    {
-      $request = $this->getRequest();
-      $get_count = \count( $request->get );
-      if ( $get_count )
+      $request = Request::getInstance();
+      if ( !isset( $request->language ) )
+      {
+         $request->language = $this->config->language;
+      }
+
+      $getCount = \count( $request->get );
+      if ( $getCount )
       {
          $request->get = \array_intersect_key( $request->get, \array_flip( $this->config->getkeys ) );
          // do not cache page with unsupport get keys
-         if ( \count( $request->get ) != $get_count )
+         if ( \count( $request->get ) != $getCount )
          {
             $this->config->cache = FALSE;
          }
@@ -95,27 +95,21 @@ class WebApp extends App
       CacheEvent::setHandler( $cacheHandler );
       Cache::setLogger( $this->logger );
 
-      // initialize cookie and session
-      $cookie = $this->getCookie();
-      $session = $this->getSession( $cookie );
+      // initialize session
+      $session = Session::getInstance( $this->_isRobot() ? NULL : $db  );
+      
+      // update request uid based on session uid
+      $request->uid = (int) $session->getUserID();
 
       // set user info for logger
       $userinfo = [
-         'uid' => $session->uid,
-         'mode' => $this->_getUmode( $cookie ),
-         'role' => $cookie->urole ];
+         'uid' => $request->uid,
+         'role' => $this->_isRobot() ? 'robot' : $session->urole ];
       $this->logger->setUserInfo( $userinfo );
 
-      // update request uid based on session uid
-      $request->uid = (int) $session->uid;
-
-      // set response cookie
       $response = Response::getInstance();
-      $response->cookie = $cookie;
-
-      $args = $request->getURIargs( $request->uri );
-
       $ctrler = NULL;
+      $args = $request->getURIargs( $request->uri );
 
       try
       {
@@ -194,120 +188,16 @@ class WebApp extends App
       $this->logger->flush();
    }
 
-   /**
-    * @param Cookie $cookie
-    */
-   private function _getUmode( Cookie $cookie )
+   private function _isRobot()
    {
-      static $umode;
+      static $isRobot;
 
-      if ( !isset( $umode ) )
+      if ( !isset( $isRobot ) )
       {
-         $umode = $cookie->umode;
-
-         if ( !\in_array( $umode, [ self::UMODE_ROBOT, self::UMODE_BROWSER ] ) )
-         {
-            $agent = $_SERVER[ 'HTTP_USER_AGENT' ];
-            if ( \preg_match( '/(http|Yahoo|bot|pider)/i', $agent ) )
-            {
-               $umode = self::UMODE_ROBOT;
-            }
-            else
-            {
-               $umode = self::UMODE_BROWSER;
-            }
-            $cookie->umode = $umode;
-         }
+         $isRobot = (bool) \preg_match( '/(http|yahoo|bot|spider)/i', $_SERVER[ 'HTTP_USER_AGENT' ] );
       }
 
-      return $umode;
-   }
-
-   /**
-    *
-    * @return Request
-    */
-   public function getRequest()
-   {
-      $req = Request::getInstance();
-      if ( !isset( $req->language ) )
-      {
-         $req->language = $this->config->language;
-      }
-      return $req;
-   }
-
-   /**
-    *
-    * @return Session
-    */
-   public function getSession( Cookie $cookie )
-   {
-      static $session;
-
-      if ( !isset( $session ) )
-      {
-         $umode = $this->_getUmode( $cookie );
-
-         if ( $umode == self::UMODE_ROBOT )
-         {
-            $handler = NULL;
-         }
-         else
-         {
-            $lifetime = $this->config->cookie[ 'lifetime' ];
-            $path = $this->config->cookie[ 'path' ] ? $this->config->cookie[ 'path' ] : '/';
-            $domain = $this->config->cookie[ 'domain' ] ? $this->config->cookie[ 'domain' ] : $this->config->domain;
-            \session_set_cookie_params( $lifetime, $path, $domain );
-            \session_name( 'LZXSID' );
-            $handler = new SessionHandler( DB::getInstance() );
-         }
-         $session = Session::getInstance( $handler );
-
-         if ( $cookie->uid != $session->uid )
-         {
-            $cookie->clear();
-            $session->clear();
-         }
-      }
-
-      return $session;
-   }
-
-   /**
-    * 
-    * @staticvar type $cookie
-    * @return Cookie
-    */
-   public function getCookie()
-   {
-      static $cookie;
-
-      if ( !isset( $cookie ) )
-      {
-         $lifetime = $this->config->cookie[ 'lifetime' ];
-         $path = $this->config->cookie[ 'path' ] ? $this->config->cookie[ 'path' ] : '/';
-         $domain = $this->config->cookie[ 'domain' ] ? $this->config->cookie[ 'domain' ] : $this->config->domain;
-         Cookie::setParams( $lifetime, $path, $domain );
-
-         $cookie = Cookie::getInstance();
-
-         // check cookie for robot agent, mark as guest
-         $umode = $this->_getUmode( $cookie );
-         if ( $umode == self::UMODE_ROBOT && $cookie->uid != 0 )
-         {
-            $cookie->setNoSend();
-            $cookie->uid = 0;
-         }
-
-         // check role for guest
-         if ( $cookie->uid == 0 && isset( $cookie->urole ) )
-         {
-            unset( $cookie->urole );
-         }
-      }
-
-      return $cookie;
+      return $isRobot;
    }
 
 }

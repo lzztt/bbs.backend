@@ -1,6 +1,6 @@
 <header class='content_header'>
    <?php print $userLinks; ?>
-   <button type="button" class='v_user edit_bookmark' data-action='/user/bookmark/delete'>编辑</button>
+   <button type="button" class='v_user edit_bookmark'>编辑</button>
    <?php print $pager; ?>
 </header>
 <ul class='bookmarks even_odd_parent'>

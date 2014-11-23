@@ -16,16 +16,16 @@ abstract class User extends Controller
    protected function _switchUser()
    {
       // switch to user from super user
-      if ( $this->session->uid == self::UID_ADMIN )
+      if ( $this->request->uid == self::UID_ADMIN )
       {
          if ( $this->id > 1 )
          {
             $user = new UserObject( $this->id, 'username' );
             if ( $user->exists() )
             {
-               $this->logger->info( 'switching from user ' . $this->session->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
-               $this->session->suid = $this->session->uid;
-               $this->_setUser( $user );
+               $this->logger->info( 'switching from user ' . $this->request->uid . ' to user ' . $user->id . '[' . $user->username . ']' );
+               $this->session->suid = $this->request->uid;
+               $this->session->setUserID( $user->id );
                $this->_var[ 'content' ] = 'switched to user [' . $user->username . '], use "logout" to switch back to super user';
             }
             else
@@ -41,15 +41,14 @@ abstract class User extends Controller
       // switch back to super user
       elseif ( isset( $this->session->suid ) )
       {
-         $suid = $this->session->suid;
-         unset( $this->session->suid );
-         if ( $suid == self::UID_ADMIN )
+         if ( $this->session->suid == self::UID_ADMIN )
          {
-            $user = new UserObject( $suid, 'username' );
+            $user = new UserObject( $this->session->suid, 'username' );
             $this->logger->info( 'switching back from user ' . $this->request->uid . ' to user ' . $user->username );
-            $this->_setUser( $user );
+            $this->session->setUserID( $user->id );
             $this->_var[ 'content' ] = 'not logged out, just switched back to super user';
          }
+         unset( $this->session->suid );
       }
       // hide from normal user
       else
@@ -71,15 +70,6 @@ abstract class User extends Controller
          return TRUE;
       }
       return FALSE;
-   }
-
-   protected function _setUser( UserObject $user )
-   {
-      $this->session->uid = $user->id;
-      $this->response->cookie->uid = $user->id;
-      $urole = $user->getUserGroup();
-      $this->response->cookie->urole = $urole ? \implode( '|', $urole ) : NULL;
-      $this->response->cookie->username = $user->username;
    }
 
    protected function _recentTopics( $uid )
