@@ -44,20 +44,6 @@ class BookmarkCtrler extends User
       $this->_var[ 'content' ] = new Template( 'bookmark_list', ['nodes' => $nodes, 'pager' => $pager, 'userLinks' => $this->_getUserLinks( '/user/' . $u->id . '/bookmark' ) ] );
    }
 
-   private function _delete()
-   {
-      $u = new UserObject( $this->request->uid, NULL );
-      if ( $this->request->get[ 'nid' ] )
-      {
-         $nids = \explode( ',', $this->request->get[ 'nid' ] );
-         foreach ( $nids as $nid )
-         {
-            $u->deleteBookmark( $nid );
-         }
-      }
-      $this->response->setContent( NULL );
-   }
-
 }
 
 //__END_OF_FILE__

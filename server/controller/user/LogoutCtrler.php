@@ -10,7 +10,7 @@ class LogoutCtrler extends User
 
    public function run()
    {
-      var_dump($this->response->cookie);
+
       if ( $this->request->uid == self::UID_GUEST )
       {
          $this->error( '错误：您尚未成功登录，不能登出。' );
@@ -25,10 +25,7 @@ class LogoutCtrler extends User
 
       //session_destroy();
       $this->session->clear(); // keep session record but clear the whole $_SESSION variable
-      $this->response->cookie->uid = 0;
-      $this->response->cookie->urole = NULL;
-      $this->response->cookie->pmCount = 0;
-      $this->pageRedirect( '/' );
+      $this->response->setContent( '<script>localStorage.removeItem("sessionID"); location.pathname !== "' . $this->request->uri . '"? location.reload() : location.assign("/");</script>' );
    }
 
 }

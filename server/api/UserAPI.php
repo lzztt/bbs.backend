@@ -19,6 +19,7 @@ class UserAPI extends Service
       $user = new User( $uid, 'username,wechat,qq,website,sex,birthday,relationship,createTime,lastAccessTime,lastAccessIP,avatar,points' );
 
       $info = $user->toArray();
+      unset($info['lastAccessIP']);
       $info[ 'lastAccessCity' ] = $this->request->getLocationFromIP( $user->lastAccessIP );
       $info[ 'topics' ] = $user->getRecentNodes( self::$_city->ForumRootID, 10 );
       $info[ 'comments' ] = $user->getRecentComments( self::$_city->ForumRootID, 10 );

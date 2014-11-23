@@ -7,7 +7,7 @@ use lzx\core\Request;
 use lzx\core\Response;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Session;
+use site\Session;
 
 abstract class Comment extends Controller
 {

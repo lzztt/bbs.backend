@@ -12,7 +12,7 @@ use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
-use lzx\core\Session;
+use site\Session;
 use site\ControllerRouter;
 use site\dbobject\User;
 use site\dbobject\Tag;
@@ -20,13 +20,12 @@ use site\dbobject\SecureLink;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use site\dbobject\City;
-use site\dbobject\Session as SessionObj;
 
 /**
  *
  * @property \lzx\core\Logger $logger
  * @property \lzx\core\Request $request
- * @property \lzx\core\Session $session
+ * @property \site\Session $session
  * @property \site\Config $config
  * @property \lzx\cache\PageCache $cache
  * @property \lzx\cache\Cache[]  $_independentCacheList
@@ -49,6 +48,7 @@ abstract class Controller extends LzxCtrler
    public $config;
    public $cache;
    public $site;
+   public $session;
    protected $_var = [ ];
    protected $_independentCacheList = [ ];
    protected $_cacheEvents = [ ];
@@ -58,7 +58,8 @@ abstract class Controller extends LzxCtrler
     */
    public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
-      parent::__construct( $req, $response, $logger, $session );
+      parent::__construct( $req, $response, $logger );
+      $this->session = $session;
 
       if ( !self::$_requestProcessed )
       {
@@ -77,24 +78,9 @@ abstract class Controller extends LzxCtrler
          self::$_city->load();
          if ( self::$_city->exists() )
          {
-            $session = new SessionObj( \session_id() );
-            // not a robot
-            if ( $session->exists() )
+            if ( self::$_city->id != $this->session->getCityID() )
             {
-               if ( $session->cid == 0 )
-               {
-                  $session->cid = self::$_city->id;
-                  $session->update( 'cid' );
-               }
-               else
-               {
-                  // session city mismatch, clear current cookie and session
-                  if ( $session->cid != self::$_city->id )
-                  {
-                     $this->session->clear();
-                     $this->response->cookie->clear();
-                  }
-               }
+               $this->session->setCityID( self::$_city->id );
             }
          }
          else
@@ -105,19 +91,9 @@ abstract class Controller extends LzxCtrler
          // update user info
          if ( $this->request->uid > 0 )
          {
-            $user = new User( $this->request->uid, 'type' );
-            if ( $user->type )
-            {
-               $this->request->ip = '72.5.190.164';
-            }
+            $user = new User( $this->request->uid, NULL );
             // update access info
             $user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
-            // check new pm message
-            $pmCount = $user->getPrivMsgsCount( 'new' );
-            if ( $pmCount != $this->response->cookie->pmCount )
-            {
-               $this->response->cookie->pmCount = (int) $pmCount;
-            }
          }
 
          self::$_requestProcessed = TRUE;
@@ -283,24 +259,8 @@ abstract class Controller extends LzxCtrler
       $ctrler->run();
    }
 
-   protected function _setLoginRedirect( $uri )
-   {
-      $this->response->cookie->loginRedirect = $uri;
-   }
-
-   protected function _getLoginRedirect()
-   {
-      $uri = $this->response->cookie->loginRedirect;
-      unset( $this->response->cookie->loginRedirect );
-      return $uri;
-   }
-
    protected function _displayLogin( $redirect = NULL )
    {
-      if ( $redirect )
-      {
-         $this->_setLoginRedirect( $redirect );
-      }
       $this->_var[ 'content' ] = new Template( 'user_login', ['userLinks' => $this->_getUserLinks( '/user/login' ) ] );
    }
 

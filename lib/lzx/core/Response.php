@@ -2,13 +2,9 @@
 
 namespace lzx\core;
 
-use lzx\core\Cookie;
 use lzx\html\Template;
 use lzx\cache\PageCache;
 
-/**
- * @property \lzx\core\Cookie $cookie
- */
 class Response
 {
 
@@ -17,7 +13,6 @@ class Response
    const JPEG = 'jpeg';
 
    public $type;
-   public $cookie;
    private $_status;
    private $_data;
    private $_sent;
@@ -27,7 +22,6 @@ class Response
       $this->type = self::HTML;
       $this->_status = 200;
       $this->_sent = FALSE;
-      $this->cookie = Cookie::getInstance();
    }
 
    /**
@@ -73,8 +67,6 @@ class Response
       $this->_data = NULL;
       $this->_status = 404;
       \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 404 Not Found' );
-      // not send cookie
-      $this->cookie->setNoSend();
    }
 
    public function pageForbidden()
@@ -82,15 +74,13 @@ class Response
       $this->_data = NULL;
       $this->_status = 403;
       \header( $_SERVER[ 'SERVER_PROTOCOL' ] . ' 403 Forbidden' );
-      // not send cookie
-      $this->cookie->setNoSend();
    }
 
    public function pageRedirect( $uri )
    {
       $this->_data = NULL;
       $this->_status = 302;
-      \header( 'Location: ' . $uri );      
+      \header( 'Location: ' . $uri );
    }
 
    public function send()
@@ -110,12 +100,7 @@ class Response
                \header( 'Content-Type: text/html; charset=UTF-8' );
          }
 
-         // send cookie and page content
-         if ( $this->cookie instanceof Cookie )
-         {
-            $this->cookie->send();
-         }
-
+         // send page content
          if ( $this->_data )
          {
             echo $this->_data;

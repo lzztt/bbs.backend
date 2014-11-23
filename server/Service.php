@@ -6,7 +6,7 @@ use lzx\core\Service as LzxService;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\Logger;
-use lzx\core\Session;
+use site\Session;
 use lzx\cache\CacheHandler;
 use site\Config;
 use site\dbobject\City;
@@ -16,6 +16,7 @@ use site\dbobject\Session as SessionDBO;
 // resource uri: /api/<resource>&action=[get,post,put,delete]
 
 /**
+ * @property \site\Session $session
  * @property \site\dbobject\City $_city
  */
 abstract class Service extends LzxService
@@ -27,12 +28,14 @@ abstract class Service extends LzxService
    private static $_cacheHandler;
    public $action;
    public $args;
+   public $session;
    private $_independentCacheList = [ ];
    private $_cacheEvents = [ ];
 
    public function __construct( Request $req, Response $response, Logger $logger, Session $session )
    {
-      parent::__construct( $req, $response, $logger, $session );
+      parent::__construct( $req, $response, $logger );
+      $this->session = $session;
 
       if ( !self::$_staticProcessed )
       {
@@ -49,24 +52,9 @@ abstract class Service extends LzxService
          self::$_city->load();
          if ( self::$_city->exists() )
          {
-            $session = new SessionDBO( \session_id() );
-            // not a robot
-            if ( $session->exists() )
+            if ( self::$_city->id != $this->session->getCityID() )
             {
-               if ( $session->cid == 0 )
-               {
-                  $session->cid = self::$_city->id;
-                  $session->update( 'cid' );
-               }
-               else
-               {
-                  // session city mismatch, clear current cookie and session
-                  if ( $session->cid != self::$_city->id )
-                  {
-                     $this->session->clear();
-                     $this->response->cookie->clear();
-                  }
-               }
+               $this->session->setCityID( self::$_city->id );
             }
          }
          else
@@ -74,7 +62,7 @@ abstract class Service extends LzxService
             $this->error( 'unsupported website: ' . $this->request->domain );
          }
       }
-
+     
       // set action
       if ( \array_key_exists( 'action', $req->get ) && \in_array( $req->get[ 'action' ], self::$_actions ) )
       {
@@ -85,7 +73,7 @@ abstract class Service extends LzxService
          $this->action = 'get';
       }
    }
-
+      
    // RESTful get
    public function get()
    {

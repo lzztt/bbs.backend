@@ -20,7 +20,7 @@ class MailBoxCtrler extends PM
       $user = new User( $this->request->uid, NULL );
 
       $mailbox = $this->args ? $this->args[ 0 ] : 'inbox';
-      $this->_setMailBox( $mailbox );
+      $this->session->mailbox = $mailbox;
 
       $pmCount = $user->getPrivMsgsCount( $mailbox );
       if ( $pmCount == 0 )

@@ -111,11 +111,6 @@ class Request
       return '/' . \implode( '/', $args ) . ($query ? '?' . \implode( '&', $query ) : '');
    }
 
-   public function hashURI( $uri )
-   {
-      return \session_id() . \md5( $uri );
-   }
-
    public function curlGetData( $url )
    {
       $c = \curl_init( $url );
