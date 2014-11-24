@@ -13,14 +13,7 @@ class SendMailCtrler extends SendMail
 
    public function run()
    {
-      if ( $this->request->uid == self::UID_GUEST )
-      {
-         $this->pageNotFound();
-      }
-
-      // only for gaara and roger83
-      $user = new User( $this->request->uid, 'type' );
-      if ( !$user->type )
+      if ( $this->request->uid != self::UID_ADMIN )
       {
          $this->pageNotFound();
       }
