@@ -33,6 +33,11 @@ class Session
          {
             // client has a session id
             $this->_sid = $_COOKIE[ self::$_cookieName ];
+            // temp: get an old session id
+            if ( \strlen( $this->_sid ) > 15 )
+            {
+               $this->_startNewSession();
+            }
          }
          else
          {
