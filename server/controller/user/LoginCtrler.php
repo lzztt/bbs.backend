@@ -10,10 +10,12 @@ class LoginCtrler extends User
 
    public function run()
    {
+      /*
       if ( $this->request->uid != self::UID_GUEST )
       {
          $this->error( '错误：您已经成功登录，不能重复登录。' );
       }
+       */
 
       if ( isset( $this->request->post[ 'username' ] ) && isset( $this->request->post[ 'password' ] ) )
       {
