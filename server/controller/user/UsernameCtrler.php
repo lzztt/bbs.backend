@@ -4,7 +4,6 @@ namespace site\controller\user;
 
 use site\controller\User;
 use site\dbobject\User as UserObject;
-use lzx\html\Template;
 use lzx\core\Mailer;
 
 class UsernameCtrler extends User
