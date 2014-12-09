@@ -45,7 +45,7 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/fontello.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1414646518.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1417407032.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
@@ -62,7 +62,7 @@
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
                <span><?php print $sitename; ?></span>
             </div>
-            <div id="page_header_ad"><span><a href="http://teamjin.com/" target="_blank"><img src="/data/ad/jinfei.gif"></a></span><span><a
+            <div id="page_header_ad"><span><a
                      href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lle_2.gif"></a><a
                      href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.gif"></a></span></div>
          </header>

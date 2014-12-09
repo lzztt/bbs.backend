@@ -100,7 +100,14 @@ class Session
 
    final public function __set( $key, $val )
    {
-      $this->_data[ $key ] = $val;
+      if ( \is_null( $val ) )
+      {
+         unset( $this->$key );
+      }
+      else
+      {
+         $this->_data[ $key ] = $val;
+      }
    }
 
    final public function __isset( $key )
