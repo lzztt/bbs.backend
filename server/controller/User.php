@@ -59,7 +59,7 @@ abstract class User extends Controller
 
    protected function _isBot( $m )
    {
-      $try1 = unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
+      $try1 = \unserialize( $this->request->curlGetData( 'http://www.stopforumspam.com/api?f=serial&email=' . $m ) );
       if ( $try1[ 'email' ][ 'appears' ] == 1 )
       {
          return TRUE;
