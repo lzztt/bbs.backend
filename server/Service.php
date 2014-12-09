@@ -10,7 +10,6 @@ use site\Session;
 use lzx\cache\CacheHandler;
 use site\Config;
 use site\dbobject\City;
-use site\dbobject\Session as SessionDBO;
 
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
@@ -62,7 +61,7 @@ abstract class Service extends LzxService
             $this->error( 'unsupported website: ' . $this->request->domain );
          }
       }
-     
+
       // set action
       if ( \array_key_exists( 'action', $req->get ) && \in_array( $req->get[ 'action' ], self::$_actions ) )
       {
@@ -73,7 +72,7 @@ abstract class Service extends LzxService
          $this->action = 'get';
       }
    }
-      
+
    // RESTful get
    public function get()
    {
@@ -194,6 +193,51 @@ abstract class Service extends LzxService
       }
 
       return [ $pageNo, $pageCount ];
+   }
+
+   protected function createIdentCode( $uid )
+   {
+      // generate identCode
+      $identCode = [
+         'code' => \mt_rand( 100000, 999999 ),
+         'uid' => $uid,
+         'attamps' => 0,
+         'expTime' => $this->request->timestamp + 3600
+      ];
+
+      // save in session
+      $this->session->identCode = $identCode;
+
+      return $identCode[ 'code' ];
+   }
+
+   protected function parseIdentCode( $code )
+   {
+      if ( !$this->session->identCode )
+      {
+         return NULL;
+      }
+
+      $idCode = $this->session->identCode;
+      if ( $idCode[ 'attamps' ] > 5 || $idCode[ 'expTime' ] < $this->request->timestamp )
+      {
+         // too many attamps, clear code
+         $this->session->identCode = NULL;
+         return NULL;
+      }
+
+      if ( $code == $idCode[ 'code' ] )
+      {
+         // valid code, clear code
+         $this->session->identCode = NULL;
+         return $idCode[ 'uid' ];
+      }
+      else
+      {
+         // attamps + 1
+         $this->session->identCode[ 'attamps' ] = $identCode[ 'attamps' ] + 1;
+         return NULL;
+      }
    }
 
 }
