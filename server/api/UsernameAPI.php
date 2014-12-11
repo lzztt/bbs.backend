@@ -4,6 +4,7 @@ namespace site\api;
 
 use site\Service;
 use site\dbobject\User;
+use lzx\core\Mailer;
 
 class UsernameAPI extends Service
 {
@@ -45,7 +46,7 @@ class UsernameAPI extends Service
          $mailer->to = $user->email;
          $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
          $mailer->subject = $user->username . '在' . $siteName . '的用户名';
-         $mailer->body = '你在' . $siteName . '的用户名是: ' . $user->username;
+         $mailer->body = '您在' . $siteName . '的用户名是: ' . $user->username;
 
          if ( $mailer->send() )
          {

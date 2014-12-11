@@ -101,15 +101,10 @@ class User extends DBObject
    public function login( $username, $password )
    {
       $this->username = $username;
-      $this->load( 'id,status' );
+      $this->load( 'id,status,password' );
       if ( $this->exists() && $this->status == 1 )
       {
-         $this->password = $this->hashPW( $password );
-         $this->load( 'id' );
-         if ( $this->exists() )
-         {
-            return TRUE;
-         }
+         return ($this->password === $this->hashPW( $password ));
       }
 
       return FALSE;
