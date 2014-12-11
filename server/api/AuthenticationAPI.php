@@ -59,19 +59,20 @@ class AuthenticationAPI extends Service
          else
          {
             $this->logger->info( 'Login Fail: ' . $user->username . ' @ ' . $this->request->ip );
-            if ( isset( $user->id ) )
+            if ( $user->exists() )
             {
+               if ( empty( $user->password ) )
+               {
+                  $this->error( '用户帐号尚未激活，请使用注册email里的安全验证码来设置初始密码。如有问题请联络网站管理员。' );
+               }
+
                if ( $user->status == 1 )
                {
                   $this->error( '错误的密码。' );
                }
-               elseif ( $user->status == 0 )
-               {
-                  $this->error( '用户帐号已被封禁，如有问题请联络网站管理员。' );
-               }
                else
                {
-                  $this->error( '用户帐号尚未激活，请点击注册email里的激活链接激活帐号，如有问题请联络网站管理员。' );
+                  $this->error( '用户帐号已被封禁，如有问题请联络网站管理员。' );
                }
             }
             else
@@ -96,6 +97,8 @@ class AuthenticationAPI extends Service
       }
 
       $this->session->clear(); // keep session record but clear session data
+
+      $this->_json( NULL );
    }
 
 }

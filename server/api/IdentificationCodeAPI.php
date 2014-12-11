@@ -58,7 +58,7 @@ class IdentificationCodeAPI extends Service
 
          if ( $mailer->send() === FALSE )
          {
-            $this->error( 'sending new user activation email error: ' . $user->email );
+            $this->error( 'sending email error: ' . $user->email );
          }
          else
          {
