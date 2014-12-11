@@ -11,6 +11,7 @@ class BugAPI extends Service
    {
       $this->logger->warn( $this->request->post );
       $this->response->setContent( NULL );
+      $this->_json( NULL );
    }
 
 }

@@ -154,22 +154,22 @@ class UserAPI extends Service
       $mailer = new Mailer();
       $mailer->to = $user->email;
       $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
-      $mailer->subject = $user->username . ' 的' . $siteName . '账户激活和设置密码链接';
-      $identCode = $this->createIdentCode( $user->id );
+      $mailer->subject = $user->username . '在' . $siteName . '的新用户激活安全验证码';
       $contents = [
          'username' => $user->username,
-         'identCode' => $identCode,
-         'domain' => $this->request->domain,
+         'ident_code' => $this->createIdentCode( $user->id ),
          'sitename' => $siteName
       ];
-      $mailer->body = new Template( 'mail/newuser', $contents );
+      $mailer->body = new Template( 'mail/ident_code', $contents );
 
       if ( $mailer->send() === FALSE )
       {
-         $this->error( 'sending new user activation email error: ' . $user->email );
+         $this->error( 'sending email error: ' . $user->email );
       }
-
-      $this->_json( NULL );
+      else
+      {
+         $this->_json( NULL );
+      }
    }
 
    private function _isBot( $m )
