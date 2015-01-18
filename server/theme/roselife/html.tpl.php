@@ -11,9 +11,9 @@
       <![endif]-->
       <script>
          if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
-            document.write('<script defer src="//code.jquery.com/jquery-2.1.1.min.js"><\/script>');
+            document.write('<script defer src="//code.jquery.com/jquery-2.1.3.min.js"><\/script>');
          } else {
-            document.write('<script defer src="//code.jquery.com/jquery-1.11.0.min.js"><\/script>');
+            document.write('<script defer src="//code.jquery.com/jquery-1.11.2.min.js"><\/script>');
          }
       </script>
       <script>(typeof JSON === 'object') || document.write('<script defer src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
@@ -28,7 +28,7 @@
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
          <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
       <?php else: ?>
-         <script defer src="/themes/<?php print $tpl_theme; ?>/js/min_1416723024.js"></script>
+         <script defer src="/themes/<?php print $tpl_theme; ?>/min/<?php print $min_version; ?>.min.js"></script>
       <?php endif; ?>
       <!--END JS-->
 
@@ -45,7 +45,7 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
          <link href="/themes/<?php print $tpl_theme; ?>/css/fontello.css" rel="stylesheet" type="text/css">
       <?php else: ?>
-         <link href="/themes/<?php print $tpl_theme; ?>/css/min_1417407032.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/min/<?php print $min_version; ?>.min.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
@@ -63,8 +63,7 @@
                <span><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad"><span><a
-                     href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lle_2.gif"></a><a
-                     href="http://www.toponemortgage.com/" target="_blank"><img src="/data/ad/topone.gif"></a></span></div>
+                     href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lle_2.gif"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
             <ul class="sf-menu" style="display: inline-block; float: right;">
