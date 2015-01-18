@@ -189,6 +189,16 @@ abstract class Controller extends LzxCtrler
       }
       $this->_var[ 'sitename' ] = '缤纷' . self::$_city->name;
 
+      // set min version for css and js
+      if ( !Template::$debug )
+      {
+         $min_version = $this->config->path[ 'file' ] . '/themes/' . Template::$theme . '/min/min.current';
+         if ( \file_exists( $min_version ) )
+         {
+            $this->_var[ 'min_version' ] = \file_get_contents( $min_version );
+         }
+      }
+
       // populate template variables and remove self as an observer
       $html->setVar( $this->_var );
       $html->detach( $this );

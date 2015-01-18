@@ -20,13 +20,8 @@ class AuthenticationAPI extends Service
    {
       if ( empty( $this->args ) || $this->args[ 0 ] != $this->session->getSessionID() )
       {
-         // temp: get an old session id
-         if ( \strlen( $this->args[ 0 ] ) > 15 )
-         {
-            $this->_json( ['sessionID' => $this->session->getSessionID(), 'uid' => 0 ] );
-            return;
-         }
-         $this->forbidden();
+         $this->_json( ['sessionID' => $this->session->getSessionID(), 'uid' => 0 ] );
+         return;
       }
 
       if ( $this->request->uid )

@@ -6,6 +6,7 @@ use site\Service;
 use site\dbobject\User;
 use lzx\core\Mailer;
 use lzx\html\Template;
+use site\Config;
 
 class UserAPI extends Service
 {
@@ -74,6 +75,22 @@ class UserAPI extends Service
       if ( \array_key_exists( 'password', $this->request->post ) )
       {
          $this->request->post[ 'password' ] = $u->hashPW( $this->request->post[ 'password' ] );
+      }
+
+      if ( \array_key_exists( 'avatar', $this->request->post ) )
+      {
+         $image = \base64_decode( \substr( $this->request->post[ 'avatar' ], \strpos( $this->request->post[ 'avatar' ], ',' ) + 1 ) );
+         if ( $image !== FALSE )
+         {
+            $config = Config::getInstance();
+            $avatarFile = '/data/avatars/' . $this->request->uid . '_' . ($this->request->timestamp % 100) . '.png';
+            \file_put_contents( $config->path[ 'file' ] . $avatarFile, $image );
+            $this->request->post[ 'avatar' ] = $avatarFile;
+         }
+         else
+         {
+            unset( $this->request->post[ 'avatar' ] );
+         }
       }
 
       foreach ( $this->request->post as $k => $v )
