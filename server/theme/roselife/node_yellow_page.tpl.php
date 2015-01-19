@@ -32,7 +32,7 @@
          <a id="comment<?php print $c[ 'id' ]; ?>"></a>
          <article>
             <header>
-               <a href="/user/<?php print $c[ 'uid' ]; ?>"><?php print $c[ 'username' ]; ?></a> <span class='city'><?php print $c[ 'city' ]; ?></span>
+               <a href="/app/user/profile/<?php print $c[ 'uid' ]; ?>"><?php print $c[ 'username' ]; ?></a> <span class='city'><?php print $c[ 'city' ]; ?></span>
                <span class='time'><?php
                   print $c[ 'createTime' ];
                   if ( $c[ 'lastModifiedTime' ] )
