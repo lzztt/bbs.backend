@@ -141,11 +141,13 @@ class MessageAPI extends Service
 
       $sender = new User( $this->request->uid, 'username,avatar' );
       $this->_json( [
-         'avatar' => $sender->avatar,
-         'body' => $pm->body,
          'id' => $pm->id,
+         'mid' => $pm->msgID,
          'time' => $pm->time,
+         'body' => $pm->body,
+         'uid' => $pm->fromUID,
          'username' => $sender->username,
+         'avatar' => $sender->avatar
       ] );
    }
 
