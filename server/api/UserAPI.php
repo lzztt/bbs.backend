@@ -207,6 +207,12 @@ class UserAPI extends Service
       }
 
       $uid = (int) $this->args[ 0 ];
+      
+      // not allowed to delete admin user
+      if( $uid == 1 )
+      {
+         $this->forbidden();
+      }
 
       $user = new User();
       $user->id = $uid;
