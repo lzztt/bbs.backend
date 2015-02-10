@@ -23,15 +23,22 @@ class UserAPI extends Service
       }
 
       $uid = (int) $this->args[ 0 ];
-      $user = new User( $uid, 'username,wechat,qq,website,sex,birthday,relationship,createTime,lastAccessTime,lastAccessIP,avatar,points' );
+      $user = new User( $uid, 'username,wechat,qq,website,sex,birthday,relationship,createTime,lastAccessTime,lastAccessIP,avatar,points,status' );
 
-      $info = $user->toArray();
-      unset( $info[ 'lastAccessIP' ] );
-      $info[ 'lastAccessCity' ] = $this->request->getLocationFromIP( $user->lastAccessIP );
-      $info[ 'topics' ] = $user->getRecentNodes( self::$_city->ForumRootID, 10 );
-      $info[ 'comments' ] = $user->getRecentComments( self::$_city->ForumRootID, 10 );
+      if ( $user->status > 0 )
+      {
+         $info = $user->toArray();
+         unset( $info[ 'lastAccessIP' ] );
+         $info[ 'lastAccessCity' ] = $this->request->getLocationFromIP( $user->lastAccessIP );
+         $info[ 'topics' ] = $user->getRecentNodes( self::$_city->ForumRootID, 10 );
+         $info[ 'comments' ] = $user->getRecentComments( self::$_city->ForumRootID, 10 );
 
-      $this->_json( $info );
+         $this->_json( $info );
+      }
+      else
+      {
+         $this->error( 'user does not exist' );
+      }
    }
 
    /**
@@ -187,6 +194,29 @@ class UserAPI extends Service
       {
          $this->_json( NULL );
       }
+   }
+
+   /**
+    * uri: /api/user/<uid>?action=delete
+    */
+   public function delete()
+   {
+      if ( $this->request->uid != 1 || empty( $this->args ) || !\is_numeric( $this->args[ 0 ] ) )
+      {
+         $this->forbidden();
+      }
+
+      $uid = (int) $this->args[ 0 ];
+
+      $user = new User();
+      $user->id = $uid;
+      $user->delete();
+
+      foreach ( $user->getAllNodeIDs() as $nid )
+      {
+         $this->_getIndependentCache( '/node/' . $nid )->delete();
+      }
+      $this->_json( NULL );
    }
 
    private function _isBot( $m )
