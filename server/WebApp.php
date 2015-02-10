@@ -97,13 +97,13 @@ class WebApp extends App
 
       // initialize session
       $session = Session::getInstance( $this->_isRobot() ? NULL : $db  );
-      
+
       // update request uid based on session uid
       $request->uid = (int) $session->getUserID();
 
       // set user info for logger
       $userinfo = [
-         'uid' => $request->uid,
+         'uid' => 'http://www.houstonbbs.com/app/user/profile/' . $request->uid,
          'role' => $this->_isRobot() ? 'robot' : $session->urole ];
       $this->logger->setUserInfo( $userinfo );
 

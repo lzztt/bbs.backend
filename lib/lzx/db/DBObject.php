@@ -238,6 +238,7 @@ abstract class DBObject
    {
       $this->_exists = FALSE;
       $this->_where = [ ];
+      $this->_bind_values = [ ];
       $this->_order = [ ];
 
       $arr = $this->getList( $properties, 1 );
