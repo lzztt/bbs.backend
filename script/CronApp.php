@@ -30,7 +30,7 @@ class CronApp extends App
       $this->loader->registerNamespace( __NAMESPACE__, \dirname( __DIR__ ) . '/server' );
 
       $this->timestamp = \intval( $_SERVER[ 'REQUEST_TIME' ] );
-      $this->config = new Config();
+      $this->config = Config::getInstance();
       $this->logger->setUserInfo( [ 'uid' => 'cron', 'umode' => 'cli', 'urole' => 'adm' ] );
       $this->logger->setDir( $this->config->path[ 'log' ] );
       $this->logger->setEmail( $this->config->webmaster );
