@@ -41,24 +41,31 @@ class MailApp extends App
 
       $uid = $argv[ 0 ];
       $db = DB::getInstance( $this->config->db, TRUE );
-      $users = $db->query( 'SELECT id, username, email, create_time FROM users WHERE id = 126' );
-      $users = $db->query( 'SELECT id, username, email, create_time FROM users WHERE id > ' . $uid . ' LIMIT 550' );
+      //$users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 550' );
+      $users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id = 126' );
+
+      $cities = [ '休斯顿', '达拉斯', '奥斯汀' ];
+      $domain = [ 'houston', 'dallas', 'austin' ];
 
       if ( \sizeof( $users ) > 0 )
       {
          $mailer = new Mailer();
          $mailer->from = 'care';
-         $mailer->subject = '缤纷休斯顿网 祝您新春快乐 喜乐羊羊';
+
          $status = [ ];
          Template::setLogger( $this->logger );
          Template::$path = $this->config->path[ 'theme' ] . '/' . $this->config->theme[ 'roselife' ];
 
          foreach ( $users as $i => $u )
          {
+            $city = $cities[ (int) $u[ 'cid' ] - 1 ];
+            $mailer->subject = '缤纷' . $city . '网 祝您新春快乐 喜乐羊羊';
+            $mailer->domain = $domain[ (int) $u[ 'cid' ] - 1 ] . 'bbs.com';
             $mailer->to = $u[ 'email' ];
             $contents = [
                'username' => $u[ 'username' ],
-               'time' => $this->time( $u[ 'create_time' ] )
+               'time' => $this->time( $u[ 'create_time' ] ),
+               'city' => $city
             ];
 
             $mailer->body = new Template( 'mail/newyear', $contents );
