@@ -9,17 +9,19 @@ use lzx\db\DB;
  * @property $email
  * @property $name
  * @property $time
+ * @property $cid
  */
-class DallasEmail extends DBObject
+class Email extends DBObject
 {
    public function __construct($id = null, $properties = '')
    {
       $db = DB::getInstance();
-      $table = 'dallas_mails';
+      $table = 'emails';
       $fields = [
          'email' => 'email',
          'name' => 'name',
          'time' => 'time', 
+         'cid' => 'cid'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
