@@ -23,7 +23,7 @@ class UserAPI extends Service
       }
 
       $uid = (int) $this->args[ 0 ];
-      $user = new User( $uid, 'username,wechat,qq,website,sex,birthday,relationship,createTime,lastAccessTime,lastAccessIP,avatar,points,status' );
+      $user = new User( $uid, 'username,wechat,qq,website,sex,birthday,relationship,occupation,interests,favoriteQuotation,createTime,lastAccessTime,lastAccessIP,avatar,points,status' );
 
       if ( $user->status > 0 )
       {
