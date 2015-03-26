@@ -1,6 +1,6 @@
 #!/bin/bash
 
-serverdir=/home/web/bbs/server
+serverdir=server
 out_file=ControllerRouter.php
 
 tmp_file=/tmp/$out_file
@@ -14,6 +14,10 @@ function error_exit
     echo "Error: $1"
     exit 1;
 } 1>&2
+
+if [[ ! -d $serverdir/controller ]] && [[ ! -d $serverdir/api ]]; then
+    error_exit "no controller or api directory found in $PWD/server"
+fi
 
 rm -rf $tmp_file || error_exit "failed to initialize $tmp_file"
 
@@ -40,18 +44,22 @@ class ControllerRouter extends ControllerFactory
 EOF
 
 {
-for i in $serverdir/controller/*/*Ctrler.php; do
-    ctrler=$(echo $i | sed -e "s!^$serverdir/controller/!!" -e 's!.php$!!')
-    uri=$(echo $ctrler | sed 's!Ctrler$!!' | tr '[:upper:]' '[:lower:]' | awk -F '/' '{ if($1 == $2) print $1; else print $1"/"$2; }')
+if [[ -d $serverdir/controller ]]; then
+    for i in $serverdir/controller/*/*Ctrler.php; do
+        ctrler=$(echo $i | sed -e "s!^$serverdir/controller/!!" -e 's!.php$!!')
+        uri=$(echo $ctrler | sed 's!Ctrler$!!' | tr '[:upper:]' '[:lower:]' | awk -F '/' '{ if($1 == $2) print $1; else print $1"/"$2; }')
 
-    echo \'$uri\'' => '\''site\\controller\\'$(echo $ctrler | sed 's!/!\\\\!g')\'','
-done | sort -t \' -k 2,2
+        echo \'$uri\'' => '\''site\\controller\\'$(echo $ctrler | sed 's!/!\\\\!g')\'','
+    done | sort -t \' -k 2,2
+fi
 
-for i in $serverdir/api/*.php; do
-    api=$(echo $i | sed -e "s!^$serverdir/!!" -e 's!.php$!!')
-    uri=$(echo $api | sed 's!API$!!' | tr '[:upper:]' '[:lower:]')
-    echo \'$uri\'' => '\''site\\'$(echo $api | sed 's!/!\\\\!g')\'','
-done | sort -t \' -k 2,2
+if [[ -d $serverdir/api ]]; then
+    for i in $serverdir/api/*.php; do
+        api=$(echo $i | sed -e "s!^$serverdir/!!" -e 's!.php$!!')
+        uri=$(echo $api | sed 's!API$!!' | tr '[:upper:]' '[:lower:]')
+        echo \'$uri\'' => '\''site\\'$(echo $api | sed 's!/!\\\\!g')\'','
+    done | sort -t \' -k 2,2
+fi
 } | column -t | sed 's/^/      /' >> $tmp_file
 
 cat >> $tmp_file <<'EOF'
@@ -62,9 +70,13 @@ cat >> $tmp_file <<'EOF'
 //__END_OF_FILE__
 EOF
 
-if [[ ! -z "$(diff $tmp_file $serverdir/$out_file || echo 'Failed to diff')" ]]; then
-    mv -f $serverdir/$out_file $serverdir/$out_file.backup && mv -f $tmp_file $serverdir/$out_file
+if [[ ! -f $serverdir/$out_file ]]; then
+    mv -f $tmp_file $serverdir/$out_file
 else
-    echo "$out_file file not changed, skip updating"
-    rm -rf $tmp_file
+    if [[ ! -z "$(diff $tmp_file $serverdir/$out_file || echo 'Failed to diff')" ]]; then
+        mv -f $serverdir/$out_file $serverdir/$out_file.backup && mv -f $tmp_file $serverdir/$out_file
+    else
+        echo "$out_file file not changed, skip updating"
+        rm -rf $tmp_file
+    fi
 fi
