@@ -152,28 +152,37 @@ class UserAPI extends Service
 
       $user = new User();
       $user->username = $this->request->post[ 'username' ];
+      $user->password = NULL;
       $user->email = $this->request->post[ 'email' ];
-      $user->createTime = $this->request->timestamp;
       $user->lastAccessIP = (int) \ip2long( $this->request->ip );
       $user->cid = self::$_city->id;
       $user->status = 1;
-      // spammer from Nanning
-      $geo = \geoip_record_by_name( $this->request->ip );
-      // from Nanning
-      if ( $geo && $geo[ 'city' ] === 'Nanning' )
+      
+      // if user record exist, means this is a new-registered user, but need to re-send identification code
+      $user->load( 'id' );
+      if ( !$user->exists() )
       {
-         // mark as disabled
-         $user->status = 0;
-      }
+         $user->createTime = $this->request->timestamp;
 
-      try
-      {
-         $user->add();
+         // spammer from Nanning
+         $geo = \geoip_record_by_name( $this->request->ip );
+         // from Nanning
+         if ( $geo && $geo[ 'city' ] === 'Nanning' )
+         {
+            // mark as disabled
+            $user->status = 0;
+         }
+
+         try
+         {
+            $user->add();
+         }
+         catch ( \PDOException $e )
+         {
+            $this->error( $e->errorInfo[ 2 ] );
+         }
       }
-      catch ( \PDOException $e )
-      {
-         $this->error( $e->errorInfo[ 2 ] );
-      }
+      
       // create user action and send out email
       $mailer = new Mailer();
       $mailer->to = $user->email;
@@ -207,9 +216,9 @@ class UserAPI extends Service
       }
 
       $uid = (int) $this->args[ 0 ];
-      
+
       // not allowed to delete admin user
-      if( $uid == 1 )
+      if ( $uid == 1 )
       {
          $this->forbidden();
       }
