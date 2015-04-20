@@ -70,32 +70,35 @@ class MessageAPI extends Service
          $topicMID = (int) $this->request->post[ 'topicMID' ];
       }
       $pm = new PrivMsg();
-      $toUID = NULL;
-      if ( $topicMID )
-      {
-         // reply an existing message topic
-         $toUID = $pm->getReplyTo( $topicMID, $this->request->uid );
 
-         if ( !$toUID )
+      // validate toUID
+      $toUID = (int) $this->request->post[ 'toUID' ];
+      if ( $toUID )
+      {
+         if ( $toUID == $this->request->uid )
          {
-            $this->error( '短信不存在，未找到短信收信人' );
+            $this->error( '不能给自己发送站内短信' );
+         }
+
+         if ( $topicMID )
+         {
+            // reply an existing message topic
+            $toUser = $pm->getReplyTo( $topicMID, $this->request->uid );
+
+            if ( !$toUser )
+            {
+               $this->error( '短信不存在，未找到短信收信人' );
+            }
+
+            if ( $toUser[ 'id' ] != $toUID )
+            {
+               $this->error( '收件人帐号不匹配，无法发送短信' );
+            }
          }
       }
       else
       {
-         // send a new message topic
-         $toUID = (int) $this->request->post[ 'toUID' ];
-         if ( $toUID )
-         {
-            if ( $toUID == $this->request->uid )
-            {
-               $this->error( '不能给自己发送站内短信' );
-            }
-         }
-         else
-         {
-            $this->error( '收信人用户不存在' );
-         }
+         $this->error( '未指定短信收件人，无法发送短信' );
       }
 
       $user = new User( $toUID, 'username,email' );
