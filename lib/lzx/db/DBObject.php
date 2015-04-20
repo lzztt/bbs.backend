@@ -45,9 +45,14 @@ abstract class DBObject
 
       if ( $id ) // not empty
       {
+         if ( !\in_array( \gettype( $id ), [ 'integer', 'string' ] ) )
+         {
+            throw new \Exception( 'Invalid ID type: ' . \gettype( $id ) );
+         }
+
          if ( $this->_pkey_property )
          {
-            $this->_values[ $this->_pkey_property ] = $id;
+            $this->_setValue( $this->_pkey_property, $id );
             if ( !\is_null( $properties ) )
             {
                $this->load( $properties );
@@ -158,6 +163,11 @@ abstract class DBObject
       }
       else
       {
+         if ( !\in_array( \gettype( $value ), [ 'integer', 'string', 'double', 'boolean' ] ) )
+         {
+            throw new \Exception( 'Invalid value type: ' . $this->_fields[ $prop ] . '(' . \gettype( $value ) . ')' );
+         }
+
          switch ( $this->_fields_type[ $this->_fields[ $prop ] ] )
          {
             case self::T_INT:
