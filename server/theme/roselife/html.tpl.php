@@ -62,7 +62,8 @@
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
                <span><?php print $sitename; ?></span>
             </div>
-            <div id="page_header_ad"><span><a
+            <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
+                     href="/node/63881"><img src="/data/ad/geekpush.jpg"></a><a
                      href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lle_2.gif"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
