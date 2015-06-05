@@ -25,7 +25,7 @@ class SpamWord extends DBObject
       $fields = [
          'id' => 'id',
          'word' => 'word',
-         'lastHitTime' => 'last_hit_time',
+         'title' => 'title',
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
