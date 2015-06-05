@@ -198,7 +198,7 @@ class User extends DBObject
       }
    }
 
-   public function validatePost( $ip, $timestamp, $text )
+   public function validatePost( $ip, $timestamp, $text, $title = NULL )
    {
       // CHECK USER
       if ( $this->status != 1 )
@@ -221,6 +221,17 @@ class User extends DBObject
                $this->delete();
                $this->_isSpammer = TRUE;
                throw new \Exception( 'User is blocked! You cannot post any message!' );
+            }
+
+            if ( $title && $w[ 'title' ] )
+            {
+               if ( \mb_strpos( $title, $w[ 'word' ] ) !== FALSE )
+               {
+                  // delete user
+                  $this->delete();
+                  $this->_isSpammer = TRUE;
+                  throw new \Exception( 'User is blocked! You cannot post any message!' );
+               }
             }
          }
 
