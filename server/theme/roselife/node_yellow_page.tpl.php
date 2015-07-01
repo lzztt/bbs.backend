@@ -50,15 +50,15 @@
             <footer class='v_user'>
                <div class="actions">
                   <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $c[ 'uid' ]; ?>
-                  <button type="button" class="edit <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/edit'; ?>">编辑</button>
+                  <button type="button" class="edit <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/edit'; ?>" data-raw="#<?php print $c[ 'type' ] . '-' . $c[ 'id' ]; ?>_raw">编辑</button>
                   <button type="button" class="delete <?php print $urole; ?>" data-action="<?php print '/' . $c[ 'type' ] . '/' . $c[ 'id' ] . '/delete'; ?>">删除</button>
                   <button type="button" class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
-                  <button type="button" class="quote" data-action="/node/<?php print $nid; ?>/comment">引用</button>
+                  <button type="button" class="quote" data-action="/node/<?php print $nid; ?>/comment" data-raw="#<?php print $c[ 'type' ] . '-' . $c[ 'id' ]; ?>_raw">引用</button>
                </div>
-               <div id="<?php print $c[ 'type' ] . '-' . $c[ 'id' ]; ?>-raw" style="display:none;">
+               <div id="<?php print $c[ 'type' ] . '-' . $c[ 'id' ]; ?>_raw" style="display:none;">
                   <pre class='username'><?php print $c[ 'username' ]; ?></pre>
                   <pre class="body"><?php print $c[ 'body' ]; ?></pre>
-                  <pre class="files"><?php print $c[ 'filesJSON' ]; ?></pre>
+                  <pre class="files">[]</pre>
                </div>
             </footer>
          </article>
