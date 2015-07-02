@@ -64,7 +64,7 @@
             </div>
             <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
                      href="http://www.cchtrip.com" target="_blank"><img src="/data/ad/cctrip.gif"></a><a
-                     href="http://www.llestudyusa.com" target="_blank"><img src="/data/ad/lle_2.gif"></a></span></div>
+                     href="/node/63881" target="_blank"><img src="/data/ad/geekpush.jpg"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
             <ul class="sf-menu" style="display: inline-block; float: right;">
