@@ -11,12 +11,11 @@
       <![endif]-->
       <script>
          if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
-            document.write('<script defer src="//code.jquery.com/jquery-2.1.1.min.js"><\/script>');
+            document.write('<script defer src="//code.jquery.com/jquery-2.1.3.min.js"><\/script>');
          } else {
-            document.write('<script defer src="//code.jquery.com/jquery-1.11.0.min.js"><\/script>');
+            document.write('<script defer src="//code.jquery.com/jquery-1.11.2.min.js"><\/script>');
          }
       </script>
-
       <script>(typeof JSON === 'object') || document.write('<script defer src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
 
       <?php if ( $tpl_debug ): ?>
@@ -63,8 +62,9 @@
             </div>
             <div id="logo_div">
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-               <span><?php print $sitename; ?></span> <span class='slogan'>Simple Peaceful Beautiful</span>
+               <span><?php print $sitename; ?></span> <span class='slogan'>简单，把时间还给生活</span>
             </div>
+            <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
             <ul class="sf-menu" style="display: inline-block; float: right;">
