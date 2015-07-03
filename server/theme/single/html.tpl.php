@@ -16,7 +16,7 @@
             <div id="logo">
                <a href="/single"><img id="logo-image" alt="首页" src="/themes/single/images/logo.png"></a>
             </div>
-            <div id='slogan'>Simple Peaceful Beautiful</div>
+            <div id='slogan'>简单，把时间还给生活</div>
             <div id='navbar'><a href="/single">首页</a> <a href="/single/activities">往昔活动</a></div>
          </div>
          <div id="content"><?php print $content; ?></div>
