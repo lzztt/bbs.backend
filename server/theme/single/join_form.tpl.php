@@ -7,25 +7,25 @@
 <form id="ajax-attend" action="/single/ajax/attend" method="post" accept-charset="UTF-8">
    <input type="hidden" name="aid" value="<?php print $activity[ 'id' ]; ?>">
    <div class='form-row'>        
-      <label>姓名 / 昵称*</label>     
+      <label>姓名 / 昵称 *</label>     
       <div class='input'>
          <input type="text" name="name" value="" maxlength="100">          
       </div>
    </div>               
    <div class='form-row'>                 
-      <label>性别*</label>   
+      <label>性别 *</label>   
       <div class='input'>               
-         <input type="radio" name="sex" value="1">男<input type="radio" name="sex" value="0">女
+         <input type="radio" name="sex" value="1"> 男 <input type="radio" name="sex" value="0"> 女
       </div>          
    </div>            
    <div class='form-row'>                 
-      <label>年龄*</label>          
+      <label>年龄 *</label>          
       <div class='input'>            
          <input type="number" name="age" value="" maxlength="100">       
       </div>            
    </div>        
    <div class='form-row'>             
-      <label>E-Mail*</label>   
+      <label>E-Mail *</label>   
       <div class='input'>
          <input type="email" name="email" value="" maxlength="100">
       </div>      
