@@ -22,5 +22,6 @@
          <div id="content"><?php print $content; ?></div>
          <div id="footer"></div>
       </div>
+      <a id="goTop" class="button">返回顶部</a>
    </body>
 </html>
