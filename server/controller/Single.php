@@ -51,12 +51,12 @@ abstract class Single extends Controller
 
       $stat = [
          [
-            'title' => $activity[ 'name' ] . ' 女生 (' . $data[ 0 ][ 'total' ] . ')人',
+            'title' => '女生 (' . $data[ 0 ][ 'total' ] . ')人',
             'data' => $data[ 0 ][ 'json' ],
             'div_id' => 'stat_' . $activity[ 'id' ] . '_female'
          ],
          [
-            'title' => $activity[ 'name' ] . ' 男生 (' . $data[ 1 ][ 'total' ] . ')人',
+            'title' => '男生 (' . $data[ 1 ][ 'total' ] . ')人',
             'data' => $data[ 1 ][ 'json' ],
             'div_id' => 'stat_' . $activity[ 'id' ] . '_male'
          ],
