@@ -82,7 +82,7 @@
          </nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
-            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@dallasbbs.com">admin@dallasbbs.com</a> | © 2014 DallasBBS 版权所有 | <a href='/term'>免责声明</a></div>
+            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@dallasbbs.com">admin@dallasbbs.com</a> | © 2014-2015 DallasBBS 版权所有 | <a href='/term'>免责声明</a></div>
          </footer>
       </div>
       <div id="messagebox"></div>
