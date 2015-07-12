@@ -96,7 +96,7 @@
          (adsbygoogle = window.adsbygoogle || []).push({});
                </script>
             </div>
-            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2014 HoustonBBS 版权所有 | <a href='/term'>免责声明</a></div>
+            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2015 HoustonBBS 版权所有 | <a href='/term'>免责声明</a></div>
          </footer>
       </div>
       <div id="messagebox"></div>

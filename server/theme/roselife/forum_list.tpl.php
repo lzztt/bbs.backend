@@ -25,9 +25,5 @@
    <div style="padding:0.4em 0.7em; background:#EEEEEE none repeat scroll 0 0;">
       <a style="padding: 4px;" target="_blank" href="http://www.dallasbbs.com">缤纷达拉斯</a>
       <a style="padding: 4px;" target="_blank" href="http://www.austinbbs.com">缤纷奥斯汀</a>
-      <a style="padding: 4px;" target="_blank" href="http://www.utcssa.net">UT Austin CSSA</a>
-      <a style="padding: 4px;" target="_blank" href="http://www.uslifes.com">海外生活</a>
-      <a style="padding: 4px;" target="_blank" href="http://www.xibian.net">西边摄影</a>
-      <a style="padding: 4px;" target="_blank" href="http://www.hi8d.com">HI8D国际短信</a>
    </div>
 </div>
