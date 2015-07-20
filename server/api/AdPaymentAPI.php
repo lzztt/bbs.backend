@@ -27,7 +27,7 @@ class AdPaymentAPI extends Service
 
    /**
     * create ad payment 
-    * uri: /api/adpayment?action=post
+    * uri: /api/adpayment[?action=post]
     * post: ad_id=<ad_id>&amount=<amount>&time=<time>&ad_time=<ad_time>&comment<comment>
     */
    public function post()

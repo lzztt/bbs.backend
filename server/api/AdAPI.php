@@ -38,7 +38,7 @@ class AdAPI extends Service
 
    /**
     * create add ad 
-    * uri: /api/ad?action=post
+    * uri: /api/ad[?action=post]
     * post: name=<name>&email=<email>&type_id=<type_id>
     */
    public function post()
