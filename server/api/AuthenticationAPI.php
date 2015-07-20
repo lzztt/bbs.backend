@@ -36,7 +36,7 @@ class AuthenticationAPI extends Service
    }
 
    // login a user
-   // uri: /api/authentication?action=post
+   // uri: /api/authentication[?action=post]
    // post: username=<username>&password=<password>
    // return: session id and uid
    public function post()

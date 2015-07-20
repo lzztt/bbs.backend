@@ -15,7 +15,7 @@ class NodeCtrler extends Forum
    {
       if ( $this->request->uid == self::UID_GUEST )
       {
-         $this->_displayLogin( $this->request->uri );
+         $this->response->pageRedirect('/app/user/login');
          return;
       }
 

@@ -81,6 +81,25 @@ class UserAPI extends Service
 
       if ( \array_key_exists( 'password', $this->request->post ) )
       {
+         if ( \array_key_exists( 'password_old', $this->request->post ) )
+         {
+            // user to change password
+            $u->load( 'password' );
+
+            if ( $u->password != $u->hashPW( $this->request->post[ 'password_old' ] ) )
+            {
+               $this->error( '更改密码失败：输入的旧密码与当前密码不符，请确认输入正确的旧密码' );
+            }
+
+            if ( $this->request->post[ 'password' ] != $this->request->post[ 'password2' ] )
+            {
+               $this->error( '更改密码失败：两次输入的新密码不一致' );
+            }
+
+            unset( $this->request->post[ 'password_old' ] );
+            unset( $this->request->post[ 'password2' ] );
+         }
+
          $this->request->post[ 'password' ] = $u->hashPW( $this->request->post[ 'password' ] );
       }
 
@@ -113,7 +132,7 @@ class UserAPI extends Service
    }
 
    /**
-    * uri: /api/user?action=post
+    * uri: /api/user[?action=post]
     * post: username=<username>&email=<email>&captcha=<captcha>
     */
    public function post()
@@ -157,7 +176,7 @@ class UserAPI extends Service
       $user->lastAccessIP = (int) \ip2long( $this->request->ip );
       $user->cid = self::$_city->id;
       $user->status = 1;
-      
+
       // if user record exist, means this is a new-registered user, but need to re-send identification code
       $user->load( 'id' );
       if ( !$user->exists() )
@@ -182,7 +201,7 @@ class UserAPI extends Service
             $this->error( $e->errorInfo[ 2 ] );
          }
       }
-      
+
       // create user action and send out email
       $mailer = new Mailer();
       $mailer->to = $user->email;

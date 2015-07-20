@@ -53,7 +53,7 @@ class MessageAPI extends Service
 
    /**
     * send a private message to user
-    * uri: /api/message?action=post
+    * uri: /api/message[?action=post]
     * post: toUID=<toUID>&body=<body>(&topicMID=<topicMID>)
     * return: new created message
     */
@@ -136,7 +136,7 @@ class MessageAPI extends Service
       $mailer = new Mailer();
       $mailer->to = $user->email;
       $mailer->subject = $user->username . ' 您有一封新的站内短信';
-      $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://' . $this->request->domain . '/pm/' . $pm->msgID;
+      $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://' . $this->request->domain . '/app/user/pm/' . $pm->msgID;
       if ( !$mailer->send() )
       {
          $this->logger->error( 'PM EMAIL REMINDER SENDING ERROR: ' . $pm->id );

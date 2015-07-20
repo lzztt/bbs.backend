@@ -47,6 +47,7 @@ class ControllerRouter extends ControllerFactory
       'node/tag'                =>  'site\\controller\\node\\TagCtrler',
       'password/change'         =>  'site\\controller\\password\\ChangeCtrler',
       'phpinfo'                 =>  'site\\controller\\phpinfo\\PHPInfoCtrler',
+      'pm/send'                 =>  'site\\controller\\pm\\SendCtrler',
       'schools'                 =>  'site\\controller\\schools\\SchoolsCtrler',
       'search'                  =>  'site\\controller\\search\\SearchCtrler',
       'sendmail'                =>  'site\\controller\\sendmail\\SendMailCtrler',
