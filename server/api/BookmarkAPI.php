@@ -39,7 +39,7 @@ class BookmarkAPI extends Service
 
    /**
     * add a node to user's bookmark list
-    * uri: /api/bookmark?action=post
+    * uri: /api/bookmark[?action=post]
     * post: nid=<nid>
     */
    public function post()

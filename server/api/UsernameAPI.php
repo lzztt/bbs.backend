@@ -11,7 +11,7 @@ class UsernameAPI extends Service
 
    /**
     * new get username request (via email)
-    * uri: /api/user/username?action=post
+    * uri: /api/user/username[?action=post]
     * post: email=<email>&captcha=<captcha>
     */
    public function post()

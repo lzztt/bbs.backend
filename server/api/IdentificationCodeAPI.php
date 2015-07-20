@@ -11,7 +11,7 @@ class IdentificationCodeAPI extends Service
 {
 
    /**
-    * uri: /api/identificationcode?action=post
+    * uri: /api/identificationcode[?action=post]
     * post: username=<username>&email=<email>&&captcha=<captcha>
     */
    public function post()
