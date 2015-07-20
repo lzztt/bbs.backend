@@ -69,7 +69,7 @@ abstract class Service extends LzxService
       }
       else
       {
-         $this->action = 'get';
+         $this->action = $req->post ? 'post' : 'get';
       }
    }
 

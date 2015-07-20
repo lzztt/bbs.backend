@@ -271,7 +271,7 @@ abstract class Controller extends LzxCtrler
 
    protected function _displayLogin( $redirect = NULL )
    {
-      $this->_var[ 'content' ] = new Template( 'user_login', ['userLinks' => $this->_getUserLinks( '/user/login' ) ] );
+      $this->response->pageRedirect('/app/user/login');
    }
 
    protected function _createSecureLink( $uid, $uri )
@@ -394,21 +394,6 @@ abstract class Controller extends LzxCtrler
       }
 
       return [ $pageNo, $pageCount ];
-   }
-
-   protected function _getUserLinks( $activeLink )
-   {
-      if ( $this->request->uid )
-      {
-         // user
-         return Template::navbar( [
-               '用户首页' => '/user/' . $this->request->uid,
-               '站内短信' => '/pm/mailbox',
-               '收藏夹' => '/user/' . $this->request->uid . '/bookmark',
-               '编辑个人资料' => '/user/' . $this->request->uid . '/edit'
-               ], $activeLink
-         );
-      }
    }
 
 }

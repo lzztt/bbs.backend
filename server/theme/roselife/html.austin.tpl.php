@@ -72,9 +72,9 @@
                <li class='v_user'><a id='username' href="/app/user">我的账户</a></li>
                <li class='v_user'><a id='pm' href="/app/user/mailbox/inbox">短信</a></li>
                <li class='v_user'><a href="/app/user/bookmark">收藏夹</a></li>
-               <li class='v_user'><a class='popup' href="#/password/change">更改密码</a></li>
+               <li class='v_user'><a class='popup' href="#changePassword">更改密码</a></li>
                <li class='v_user'><a href="/app/user/logout">登出</a></li>
-               <li class='v_guest'><a class='popup' href="#/user/login">登录</a></li>
+               <li class='v_guest'><a class='popup' href="#login">登录</a></li>
                <li class='v_guest'><a href="/app/user/forget_password">忘记密码</a></li>
                <li class='v_guest'><a href="/app/user/forget_username">忘记用户名</a></li>
                <li class='v_guest'><a href="/app/user/register">注册帐号</a></li>
