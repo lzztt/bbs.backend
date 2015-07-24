@@ -31,7 +31,15 @@ class AttendeeCtrler extends Single
       {
          //verify user's access code
          $code = $this->request->get[ 'c' ];
-         if ( $code != $this->_getCode( $uid ) )
+
+         $act = \array_pop( $this->db->query( 'CALL get_latest_single_activity()' ) );
+         $atd = new FFAttendee();
+         $atd->aid = (int) $act[ 'id' ];
+         $atd->id = $uid;
+         $atd->status = 1;
+         $atd->load( 'id' );
+
+         if ( !$atd->exists() || $code != $this->_getCode( $uid ) )
          {
             $this->pageForbidden();
          }
