@@ -5,7 +5,7 @@
 <?php if ( $tpl_debug ): ?>
    <script defer src="/themes/single/js/main.js"></script>
 <?php else: ?>
-   <script defer src="/themes/single/js/min_1436023457.js"></script>
+   <script defer src="/themes/single/js/min_1437713205.js"></script>
 <?php endif; ?>
 
 <!--[if lt IE 9]>
