@@ -104,10 +104,13 @@ class AJAXCtrler extends Single
 
    protected function _checkin()
    {
-      // not return a page
-      $this->response->setContent( NULL );
+      $a = new FFAttendee( $this->request->get[ 'u' ], 'name,email,sex,aid' );
 
-      $a = new FFAttendee( $this->request->get[ 'id' ], 'name,email' );
+      if ( !$a->exists() )
+      {
+         $this->error( 'user does not exist' );
+      }
+
       $a->checkin = $this->request->timestamp;
       $a->update( 'checkin' );
 
@@ -116,9 +119,19 @@ class AJAXCtrler extends Single
 
       $url = 'http://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode( $a->id );
       $mailer->body = new Template( 'mail/attendees', [ 'name' => $a->name, 'url' => $url ] );
-      $mailer->to = $a->email;
-      //$mailer->to = 'ikki3355@gmail.com';
+      //$mailer->to = $a->email;
+      $mailer->to = 'ikki3355@gmail.com';
       $mailer->send();
+
+      $aTmp = new FFAttendee();
+      $aTmp->where( 'aid', $a->aid, '=' );
+      $aTmp->where( 'sex', $a->sex, '=' );
+      $aTmp->where( 'checkin', 0, '>' );
+
+      $this->ajax( [
+         'sex' => $a->sex,
+         'checkinID' => $aTmp->getCount()
+      ] );
    }
 
    protected function error( $msg )
