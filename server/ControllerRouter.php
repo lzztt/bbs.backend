@@ -84,7 +84,6 @@ class ControllerRouter extends ControllerFactory
       'api/message'             =>  'site\\api\\MessageAPI',
       'api/stat'                =>  'site\\api\\StatAPI',
       'api/user'                =>  'site\\api\\UserAPI',
-      'api/username'            =>  'site\\api\\UsernameAPI',
       'api/viewcount'           =>  'site\\api\\ViewCountAPI',
    ];
 
