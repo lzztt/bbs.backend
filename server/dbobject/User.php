@@ -109,6 +109,18 @@ class User extends DBObject
 
       return FALSE;
    }
+   
+   public function loginWithEmail( $email, $password )
+   {
+      $this->email = $email;
+      $this->load( 'id,username,status,password' );
+      if ( $this->exists() && $this->status == 1 )
+      {
+         return ($this->password === $this->hashPW( $password ));
+      }
+
+      return FALSE;
+   }
 
    public function getUserGroup()
    {
