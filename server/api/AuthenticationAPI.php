@@ -38,14 +38,28 @@ class AuthenticationAPI extends Service
    // login a user
    // uri: /api/authentication[?action=post]
    // post: username=<username>&password=<password>
+   // post: email=<email>&password=<password>
    // return: session id and uid
    public function post()
-   {
-      if ( isset( $this->request->post[ 'username' ] ) && isset( $this->request->post[ 'password' ] ) )
+   {      
+      if ( isset( $this->request->post[ 'password' ] ) && ( isset( $this->request->post[ 'email' ] ) || isset( $this->request->post[ 'username' ] ) ) )
       {
          // todo: login times control
          $user = new User();
-         if ( $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] ) )
+         if( isset( $this->request->post[ 'email' ] ) )
+         {
+            $loggedIn = $user->loginWithEmail( $this->request->post[ 'email' ], $this->request->post[ 'password' ] );
+         }
+         else if ( isset( $this->request->post[ 'username' ] ) )
+         {
+            $loggedIn = $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] );
+         }
+         else
+         {
+            $loggedIn = FALSE;
+         }
+         
+         if ( $loggedIn )
          {
             $this->session->setUserID( $user->id );
             $this->_json( ['sessionID' => $this->session->getSessionID(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup() ] );
@@ -72,7 +86,7 @@ class AuthenticationAPI extends Service
             }
             else
             {
-               $this->error( '错误的用户名。' );
+               $this->error( '用户不存在。' );
             }
          }
       }
