@@ -1,6 +1,6 @@
 <header class="content_header">
    <?php print $breadcrumb; ?>
-   <span class='v_guest'>您需要先<a class='popup' href="#/user/login">登录</a>或<a class='popup' href="#/user/register">注册</a>才能发表新话题或回复</span>
+   <span class='v_guest'>您需要先<a class='popup' href="#login">登录</a>或<a href="/app/user/register">注册</a>才能发表新话题或回复</span>
    <button type="button" class='v_user create_node' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
    <button type="button" class='v_user reply' data-action="/node/<?php print $nid; ?>/comment">回复</button>
    <button type="button" class='v_user bookmark' data-action="/node/<?php print $nid; ?>/bookmark">收藏</button>
