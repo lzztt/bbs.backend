@@ -2,7 +2,7 @@
    <?php print $breadcrumb; ?>
    <div><?php print $boardDescription; ?></div>
    <div>
-      <span class='v_guest'>您需要先<a class='popup' href="#/user/login">登录</a>或<a class='popup' href="#/user/register">注册</a>才能发表新话题</span>
+      <span class='v_guest'>您需要先<a class='popup' href="#login">登录</a>或<a href="/app/user/register">注册</a>才能发表新话题</span>
       <button type="button" class='v_user create_node' data-action="/forum/<?php print $tid; ?>/node">发表新话题</button>
       <?php print $pager; ?>
    </div>
