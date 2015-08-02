@@ -250,6 +250,37 @@ class CronApp extends App
          }
       }
    }
+   
+   protected function do_checkSpamer()
+   {
+      $db = DB::getInstance( $this->config->db );
+
+      $users = $db->query( 
+         'SELECT id, '
+         . '(SELECT COUNT(*) FROM nodes WHERE uid = users.id) AS nc, '
+         . '(SELECT COUNT(*) FROM comments WHERE uid = users.id) AS cc, '
+         . 'username, email, create_time, last_access_time, last_access_ip '
+         . 'FROM users WHERE username = SUBSTRING_INDEX(email,"@",1) AND status = 1' );
+      
+      foreach( $users as $u )
+      {
+         // skip usernames with uppercase letters
+         if( \preg_match( '/[A-Z]/', $u['username'] ) || !\preg_match( '/[a-z][0-9]+[a-z]/', $u['username'] ) )
+         {
+            continue;
+         }
+         
+         $geo = \geoip_record_by_name( \long2ip( $u['last_access_ip'] ) );
+         if( $geo )
+         {
+            $city = $geo[ 'city' ] ? $geo[ 'city' ] : 'NA';
+            $region = $geo[ 'region' ] ? $geo[ 'region' ] : 'NA';
+         }
+         
+         echo \implode( "\t", [ $u['nc'], $u['cc'], $u['id'], $city , $region, $u['username'], $u['email'] ] ) . \PHP_EOL;
+
+      }
+   }
 
 }
 

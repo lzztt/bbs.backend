@@ -42,22 +42,11 @@ class AuthenticationAPI extends Service
    // return: session id and uid
    public function post()
    {      
-      if ( isset( $this->request->post[ 'password' ] ) && ( isset( $this->request->post[ 'email' ] ) || isset( $this->request->post[ 'username' ] ) ) )
+      if ( isset( $this->request->post[ 'password' ] ) && isset( $this->request->post[ 'email' ] ) )
       {
          // todo: login times control
          $user = new User();
-         if( isset( $this->request->post[ 'email' ] ) )
-         {
-            $loggedIn = $user->loginWithEmail( $this->request->post[ 'email' ], $this->request->post[ 'password' ] );
-         }
-         else if ( isset( $this->request->post[ 'username' ] ) )
-         {
-            $loggedIn = $user->login( $this->request->post[ 'username' ], $this->request->post[ 'password' ] );
-         }
-         else
-         {
-            $loggedIn = FALSE;
-         }
+         $loggedIn = $user->loginWithEmail( $this->request->post[ 'email' ], $this->request->post[ 'password' ] );
          
          if ( $loggedIn )
          {
@@ -67,7 +56,7 @@ class AuthenticationAPI extends Service
          }
          else
          {
-            $this->logger->info( 'Login Fail: ' . $user->username . ' @ ' . $this->request->ip );
+            $this->logger->info( 'Login Fail: ' . $user->email . ' | ' . $this->request->ip );
             if ( $user->exists() )
             {
                if ( empty( $user->password ) )
@@ -92,7 +81,7 @@ class AuthenticationAPI extends Service
       }
       else
       {
-         $this->error( '请填写用户名和密码。' );
+         $this->error( '请填写邮箱名和密码。' );
       }
    }
 
