@@ -228,8 +228,7 @@ class User extends DBObject
          
          if( $title )
          {
-            // white spaces also get trimed
-            $cleanTitle = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin})]|\|)+/u', '', $title );
+            $cleanTitle = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin}) ]|\|)+/u', '', $title );
             
             foreach ( $list as $w )
             {
