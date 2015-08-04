@@ -62,6 +62,7 @@ class CommentCtrler extends Node
          if ( $user->isSpammer() )
          {
             $this->logger->info( 'SPAMMER FOUND: uid=' . $user->id );
+            $user->delete();
             $u = new User();
             $u->lastAccessIP = \ip2long( $this->request->ip );
             $users = $u->getList( 'createTime' );
@@ -164,6 +165,7 @@ class CommentCtrler extends Node
          if ( $user->isSpammer() )
          {
             $this->logger->info( 'SPAMMER FOUND: uid=' . $user->id );
+            $user->delete();
             $u = new User();
             $u->lastAccessIP = \ip2long( $this->request->ip );
             $users = $u->getList( 'createTime' );
