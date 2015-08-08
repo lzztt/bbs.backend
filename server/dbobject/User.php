@@ -228,7 +228,7 @@ class User extends DBObject
          
          if( $title )
          {
-            $cleanTitle = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin}) ]|\|)+/u', '', $title );
+            $cleanTitle = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin}) $]|\|)+/u', '', $title );
             
             foreach ( $list as $w )
             {
@@ -244,7 +244,7 @@ class User extends DBObject
             }
          }         
          
-         $cleanBody = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin}) ]|\|)+/u', '', $text );
+         $cleanBody = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin}) $\r\n]|\|)+/u', '', $text );
          
          foreach ( $list as $w )
          {
@@ -264,7 +264,7 @@ class User extends DBObject
          }
          
          $textLen = \mb_strlen( $text );
-         if( $textLen > 35 && ( $textLen - \mb_strlen( $cleanBody ) ) / $textLen > 0.3 )
+         if( $textLen > 35 && ( $textLen - \mb_strlen( $cleanBody ) ) / $textLen > 0.4 )
          {
             throw new \Exception( 'Body text is not valid!' );
          }
