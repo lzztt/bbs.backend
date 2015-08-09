@@ -560,13 +560,14 @@ abstract class DBObject
          }
          else
          {
-            if ( !\in_array( $condition, ['>', '>=', '<', '<=', '=', '!=', '<>', 'LIKE', 'NOT LIKE' ] ) )
+            $key = \array_search( $condition, [ '>', '>=', '<', '<=', '=', '!=', '<>', 'LIKE', 'NOT LIKE' ], TRUE );
+            if ( $key === FALSE )
             {
                throw new Exception( 'non-supported operator: ' . $condition );
             }
             // a single value, bind
-            $this->_bind_values[ ':' . $prop ] = $value;
-            $value = ':' . $prop;
+            $this->_bind_values[ ':' . $prop . $key ] = $value;
+            $value = ':' . $prop . $key;
          }
       }
 
