@@ -2,8 +2,8 @@
 
 谢谢报名参加 “#我们# 七夕单身聚会”！
 
-时间: 8月15号 (周六) 下午3:30 开始
-地点: LuLu餐厅，原“江南人家” (6348 Corporate Dr Houston TX 77036 黄金广场后面，Corporate路边一小广场)
+时间: 8月15号 (周六) 下午3:20 开始
+地点: 松柏园 (Pine Forest Garden)，地址: 9108 Bellaire Blvd, Houston, TX 77036
 
 活动内容:
 3:20 - 3:40: 签到
