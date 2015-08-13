@@ -1,7 +1,7 @@
 <?php print $name; ?> 你好，你的活动报名已收到
 
-活动地点: LuLu餐厅，原“江南人家”
-   地址: 6348 Corporate Dr Houston TX 77036 (黄金广场后面，Corporate路边一小广场)
+活动地点: 松柏园 (Pine Forest Garden)
+   地址: 9108 Bellaire Blvd, Houston, TX 77036
 
 周六(8月15号)，下午3:30开始
 
