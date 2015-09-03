@@ -62,9 +62,10 @@
             </div>
             <div id="logo_div">
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-               <span><?php print $sitename; ?></span> <span class='slogan'>简单，把时间还给生活</span>
+               <span><?php print $sitename; ?></span> <span class='slogan'>简单，把时间留给生活</span>
             </div>
-            <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span></span></div>
+           <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
+                     href="/node/68810" target="_blank"><img src="/data/ad/geekpush2.jpg"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
             <ul class="sf-menu" style="display: inline-block; float: right;">
