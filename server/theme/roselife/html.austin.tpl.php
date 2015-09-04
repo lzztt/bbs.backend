@@ -63,7 +63,7 @@
             </div>
             <div id="logo_div">
                <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-               <span><?php print $sitename; ?></span> <span class='slogan'>简单，把时间留给生活</span>
+               <span><?php print $sitename; ?></span> <span class='slogan'>简爱生活 由此开始</span>
             </div>
             <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
                      href="#"><img src="/data/ad/geekpush2.jpg"></a></span></div>
