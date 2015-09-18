@@ -27,7 +27,7 @@ class LoginCtrler extends Wedding
 
       if ( $this->request->post )
       {
-         if ( $this->request->post[ 'password' ] == 'alexmika928123' )
+         if ( $this->request->post[ 'password' ] == 'alexmika' )
          {
             $this->session->loginStatus = TRUE;
             $uri = $this->session->loginRedirect;
