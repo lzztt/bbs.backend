@@ -14,6 +14,7 @@ class JoinCtrler extends YP
       $this->cache = new PageCache( $this->request->uri );
       
       $this->_var[ 'content' ] = new Template( 'yp_join' );
+      $this->_var[ 'head_title'] = '市场推广 先入为主';
    }
 
 }
