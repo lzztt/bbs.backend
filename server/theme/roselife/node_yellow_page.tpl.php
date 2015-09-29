@@ -15,10 +15,10 @@
             <li data-before='传真'><?php print $node[ 'fax' ]; ?></li>
          <?php endif; ?>
          <?php if ( isset( $node[ 'email' ] ) ): ?>
-            <li data-before='电子邮箱'><?php print $node[ 'email' ]; ?></li>
+            <li data-before='电子邮箱'><a href="mailto:<?php print $node[ 'email' ]; ?>"><?php print $node[ 'email' ]; ?></a></li>
          <?php endif; ?>
          <?php if ( isset( $node[ 'website' ] ) ): ?>
-            <li data-before='网站'><?php print $node[ 'website' ]; ?></li>
+            <li data-before='网站'><a href="<?php print $node[ 'website' ]; ?>" target="_blank"><?php print $node[ 'website' ]; ?></a></li>
          <?php endif; ?>
       </ul>
    </div>

@@ -34,4 +34,4 @@ http://www.houstonbbs.com/yp/join
 最后，也是最重要的，祝您和您的家人中秋节快乐！
 
 站长
-Alex Tian
+田龙璋 (Alex Tian)
