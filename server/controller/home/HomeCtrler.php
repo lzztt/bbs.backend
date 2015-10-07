@@ -36,7 +36,7 @@ class HomeCtrler extends Home
          'latestForumTopics' => $this->_getLatestForumTopics( 15 ),
          'hotForumTopics' => $this->_getHotForumTopics( 15 ),
          'latestYellowPages' => $this->_getLatestYellowPages( 15 ),
-         'latestImmigrationPosts' => $this->_getLatestImmigrationPosts( 15 ),
+         //'latestImmigrationPosts' => $this->_getLatestImmigrationPosts( 15 ),
          'latestForumTopicReplies' => $this->_getLatestForumTopicReplies( 15 ),
          'latestYellowPageReplies' => $this->_getLatestYellowPageReplies( 15 ),
          'imageSlider' => $this->_getImageSlider(),
@@ -202,18 +202,25 @@ class HomeCtrler extends Home
    private function _getLatestYellowPages( $count )
    {
       $ulCache = $this->cache->getSegment( 'latestYellowPages' );
-      $ul = $ulCache->fetch();
+      $ul = \unserialize( $ulCache->fetch() );
       if ( !$ul )
       {
-         $arr = [ ];
+         $ul = [ ];
+         $ypGroups = \array_chunk( (new Node() )->getLatestYellowPages( self::$_city->YPRootID, $count * 2 ), $count );
 
-         foreach ( (new Node() )->getLatestYellowPages( self::$_city->YPRootID, $count ) as $n )
+         foreach ( $ypGroups as $yps )
          {
-            $arr[] = [ 'after' => \date( 'm/d', $n[ 'exp_time' ] ),
-               'uri' => '/node/' . $n[ 'nid' ],
-               'text' => $n[ 'title' ] ];
+            $arr = [ ];
+            foreach ( $yps as $n )
+            {
+               $arr[] = [ 'after' => \date( 'm/d', $n[ 'exp_time' ] ),
+                  'uri' => '/node/' . $n[ 'nid' ],
+                  'text' => $n[ 'title' ] ];
+            }
+            $ul[] = $this->_linkNodeList( $arr, $ulCache );
          }
-         $ul = $this->_linkNodeList( $arr, $ulCache );
+         
+         $ulCache->store( \serialize( $ul ) );
       }
       $this->_getCacheEvent( 'YellowPageNode' )->addListener( $ulCache );
 
