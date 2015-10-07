@@ -16,9 +16,9 @@
    <header>最新话题</header><?php print $latestForumTopics; ?></section><section class="items">
    <header>最新论坛回复</header><?php print $latestForumTopicReplies; ?></section><section class="items home_hot_nodes">
    <header>本周热门</header><?php print $hotForumTopics; ?></section><section class="items">
-   <header>最新黄页</header><?php print $latestYellowPages; ?></section><section class="items">
-   <header>最新黄页回复</header><?php print $latestYellowPageReplies; ?></section><section class="items">
-   <header>签证移民信息</header><?php print $latestImmigrationPosts; ?></section>
+   <header>最新黄页一</header><?php print $latestYellowPages[0]; ?></section><section class="items">
+   <header>最新黄页二</header><?php print $latestYellowPages[1]; ?></section><section class="items">
+   <header>最新黄页回复</header><?php print $latestYellowPageReplies; ?></section>
 <div id='site_stat' class='ajax_load' data-ajax='/api/stat'>
    <div>当前在线用户：<span class='ajax_onlineCount'></span> (<span class='ajax_onlineUserCount'></span> 用户| <span class='ajax_onlineGuestCount'></span> 访客)</div>
    <div><span class='ajax_onlineUsers'></span></div>
