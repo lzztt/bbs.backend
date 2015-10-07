@@ -8,6 +8,7 @@ use site\dbobject\Tag;
 use site\dbobject\Node;
 use site\dbobject\NodeYellowPage;
 use site\dbobject\Image;
+use site\dbobject\AD;
 
 class NodeCtrler extends YP
 {
@@ -34,7 +35,8 @@ class NodeCtrler extends YP
 
       if ( empty( $this->request->post ) )
       {
-         $this->_var[ 'content' ] = new Template( 'editor_bbcode_yp' );
+         $ad = new AD();
+         $this->_var[ 'content' ] = new Template( 'editor_bbcode_yp', [ 'ads' => $ad->getList( 'name' ) ] );
       }
       else
       {
@@ -62,7 +64,9 @@ class NodeCtrler extends YP
             $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
          }
 
-         foreach ( ['latestYellowPages', '/yp/' . $tid ] as $key )
+         $tag = new Tag($tid, 'parent');
+      
+         foreach ( ['latestYellowPages', '/yp/' . $tid, '/yp/' . $tag->parent ] as $key )
          {
             $this->_getIndependentCache( $key )->delete();
          }

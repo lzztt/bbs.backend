@@ -1,4 +1,14 @@
 <form enctype="multipart/form-data" id="bbcode_editor" class='v_user_superadm' method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
+   <?php if( \is_array( $ads ) ): ?>
+   <fieldset>
+      <label class='label' for="title">黄页广告:</label>
+      <select name='aid'>
+        <?php foreach( $ads as $a ): ?>
+        <option value="<?php print $a['id']; ?>"><?php print $a['name']; ?></option>
+        <?php endforeach; ?>
+      </select>
+   </fieldset>
+   <?php endif; ?>
    <fieldset>
       <label class='label' for="title">名称:</label>
       <input type="text" name="title" value="<?php print $title; ?>" required placeholder="最少5个字母或3个汉字">

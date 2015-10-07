@@ -26,6 +26,7 @@ class NodeYellowPage extends DBObject
       $table = 'node_yellowpages';
       $fields = [
          'nid' => 'nid',
+         'aid' => 'ad_id',
          'address' => 'address',
          'phone' => 'phone',
          'fax' => 'fax',
