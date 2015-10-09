@@ -139,7 +139,14 @@ abstract class DBObject
 
    private function _bind( $prop )
    {
-      $this->_bind_values[ ':' . $this->_fields[ $prop ] ] = $this->_values[ $prop ];
+      if( \array_key_exists( $prop, $this->_values ) )
+      {
+         $this->_bind_values[ ':' . $this->_fields[ $prop ] ] = $this->_values[ $prop ];
+      }
+      else
+      {
+         throw new \Exception( 'could not find binding value for property: ' . $prop );
+      }
    }
 
    private function _clear( $clearData = FALSE )

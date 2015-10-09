@@ -14,7 +14,7 @@ class Handler
    private static $errorHandler;
    private static $exceptionHandler;
    public static $logger;
-   public static $displayError = True;
+   public static $displayError = TRUE;
 
    public static function setErrorHandler()
    {
