@@ -19,9 +19,6 @@ class ControllerRouter extends ControllerFactory
    protected static $_route = [
       'activity'                =>  'site\\controller\\activity\\ActivityCtrler',
       'ad'                      =>  'site\\controller\\ad\\ADCtrler',
-      'adm'                     =>  'site\\controller\\adm\\AdmCtrler',
-      'adm/ad'                  =>  'site\\controller\\adm\\AdCtrler',
-      'adm/cache'               =>  'site\\controller\\adm\\CacheCtrler',
       'app/ad'                  =>  'site\\controller\\app\\ADCtrler',
       'app/cache'               =>  'site\\controller\\app\\CacheCtrler',
       'app/user'                =>  'site\\controller\\app\\UserCtrler',
