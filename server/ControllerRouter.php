@@ -80,7 +80,9 @@ class ControllerRouter extends ControllerFactory
       'api/file'                =>  'site\\api\\FileAPI',
       'api/identificationcode'  =>  'site\\api\\IdentificationCodeAPI',
       'api/message'             =>  'site\\api\\MessageAPI',
+      'api/node'                =>  'site\\api\\NodeAPI',
       'api/stat'                =>  'site\\api\\StatAPI',
+      'api/tag'                 =>  'site\\api\\TagAPI',
       'api/user'                =>  'site\\api\\UserAPI',
       'api/viewcount'           =>  'site\\api\\ViewCountAPI',
    ];

@@ -176,6 +176,11 @@ class Tag extends DBObject
    {
       return $this->call( 'get_tag_node_info_1(' . $this->id . ')' );
    }
+   
+   public function getNodeList( $cid, $limit, $offset )
+   {
+       return $this->call( 'get_tag_nodes(' . $this->id . ', ' . $cid . ', ' . $limit . ', ' . $offset .')' );
+   }
 
 }
 

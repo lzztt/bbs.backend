@@ -22,6 +22,7 @@ class ControllerRouter extends ControllerFactory
       'app/ad'                  =>  'site\\controller\\app\\ADCtrler',
       'app/cache'               =>  'site\\controller\\app\\CacheCtrler',
       'app/user'                =>  'site\\controller\\app\\UserCtrler',
+      'app/web'                 =>  'site\\controller\\app\\WebCtrler',
       'comment'                 =>  'site\\controller\\comment\\CommentCtrler',
       'comment/delete'          =>  'site\\controller\\comment\\DeleteCtrler',
       'comment/edit'            =>  'site\\controller\\comment\\EditCtrler',
