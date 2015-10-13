@@ -3,43 +3,56 @@
 namespace site\api;
 
 use site\Service;
-use site\dbobject\User;
+use site\dbobject\Node;
+use site\dbobject\Comment;
 
 class NodeAPI extends Service
 {
 
-   const NODE_PER_PAGE = 20;
+   const COMMENT_PER_PAGE = 20;
+
    /**
-    * get bookmarks for a user
-    * uri: /api/bookmark/<uid>
-    *      /api/bookmark/<uid>?p=<pageNo>
+    * get nodes for a user
+    * uri: /api/node/<nid>
+    *      /api/node/<nid>?p=<pageNo>
     */
    public function get()
    {
-      if ( !$this->request->uid || empty( $this->args ) || !\is_numeric( $this->args[ 0 ] ) )
+      if ( empty( $this->args ) || !\is_numeric( $this->args[ 0 ] ) )
       {
          $this->forbidden();
       }
 
-      $uid = (int) $this->args[ 0 ];
+      $nid = (int) $this->args[ 0 ];
 
-      if ( $uid != $this->request->uid )
+      $n = new Node( $nid, 'id,title,body' );
+      $data = $n->toArray();
+
+      // get Comments
+      $comment = new Comment();
+      $comment->nid = $nid;
+      $commentCount = $comment->getCount();
+      if ( $commentCount == 0 )
       {
-         $this->forbidden();
+         $data[ 'pageNo' ] = 1;
+         $data[ 'pageCount' ] = 1;
+         $data[ 'comments' ] = [ ];
+      }
+      else
+      {
+         list($pageNo, $pageCount) = $this->_getPagerInfo( $commentCount, self::COMMENT_PER_PAGE );
+         $data[ 'pageNo' ] = $pageNo;
+         $data[ 'pageCount' ] = $pageCount;
+
+         $data[ 'comments' ] = $comment->getList( 'body', self::COMMENT_PER_PAGE, ($pageNo - 1) * self::COMMENT_PER_PAGE );
       }
 
-      $u = new User( $this->request->uid, NULL );
-
-      list($pageNo, $pageCount) = $this->_getPagerInfo( $u->countBookmark(), self::NODE_PER_PAGE );
-
-      $nodes = $u->listBookmark( self::NODE_PER_PAGE, ($pageNo - 1) * self::NODE_PER_PAGE );
-
-      $this->_json( [ 'nodes' => $nodes, 'pager' => [ 'pageNo' => $pageNo, 'pageCount' => $pageCount ] ] );
+      $this->_json( $data );
    }
 
    /**
-    * add a node to user's bookmark list
-    * uri: /api/bookmark[?action=post]
+    * add a node to user's node list
+    * uri: /api/node[?action=post]
     * post: nid=<nid>
     */
    public function post()
@@ -63,8 +76,8 @@ class NodeAPI extends Service
    }
 
    /**
-    * remove one node or multiple modes from user's bookmark list
-    * uri: /api/bookmark/<nid>(,<nid>,...)?action=delete
+    * remove one node or multiple modes from user's node list
+    * uri: /api/node/<nid>(,<nid>,...)?action=delete
     */
    public function delete()
    {
