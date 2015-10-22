@@ -25,12 +25,12 @@ class IdentificationCodeAPI extends Service
 
       if ( !$this->request->post[ 'username' ] )
       {
-         $this->error( 'Please input a username' );
+         $this->error( '请输入用户名' );
       }
 
       if ( !$this->request->post[ 'email' ] )
       {
-         $this->error( 'Please input the email for this username' );
+         $this->error( '请输入注册电子邮箱' );
       }
 
       $user = new User();
@@ -41,7 +41,7 @@ class IdentificationCodeAPI extends Service
       {
          if ( $user->email != $this->request->post[ 'email' ] )
          {
-            $this->error( 'Email does not match. Please input the registration email for ' . $user->username );
+            $this->error( '您输入的电子邮箱与与此用户的注册邮箱不匹配，请检查是否输入了正确的注册邮箱' );
          }
 
          // create user action and send out email
@@ -67,7 +67,7 @@ class IdentificationCodeAPI extends Service
       }
       else
       {
-         $this->error( 'user does not exist' );
+         $this->error( '你输入的用户名不存在' );
       }
    }
 
