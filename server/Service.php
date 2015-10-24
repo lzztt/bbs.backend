@@ -6,6 +6,8 @@ use lzx\core\Service as LzxService;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\Logger;
+use lzx\core\Mailer;
+use lzx\html\Template;
 use site\Session;
 use lzx\cache\CacheHandler;
 use site\Config;
@@ -199,10 +201,10 @@ abstract class Service extends LzxService
    {
       // generate identCode
       $identCode = [
-         'code' => \mt_rand( 100000, 999999 ),
-         'uid' => $uid,
+         'code'    => \mt_rand( 100000, 999999 ),
+         'uid'     => $uid,
          'attamps' => 0,
-         'expTime' => $this->request->timestamp + 3600
+         'expTime' => $this->request->timestamp + 600
       ];
 
       // save in session
@@ -238,6 +240,23 @@ abstract class Service extends LzxService
          $this->session->identCode[ 'attamps' ] = $identCode[ 'attamps' ] + 1;
          return NULL;
       }
+   }
+
+   protected function sendIdentCode( $user )
+   {
+      // create user action and send out email
+      $mailer = new Mailer( 'system' );
+      $mailer->to = $user->email;
+      $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
+      $mailer->subject = $user->username . '在' . $siteName . '的用户安全验证码';
+      $contents = [
+         'username'   => $user->username,
+         'ident_code' => $this->createIdentCode( $user->id ),
+         'sitename'   => $siteName
+      ];
+      $mailer->body = new Template( 'mail/ident_code', $contents );
+      
+      return $mailer->send();
    }
 
 }
