@@ -4,8 +4,6 @@ namespace site\api;
 
 use site\Service;
 use site\dbobject\User;
-use lzx\core\Mailer;
-use lzx\html\Template;
 use site\Config;
 
 class UserAPI extends Service
@@ -162,7 +160,7 @@ class UserAPI extends Service
       {
          $this->error( '不合法的电子邮箱 : ' . $this->request->post[ 'email' ] );
       }
-      
+
       if ( $this->_isSpammer( $this->request->post[ 'email' ], $this->request->ip ) )
       {
          $this->logger->info( 'STOP SPAMMER : ' . \implode( '|', [ $this->request->post[ 'username' ], $this->request->post[ 'email' ], $this->request->ip ] ) );
@@ -209,18 +207,7 @@ class UserAPI extends Service
       }
 
       // create user action and send out email
-      $mailer = new Mailer();
-      $mailer->to = $user->email;
-      $siteName = \ucfirst( self::$_city->uriName ) . 'BBS';
-      $mailer->subject = $user->username . '在' . $siteName . '的新用户激活安全验证码';
-      $contents = [
-         'username' => $user->username,
-         'ident_code' => $this->createIdentCode( $user->id ),
-         'sitename' => $siteName
-      ];
-      $mailer->body = new Template( 'mail/ident_code', $contents );
-
-      if ( $mailer->send() === FALSE )
+      if ( $this->sendIdentCode( $user ) === FALSE )
       {
          $this->error( 'sending email error: ' . $user->email );
       }
@@ -258,16 +245,16 @@ class UserAPI extends Service
       }
       $this->_json( NULL );
    }
-   
+
    private function _isSpammer( $email, $ip )
    {
-      $geo = \geoip_record_by_name( $ip  );
-      
-      if( \preg_match( '/[a-z][0-9]+[a-z]/', \strstr($email, '@', true) ) && ( !$geo || $geo[ 'region' ] != 'TX' ) )
+      $geo = \geoip_record_by_name( $ip );
+
+      if ( \preg_match( '/[a-z][0-9]+[a-z]/', \strstr( $email, '@', true ) ) && (!$geo || $geo[ 'region' ] != 'TX' ) )
       {
          return TRUE;
       }
-      
+
       return FALSE;
    }
 
