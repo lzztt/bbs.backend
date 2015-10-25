@@ -35,7 +35,7 @@ class UserAPI extends Service
       }
       else
       {
-         $this->error( 'user does not exist' );
+         $this->error( '用户不存在' );
       }
    }
 
