@@ -68,6 +68,10 @@ class MessageAPI extends Service
       if ( \array_key_exists( 'topicMID', $this->request->post ) )
       {
          $topicMID = (int) $this->request->post[ 'topicMID' ];
+         if ( $topicMID <= 0 )
+         {
+            $topicMID = NULL;
+         }
       }
       $pm = new PrivMsg();
 
@@ -132,9 +136,9 @@ class MessageAPI extends Service
          $pm->update( 'msgID' );
       }
 
-      if( $user->email )
+      if ( $user->email )
       {
-         $mailer = new Mailer('pm');
+         $mailer = new Mailer( 'pm' );
          $mailer->to = $user->email;
          $mailer->subject = $user->username . ' 您有一封新的站内短信';
          $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'http://' . $this->request->domain . '/app/user/pm/' . $pm->msgID;
@@ -146,13 +150,13 @@ class MessageAPI extends Service
 
       $sender = new User( $this->request->uid, 'username,avatar' );
       $this->_json( [
-         'id' => $pm->id,
-         'mid' => $pm->msgID,
-         'time' => $pm->time,
-         'body' => $pm->body,
-         'uid' => $pm->fromUID,
+         'id'       => $pm->id,
+         'mid'      => $pm->msgID,
+         'time'     => $pm->time,
+         'body'     => $pm->body,
+         'uid'      => $pm->fromUID,
          'username' => $sender->username,
-         'avatar' => $sender->avatar
+         'avatar'   => $sender->avatar
       ] );
    }
 
