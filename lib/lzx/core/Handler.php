@@ -55,7 +55,7 @@ class Handler
       }
    }
 
-   public static function exceptionHandler( \Exception $e )
+   public static function exceptionHandler( \Throwable $e )
    {
       $msg = 'Uncaught exception: [' . \get_class( $e ) . '] ' . $e->getMessage();
       if ( self::$logger instanceof Logger )

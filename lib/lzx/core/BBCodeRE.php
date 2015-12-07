@@ -85,9 +85,7 @@ class BBCodeRE
          '/\[\*\]\s?(.*?)\n/ms'
          => '<li>\1</li>',
          '/\[youtube\](.*?)\[\/youtube\]/ms'
-         => '<iframe width="480" height="360" src="http://www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>',
-         '/\[tudou\](.*?)\[\/tudou\]/ms'
-         => '<embed src="http://www.tudou.com/v/\1/v.swf" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" wmode="opaque" width="480" height="400"></embed>',
+         => '<iframe class="youtube" src="http://www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>'
       ];
 
       $text = preg_replace( array_keys( $bbcode ), array_values( $bbcode ), $text );
