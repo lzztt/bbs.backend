@@ -269,7 +269,7 @@ abstract class Controller extends LzxCtrler
       $ctrler->run();
    }
 
-   protected function _displayLogin( $redirect = NULL )
+   protected function _displayLogin()
    {
       $this->response->pageRedirect('/app/user/login');
    }

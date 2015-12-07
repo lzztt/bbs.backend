@@ -35,11 +35,9 @@ class NodeCtrler extends Forum
       $user = new User( $this->request->uid, 'createTime,points,status' );
       try
       {
-         // validate post for houston
-         if ( self::$_city->id == 1 )
-         {
-            $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ], $this->request->post[ 'title' ] );
-         }
+         // validate post
+         $user->validatePost( $this->request->ip, $this->request->timestamp, $this->request->post[ 'body' ], $this->request->post[ 'title' ] );
+
          $node = new Node();
          $node->tid = $tid;
          $node->uid = $this->request->uid;
