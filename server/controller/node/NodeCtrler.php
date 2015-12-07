@@ -3,7 +3,7 @@
 namespace site\controller\node;
 
 use site\controller\Node;
-use lzx\core\BBCode;
+use lzx\core\BBCodeRE as BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
