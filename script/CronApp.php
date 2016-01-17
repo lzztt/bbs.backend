@@ -182,7 +182,7 @@ class CronApp extends App
       $db = $this->config->db;
       $mysqldump = '/usr/bin/mysqldump';
       $gzip = '/bin/gzip';
-      $cmd = $mysqldump . ' --opt --routines --default-character-set=utf8 --set-charset --user=' . $db[ 'user' ] . ' --password=' . $db[ 'password' ] . ' ' . $db[ 'dsn' ];
+      $cmd = $mysqldump . ' --opt --routines --default-character-set=utf8 --set-charset ' . $db[ 'dsn' ];
       foreach ( $cacheTables as $t )
       {
          $cmd = $cmd . ' --ignore-table=' . $db[ 'dsn' ] . '.' . $t;
