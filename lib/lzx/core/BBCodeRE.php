@@ -85,7 +85,7 @@ class BBCodeRE
          '/\[\*\]\s?(.*?)\n/ms'
          => '<li>\1</li>',
          '/\[youtube\](.*?)\[\/youtube\]/ms'
-         => '<iframe class="youtube" src="http://www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>'
+         => '<iframe class="youtube" src="//www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>'
       ];
 
       $text = preg_replace( array_keys( $bbcode ), array_values( $bbcode ), $text );
