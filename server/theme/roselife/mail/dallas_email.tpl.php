@@ -2,7 +2,7 @@
 
 我们建了一个Dallas地区的信息发布平台，完全免费，服务于达福地区的华人
 去我们的网站看看热门话题，或者免费发布您的信息吧 :)
-网址是: http://www.dallasbbs.com
+网址是: https://www.dallasbbs.com
 
 真诚期待您的加盟！
 
