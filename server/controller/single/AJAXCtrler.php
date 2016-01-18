@@ -79,7 +79,7 @@ class AJAXCtrler extends Single
 
       $chart = (string) $this->_getChart( $a );
 
-      $url = 'http://www.houstonbbs.com/single/info?u=' . $attendee->id . '&c=' . $this->_getCode( $attendee->id );
+      $url = 'https://www.houstonbbs.com/single/info?u=' . $attendee->id . '&c=' . $this->_getCode( $attendee->id );
 
       $mailer = new Mailer();
 
@@ -117,7 +117,7 @@ class AJAXCtrler extends Single
       $mailer = new Mailer();
       $mailer->subject = '七夕单身聚会 通讯录';
 
-      $url = 'http://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode( $a->id );
+      $url = 'https://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode( $a->id );
       $mailer->body = new Template( 'mail/attendees', [ 'name' => $a->name, 'url' => $url ] );
       $mailer->to = $a->email;
       //$mailer->to = 'ikki3355@gmail.com';

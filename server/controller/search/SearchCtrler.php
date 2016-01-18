@@ -42,7 +42,7 @@ div.gs-visibleUrl {
 display:none !important;
 }
 </style>
-<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script src="https://www.google.com/jsapi" type="text/javascript"></script>
 <script type="text/javascript">
   google.load('search', '1', {language : 'en'});
   google.setOnLoadCallback(function() {
@@ -55,7 +55,7 @@ display:none !important;
     customSearchControl.draw('cse', options);
   }, true);
 </script>
-<link rel="stylesheet" href="http://www.google.com/cse/style/look/greensky.css" />
+<link rel="stylesheet" href="https://www.google.com/cse/style/look/greensky.css" />
 
 <div id="cse"></div>
 HTML;

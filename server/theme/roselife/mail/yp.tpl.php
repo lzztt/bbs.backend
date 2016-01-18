@@ -21,7 +21,7 @@
 
 
 了解电子黄页详情
-http://www.houstonbbs.com/yp/join
+https://www.houstonbbs.com/yp/join
 
 
 听起来有点意思，那么，活动什么时候开始呢？

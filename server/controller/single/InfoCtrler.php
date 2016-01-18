@@ -93,7 +93,7 @@ class InfoCtrler extends Single
       $mailer->subject = '七夕单身聚会 活动详情 (本周六下午)';
       foreach ( $attendee->getList( 'id,name,email' ) as $a )
       {
-         $url = 'http://www.houstonbbs.com/single/info?u=' . $a[ 'id' ] . '&c=' . $this->_getCode( $a[ 'id' ] );
+         $url = 'https://www.houstonbbs.com/single/info?u=' . $a[ 'id' ] . '&c=' . $this->_getCode( $a[ 'id' ] );
          $mailer->body = new Template( 'mail/attendee_final', [ 'name' => $a[ 'name' ], 'url' => $url ] );
          $mailer->to = $a[ 'email' ];
          $mailer->send();
