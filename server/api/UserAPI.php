@@ -160,13 +160,13 @@ class UserAPI extends Service
       {
          $this->error( '不合法的电子邮箱 : ' . $this->request->post[ 'email' ] );
       }
-
+/*
       if ( $this->_isSpammer( $this->request->post[ 'email' ], $this->request->ip ) )
       {
          $this->logger->info( 'STOP SPAMMER : ' . \implode( '|', [ $this->request->post[ 'username' ], $this->request->post[ 'email' ], $this->request->ip ] ) );
          $this->error( '系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您认为这是一个错误的判断，请与网站管理员联系。' );
       }
-
+*/
       if ( isset( $this->request->post[ 'submit' ] ) || $this->_isBot( $this->request->post[ 'email' ] ) )
       {
          $this->logger->info( 'STOP SPAMBOT : ' . $this->request->post[ 'email' ] );
@@ -248,13 +248,14 @@ class UserAPI extends Service
 
    private function _isSpammer( $email, $ip )
    {
+      /*
       $geo = \geoip_record_by_name( $ip );
 
       if ( \preg_match( '/[a-z][0-9]+[a-z]/', \strstr( $email, '@', true ) ) && (!$geo || $geo[ 'region' ] != 'TX' ) )
       {
          return TRUE;
       }
-
+      */
       return FALSE;
    }
 
