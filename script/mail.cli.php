@@ -42,7 +42,17 @@ class MailApp extends App
       $uid = $argv[ 0 ];
       $db = DB::getInstance( $this->config->db, TRUE );
       //$users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 550' );
-      $users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id = 126' );
+      //$users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email NOT LIKE "%@qq.com" LIMIT 550' );
+      //$users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id in (29634,29641,29644,29647,29675,29689,29701,29704,29707,29714,29726) or (id > 29726 and email like "%@qq.com") order by id' );
+      $users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email LIKE "%@qq.com" LIMIT 300' );
+      /*
+      $users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 3' );
+      foreach( $users as $i => $u )
+      {
+         $users[$i]['email'] = 'ikki3355@gmail.com';
+         $users[$i]['cid'] = $i + 1;
+      }
+       */
 
       $cities = [ '休斯顿', '达拉斯', '奥斯汀' ];
       $domain = [ 'houston', 'dallas', 'austin' ];
@@ -50,7 +60,7 @@ class MailApp extends App
       if ( \sizeof( $users ) > 0 )
       {
          $mailer = new Mailer();
-         $mailer->from = 'care';
+         $mailer->from = 'newyear';
 
          $status = [ ];
          Template::setLogger( $this->logger );
@@ -58,14 +68,17 @@ class MailApp extends App
 
          foreach ( $users as $i => $u )
          {
-            $city = $cities[ (int) $u[ 'cid' ] - 1 ];
-            $mailer->subject = '缤纷' . $city . '网 祝您新春快乐 喜乐羊羊';
-            $mailer->domain = $domain[ (int) $u[ 'cid' ] - 1 ] . 'bbs.com';
+            $cid = (int) $u[ 'cid' ] - 1;
+            $city = $cities[ $cid ];
+            $mailer->subject = '新年快乐，猴年吉祥';
+            $mailer->domain = $domain[ $cid ] . 'bbs.com';
             $mailer->to = $u[ 'email' ];
+            $mailer->is_html = TRUE;
             $contents = [
                'username' => $u[ 'username' ],
                'time' => $this->time( $u[ 'create_time' ] ),
-               'city' => $city
+               'city' => $city,
+               'mailid' => \mt_rand()
             ];
 
             $mailer->body = new Template( 'mail/newyear', $contents );
@@ -87,7 +100,7 @@ class MailApp extends App
                $status = [ ];
             }
 
-            \sleep( 6 );
+            \sleep( 11 );
          }
 
          if ( $status )
@@ -103,9 +116,13 @@ class MailApp extends App
 
    private function time( $timestamp )
    {
-      $intv = \date_diff( new \DateTime( \date( 'now' ) ), new \DateTime( \date( 'Y-m-d H:i:s', $timestamp ) ) );
+      $intv = ( new \DateTime() )->diff( new \DateTime( \date( 'Y-m-d H:i:s', $timestamp ) ) );
       $days = $intv->days;
-      if ( $days / 365 > 5 )
+      if ( $days / 365 > 6 )
+      {
+         return '六年多以来';
+      }
+      elseif ( $days / 365 > 5 )
       {
          return '五年多以来';
       }

@@ -1,11 +1,21 @@
-<?php print $username; ?> 您好，
-
-感谢您<?php print $time; ?>对缤纷<?php print $city; ?>网的关注和支持！
-在羊年到来之际，祝您
-  生活洋洋得意，幸福无限；
-  事业大发洋财，财源滚滚；
-  爱情似羊缠绵，甜蜜无限；
-  日子阳光明媚，红红火火！！
-
-站长
-Alex Tian
+<!DOCTYPE html>
+<html lang="zh" dir="ltr">
+  <head>
+    <meta charset="UTF-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <article>
+      Hi <?php print $username; ?>，<br>
+      <br>
+      不知不觉猴年就来到了，今天终于有时间写封邮件拜个年，感谢你<?php print $time; ?>对缤纷<?php print $city; ?>网的支持和关注。<br>
+      祝你和你的家人新年快乐，猴年吉祥！<br>
+      <br>
+      过去一年里，我认识到communication是一项很重要的技能。<br>
+      新的一年里，保持联系！<br>
+      <br>
+      站长<br>
+      田龙璋
+    </article>
+  </body>
+</html>
