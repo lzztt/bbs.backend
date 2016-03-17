@@ -91,7 +91,7 @@ class CommentCtrler extends Node
                   $this->logger->info( $log );
                }
             }
-            if ( $this->config->webmaster )
+            if ( FALSE && $this->config->webmaster ) // turn off spammer email
             {
                $mailer = new Mailer();
                $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
