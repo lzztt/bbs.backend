@@ -50,7 +50,14 @@
       <!--END CSS-->
 
       <title><?php print $head_title; ?></title>
-      <meta name='description' content='<?php print $head_description; ?>'> 
+      <meta name='description' content='<?php print $head_description; ?>'>
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-8257334386742604",
+          enable_page_level_ads: true
+        });
+      </script>
    </head>
    <body>
       <div id='page'>
@@ -63,7 +70,7 @@
                <span><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
-                     href="http://www.cchtrip.com" target="_blank"><img src="/data/ad/cctrip7.gif"></a><a
+                     href="http://www.cchtrip.com" target="_blank"><img src="/data/ad/cctrip8.gif"></a><a
                      href="/node/68817" target="_blank"><img src="/data/ad/geekpush2.jpg"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
@@ -82,20 +89,6 @@
          </nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
-            <div class='google_ad_xs'>
-               <style>
-                  .responsive-ad-xs { display:none; }
-                  @media(max-width: 767px) { .responsive-ad-xs { display: block; width: 100%; height: 60px; } }
-               </style>
-               <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-               <!-- responsive_ad_xs -->
-               <ins class="adsbygoogle responsive-ad-xs"
-                    data-ad-client="ca-pub-8257334386742604"
-                    data-ad-slot="9976046082"></ins>
-               <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-               </script>
-            </div>
             <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2015 HoustonBBS 版权所有 | <a href='/term'>免责声明</a></div>
          </footer>
       </div>

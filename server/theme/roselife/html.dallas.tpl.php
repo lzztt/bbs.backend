@@ -47,12 +47,19 @@
          <link href="/themes/<?php print $tpl_theme; ?>/css/fontello.css" rel="stylesheet" type="text/css">
       <?php else: ?>
          <link href="/themes/<?php print $tpl_theme; ?>/min/<?php print $min_version; ?>.min.css" rel="stylesheet" type="text/css">
-         <link href="/themes/<?php print $tpl_theme; ?>/min/<?php print $min_version; ?>.dallas.min.css" rel="stylesheet" type="text/css">
+         <link href="/themes/<?php print $tpl_theme; ?>/min/1464241922.dallas.min.css" rel="stylesheet" type="text/css">
       <?php endif; ?>
       <!--END CSS-->
 
       <title><?php print $head_title; ?></title>
       <meta name='description' content='<?php print $head_description; ?>'>
+      <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-8257334386742604",
+          enable_page_level_ads: true
+        });
+      </script>
    </head>
    <body>
       <div id='page'>

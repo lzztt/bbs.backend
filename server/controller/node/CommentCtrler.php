@@ -101,7 +101,7 @@ class CommentCtrler extends Node
             }
          }
 
-         $this->logger->error( $e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->post[ 'body' ] );
+         $this->logger->warn( $e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->post[ 'body' ] );
          $this->error( $e->getMessage() );
       }
 
@@ -204,7 +204,7 @@ class CommentCtrler extends Node
             }
          }
 
-         $this->logger->error( $e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->post[ 'body' ] );
+         $this->logger->warn( $e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->post[ 'body' ] );
          $this->error( $e->getMessage() );
       }
 

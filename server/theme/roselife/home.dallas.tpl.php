@@ -1,4 +1,28 @@
-<div class="image_slider"><?php print $imageSlider; ?></div><section class="items">
+<div class="image_slider"><?php print $imageSlider; ?></div><div class="google_ad">
+      <style>
+         .responsive-ad-1 { display:inline-block; width:300px; height:250px; }
+         @media(max-width: 995px) { .responsive-ad-1 { display:none } }
+      </style>
+      <!-- responsive_ad -->
+      <ins class="adsbygoogle responsive-ad-1"
+           data-ad-client="ca-pub-8257334386742604"
+           data-ad-slot="4245946485"></ins>
+      <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+   </div><div class="google_ad">
+      <style>
+         .responsive-ad-2 { display:inline-block; width:300px; height:250px; }
+         @media(max-width: 995px) { .responsive-ad-2 { display:none } }
+      </style>
+      <!-- responsive_ad -->
+      <ins class="adsbygoogle responsive-ad-2"
+           data-ad-client="ca-pub-8257334386742604"
+           data-ad-slot="7199412884"></ins>
+      <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+   </div><section class="items">
    <header>最新话题</header><?php print $latestForumTopics; ?></section><section class="items">
    <header>最新论坛回复</header><?php print $latestForumTopicReplies; ?></section><section class="items home_hot_nodes">
    <header>本周热门</header><?php print $hotForumTopics; ?></section>
