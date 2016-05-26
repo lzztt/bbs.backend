@@ -34,7 +34,6 @@
                   .responsive-ad { display:inline-block; float:right; width:300px; height:250px; }
                   @media(max-width: 767px) { .responsive-ad { display:none } }
                </style>
-               <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                <!-- responsive_ad -->
                <ins class="adsbygoogle responsive-ad"
                     data-ad-client="ca-pub-8257334386742604"
