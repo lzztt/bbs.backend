@@ -103,7 +103,7 @@ class WebApp extends App
 
       // set user info for logger
       $userinfo = [
-         'uid' => 'https://www.houstonbbs.com/app/user/profile/' . $request->uid,
+         'uid' => 'https://www.houstonbbs.com/app/user/' . $request->uid,
          'role' => $this->_isRobot() ? 'robot' : $session->urole ];
       $this->logger->setUserInfo( $userinfo );
 

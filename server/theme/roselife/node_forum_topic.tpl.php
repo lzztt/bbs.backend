@@ -15,7 +15,7 @@
       <?php print $p[ 'authorPanel' ]; ?>
       <article>
          <header>
-            <a href="/app/user/profile/<?php print $p[ 'uid' ]; ?>"><?php print $p[ 'username' ]; ?></a> <span class='city'><?php print $p[ 'city' ]; ?></span>
+            <a href="/app/user/<?php print $p[ 'uid' ]; ?>"><?php print $p[ 'username' ]; ?></a> <span class='city'><?php print $p[ 'city' ]; ?></span>
             <span class='time'><?php
                print $p[ 'createTime' ];
                if ( $p[ 'lastModifiedTime' ] )
