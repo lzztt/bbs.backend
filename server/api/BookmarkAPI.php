@@ -30,9 +30,10 @@ class BookmarkAPI extends Service
 
       $u = new User( $this->request->uid, NULL );
 
-      list($pageNo, $pageCount) = $this->_getPagerInfo( $u->countBookmark(), self::NODE_PER_PAGE );
+      $nodeCount = $u->countBookmark();
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $nodeCount, self::NODE_PER_PAGE );
 
-      $nodes = $u->listBookmark( self::NODE_PER_PAGE, ($pageNo - 1) * self::NODE_PER_PAGE );
+      $nodes = $nodeCount > 0 ? $u->listBookmark( self::NODE_PER_PAGE, ($pageNo - 1) * self::NODE_PER_PAGE ) : [];
 
       $this->_json( [ 'nodes' => $nodes, 'pager' => [ 'pageNo' => $pageNo, 'pageCount' => $pageCount ] ] );
    }

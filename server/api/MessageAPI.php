@@ -162,7 +162,7 @@ class MessageAPI extends Service
 
    /**
     * delete a private message from user's message box
-    * uri: /api/message/<mid>?action=delete
+    * uri: /api/message/<mid>(,<mid>,...)?action=delete
     */
    public function delete()
    {
@@ -235,13 +235,9 @@ class MessageAPI extends Service
       }
 
       $pmCount = $user->getPrivMsgsCount( $mailbox );
-      if ( $pmCount == 0 )
-      {
-         return [ 'msgs' => [ ] ];
-      }
 
       list($pageNo, $pageCount) = $this->_getPagerInfo( $pmCount, self::TOPIC_PER_PAGE );
-      $msgs = $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE );
+      $msgs = $pmCount > 0 ? $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE ) : [ ];
 
       return [ 'msgs' => $msgs, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount ] ];
    }

@@ -1,6 +1,6 @@
 <aside class="author_panel">
    <div class="picture">
-      <a title="浏览用户信息" href="/app/user/profile/<?php print $uid; ?>"><img width="120" height="120" title="<?php print $username; ?> 的头像" alt="<?php print $username; ?> 的头像" src="<?php print $avatar; ?>"><br><?php print $username; ?></a>
+      <a title="浏览用户信息" href="/app/user/<?php print $uid; ?>"><img width="120" height="120" title="<?php print $username; ?> 的头像" alt="<?php print $username; ?> 的头像" src="<?php print $avatar; ?>"><br><?php print $username; ?></a>
    </div>
    <div>
       <span>性别:</span> <?php print $sex; ?>
