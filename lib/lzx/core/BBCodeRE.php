@@ -50,7 +50,7 @@ class BBCodeRE
         }
        */
 
-      $text = str_replace( ['[quote]', '[/quote]'], ['<div class="quote">Quote:<blockquote class="quote-body">', '</blockquote></div>'], $text );
+      $text = str_replace( ['[quote]', '[/quote]'], ['<blockquote>', '</blockquote>'], $text );
 
       // BBCode to find...
       $bbcode = [
@@ -77,7 +77,7 @@ class BBCodeRE
          '/\[bgcolor\="?(.*?)"?\](.*?)\[\/bgcolor\]/ms'
          => '<span style="background-color:\1">\2</span>',
          '/\[quote\="?(.*?)"?\]/ms'
-         => '<div class="quote"><b>\1 wrote:</b><blockquote class="quote-body">',
+         => '<blockquote data-author="\1 :">',
          '/\[list\=(.*?)\](.*?)\[\/list\]/ms'
          => '<ol start="\1">\2</ol>',
          '/\[list\](.*?)\[\/list\]/ms'

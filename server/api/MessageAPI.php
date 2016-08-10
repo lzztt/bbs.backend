@@ -10,7 +10,7 @@ use site\dbobject\User;
 class MessageAPI extends Service
 {
 
-   const TOPIC_PER_PAGE = 25;
+   const TOPICS_PER_PAGE = 25;
 
    private static $_mailbox = ['inbox', 'sent' ];
 
@@ -236,8 +236,8 @@ class MessageAPI extends Service
 
       $pmCount = $user->getPrivMsgsCount( $mailbox );
 
-      list($pageNo, $pageCount) = $this->_getPagerInfo( $pmCount, self::TOPIC_PER_PAGE );
-      $msgs = $pmCount > 0 ? $user->getPrivMsgs( $mailbox, self::TOPIC_PER_PAGE, ($pageNo - 1) * self::TOPIC_PER_PAGE ) : [ ];
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $pmCount, self::TOPICS_PER_PAGE );
+      $msgs = $pmCount > 0 ? $user->getPrivMsgs( $mailbox, self::TOPICS_PER_PAGE, ($pageNo - 1) * self::TOPICS_PER_PAGE ) : [ ];
 
       return [ 'msgs' => $msgs, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount ] ];
    }

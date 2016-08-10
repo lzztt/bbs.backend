@@ -12,7 +12,7 @@
       <span>加入:</span> <?php print $joinTime; ?>
    </div>
    <div>
-      <span>金币</span>: <?php print $points; ?>
+      <span>声望:</span> <?php print $points; ?>
    </div>
    <div>
       <a href="#sendPM" class="popup" data-vars='{"uid":<?php print $uid; ?>,"username":"<?php print $username; ?>"}'><img title="发送站内短信" alt="发送站内短信" src="/themes/default/images/forum/pm.gif"></a>

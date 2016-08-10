@@ -103,7 +103,7 @@ class WebApp extends App
 
       // set user info for logger
       $userinfo = [
-         'uid' => 'https://www.houstonbbs.com/app/user/' . $request->uid,
+         'uid'  => 'https://www.houstonbbs.com/app/user/' . $request->uid,
          'role' => $this->_isRobot() ? 'robot' : $session->urole ];
       $this->logger->setUserInfo( $userinfo );
 
@@ -116,7 +116,7 @@ class WebApp extends App
          if ( $args && $args[ 0 ] === 'api' )
          {
             // service api controller
-            $ctrler = ControllerRouter::createService( $request, $response, $this->logger, $session );
+            $ctrler = ControllerRouter::createService( $request, $response, $this->config, $this->logger, $session );
             $ctrler->{$ctrler->action}();
          }
          else

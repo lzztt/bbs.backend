@@ -40,8 +40,7 @@ class JSON
          $this->_string = \json_encode( $this->_data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE );
          if ( $this->_string === FALSE )
          {
-            $this->
-               $this->_string = '{"error":"json encode error"}';
+            $this->_string = '{"error":"json encode error"}';
          }
       }
       return $this->_string;

@@ -12,6 +12,7 @@ class Request
    public $post;
    public $get;
    public $files;
+   public $json;
    public $uid;
    public $language;
    public $timestamp;
@@ -27,6 +28,7 @@ class Request
       $this->post = $this->_toUTF8( $_POST );
       $this->get = $this->_toUTF8( $_GET );
       $this->files = $this->getUploadFiles();
+      $this->json = $this->_decodeJsonPost();
 
       $arr = \explode( $this->domain, $_SERVER[ 'HTTP_REFERER' ] );
       $this->referer = \sizeof( $arr ) > 1 ? $arr[ 1 ] : NULL;
@@ -82,6 +84,18 @@ class Request
       return $_files;
    }
 
+   private function _decodeJsonPost()
+   {
+      $json = NULL;
+      $data = \file_get_contents( 'php://input' );
+      if ( !empty( $data ) )
+      {
+         $json = \json_decode( $data, true );
+      }
+
+      return $json;
+   }
+
    /**
     * 
     * @param string $uri test
@@ -117,7 +131,7 @@ class Request
       \curl_setopt_array( $c, [
          \CURLOPT_RETURNTRANSFER => TRUE,
          \CURLOPT_CONNECTTIMEOUT => 2,
-         \CURLOPT_TIMEOUT => 3
+         \CURLOPT_TIMEOUT        => 3
       ] );
       $data = \curl_exec( $c );
       \curl_close( $c );
@@ -144,9 +158,10 @@ class Request
             return $city;
          }
 
-         if ( \is_numeric( $ip ) )
+         $ip = \inet_ntop( $ip );
+         if ( $ip === FALSE )
          {
-            $ip = \long2ip( $ip );
+            return $city;
          }
 
          $geo = \geoip_record_by_name( $ip );
@@ -156,7 +171,7 @@ class Request
             $city = $geo[ 'city' ];
          }
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          return 'UNKNOWN';
       }
@@ -178,9 +193,10 @@ class Request
             return $location;
          }
 
-         if ( \filter_var( $action, \FILTER_VALIDATE_INT, [ 'options' => [ 'min_range' => 0, 'max_range' => 4294967295 ] ] ) )
+         $ip = \inet_ntop( $ip );
+         if ( $ip === FALSE )
          {
-            $ip = \long2ip( $ip );
+            return $location;
          }
 
          $city = 'N/A';
@@ -206,7 +222,7 @@ class Request
 
          $location = $city . ', ' . $region . ', ' . $country;
       }
-      catch (\Exception $e)
+      catch ( \Exception $e )
       {
          return 'UNKNOWN';
       }

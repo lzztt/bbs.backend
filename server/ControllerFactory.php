@@ -87,7 +87,7 @@ class ControllerFactory
     * @param \site\Session $session
     * @return \site\Service
     */
-   public static function createService( Request $req, Response $response, Logger $logger, Session $session )
+   public static function createService( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
       $args = $req->getURIargs( $req->uri );
       if ( \sizeof( $args ) > 1 )
@@ -95,7 +95,7 @@ class ControllerFactory
          $apiClass = static::$_route[ 'api/' . $args[ 1 ] ];
          if ( $apiClass )
          {
-            $api = new $apiClass( $req, $response, $logger, $session );
+            $api = new $apiClass( $req, $response, $config, $logger, $session );
             $api->args = \array_slice( $args, 2 );
             return $api;
          }

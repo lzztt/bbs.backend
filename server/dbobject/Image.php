@@ -28,13 +28,13 @@ class Image extends DBObject
       $db = DB::getInstance();
       $table = 'images';
       $fields = [
-         'id' => 'id',
-         'nid' => 'nid',
-         'cid' => 'cid',
-         'name' => 'name',
-         'path' => 'path',
+         'id'     => 'id',
+         'nid'    => 'nid',
+         'cid'    => 'cid',
+         'name'   => 'name',
+         'path'   => 'path',
          'height' => 'height',
-         'width' => 'width',
+         'width'  => 'width',
          'cityID' => 'city_id'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
@@ -57,14 +57,14 @@ class Image extends DBObject
    public function saveFile( array $files, array $config )
    {
       $errmsg = [
-         \UPLOAD_ERR_INI_SIZE => 'upload_err_ini_size',
-         \UPLOAD_ERR_FORM_SIZE => 'upload_err_form_size',
-         \UPLOAD_ERR_PARTIAL => 'upload_err_partial',
-         \UPLOAD_ERR_NO_FILE => 'upload_err_no_file',
+         \UPLOAD_ERR_INI_SIZE   => 'upload_err_ini_size',
+         \UPLOAD_ERR_FORM_SIZE  => 'upload_err_form_size',
+         \UPLOAD_ERR_PARTIAL    => 'upload_err_partial',
+         \UPLOAD_ERR_NO_FILE    => 'upload_err_no_file',
          \UPLOAD_ERR_NO_TMP_DIR => 'upload_err_no_tmp_dir',
          \UPLOAD_ERR_CANT_WRITE => 'upload_err_cant_write',
-         102 => 'upload_err_invalid_type',
-         103 => 'upload_err_cant_save',
+         102                    => 'upload_err_invalid_type',
+         103                    => 'upload_err_cant_save',
       ];
 
       $errorFile = [ ];
@@ -83,7 +83,7 @@ class Image extends DBObject
             if ( $f[ 'error' ] !== \UPLOAD_ERR_OK ) // upload error
             {
                $errorFile[] = [
-                  'name' => $fileName,
+                  'name'  => $fileName,
                   'error' => $errmsg[ $f[ 'error' ] ],
                ];
                if ( $tmpFile )
@@ -97,7 +97,7 @@ class Image extends DBObject
             if ( $f[ 'size' ] > $config[ 'size' ] ) // File Size
             {
                $errorFile[] = [
-                  'name' => $fileName,
+                  'name'  => $fileName,
                   'error' => $errmsg[ \UPLOAD_ERR_INI_SIZE ],
                ];
                if ( $tmpFile )
@@ -113,7 +113,7 @@ class Image extends DBObject
             if ( $imageInfo === FALSE || !\in_array( $imageInfo[ 2 ], $config[ 'types' ] ) )
             {
                $errorFile[] = [
-                  'name' => $fileName,
+                  'name'  => $fileName,
                   'error' => $errmsg[ 102 ],
                ];
                if ( $tmpFile )
@@ -163,7 +163,7 @@ class Image extends DBObject
                $logger = Logger::getInstance();
                $logger->error( $e->getMessage() );
                $errorFile[] = [
-                  'name' => $fileName,
+                  'name'  => $fileName,
                   'error' => $errmsg[ 103 ],
                ];
                continue;
@@ -204,6 +204,76 @@ class Image extends DBObject
       }
    }
 
+   public function addImages( array $files, $filePath, $nid, $cid = NULL )
+   {
+      foreach ( $files as $file )
+      {
+         if ( $file[ 'action' ] == 'add' )
+         {
+            $info = \getimagesize( $filePath . $file[ 'path' ] );
+            $width = $info[ 0 ];
+            $height = $info[ 1 ];
+            $this->call( 'image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
+               ':nid'     => $nid,
+               ':cid'     => $cid,
+               ':name'    => $file[ 'name' ],
+               ':path'    => $file[ 'path' ],
+               ':height'  => $height,
+               ':width'   => $width,
+               ':city_id' => $this->cityID ] );
+         }
+      }
+   }
+
+   public function updateImages( array $files, $filePath, $nid, $cid = NULL )
+   {
+      if ( \sizeof( $files ) > 0 )
+      {
+         $deletedIDs = [ ];
+
+         foreach ( $files as $file )
+         {
+            switch ( $file[ "action" ] )
+            {
+               case 'add':
+                  $info = \getimagesize( $filePath . $file[ 'path' ] );
+                  $width = $info[ 0 ];
+                  $height = $info[ 1 ];
+                  $this->call( 'image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
+                     ':nid'     => $nid,
+                     ':cid'     => $cid,
+                     ':name'    => $file[ 'name' ],
+                     ':path'    => $file[ 'path' ],
+                     ':height'  => $height,
+                     ':width'   => $width,
+                     ':city_id' => $this->cityID ] );
+                  break;
+               case 'update':
+                  $this->call( 'image_update(:fid, :name)', [':fid' => $file[ 'id' ], ':name' => $file[ 'name' ] ] );
+                  break;
+               case 'delete':
+                  if ( $file[ 'id' ] > 0 )
+                  {
+                     $deletedIDs[] = $file[ 'id' ];
+                  }
+                  break;
+               default :
+                  continue;
+            }
+         }
+
+         if ( sizeof( $deletedIDs ) > 0 )
+         {
+            $this->call( 'image_delete("' . \implode( ',', $deletedIDs ) . '")' );
+         }
+      }
+
+      $image = new Image();
+      $image->nid = $nid;
+      $image->cid = $cid;
+      return $image->getList( 'id,name,path' );
+   }
+
    public function updateFileList( array $files, $filePath, $nid, $cid = NULL )
    {
       $nid = (int) $nid;
@@ -226,6 +296,7 @@ class Image extends DBObject
       {
          if ( \is_numeric( $fid ) )
          {
+            // existing image
             $fid = (int) $fid;
             if ( $file[ 'name' ] != $images[ $fid ][ 'name' ] )
             {
@@ -241,12 +312,12 @@ class Image extends DBObject
                $info = \getimagesize( $filePath . $file[ 'path' ] );
                $width = $info[ 0 ];
                $height = $info[ 1 ];
-               $this->call( 'image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [':nid' => $nid,
-                  ':cid' => $cid,
-                  ':name' => $file[ 'name' ],
-                  ':path' => $file[ 'path' ],
-                  ':height' => $height,
-                  ':width' => $width,
+               $this->call( 'image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [':nid'     => $nid,
+                  ':cid'     => $cid,
+                  ':name'    => $file[ 'name' ],
+                  ':path'    => $file[ 'path' ],
+                  ':height'  => $height,
+                  ':width'   => $width,
                   ':city_id' => $this->cityID ] );
             }
             catch ( \Exception $e )
