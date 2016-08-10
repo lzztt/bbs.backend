@@ -30,7 +30,7 @@
          </div>
       <br>
       Google Analytics统计显示：缤纷休斯顿网 平均每天有<span style="color:blue; padding:0">2千2百</span>位独立访客访问页面<span style="color:blue; padding:0">3万8千</span>次，每月有<span style="color:blue; padding:0">2万4千</span>位独立访客访问页面<span style="color:blue; padding:0">104万</span>次。<span style="color:blue; padding:0">86%</span>的用户位于休斯顿地区。<br><br>
-      <span style="color:blue; font-size: 120%">感谢您对电子黄页感兴趣！<br>我们给新客户三个月的免费黄页广告！</span><br>
+      <!--span style="color:blue; font-size: 120%">感谢您对电子黄页感兴趣！<br>我们给新客户三个月的免费黄页广告！</span--><br>
         既然都看到这里了，那就联系Email <a href='mailto:yp@houstonbbs.com'>yp@houstonbbs.com</a> 开始添加您的黄页吧 :)
 <br><br><br><br>
     </article>

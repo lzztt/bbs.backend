@@ -8,7 +8,7 @@ use site\dbobject\User;
 class BookmarkAPI extends Service
 {
 
-   const NODE_PER_PAGE = 20;
+   const NODES_PER_PAGE = 20;
    /**
     * get bookmarks for a user
     * uri: /api/bookmark/<uid>
@@ -31,9 +31,9 @@ class BookmarkAPI extends Service
       $u = new User( $this->request->uid, NULL );
 
       $nodeCount = $u->countBookmark();
-      list($pageNo, $pageCount) = $this->_getPagerInfo( $nodeCount, self::NODE_PER_PAGE );
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $nodeCount, self::NODES_PER_PAGE );
 
-      $nodes = $nodeCount > 0 ? $u->listBookmark( self::NODE_PER_PAGE, ($pageNo - 1) * self::NODE_PER_PAGE ) : [];
+      $nodes = $nodeCount > 0 ? $u->listBookmark( self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE ) : [];
 
       $this->_json( [ 'nodes' => $nodes, 'pager' => [ 'pageNo' => $pageNo, 'pageCount' => $pageCount ] ] );
    }

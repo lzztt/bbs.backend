@@ -59,6 +59,7 @@ class UserAPI extends Service
       $uid = 0;
       if ( $this->request->uid )
       {
+         // user
          $uid = (int) $this->args[ 0 ];
 
          if ( $uid != $this->request->uid )
@@ -68,6 +69,7 @@ class UserAPI extends Service
       }
       else
       {
+         // guest
          $uid = $this->parseIdentCode( (int) $this->args[ 0 ] );
          if ( !$uid )
          {
@@ -96,6 +98,54 @@ class UserAPI extends Service
 
             unset( $this->request->post[ 'password_old' ] );
             unset( $this->request->post[ 'password2' ] );
+         }
+         else
+         {
+            // guest set new password
+            $u->load( 'username,password,email' );
+            if ( !$u->password )
+            {
+               // this is a new user
+               if ( $u->username == \strstr( $u->email, '@', true ) )
+               {
+                  // load 3 users before this one
+                  $userObj = new User();
+                  $userObj->where( 'id', $uid - 4, '>' );
+                  $userObj->where( 'id', $uid, '<' );
+                  foreach ( $userObj->getList( 'username,email,status' ) as $user )
+                  {
+                     if ( $user[ 'username' ] == \strstr( $user[ 'email' ], '@', true ) && \substr( $u->username, 0, 4 ) == \substr( $user[ 'username' ], 0, 4 ) )
+                     {
+                        // found username has the same prefix
+                        // check location
+                        $geo = \geoip_record_by_name( $ip );
+
+                        if ( (!$geo || $geo[ 'region' ] != 'TX' ) || \strpos( $this->request->post[ 'password' ], $u->username ) !== false )
+                        {
+                           // non texas user, or username = password
+                           // treat as spammer, make as disabled
+                           $u->status = 0;
+                           // also disable spammer peer, if it is not disable
+                           if ( $user[ 'status' ] > 0 )
+                           {
+                              $up = new User();
+                              $up->id = $user[ 'id' ];
+                              $up->status = 0;
+                              $up->update();
+                           }
+                           // notify admin to check peers too
+                           $this->logger->error( 'Serial User found: username=' . $u->username . ' password=' . $this->request->post[ 'password' ] . ' (this user is deleted, but check on similar users)' );
+                        }
+                        else
+                        {
+                           // texas user, notify admin
+                           $this->logger->error( 'Serial User found: username=' . $u->username . ' password=' . $this->request->post[ 'password' ] );
+                        }
+                        break;
+                     }
+                  }
+               }
+            }
          }
 
          $this->request->post[ 'password' ] = $u->hashPW( $this->request->post[ 'password' ] );
@@ -136,48 +186,42 @@ class UserAPI extends Service
    public function post()
    {
       // validate captcha
-      if ( \strtolower( $this->session->captcha ) != \strtolower( $this->request->post[ 'captcha' ] ) )
+      if ( \strtolower( $this->session->captcha ) != \strtolower( $this->request->json[ 'captcha' ] ) )
       {
          $this->error( '图形验证码错误' );
       }
       unset( $this->session->captcha );
 
       // check username and email first
-      if ( empty( $this->request->post[ 'username' ] ) )
+      if ( empty( $this->request->json[ 'username' ] ) )
       {
          $this->error( '请填写用户名' );
       }
       else
       {
-         $username = \strtolower( $this->request->post[ 'username' ] );
+         $username = \strtolower( $this->request->json[ 'username' ] );
          if ( \strpos( $username, 'admin' ) !== FALSE || \strpos( $username, 'bbs' ) !== FALSE )
          {
             $this->error( '不合法的用户名，请选择其他用户名' );
          }
       }
 
-      if ( !\filter_var( $this->request->post[ 'email' ], \FILTER_VALIDATE_EMAIL ) )
+      if ( !\filter_var( $this->request->json[ 'email' ], \FILTER_VALIDATE_EMAIL ) || \substr( $this->request->json[ 'email' ], -8 ) == 'bccto.me' )
       {
-         $this->error( '不合法的电子邮箱 : ' . $this->request->post[ 'email' ] );
+         $this->error( '不合法的电子邮箱 : ' . $this->request->json[ 'email' ] );
       }
-/*
-      if ( $this->_isSpammer( $this->request->post[ 'email' ], $this->request->ip ) )
+
+      if ( isset( $this->request->json[ 'submit' ] ) || $this->_isBot( $this->request->json[ 'email' ] ) )
       {
-         $this->logger->info( 'STOP SPAMMER : ' . \implode( '|', [ $this->request->post[ 'username' ], $this->request->post[ 'email' ], $this->request->ip ] ) );
-         $this->error( '系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您认为这是一个错误的判断，请与网站管理员联系。' );
-      }
-*/
-      if ( isset( $this->request->post[ 'submit' ] ) || $this->_isBot( $this->request->post[ 'email' ] ) )
-      {
-         $this->logger->info( 'STOP SPAMBOT : ' . $this->request->post[ 'email' ] );
+         $this->logger->info( 'STOP SPAMBOT : ' . $this->request->json[ 'email' ] );
          $this->error( '系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您认为这是一个错误的判断，请与网站管理员联系。' );
       }
 
       $user = new User();
-      $user->username = $this->request->post[ 'username' ];
+      $user->username = $this->request->json[ 'username' ];
       $user->password = NULL;
-      $user->email = $this->request->post[ 'email' ];
-      $user->lastAccessIP = (int) \ip2long( $this->request->ip );
+      $user->email = $this->request->json[ 'email' ];
+      $user->lastAccessIP = \inet_pton( $this->request->ip );
       $user->cid = self::$_city->id;
       $user->status = 1;
 
@@ -244,19 +288,6 @@ class UserAPI extends Service
          $this->_getIndependentCache( '/node/' . $nid )->delete();
       }
       $this->_json( NULL );
-   }
-
-   private function _isSpammer( $email, $ip )
-   {
-      /*
-      $geo = \geoip_record_by_name( $ip );
-
-      if ( \preg_match( '/[a-z][0-9]+[a-z]/', \strstr( $email, '@', true ) ) && (!$geo || $geo[ 'region' ] != 'TX' ) )
-      {
-         return TRUE;
-      }
-      */
-      return FALSE;
    }
 
    private function _isBot( $m )

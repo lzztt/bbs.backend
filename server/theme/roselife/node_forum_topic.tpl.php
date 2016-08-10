@@ -48,12 +48,16 @@
          <footer class='v_user'>
             <div class="actions">
                <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p[ 'uid' ]; ?>
+               <?php if ( $p[ 'report' ] ): ?>
+                  <button type="button" class="report" data-action="nid=<?php print $nid; ?>&uid=<?php print $p[ 'uid' ]; ?>">举报</button>
+               <?php endif; ?>
                <?php if ( $tid == 16 && $p[ 'type' ] == 'node' ): ?>
                   <a class="button <?php print $urole; ?>" href="/node/<?php print $p[ 'id' ]; ?>/activity" rel="nofollow">发布为活动</a>
                <?php endif; ?>
+               
                <button type="button" class="edit <?php print $urole; ?>" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/edit'; ?>">编辑</button>
                <button type="button" class="delete <?php print $urole; ?>" data-action="<?php print '/' . $p[ 'type' ] . '/' . $p[ 'id' ] . '/delete'; ?>">删除</button>
-               <button type="button" class="reply " data-action="/node/<?php print $nid; ?>/comment">回复</button>
+               <button type="button" class="reply" data-action="/node/<?php print $nid; ?>/comment">回复</button>
                <button type="button" class="quote" data-raw="#<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" data-action="/node/<?php print $nid; ?>/comment">引用</button>
             </div>
             <div id="<?php print $p[ 'type' ] . '_' . $p[ 'id' ]; ?>_raw" style="display:none;">

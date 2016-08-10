@@ -70,7 +70,7 @@
                <span><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
-                     href="http://www.cchtrip.com" target="_blank"><img src="/data/ad/cctrip8.gif"></a><a
+                     ></a><a
                      href="/node/68817" target="_blank"><img src="/data/ad/geekpush2.jpg"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
@@ -89,7 +89,7 @@
          </nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
-            <div id='copyright'>如有问题，请联络网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2015 HoustonBBS 版权所有 | <a href='/term'>免责声明</a></div>
+            <div id='copyright'>网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2016 HoustonBBS 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:ad@houstonbbs.com?subject=想在HoustonBBS上做个广告">广告洽谈</a></div>
          </footer>
       </div>
       <div id="messagebox"></div>

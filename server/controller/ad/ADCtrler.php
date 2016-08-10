@@ -42,10 +42,10 @@ YP_SP;
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="PEP9ASKEHJV7Q">
 <table>
-<tr><td><input type="hidden" name="on0" value="Time">Time</td></tr><tr><td><select name="os0">
-	<option value="3 months">3 months $240.00 USD</option>
-	<option value="6 months">6 months $420.00 USD</option>
-	<option value="12 months">12 months $720.00 USD</option>
+<tr><td><input type="hidden" name="on0" value="Time">广告时间</td></tr><tr><td><select name="os0">
+	<option value="3 months">3个月 $240</option>
+	<option value="6 months">6个月 $420</option>
+	<option value="12 months">12个月 $720</option>
 </select> </td></tr>
 </table>
 <input type="hidden" name="currency_code" value="USD">
@@ -60,10 +60,10 @@ YP;
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="N2NJXZZRT69RS">
 <table>
-<tr><td><input type="hidden" name="on0" value="Time">Time</td></tr><tr><td><select name="os0">
-	<option value="3 months">3 months $800.00 USD</option>
-	<option value="6 months">6 months $1,400.00 USD</option>
-	<option value="12 months">12 months $2,400.00 USD</option>
+<tr><td><input type="hidden" name="on0" value="Time">广告时间</td></tr><tr><td><select name="os0">
+	<option value="3 months">3个月 $800</option>
+	<option value="6 months">6个月 $1,400</option>
+	<option value="12 months">12个月 $2,400</option>
 </select> </td></tr>
 </table>
 <input type="hidden" name="currency_code" value="USD">
@@ -79,13 +79,13 @@ HEAD;
         $form->setDataByIndex(NULL, $form_yp_sp);
         $content->setDataByIndex(NULL, $form);
        */
-      $form = new HTMLElement( 'div', NULL );
-      $form->setDataByIndex( NULL, new HTMLElement( 'h3', 'Yellow Page Web Advertisement' ) );
+      $form = new HTMLElement( 'div', NULL, ['style' => 'padding:1em;'] );
+      $form->setDataByIndex( NULL, new HTMLElement( 'h3', '商家黄页广告' ) );
       $form->setDataByIndex( NULL, $form_yp );
       $content->setDataByIndex( NULL, $form );
 
-      $form = new HTMLElement( 'div', NULL );
-      $form->setDataByIndex( NULL, new HTMLElement( 'h3', 'Page Header Web Advertisement' ) );
+      $form = new HTMLElement( 'div', NULL, ['style' => 'padding:1em;'] );
+      $form->setDataByIndex( NULL, new HTMLElement( 'h3', '页顶图片广告' ) );
       $form->setDataByIndex( NULL, $form_banner );
       $content->setDataByIndex( NULL, $form );
 
