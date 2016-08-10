@@ -10,8 +10,10 @@ use lzx\core\Mailer;
 use lzx\html\Template;
 use site\Session;
 use lzx\cache\CacheHandler;
+use lzx\cache\CacheEvent;
 use site\Config;
 use site\dbobject\City;
+use site\dbobject\User;
 
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
@@ -23,6 +25,9 @@ use site\dbobject\City;
 abstract class Service extends LzxService
 {
 
+   const UID_GUEST = 0;
+   const UID_ADMIN = 1;
+
    protected static $_city;
    private static $_actions = [ 'get', 'post', 'put', 'delete' ];
    private static $_staticProcessed = FALSE;
@@ -33,10 +38,11 @@ abstract class Service extends LzxService
    private $_independentCacheList = [ ];
    private $_cacheEvents = [ ];
 
-   public function __construct( Request $req, Response $response, Logger $logger, Session $session )
+   public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
    {
       parent::__construct( $req, $response, $logger );
       $this->session = $session;
+      $this->config = $config;
 
       if ( !self::$_staticProcessed )
       {
@@ -71,7 +77,7 @@ abstract class Service extends LzxService
       }
       else
       {
-         $this->action = $req->post ? 'post' : 'get';
+         $this->action = ($req->post || $req->json) ? 'post' : 'get';
       }
    }
 
@@ -255,8 +261,51 @@ abstract class Service extends LzxService
          'sitename'   => $siteName
       ];
       $mailer->body = new Template( 'mail/ident_code', $contents );
-      
+
       return $mailer->send();
+   }
+
+   protected function _handleSpammer( User $user )
+   {
+      $this->logger->info( 'SPAMMER FOUND: uid=' . $user->id );
+      $user->delete();
+      $u = new User();
+      $u->lastAccessIP = \inet_pton( $this->request->ip );
+      $users = $u->getList( 'createTime' );
+      $deleteAll = TRUE;
+      if ( \sizeof( $users ) > 1 )
+      {
+         // check if we have old users that from this ip
+         foreach ( $users as $u )
+         {
+            if ( $this->request->timestamp - $u[ 'createTime' ] > 2592000 )
+            {
+               $deleteAll = FALSE;
+               break;
+            }
+         }
+
+         if ( $deleteAll )
+         {
+            $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
+            foreach ( $users as $u )
+            {
+               $spammer = new User( $u[ 'id' ], NULL );
+               $spammer->delete();
+               $log = $log . $spammer->id . ' ';
+            }
+            $this->logger->info( $log );
+         }
+      }
+
+      if ( FALSE && $this->config->webmaster ) // turn off spammer email
+      {
+         $mailer = new Mailer();
+         $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof( $users ) . ($deleteAll ? ' deleted)' : ' not deleted)');
+         $mailer->body = ' --node-- ' . $this->request->json[ 'title' ] . PHP_EOL . $this->request->json[ 'body' ];
+         $mailer->to = $this->config->webmaster;
+         $mailer->send();
+      }
    }
 
 }

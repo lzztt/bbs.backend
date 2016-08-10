@@ -93,7 +93,7 @@ abstract class Controller extends LzxCtrler
          {
             $user = new User( $this->request->uid, NULL );
             // update access info
-            $user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',' . \ip2long( $this->request->ip ) . ')' );
+            $user->call( 'update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',"' . $this->request->ip . '")' );
          }
 
          self::$_requestProcessed = TRUE;

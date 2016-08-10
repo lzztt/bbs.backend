@@ -186,9 +186,9 @@ class HomeCtrler extends Home
          // 1 week for houstonbbs, 2 weeks for other cities
          $start = ( self::$_city->id == 1 ? $this->request->timestamp - 604800 : $this->request->timestamp - 604800 * 2 );
 
-         foreach ( (new Node() )->getHotForumTopics( self::$_city->ForumRootID, $count, $start ) as $n )
+         foreach ( (new Node() )->getHotForumTopics( self::$_city->ForumRootID, $count, $start ) as $i => $n )
          {
-            $arr[] = [ 'after' => $n[ 'comment_count' ],
+            $arr[] = [ 'after' => $i + 1,
                'uri' => '/node/' . $n[ 'nid' ],
                'text' => $n[ 'title' ] ];
          }

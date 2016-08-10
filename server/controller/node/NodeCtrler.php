@@ -50,26 +50,26 @@ class NodeCtrler extends Node
       $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
 
       $contents = [
-         'nid' => $nid,
-         'tid' => $node[ 'tid' ],
+         'nid'          => $nid,
+         'tid'          => $node[ 'tid' ],
          'commentCount' => $node[ 'comment_count' ],
-         'status' => $node[ 'status' ],
-         'breadcrumb' => Template::breadcrumb( $breadcrumb ),
-         'pager' => $pager,
+         'status'       => $node[ 'status' ],
+         'breadcrumb'   => Template::breadcrumb( $breadcrumb ),
+         'pager'        => $pager,
          'postNumStart' => $postNumStart,
-         'ajaxURI' => '/api/viewcount/'. $nid
+         'ajaxURI'      => '/api/viewcount/' . $nid
       ];
 
       $posts = [ ];
 
       $authorPanelInfo = [
-         'uid' => NULL,
-         'username' => NULL,
-         'avatar' => NULL,
-         'sex' => NULL,
+         'uid'       => NULL,
+         'username'  => NULL,
+         'avatar'    => NULL,
+         'sex'       => NULL,
          'access_ip' => NULL,
          'join_time' => NULL,
-         'points' => NULL,
+         'points'    => NULL,
       ];
 
       if ( $pageNo == 1 )
@@ -94,6 +94,7 @@ class NodeCtrler extends Node
          $node[ 'city' ] = $this->request->getCityFromIP( $node[ 'access_ip' ] );
          $node[ 'attachments' ] = $this->_attachments( $node[ 'files' ], $node[ 'body' ] );
          $node[ 'filesJSON' ] = \json_encode( $node[ 'files' ] );
+         $node[ 'report' ] = ( $node[ 'points' ] < 5 || \strpos( $node[ 'body' ], 'http' ) !== FALSE );
 
          $posts[] = $node;
       }
@@ -132,14 +133,14 @@ class NodeCtrler extends Node
       }
 
       $editor_contents = [
-         'title' => $node[ 'title' ],
+         'title'        => $node[ 'title' ],
          'form_handler' => '/node/' . $nid . '/comment',
-         'hasFile' => TRUE
+         'hasFile'      => TRUE
       ];
       $editor = new Template( 'editor_bbcode', $editor_contents );
 
       $contents += [
-         'posts' => $posts,
+         'posts'  => $posts,
          'editor' => $editor
       ];
 
@@ -257,14 +258,14 @@ class NodeCtrler extends Node
       $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
 
       $contents = [
-         'nid' => $nid,
-         'cid' => $tags[ 2 ][ 'cid' ],
+         'nid'          => $nid,
+         'cid'          => $tags[ 2 ][ 'cid' ],
          'commentCount' => $node[ 'comment_count' ],
-         'status' => $node[ 'status' ],
-         'breadcrumb' => Template::breadcrumb( $breadcrumb ),
-         'pager' => $pager,
+         'status'       => $node[ 'status' ],
+         'breadcrumb'   => Template::breadcrumb( $breadcrumb ),
+         'pager'        => $pager,
          'postNumStart' => $postNumStart,
-         'ajaxURI' => '/api/viewcount/'. $nid
+         'ajaxURI'      => '/api/viewcount/' . $nid
       ];
 
       $node[ 'type' ] = 'node';
@@ -319,9 +320,9 @@ class NodeCtrler extends Node
       $editor = new Template( 'editor_bbcode', $editor_contents );
 
       $contents += [
-         'node' => $node,
+         'node'     => $node,
          'comments' => $cmts,
-         'editor' => $editor
+         'editor'   => $editor
       ];
 
       $this->_var[ 'content' ] = new Template( 'node_yellow_page', $contents );

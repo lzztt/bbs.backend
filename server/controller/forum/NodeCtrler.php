@@ -55,7 +55,7 @@ class NodeCtrler extends Forum
             $this->logger->info( 'SPAMMER FOUND: uid=' . $user->id );
             $user->delete();
             $u = new User();
-            $u->lastAccessIP = \ip2long( $this->request->ip );
+            $u->lastAccessIP = \inet_pton( $this->request->ip );
             $users = $u->getList( 'createTime' );
             $deleteAll = TRUE;
             if ( \sizeof( $users ) > 1 )

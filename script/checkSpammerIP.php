@@ -19,14 +19,12 @@ class Script extends App
       $config = Config::getInstance();
       $db = DB::getInstance( $config->db );
 
-      $user = new User();
-      foreach ( \array_column( $user->getList( 'lastAccessIP' ), 'lastAccessIP', 'id' ) as $id => $ip )
+      $users = $db->query( 'select status, id, username, email,inet6_ntoa(last_access_ip) as ip from users where last_access_ip is not null' );
+      foreach ( $users as $u )
       {
-         $geo = \geoip_record_by_name( \long2ip( $ip ) );
-         if ( $geo && $geo[ 'city' ] === 'Nanning' )
-         {
-            echo 'id = ' . $id . ' ip = ' . \long2ip( $ip ) . \PHP_EOL;
-         }
+         $geo = \geoip_record_by_name( $u[ 'ip' ] );
+         $u[ 'city' ] = ( $geo && $geo[ 'city' ] ? $geo[ 'city' ] : 'NULL' );
+         echo \implode( "\t", $u ) . \PHP_EOL;
       }
    }
 
