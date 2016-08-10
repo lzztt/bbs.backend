@@ -4,17 +4,19 @@ namespace site\api;
 
 use site\Service;
 use site\dbobject\Tag;
+use site\dbobject\Node;
 
 class TagAPI extends Service
 {
 
-   const NODE_PER_PAGE = 20;
+   const NODES_PER_PAGE = 20;
 
    /**
     * get tags for a user
     * uri: /api/tag/<tid>
     *      /api/tag/<tid>?p=<pageNo>
-    *      /api/tag/<tid>?n=<nodeId>
+    *      /api/tag/<tid>?p=hot     // only 1 page, 20 nodes
+    *      /api/tag/<tid>?p=comment // only 1 page, 20 nodes
     */
    public function get()
    {
@@ -24,10 +26,32 @@ class TagAPI extends Service
       }
 
       $tid = (int) $this->args[ 0 ];
+      if ( $tid > 0 )
+      {
+         $tag = new Tag( $tid, 'id' );
 
-      $t = new Tag( $tid, NULL );
+         if ( !$tag->exists() )
+         {
+            $this->error( "tag does not exist" );
+         }
 
-      $nodes = $t->getNodeList( 1, self::NODE_PER_PAGE, 0 );
+         $tagRoot = $tag->getTagRoot();
+         if ( !\array_key_exists( self::$_city->ForumRootID, $tagRoot ) )
+         {
+            $this->error( "tag does not exist" );
+         }
+      }
+
+      $node = new Node();
+      list($pageNo, $pageCount) = $this->_getPagerInfo( $node->getNodeCount( $tid ), self::NODES_PER_PAGE );
+      $pager = Template::pager( $pageNo, $pageCount, '/forum/' . $tid );
+
+      $nodes = $node->getForumNodeList( self::$_city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE );
+      $db = \lzx\db\DB::getInstance();
+      $nodes = $db->query('select ');
+
+
+      $nodes = $t->getNodeList( 1, self::NODES_PER_PAGE, 0 );
 
       $this->_json( $nodes );
    }

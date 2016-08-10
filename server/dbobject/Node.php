@@ -30,16 +30,17 @@ class Node extends DBObject
       $db = DB::getInstance();
       $table = 'nodes';
       $fields = [
-         'id' => 'id',
-         'uid' => 'uid',
-         'tid' => 'tid',
-         'createTime' => 'create_time',
+         'id'               => 'id',
+         'uid'              => 'uid',
+         'tid'              => 'tid',
+         'createTime'       => 'create_time',
          'lastModifiedTime' => 'last_modified_time',
-         'title' => 'title',
-         'body' => 'body',
-         'viewCount' => 'view_count',
-         'weight' => 'weight',
-         'status' => 'status'
+         'title'            => 'title',
+         'body'             => 'body',
+         'hash'             => 'hash',
+         'viewCount'        => 'view_count',
+         'weight'           => 'weight',
+         'status'           => 'status'
       ];
       parent::__construct( $db, $table, $fields, $id, $properties );
    }
@@ -49,9 +50,10 @@ class Node extends DBObject
       return $this->call( 'get_tag_nodes_forum(' . $cid . ', ' . $tid . ', ' . $limit . ', ' . $offset . ')' );
    }
 
-   public function getForumNode( $id )
+   public function getForumNode( $id, $useNewVersion = false )
    {
-      $arr = $this->call( 'get_forum_node(' . $id . ')' );
+      $sp = $useNewVersion ? 'get_forum_node_2' : 'get_forum_node';
+      $arr = $this->call( $sp . '(' . $id . ')' );
 
       if ( \sizeof( $arr ) > 0 )
       {
@@ -65,9 +67,22 @@ class Node extends DBObject
       }
    }
 
-   public function getForumNodeComments( $id, $limit = 10, $offset = 0 )
+   public function getForumNodeComments( $id, $limit, $offset, $useNewVersion = false )
    {
-      $arr = $this->call( 'get_forum_node_comments(' . $id . ', ' . $limit . ', ' . $offset . ')' );
+      $sp = $useNewVersion ? 'get_forum_node_comments_2' : 'get_forum_node_comments';
+      $arr = $this->call( $sp . '(' . $id . ', ' . $limit . ', ' . $offset . ')' );
+
+      foreach ( $arr as $i => $r )
+      {
+         $arr[ $i ][ 'files' ] = $this->call( 'get_comment_images(' . $r[ 'id' ] . ')' );
+      }
+
+      return $arr;
+   }
+
+   public function getForumNodeCommentsAfter( $id, $limit, $cid )
+   {
+      $arr = $this->call( 'get_forum_node_comments_after(' . $id . ', ' . $limit . ', ' . $cid . ')' );
 
       foreach ( $arr as $i => $r )
       {
@@ -177,10 +192,10 @@ class Node extends DBObject
       $today = \strtotime( \date( "m/d/Y" ) );
       $stats = \array_pop( $this->call( 'get_node_stat("' . \implode( ',', (new Tag( $forumRootID, NULL ) )->getLeafTIDs() ) . '", ' . $today . ')' ) );
       return [
-         'nodeCount' => $stats[ 'node_count_total' ],
-         'nodeTodayCount' => $stats[ 'node_count_recent' ],
+         'nodeCount'         => $stats[ 'node_count_total' ],
+         'nodeTodayCount'    => $stats[ 'node_count_recent' ],
          'commentTodayCount' => $stats[ 'comment_count_recent' ],
-         'postCount' => $stats[ 'node_count_total' ] + $stats[ 'comment_count_total' ]
+         'postCount'         => $stats[ 'node_count_total' ] + $stats[ 'comment_count_total' ]
       ];
    }
 

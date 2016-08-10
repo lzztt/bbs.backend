@@ -60,7 +60,7 @@ abstract class DBObject
          }
          else
          {
-            throw new \Exception( 'Table does not have primary key. Cannot load id=' . id );
+            throw new \Exception( 'Table does not have primary key. Cannot load id=' . $id );
          }
       }
    }
@@ -291,6 +291,11 @@ abstract class DBObject
 
    public function delete()
    {
+      if ( !$this->_pkey_property )
+      {
+         throw new \Exception( 'Table does not have primary key. Deletion without primary key is not supported yet' );
+      }
+         
       if ( \array_key_exists( $this->_pkey_property, $this->_values ) )
       {
          $this->_bind( $this->_pkey_property );
@@ -334,7 +339,7 @@ abstract class DBObject
 
       $this->_db->query( $sql, $this->_bind_values );
 
-      if ( !\array_key_exists( $this->_pkey_property, $this->_values ) )
+      if ( $this->_pkey_property && !\array_key_exists( $this->_pkey_property, $this->_values ) )
       {
          $this->_values[ $this->_pkey_property ] = $this->_db->insert_id();
       }
@@ -354,7 +359,10 @@ abstract class DBObject
    public function update( $properties = '' )
    {
       // do not update pkey
-      $this->_unDirty( $this->_pkey_property );
+      if( $this->_pkey_property )
+      {
+         $this->_unDirty( $this->_pkey_property );
+      }
 
       if ( \sizeof( $this->_properties_dirty ) == 0 )
       {
@@ -381,7 +389,7 @@ abstract class DBObject
 
       if ( empty( $this->_where ) )
       {
-         if ( \array_key_exists( $this->_pkey_property, $this->_values ) )
+         if ( $this->_pkey_property && \array_key_exists( $this->_pkey_property, $this->_values ) )
          {
             $this->where( $this->_pkey_property, $this->_values[ $this->_pkey_property ], '=' );
          }
@@ -428,6 +436,11 @@ abstract class DBObject
 
    public function getIndexedList( $properties = '', $limit = FALSE, $offset = FALSE )
    {
+      if ( !$this->_pkey_property )
+      {
+         throw new \Exception( 'Table does not have primary key. getIndexedList without primary key is not supported yet' );
+      }
+      
       $list = [ ];
 
       foreach ( $this->getList( $keys, $limit, $offset ) as $i )
@@ -482,7 +495,10 @@ abstract class DBObject
       {
          $properties_tmp = \explode( ',', $properties );
          // add primary key property
-         $properties_tmp[] = $this->_pkey_property;
+         if( $this->_pkey_property )
+         {
+            $properties_tmp[] = $this->_pkey_property;
+         }
          $properties_array = \array_unique( $properties_tmp );
          $fields = '';
 
@@ -737,10 +753,11 @@ abstract class DBObject
             }
          }
 
+         /*
          if ( \is_null( $this->_pkey_property ) )
          {
             throw new \Exception( 'no primary key found: ' . $this->_table );
-         }
+         }*/
 
          if ( \sizeof( $this->_fields_type ) < \sizeof( $this->_fields ) )
          {
