@@ -47,9 +47,11 @@ class DeleteCtrler extends Node
          $activity->delete();
       }
 
+      /*
       $user = new User( $node->uid, 'points' );
       $user->points -= 3;
       $user->update( 'points' );
+       */
 
       $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
       $this->_getCacheEvent( 'ForumUpdate', $node->tid )->trigger();

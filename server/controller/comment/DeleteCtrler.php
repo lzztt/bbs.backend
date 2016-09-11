@@ -46,9 +46,11 @@ class DeleteCtrler extends Comment
            } */
       }
 
+      /*
       $user = new User( $comment->uid, 'points' );
       $user->points -= 1;
       $user->update( 'points' );
+       */
 
       $comment->delete();
 
