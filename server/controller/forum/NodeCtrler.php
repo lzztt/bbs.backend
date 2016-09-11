@@ -106,8 +106,10 @@ class NodeCtrler extends Forum
          $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       }
 
+      /*
       $user->points += 3;
       $user->update( 'points' );
+       */
 
       $this->_getCacheEvent( 'ForumNode' )->trigger();
       $this->_getCacheEvent( 'ForumUpdate', $tid )->trigger();

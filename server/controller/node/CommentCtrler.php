@@ -113,8 +113,10 @@ class CommentCtrler extends Node
          $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       }
 
+      /*
       $user->points += 1;
       $user->update( 'points' );
+       */
 
       $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
       $this->_getCacheEvent( 'ForumComment' )->trigger();
@@ -217,8 +219,10 @@ class CommentCtrler extends Node
          }
       }
 
+      /*
       $user->points += 1;
       $user->update( 'points' );
+       */
 
       $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
       $this->_getCacheEvent( 'YellowPageComment' )->trigger();
