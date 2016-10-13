@@ -1,4 +1,4 @@
-<form enctype="multipart/form-data" id="bbcode_editor" class='v_user_superadm' method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
+<form enctype="multipart/form-data" id="bbcode_editor" class='v_user_superadm v_user_8831 v_user_3' method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
    <?php if( \is_array( $ads ) ): ?>
    <fieldset>
       <label class='label' for="title">黄页广告:</label>

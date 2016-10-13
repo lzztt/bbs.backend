@@ -67,7 +67,14 @@ class EditCtrler extends Node
 
    private function _editYellowPage( $nid )
    {
-      if ( $this->request->uid != self::UID_ADMIN )
+      $node = new NodeObject( $nid, 'uid,status' );
+
+      if ( !$node->exists() || $node->status == 0 )
+      {
+         $this->error( 'node does not exist.' );
+      }
+
+      if ( $this->request->uid != 1 && $this->request->uid != $node->uid )
       {
          $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
          $this->pageForbidden();
