@@ -15,7 +15,7 @@ class NodeCtrler extends YP
 
    public function run()
    {
-      if ( $this->request->uid != 1 )
+      if ( $this->request->uid != 1 && $this->request->uid != 8831 && $this->request->uid != 3 )
       {
          $this->pageForbidden();
       }
