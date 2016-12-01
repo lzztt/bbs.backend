@@ -70,7 +70,7 @@
                <span><?php print $sitename; ?></span>
             </div>
             <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
-                     ></a><a
+                     href="http://www.rate-rent.com" target="_blank"><img src="/data/ad/apartment_ad.gif"></a><a
                      href="/node/68817" target="_blank"><img src="/data/ad/geekpush2.jpg"></a></span></div>
          </header>
          <nav id='page_navbar' class='hidden'>
