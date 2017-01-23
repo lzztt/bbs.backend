@@ -109,7 +109,7 @@ class User extends DBObject
 
       return FALSE;
    }
-   
+
    public function loginWithEmail( $email, $password )
    {
       $this->email = $email;
@@ -225,11 +225,11 @@ class User extends DBObject
          // check spams
          $spamwords = new SpamWord();
          $list = $spamwords->getList();
-         
+
          if( $title )
          {
             $cleanTitle = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin}) $]|\|)+/u', '', $title );
-            
+
             foreach ( $list as $w )
             {
                if ( $w[ 'title' ] )
@@ -242,10 +242,10 @@ class User extends DBObject
                   }
                }
             }
-         }         
-         
+         }
+
          $cleanBody = \preg_replace( '/([^(\p{Nd}|\p{Han}|\p{Latin}) $\r\n]|\|)+/u', '', $text );
-         
+
          foreach ( $list as $w )
          {
             if ( \mb_strpos( $cleanBody, $w[ 'word' ] ) !== FALSE )
@@ -255,14 +255,14 @@ class User extends DBObject
                throw new \Exception( 'User is blocked! You cannot post any message!' );
             }
          }
-         
+
          // still good?
          // not mark as spammer, but notify admin as a non-valid post, if there are too many noice charactors
          if( $title && \mb_strlen( $title ) - \mb_strlen( $cleanTitle ) > 4 )
          {
             throw new \Exception( 'Title is not valid!' );
          }
-         
+
          $textLen = \mb_strlen( $text );
          if( $textLen > 35 && ( $textLen - \mb_strlen( $cleanBody ) ) / $textLen > 0.4 )
          {

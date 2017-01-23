@@ -71,7 +71,7 @@ class NodeCtrler extends Node
          'join_time' => NULL,
          'points'    => NULL,
       ];
-
+/*
       if ( $pageNo == 1 )
       { // show node details as the first post
          $node[ 'type' ] = 'node';
@@ -98,7 +98,8 @@ class NodeCtrler extends Node
 
          $posts[] = $node;
       }
-
+*/
+      $nodeComment = ( $pageNo == 1 );
       $nodeObj = new NodeObject();
       $comments = $nodeObj->getForumNodeComments( $nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE );
 
@@ -127,6 +128,12 @@ class NodeCtrler extends Node
             $c[ 'city' ] = $this->request->getCityFromIP( $c[ 'access_ip' ] );
             $c[ 'attachments' ] = $this->_attachments( $c[ 'files' ], $c[ 'body' ] );
             $c[ 'filesJSON' ] = \json_encode( $c[ 'files' ] );
+            if ($nodeComment) {
+               $c[ 'type' ] = 'node';
+               $c[ 'id' ] = $node[ 'id' ];
+               $c[ 'report' ] = ( $node[ 'points' ] < 5 || \strpos( $c[ 'body' ], 'http' ) !== FALSE );
+               $nodeComment = false;
+            }
 
             $posts[] = $c;
          }
@@ -269,7 +276,7 @@ class NodeCtrler extends Node
       ];
 
       $node[ 'type' ] = 'node';
-
+/*
       if ( $pageNo == 1 )
       { // show node details as the first post
          try
@@ -284,7 +291,8 @@ class NodeCtrler extends Node
          $node[ 'attachments' ] = $this->_attachments( $node[ 'files' ], $node[ 'body' ] );
          //$node['filesJSON'] = \json_encode($node['files']);
       }
-
+*/      
+      $nodeComment = ( $pageNo == 1 );
       $comments = $nodeObj->getYellowPageNodeComments( $nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE );
 
       $cmts = [ ];
@@ -292,25 +300,45 @@ class NodeCtrler extends Node
       {
          foreach ( $comments as $c )
          {
-            $c[ 'id' ] = $c[ 'id' ];
-            $c[ 'type' ] = 'comment';
-            $c[ 'createTime' ] = \date( 'm/d/Y H:i', $c[ 'create_time' ] );
-            if ( $c[ 'lastModifiedTime' ] )
+            if ( $nodeComment )
             {
-               $c[ 'lastModifiedTime' ] = \date( 'm/d/Y H:i', $c[ 'last_modified_time' ] );
+               // show node details as the first post
+               try
+               {
+                  $node[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
+               }
+               catch ( \Exception $e )
+               {
+                  $node[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
+                  $this->logger->error( $e->getMessage(), $e->getTrace() );
+               }
+               $node[ 'attachments' ] = $this->_attachments( $c[ 'files' ], $c[ 'body' ] );
+               //$node['filesJSON'] = \json_encode($node['files']);
+      
+               $nodeComment = false;
             }
-            $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
-            try
+            else
             {
-               $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
-            }
-            catch ( \Exception $e )
-            {
+               $c[ 'id' ] = $c[ 'id' ];
+               $c[ 'type' ] = 'comment';
+               $c[ 'createTime' ] = \date( 'm/d/Y H:i', $c[ 'create_time' ] );
+               if ( $c[ 'lastModifiedTime' ] )
+               {
+                  $c[ 'lastModifiedTime' ] = \date( 'm/d/Y H:i', $c[ 'last_modified_time' ] );
+               }
                $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
-               $this->logger->error( $e->getMessage(), $e->getTrace() );
-            }
+               try
+               {
+                  $c[ 'HTMLbody' ] = BBCode::parse( $c[ 'body' ] );
+               }
+               catch ( \Exception $e )
+               {
+                  $c[ 'HTMLbody' ] = \nl2br( $c[ 'body' ] );
+                  $this->logger->error( $e->getMessage(), $e->getTrace() );
+               }
 
-            $cmts[] = $c;
+               $cmts[] = $c;
+            }
          }
       }
 
