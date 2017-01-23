@@ -44,14 +44,6 @@ class NodeAPI extends Service
 
       if ( $pageNo == 1 )
       {
-         $node[ 'city' ] = $this->request->getCityFromIP( $node[ 'last_access_ip' ] );
-         unset( $node[ 'last_access_ip' ] );
-
-         if ( \strpos( $node[ 'body' ], '[/' ) !== FALSE )
-         {
-            $node[ 'body' ] = BBCodeMarkx::parse( $node[ 'body' ] );
-         }
-
          $data[ 'topic' ] = $node;
       }
       else

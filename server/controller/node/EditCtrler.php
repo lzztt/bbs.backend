@@ -7,6 +7,7 @@ use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
 use site\dbobject\NodeYellowPage;
 use site\dbobject\Image;
+use site\dbobject\Comment;
 
 class EditCtrler extends Node
 {
@@ -41,7 +42,7 @@ class EditCtrler extends Node
       }
 
       $node->title = $this->request->post[ 'title' ];
-      $node->body = $this->request->post[ 'body' ];
+      //$node->body = $this->request->post[ 'body' ];
       $node->lastModifiedTime = $this->request->timestamp;
 
       try
@@ -53,11 +54,22 @@ class EditCtrler extends Node
          $this->logger->error( $e->getMessage() );
          $this->error( $e->getMessage() );
       }
+      
+      $comment = new Comment();
+      $comment->nid = $nid;
+      $arr = $comment->getList('id', 1);
+      
+      $comment = new Comment();
+      $comment->id = $arr[0]['id'];
+      $comment->body = $this->request->post[ 'body' ];
+      $comment->lastModifiedTime = $this->request->timestamp;
+      $comment->update();
+      
 
       $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
       $file = new Image();
       $file->cityID = self::$_city->id;
-      $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
+      $file->updateFileList( $files, $this->config->path[ 'file' ], $nid, $comment->id );
 
       $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
@@ -85,6 +97,13 @@ class EditCtrler extends Node
          // display edit interface
          $nodeObj = new NodeObject();
          $contents = $nodeObj->getYellowPageNode( $nid );
+         
+         $comment = new Comment();
+         $comment->nid = $nid;
+         $arr = $comment->getList('id', 1);
+
+         $comment = new Comment($arr[0]['id'], 'body');
+         $contents['body'] = $comment->body;
 
          $this->_var[ 'content' ] = new Template( 'editor_bbcode_yp', $contents );
       }
@@ -92,27 +111,34 @@ class EditCtrler extends Node
       {
          // save modification
          $node = new NodeObject( $nid, 'tid' );
-         if ( $node->exists() )
+         $node->title = $this->request->post[ 'title' ];
+         // $node->body = $this->request->post[ 'body' ];
+         $node->lastModifiedTime = $this->request->timestamp;
+         $node->update();
+
+         $node_yp = new NodeYellowPage( $nid, 'nid' );
+         $keys = ['address', 'phone', 'email', 'website', 'fax' ];
+         foreach ( $keys as $k )
          {
-            $node->title = $this->request->post[ 'title' ];
-            $node->body = $this->request->post[ 'body' ];
-            $node->lastModifiedTime = $this->request->timestamp;
-            $node->update();
-
-            $node_yp = new NodeYellowPage( $nid, 'nid' );
-            $keys = ['address', 'phone', 'email', 'website', 'fax' ];
-            foreach ( $keys as $k )
-            {
-               $node_yp->$k = \strlen( $this->request->post[ $k ] ) ? $this->request->post[ $k ] : NULL;
-            }
-
-            $node_yp->update();
+            $node_yp->$k = \strlen( $this->request->post[ $k ] ) ? $this->request->post[ $k ] : NULL;
          }
+
+         $node_yp->update();
+
+         $comment = new Comment();
+         $comment->nid = $nid;
+         $arr = $comment->getList('id', 1);
+
+         $comment = new Comment();
+         $comment->id = $arr[0]['id'];
+         $comment->body = $this->request->post[ 'body' ];
+         $comment->lastModifiedTime = $this->request->timestamp;
+         $comment->update();
 
          $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
          $file = new Image();
          $file->cityID = self::$_city->id;
-         $file->updateFileList( $files, $this->config->path[ 'file' ], $nid );
+         $file->updateFileList( $files, $this->config->path[ 'file' ], $nid, $comment->id );
 
          $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
 
