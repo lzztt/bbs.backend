@@ -219,7 +219,7 @@ class HomeCtrler extends Home
             }
             $ul[] = $this->_linkNodeList( $arr, $ulCache );
          }
-         
+
          $ulCache->store( \serialize( $ul ) );
       }
       $this->_getCacheEvent( 'YellowPageNode' )->addListener( $ulCache );

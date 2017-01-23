@@ -7,6 +7,7 @@ use site\dbobject\Node;
 use site\dbobject\Image;
 use site\dbobject\User;
 use lzx\core\Mailer;
+use site\dbobject\Comment;
 
 class NodeCtrler extends Forum
 {
@@ -42,10 +43,18 @@ class NodeCtrler extends Forum
          $node->tid = $tid;
          $node->uid = $this->request->uid;
          $node->title = $this->request->post[ 'title' ];
-         $node->body = $this->request->post[ 'body' ];
+         // $node->body = $this->request->post[ 'body' ];
          $node->createTime = $this->request->timestamp;
          $node->status = 1;
          $node->add();
+         
+         $comment = new Comment();
+         $comment->nid = $node->id;
+         $comment->tid = $tid;
+         $comment->uid = $this->request->uid;
+         $comment->body = $this->request->post[ 'body' ];
+         $comment->createTime = $this->request->timestamp;
+         $comment->add();
       }
       catch ( \Exception $e )
       {
@@ -102,7 +111,7 @@ class NodeCtrler extends Forum
       {
          $file = new Image();
          $file->cityID = self::$_city->id;
-         $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
+         $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id, $comment->id );
          $this->_getCacheEvent( 'ImageUpdate' )->trigger();
       }
 
