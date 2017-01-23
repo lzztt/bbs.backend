@@ -102,7 +102,6 @@ class Node extends DBObject
       $arr = $this->call( 'get_yp_node(' . $id . ')' );
       if ( \sizeof( $arr ) > 0 )
       {
-         $arr[ 0 ][ 'files' ] = $this->call( 'get_node_images(' . $id . ')' );
          return $arr[ 0 ];
       }
       else
@@ -113,7 +112,14 @@ class Node extends DBObject
 
    public function getYellowPageNodeComments( $id, $limit = false, $offset = false )
    {
-      return $this->call( 'get_yp_node_comments(' . $id . ', ' . $limit . ', ' . $offset . ')' );
+      $arr = $this->call( 'get_yp_node_comments(' . $id . ', ' . $limit . ', ' . $offset . ')' );
+
+      if ( $offset == 0 )
+      {
+         $arr[ 0 ][ 'files' ] = $this->call( 'get_comment_images(' . $arr[ 0 ][ 'id' ] . ')' );
+      }
+      
+      return $arr;
    }
 
    public function getViewCounts( $nids )

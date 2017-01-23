@@ -9,6 +9,7 @@ use site\dbobject\Node;
 use site\dbobject\NodeYellowPage;
 use site\dbobject\Image;
 use site\dbobject\AD;
+use site\dbobject\Comment;
 
 class NodeCtrler extends YP
 {
@@ -44,10 +45,18 @@ class NodeCtrler extends YP
          $node->tid = $tid;
          $node->uid = $this->request->uid;
          $node->title = $this->request->post[ 'title' ];
-         $node->body = $this->request->post[ 'body' ];
+         // $node->body = $this->request->post[ 'body' ];
          $node->createTime = $this->request->timestamp;
          $node->status = 1;
          $node->add();
+         
+         $comment = new Comment();
+         $comment->nid = $node->id;
+         $comment->tid = $tid;
+         $comment->uid = $this->request->uid;
+         $comment->body = $this->request->post[ 'body' ];
+         $comment->createTime = $this->request->timestamp;
+         $comment->add();
 
          $nodeYP = new NodeYellowPage();
          $nodeYP->nid = $node->id;
@@ -61,7 +70,7 @@ class NodeCtrler extends YP
          {
             $file = new Image();
             $file->cityID = self::$_city->id;
-            $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id );
+            $file->updateFileList( $this->request->post[ 'files' ], $this->config->path[ 'file' ], $node->id, $comment->id );
          }
 
          $tag = new Tag($tid, 'parent');
