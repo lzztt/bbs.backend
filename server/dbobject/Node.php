@@ -36,7 +36,7 @@ class Node extends DBObject
          'createTime'       => 'create_time',
          'lastModifiedTime' => 'last_modified_time',
          'title'            => 'title',
-         'body'             => 'body',
+//         'body'             => 'body',
          'hash'             => 'hash',
          'viewCount'        => 'view_count',
          'weight'           => 'weight',
