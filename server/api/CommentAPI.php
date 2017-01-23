@@ -52,7 +52,7 @@ class CommentAPI extends Service
          $c->tid = $n->tid;
          $c->body = $this->request->json[ 'body' ];
          $c->createTime = $this->request->timestamp;
-         $c->hash = \crc32( $c->body );
+//         $c->hash = \crc32( $c->body );
          $c->add();
       }
       catch ( \Exception $e )
@@ -141,8 +141,8 @@ class CommentAPI extends Service
 
          $c->body = $this->request->json[ 'body' ];
          $c->lastModifiedTime = $this->request->timestamp;
-         $c->hash = \crc32( $c->body );
-         $c->update( 'body,lastModifiedTime,hash' );
+//         $c->hash = \crc32( $c->body );
+         $c->update( 'body,lastModifiedTime' );
       }
       catch ( \Exception $e )
       {

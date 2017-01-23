@@ -32,7 +32,7 @@ class Comment extends DBObject
          'uid' => 'uid',
          'tid' => 'tid',
          'body' => 'body',
-         'hash' => 'hash',
+//         'hash' => 'hash',
          'createTime' => 'create_time',
          'lastModifiedTime' => 'last_modified_time'
       ];
