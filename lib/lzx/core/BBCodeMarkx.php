@@ -35,7 +35,7 @@ class BBCodeMarkx
       if ( $text[ 0 ] == '=' )
       {
          $p = strpos( $text, ']' );
-         return "\n> [g *" . trim( substr( $text, 1, $p - 1 ), ' \'"' ) . " :*]" . self::_quote( substr( $text, $p + 1 ) );
+         return "\n> [*" . trim( substr( $text, 1, $p - 1 ), ' \'"' ) . " :* g]" . self::_quote( substr( $text, $p + 1 ) );
       }
    }
 
@@ -92,13 +92,13 @@ class BBCodeMarkx
          '/\[i\](.*?)\[\/i\]/ms'                        => '\1',
          '/\[u\](.*?)\[\/u\]/ms'                        => '_\1_',
          '/\[s\](.*?)\[\/s\]/ms'                        => '~\1~',
-         '/\[img\="?(.*?)"?\](.*?)\[\/img\]/ms'         => '\2[\1]',
+         '/\[img\="?(.*?)"?\](.*?)\[\/img\]/ms'         => '[\1 \2]',
          '/\[img\](.*?)\[\/img\]/ms'                    => '\1',
-         '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms'         => '\1[\2]',
+         '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms'         => '[\2 \1]',
          '/\[url](.*?)\[\/url\]/ms'                     => '\1',
          '/\[size\=120%\](.*?)\[\/size\]/ms'            => '*\1*',
-         '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms'     => '[b \2]',
-         '/\[bgcolor\="?(.*?)"?\](.*?)\[\/bgcolor\]/ms' => '[!g \2]',
+         '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms'     => '[\2 b]',
+         '/\[bgcolor\="?(.*?)"?\](.*?)\[\/bgcolor\]/ms' => '[\2 g!]',
          '/\[youtube\](.*?)\[\/youtube\]/ms'            => 'https://www.youtube.com/watch?v=\1'
       ];
 
