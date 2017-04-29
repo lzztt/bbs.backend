@@ -8,6 +8,8 @@ class Mailer
    public $domain;
    public $from;
    public $to;
+   public $cc;
+   public $bcc;
    public $subject;
    public $is_html = FALSE;
    public $body;
@@ -31,6 +33,8 @@ class Mailer
       $headers = 'From: ' . $this->from . '@' . $this->domain . \PHP_EOL .
          'Reply-To: ' . $this->from . '@' . $this->domain . \PHP_EOL .
          'Sender: ' . $this->from . '@' . $this->domain . \PHP_EOL .
+         ($this->cc ? 'Cc: ' . $this->cc . \PHP_EOL : '') .
+         ($this->bcc ? 'Bcc: ' . $this->bcc . \PHP_EOL : '') .
          'MIME-Version: 1.0' . \PHP_EOL .
          'Content-Type: ' . ( $this->is_html ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8; format=flowed; delsp=yes' ) . \PHP_EOL .
          'X-Mailer: WebMailer';
