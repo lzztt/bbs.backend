@@ -196,6 +196,7 @@ class CronApp extends App
    {
       $db = DB::getInstance( $this->config->db );
 
+      /*
       $ads = $db->query( 'SELECT * FROM ads WHERE exp_time < ' . ($this->timestamp + 604800) . ' AND exp_time > ' . ($this->timestamp - 172800) );
       $count = \sizeof( $ads );
       if ( $count > 0 )
@@ -212,6 +213,37 @@ class CronApp extends App
          {
             $this->logger->info( 'sending expiring ads email error.' );
          }
+      }
+       */
+      
+      $mailer = new Mailer();
+      $mailer->from = 'ad';
+      $mailer->bcc = 'ad@houstonbbs.com';
+      Template::$path = $this->config->path[ 'theme' ] . '/' . $this->config->theme[ 'roselife' ];
+         
+      // expiring in seven days
+      $ads = $db->query( 'SELECT * FROM ads WHERE exp_time > ' . ($this->timestamp + 518400) . ' AND exp_time < ' . ($this->timestamp + 604800) );
+      foreach ( $ads as $ad )
+      {
+         $this->_notifyAdUser($mailer, $ad, '七天内');
+      }
+      
+      // expiring in one day
+      $ads = $db->query( 'SELECT * FROM ads WHERE exp_time > ' . ($this->timestamp - 86400) . ' AND exp_time < ' . ($this->timestamp) );
+      foreach ( $ads as $ad )
+      {
+         $this->_notifyAdUser($mailer, $ad, '今天');
+      }
+   }
+   
+   private function _notifyAdUser($mailer, $ad, $time) {
+      $mailer->subject = $ad['name'] . '在HoustonBBS的' . ($ad['type_id'] == 1 ? '电子黄页' : '页顶广告') . $time . '到期';
+      $mailer->to = $ad['email'];         
+      $mailer->body = new Template( 'mail/ad', [ 'ad' => $ad ] );
+
+      if ( $mailer->send() === FALSE )
+      {
+         $this->logger->info( 'sending expiring ads email error.' );
       }
    }
 
