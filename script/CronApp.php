@@ -195,26 +195,6 @@ class CronApp extends App
    protected function do_ad()
    {
       $db = DB::getInstance( $this->config->db );
-
-      /*
-      $ads = $db->query( 'SELECT * FROM ads WHERE exp_time < ' . ($this->timestamp + 604800) . ' AND exp_time > ' . ($this->timestamp - 172800) );
-      $count = \sizeof( $ads );
-      if ( $count > 0 )
-      {
-         $mailer = new Mailer();
-         Template::$path = $this->config->path[ 'theme' ] . '/' . $this->config->theme[ 'roselife' ];
-
-         $mailer->to = $this->config->webmaster;
-         $mailer->subject = '[ ' . $count . ' ] 七天内过期广告';
-         $contents = [ 'ads' => $ads ];
-         $mailer->body = new Template( 'mail/ads', $contents );
-
-         if ( $mailer->send() === FALSE )
-         {
-            $this->logger->info( 'sending expiring ads email error.' );
-         }
-      }
-       */
       
       $mailer = new Mailer();
       $mailer->from = 'ad';

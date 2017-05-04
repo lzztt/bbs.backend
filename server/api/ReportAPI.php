@@ -6,6 +6,7 @@ use site\Service;
 use lzx\core\Mailer;
 use site\dbobject\User;
 use site\dbobject\Node;
+use site\dbobject\Comment;
 use site\dbobject\NodeComplain;
 
 class ReportAPI extends Service
@@ -62,9 +63,14 @@ class ReportAPI extends Service
                $complain->reason = $reason;
                $complain->status = 1;
                $complain->add();
+               
+               $comment = new Comment();
+               $comment->nid = $nid;
+               $arr = $comment->getList('id,body', 1);
+               $body = $arr[0]['body'];
 
                $title = '举报';
-               if ( $reporter->points > 0 && ( $spammer->points < 2 || \strpos( $node->body, 'http' ) !== FALSE ) )
+               if ( $reporter->points > 0 && ( $spammer->points < 2 || \strpos( $body, 'http' ) !== FALSE ) )
                {
                   // check complains
                   $complain = new NodeComplain();
@@ -98,7 +104,7 @@ class ReportAPI extends Service
                   'node'     => [
                      'id'    => 'https://' . $this->request->domain . '/node/' . $nid,
                      'title' => $node->title,
-                     'body'  => $node->body,
+                     'body'  => $body,
                   ],
                   'reporter' => [
                      'id'       => 'https://' . $this->request->domain . '/app/user/' . $reporter->id,

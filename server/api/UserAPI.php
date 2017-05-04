@@ -214,7 +214,7 @@ class UserAPI extends Service
       if ( isset( $this->request->json[ 'submit' ] ) || $this->_isBot( $this->request->json[ 'email' ] ) )
       {
          $this->logger->info( 'STOP SPAMBOT : ' . $this->request->json[ 'email' ] );
-         $this->error( '系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您认为这是一个错误的判断，请与网站管理员联系。' );
+         $this->error( '系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。' );
       }
 
       $user = new User();
