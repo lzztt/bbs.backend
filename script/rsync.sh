@@ -1,7 +1,7 @@
 # do not sync config.php, static/data
-# rsync -ave 'ssh -p 3355' client/fonts web@houstonbbs.com:bbs/client/
-rsync -ave 'ssh -p 3355' client/themes/roselife web@houstonbbs.com:bbs/client/themes/
-rsync -ave 'ssh -p 3355' client/app web@houstonbbs.com:bbs/client/ --exclude='*.__HEAD__'
-rsync -ave 'ssh -p 3355' lib/lzx web@houstonbbs.com:bbs/lib/
-rsync -ave 'ssh -p 3355' script web@houstonbbs.com:bbs/
-rsync -ave 'ssh -p 3355' server web@houstonbbs.com:bbs/ --exclude='Config.php'
+# rsync -ave 'ssh' client/fonts web@houstonbbs.com:bbs/client/
+rsync -ave 'ssh' client/themes/roselife web@houstonbbs.com:bbs/client/themes/
+rsync -ave 'ssh' client/app web@houstonbbs.com:bbs/client/ --exclude='*.__HEAD__'
+rsync -ave 'ssh' lib/lzx web@houstonbbs.com:bbs/lib/
+rsync -ave 'ssh' script web@houstonbbs.com:bbs/
+rsync -ave 'ssh' server web@houstonbbs.com:bbs/ --exclude='Config.php'
