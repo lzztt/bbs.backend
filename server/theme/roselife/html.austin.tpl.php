@@ -91,7 +91,7 @@
          </nav>
          <section id='page_body'><?php print $content; ?></section>
          <footer id='page_footer'>
-            <div id='copyright'>网站管理员<a href="mailto:admin@austinbbs.com">admin@austinbbs.com</a> | © 2014-2016 AustinBBS 版权所有 | <a href='/term'>免责声明</a></div>
+            <div id='copyright'>网站管理员<a href="mailto:admin@austinbbs.com">admin@austinbbs.com</a> | © 2014-2017 AustinBBS 版权所有 | <a href='/term'>免责声明</a></div>
          </footer>
       </div>
       <div id="messagebox"></div>

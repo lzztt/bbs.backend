@@ -58,11 +58,3 @@
       </section><section><span class='ajax_alexa'></span></section>
    </div>
 </div>
-<div style="margin-top:15px; clear: both;">
-   <div style="padding:0.4em 0.7em;">友情链接</div>
-   <div style="padding:0.4em 0.7em; background:#EEEEEE none repeat scroll 0 0;">
-      <a style="padding: 4px;" target="_blank" href="http://www.houstonbbs.com">缤纷休斯顿</a>
-      <a style="padding: 4px;" target="_blank" href="http://www.utswcssa.org">西南医学中心学生学者联谊会</a>
-      <a style="padding: 4px;" target="_blank" href="http://www.facss.us">UTD学生学者联谊会</a>
-   </div>
-</div>

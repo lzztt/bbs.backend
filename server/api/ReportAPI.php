@@ -70,7 +70,7 @@ class ReportAPI extends Service
                $body = $arr[0]['body'];
 
                $title = '举报';
-               if ( $reporter->points > 0 && ( $spammer->points < 2 || \strpos( $body, 'http' ) !== FALSE ) )
+               if ( $reporter->points > 0 && ( $spammer->points < 2 || ( \strpos( $body, 'http' ) && $spammer->points < 18 ) !== FALSE ) )
                {
                   // check complains
                   $complain = new NodeComplain();
