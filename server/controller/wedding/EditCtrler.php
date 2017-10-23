@@ -19,46 +19,36 @@ use site\dbobject\Wedding as WeddingAttendee;
  */
 class EditCtrler extends Wedding
 {
+    public function run()
+    {
+        Template::$theme = $this->config->theme['wedding2'];
+        // login first
+        if (!$this->session->loginStatus) {
+            $this->_displayLogin();
+            return;
+        }
 
-   public function run()
-   {
-      Template::$theme = $this->config->theme[ 'wedding2' ];
-      // login first
-      if ( !$this->session->loginStatus )
-      {
-         $this->_displayLogin();
-         return;
-      }
-
-      $this->_var[ 'navbar' ] = new Template( 'navbar' );
-      $a = new WeddingAttendee();
-      if ( $this->request->post )
-      {
-         // save changes for one guest
-         foreach ( $this->request->post as $k => $v )
-         {
-            $a->$k = $v;
-         }
-         $a->update();
-         $this->_var[ 'body' ] = $a->name . '的更新信息已经被保存';
-      }
-      else
-      {
-         if ( $this->id )
-         {
-            // edit one guest
-            $a->id = $this->id;
-            $this->_var[ 'body' ] = new Template( 'edit', \array_pop( $a->getList() ) );
-         }
-         else
-         {
-            // all guests in a list;
-            $a->order( 'tid' );
-            $this->_var[ 'body' ] = new Template( 'edit_list', ['attendees' => $a->getList( 'name' ) ] );
-         }
-      }
-   }
-
+        $this->_var['navbar'] = new Template('navbar');
+        $a = new WeddingAttendee();
+        if ($this->request->post) {
+            // save changes for one guest
+            foreach ($this->request->post as $k => $v) {
+                $a->$k = $v;
+            }
+            $a->update();
+            $this->_var['body'] = $a->name . '的更新信息已经被保存';
+        } else {
+            if ($this->id) {
+                // edit one guest
+                $a->id = $this->id;
+                $this->_var['body'] = new Template('edit', \array_pop($a->getList()));
+            } else {
+                // all guests in a list;
+                $a->order('tid');
+                $this->_var['body'] = new Template('edit_list', ['attendees' => $a->getList('name')]);
+            }
+        }
+    }
 }
 
 //__END_OF_FILE__

@@ -18,27 +18,23 @@ use lzx\html\Template;
  */
 class LoginCtrler extends Wedding
 {
+    public function run()
+    {
+        Template::$theme = $this->config->theme['wedding2'];
 
-   public function run()
-   {
-      Template::$theme = $this->config->theme[ 'wedding2' ];
+        $defaultRedirect = '/wedding/listall';
 
-      $defaultRedirect = '/wedding/listall';
+        if ($this->request->post) {
+            if ($this->request->post['password'] == 'alexmika') {
+                $this->session->loginStatus = true;
+                $uri = $this->session->loginRedirect;
+                unset($this->session->loginRedirect);
+                $this->pageRedirect($uri ? $uri : $defaultRedirect);
+            }
+        }
 
-      if ( $this->request->post )
-      {
-         if ( $this->request->post[ 'password' ] == 'alexmika' )
-         {
-            $this->session->loginStatus = TRUE;
-            $uri = $this->session->loginRedirect;
-            unset( $this->session->loginRedirect );
-            $this->pageRedirect( $uri ? $uri : $defaultRedirect );
-         }
-      }
-
-      $this->_displayLogin();
-   }
-
+        $this->_displayLogin();
+    }
 }
 
 //__END_OF_FILE__

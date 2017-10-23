@@ -19,24 +19,22 @@ use lzx\db\DBObject;
  */
 class NodeComplain extends DBObject
 {
-
-   public function __construct( $id = null, $properties = '' )
-   {
-      $db = DB::getInstance();
-      $table = 'node_complaints';
-      $fields = [
-         'id'          => 'id',
-         'uid'         => 'uid',
-         'nid'         => 'nid',
-         'reporterUID' => 'reporter_uid',
-         'weight'      => 'weight',
-         'time'        => 'time',
-         'reason'      => 'reason',
-         'status'      => 'status'
-      ];
-      parent::__construct( $db, $table, $fields, $id, $properties );
-   }
-
+    public function __construct($id = null, $properties = '')
+    {
+        $db = DB::getInstance();
+        $table = 'node_complaints';
+        $fields = [
+            'id'             => 'id',
+            'uid'            => 'uid',
+            'nid'            => 'nid',
+            'reporterUID' => 'reporter_uid',
+            'weight'        => 'weight',
+            'time'          => 'time',
+            'reason'        => 'reason',
+            'status'        => 'status'
+        ];
+        parent::__construct($db, $table, $fields, $id, $properties);
+    }
 }
 
 //__END_OF_FILE__

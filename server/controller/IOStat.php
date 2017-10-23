@@ -16,7 +16,6 @@ use site\Controller;
  */
 abstract class IOStat extends Controller
 {
-   
 }
 
 //__END_OF_FILE__

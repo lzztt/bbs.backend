@@ -20,168 +20,148 @@ use lzx\db\DB;
  */
 class Tag extends DBObject
 {
+    public function __construct($id = null, $properties = '')
+    {
+        $db = DB::getInstance();
+        $table = 'tags';
+        $fields = [
+            'id' => 'id',
+            'name' => 'name',
+            'description' => 'description',
+            'parent' => 'parent',
+            'root' => 'root',
+            'weight' => 'weight'
+        ];
+        parent::__construct($db, $table, $fields, $id, $properties);
+    }
 
-   public function __construct( $id = null, $properties = '' )
-   {
-      $db = DB::getInstance();
-      $table = 'tags';
-      $fields = [
-         'id' => 'id',
-         'name' => 'name',
-         'description' => 'description',
-         'parent' => 'parent',
-         'root' => 'root',
-         'weight' => 'weight'
-      ];
-      parent::__construct( $db, $table, $fields, $id, $properties );
-   }
+    /*
+     * rarely used, only get leaves for a root id (forum / yellow page)
+     */
 
-   /*
-    * rarely used, only get leaves for a root id (forum / yellow page)
-    */
-
-   public function getLeafTIDs()
-   {
-      if ( $this->id )
-      {
-         $ids = [ ];
-         $tree = $this->getTagTree();
-         foreach ( $tree as $i => $t )
-         {
-            if ( !\array_key_exists( 'children', $t ) )
-            {
-               $ids[] = $i;
+    public function getLeafTIDs()
+    {
+        if ($this->id) {
+            $ids = [];
+            $tree = $this->getTagTree();
+            foreach ($tree as $i => $t) {
+                if (!\array_key_exists('children', $t)) {
+                    $ids[] = $i;
+                }
             }
-         }
-         return $ids;
-      }
-      return [ ];
-   }
+            return $ids;
+        }
+        return [];
+    }
 
-   /*
-    * get the tag tree, upto 2 levels
-    */
+    /*
+     * get the tag tree, upto 2 levels
+     */
 
-   public function getTagRoot()
-   {
-      static $root = [ ];
+    public function getTagRoot()
+    {
+        static $root = [];
 
-      if ( isset( $this->id ) )
-      {
-         if ( !\array_key_exists( $this->id, $root ) )
-         {
-            $arr = \array_reverse( $this->call( 'get_tag_root(' . $this->id . ')' ) );
+        if (isset($this->id)) {
+            if (!\array_key_exists($this->id, $root)) {
+                $arr = \array_reverse($this->call('get_tag_root(' . $this->id . ')'));
 
-            $tags = [ ];
-            foreach ( $arr as $r )
-            {
-               $id = (int) $r[ 'id' ];
-               $parent = \is_null( $r[ 'parent' ] ) ? NULL : (int) $r[ 'parent' ];
-               $tags[ $id ] = [
-                  'id' => $id,
-                  'name' => $r[ 'name' ],
-                  'description' => $r[ 'description' ],
-                  'parent' => $parent
-               ];
+                $tags = [];
+                foreach ($arr as $r) {
+                    $id = (int) $r['id'];
+                    $parent = \is_null($r['parent']) ? null : (int) $r['parent'];
+                    $tags[$id] = [
+                        'id' => $id,
+                        'name' => $r['name'],
+                        'description' => $r['description'],
+                        'parent' => $parent
+                    ];
+                }
+                $root[$this->id] = $tags;
             }
-            $root[ $this->id ] = $tags;
-         }
-         return $root[ $this->id ];
-      }
-      else
-      {
-         throw new \Exception( 'no tag id set' );
-      }
-   }
+            return $root[$this->id];
+        } else {
+            throw new \Exception('no tag id set');
+        }
+    }
 
-   public function getTagTree()
-   {
-      static $tree = [ ];
+    public function getTagTree()
+    {
+        static $tree = [];
 
-      if ( isset( $this->id ) )
-      {
-         if ( !\array_key_exists( $this->id, $tree ) )
-         {
-            $arr = $this->call( 'get_tag_tree(' . $this->id . ')' );
+        if (isset($this->id)) {
+            if (!\array_key_exists($this->id, $tree)) {
+                $arr = $this->call('get_tag_tree(' . $this->id . ')');
 
-            $tags = [ ];
-            $children = [ ];
-            foreach ( $arr as $r )
-            {
-               $id = (int) $r[ 'id' ];
-               $parent = \is_null( $r[ 'parent' ] ) ? NULL : (int) $r[ 'parent' ];
+                $tags = [];
+                $children = [];
+                foreach ($arr as $r) {
+                    $id = (int) $r['id'];
+                    $parent = \is_null($r['parent']) ? null : (int) $r['parent'];
 
-               $tags[ $id ] = [
-                  'id' => $id,
-                  'name' => $r[ 'name' ],
-                  'description' => $r[ 'description' ],
-                  'parent' => $parent,
-               ];
-               if ( !\is_null( $parent ) )
-               {
-                  $children[ $parent ][] = $id;
-               }
+                    $tags[$id] = [
+                        'id' => $id,
+                        'name' => $r['name'],
+                        'description' => $r['description'],
+                        'parent' => $parent,
+                    ];
+                    if (!\is_null($parent)) {
+                        $children[$parent][] = $id;
+                    }
+                }
+
+                foreach ($children as $p => $c) {
+                    $tags[$p]['children'] = $c;
+                }
+
+                $tree[$this->id] = $tags;
             }
 
-            foreach ( $children as $p => $c )
-            {
-               $tags[ $p ][ 'children' ] = $c;
-            }
+            return $tree[$this->id];
+        } else {
+            throw new \Exception('no tag id set');
+        }
+    }
 
-            $tree[ $this->id ] = $tags;
-         }
+    /*
+     * get parent tag
+     */
 
-         return $tree[ $this->id ];
-      }
-      else
-      {
-         throw new \Exception( 'no tag id set' );
-      }
-   }
+    public function getParent($properties = '')
+    {
+        $this->load('parent');
+        if (\is_null($this->parent)) {
+            return null;
+        } else {
+            $tag = new Tag();
+            $tag->id = $this->parent;
+            $parent = $tag->getList($properties, 1);
+            return \array_pop($parent);
+        }
+    }
 
-   /*
-    * get parent tag
-    */
+    /*
+     * get children tags
+     */
 
-   public function getParent( $properties = '' )
-   {
-      $this->load( 'parent' );
-      if ( \is_null( $this->parent ) )
-      {
-         return NULL;
-      }
-      else
-      {
-         $tag = new Tag();
-         $tag->id = $this->parent;
-         $parent = $tag->getList( $properties, 1 );
-         return \array_pop( $parent );
-      }
-   }
+    public function getChildren($properties = '')
+    {
+        $tag = new Tag();
+        $tag->parent = $this->id;
+        $tag->order('weight');
+        return $tag->getList($properties);
+    }
 
-   /*
-    * get children tags
-    */
+    // get the information for the latest updated node
+    public function getNodeInfo()
+    {
+        return $this->call('get_tag_node_info_1(' . $this->id . ')');
+    }
 
-   public function getChildren( $properties = '' )
-   {
-      $tag = new Tag();
-      $tag->parent = $this->id;
-      $tag->order( 'weight' );
-      return $tag->getList( $properties );
-   }
-
-   // get the information for the latest updated node
-   public function getNodeInfo()
-   {
-      return $this->call( 'get_tag_node_info_1(' . $this->id . ')' );
-   }
-   
-   public function getNodeList( $cid, $limit, $offset )
-   {
-       return $this->call( 'get_tag_nodes(' . $this->id . ', ' . $cid . ', ' . $limit . ', ' . $offset .')' );
-   }
-
+    public function getNodeList($cid, $limit, $offset)
+    {
+         return $this->call('get_tag_nodes(' . $this->id . ', ' . $cid . ', ' . $limit . ', ' . $offset .')');
+    }
 }
 
 //__END_OF_FILE__

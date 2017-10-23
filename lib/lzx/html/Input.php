@@ -17,57 +17,49 @@ use lzx\html\FormElement;
  */
 class Input extends FormElement
 {
+    //put your code here
+    public $type = 'text';
 
-   //put your code here
-   public $type = 'text';
+    public function __construct($name, $label = '', $help = '', $required = false)
+    {
+        $value = '';
+        parent::__construct($name, $label, $value, $help, $required);
+    }
 
-   public function __construct($name, $label = '', $help = '', $required = FALSE)
-   {
-      $value = '';
-      parent::__construct($name, $label, $value, $help, $required);
-   }
+    /**
+     *
+     * @return \lzx\html\HTMLElement
+     */
+    public function toHTMLElement()
+    {
+        $attr = ['class' => self::ELEMENT_CLASS];
+        if ($this->_inline) {
+            $attr['style'] = 'display:inline';
+        }
+        $div = new HTMLElement('div', $this->_label(), $attr);
 
-   /**
-    *
-    * @return \lzx\html\HTMLElement
-    */
-   public function toHTMLElement()
-   {
-      $attr = ['class' => self::ELEMENT_CLASS];
-      if ($this->_inline)
-      {
-         $attr['style'] = 'display:inline';
-      }
-      $div = new HTMLElement('div', $this->_label(), $attr);
+        $this->attributes = array_merge(['size' => ($this->_inline ? '10' : '22')], $this->attributes);
 
-      $this->attributes = array_merge(['size' => ($this->_inline ? '10' : '22')], $this->attributes);
+        $input_attr = [
+            'name' => $this->name,
+            'type' => $this->type
+        ];
+        if ($this->_value) {
+            $input_attr['value'] = $this->_value;
+        }
+        if ($this->required) {
+            $input_attr['required'] = 'required';
+        }
+        $input = new HTMLElement('input', null, array_merge($this->attributes, $input_attr));
 
-      $input_attr = [
-         'name' => $this->name,
-         'type' => $this->type
-      ];
-      if ($this->_value)
-      {
-         $input_attr['value'] = $this->_value;
-      }
-      if ($this->required)
-      {
-         $input_attr['required'] = 'required';
-      }
-      $input = new HTMLElement('input', NULL, array_merge($this->attributes, $input_attr));
+        if ($this->_inline) {
+            $div->addElement($input);
+        } else {
+            $div->addElement(new HTMLElement('div', $input, ['class' => self::INPUT_CLASS]));
+        }
 
-      if ($this->_inline)
-      {
-         $div->addElement($input);
-      }
-      else
-      {
-         $div->addElement(new HTMLElement('div', $input, ['class' => self::INPUT_CLASS]));
-      }
-
-      return $div;
-   }
-
+        return $div;
+    }
 }
 
 //__END_OF_FILE__

@@ -20,11 +20,11 @@ $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 $domain = 'houstonbbs.com';
 $siteDir = \dirname(__DIR__);
 $path = [
-   'lzx' => $siteDir . '/Lzx',
-   'root' => $siteDir,
-   'log' => $siteDir . '/logs',
-   'theme' => $siteDir . '/themes',
-   'backup' => $siteDir . '/backup',
+    'lzx' => $siteDir . '/Lzx',
+    'root' => $siteDir,
+    'log' => $siteDir . '/logs',
+    'theme' => $siteDir . '/themes',
+    'backup' => $siteDir . '/backup',
 ];
 
 require_once $path['lzx'] . '/Core/ClassLoader.php';
@@ -48,16 +48,14 @@ $config = Config::getInstance($siteDir . '/config.php');
 
 $cacheKeys = \array_slice($argv, 1);
 
-if(\sizeof($cacheKeys) < 1)
-{
-   echo 'usage: php ' . $argv[0] . ' <cacheKeys> ...' . PHP_EOL;
-   exit;
+if (\sizeof($cacheKeys) < 1) {
+    echo 'usage: php ' . $argv[0] . ' <cacheKeys> ...' . PHP_EOL;
+    exit;
 }
 
 $cache = Cache::getInstance($config->cache_path);
 $cache->setLogger($logger);
-foreach($cacheKeys as $k)
-{
-   echo 'deleting ' . $k . PHP_EOL;
-   $cache->delete($k);
+foreach ($cacheKeys as $k) {
+    echo 'deleting ' . $k . PHP_EOL;
+    $cache->delete($k);
 }

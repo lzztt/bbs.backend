@@ -19,23 +19,20 @@ use site\dbobject\Wedding as WeddingAttendee;
  */
 class CheckinCtrler extends Wedding
 {
+    public function run()
+    {
+        Template::$theme = $this->config->theme['wedding2'];
+        // login first
+        if (!$this->session->loginStatus) {
+            $this->_displayLogin();
+            return;
+        }
 
-   public function run()
-   {
-      Template::$theme = $this->config->theme[ 'wedding2' ];
-      // login first
-      if ( !$this->session->loginStatus )
-      {
-         $this->_displayLogin();
-         return;
-      }
-
-      $a = new WeddingAttendee();
-      $a->where( 'tid', 0, '>' );
-      list($table_guests, $table_counts, $total) = $this->_getTableGuests( $a->getList( 'name,guests,checkin,tid' ), 'guests' );
-      $this->_var[ 'body' ] = new Template( 'checkin', ['tables' => $table_guests ] );
-   }
-
+        $a = new WeddingAttendee();
+        $a->where('tid', 0, '>');
+        list($table_guests, $table_counts, $total) = $this->_getTableGuests($a->getList('name,guests,checkin,tid'), 'guests');
+        $this->_var['body'] = new Template('checkin', ['tables' => $table_guests]);
+    }
 }
 
 //__END_OF_FILE__

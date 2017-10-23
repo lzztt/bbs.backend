@@ -21,49 +21,47 @@ use lzx\core\Logger;
  */
 abstract class Controller
 {
+    public $logger;
+    public $request;
+    public $response;
 
-   public $logger;
-   public $request;
-   public $response;
+    public function __construct(Request $req, Response $response, Logger $logger)
+    {
+        $this->request = $req;
+        $this->response = $response;
+        $this->logger = $logger;
+    }
 
-   public function __construct( Request $req, Response $response, Logger $logger )
-   {
-      $this->request = $req;
-      $this->response = $response;
-      $this->logger = $logger;      
-   }
+    abstract public function run();
 
-   abstract public function run();
+    /**
+     * Observer design pattern interfaces
+     */
+    abstract public function update(Template $html);
 
-   /**
-    * Observer design pattern interfaces
-    */
-   abstract public function update( Template $html );
+    protected function error($msg)
+    {
+        $this->response->setContent($msg);
+        throw new \Exception();
+    }
 
-   protected function error( $msg )
-   {
-      $this->response->setContent( $msg );
-      throw new \Exception();
-   }
+    protected function pageNotFound()
+    {
+        $this->response->pageNotFound();
+        throw new \Exception();
+    }
 
-   protected function pageNotFound()
-   {
-      $this->response->pageNotFound();
-      throw new \Exception();
-   }
+    protected function pageForbidden()
+    {
+        $this->response->pageForbidden();
+        throw new \Exception();
+    }
 
-   protected function pageForbidden()
-   {
-      $this->response->pageForbidden();
-      throw new \Exception();
-   }
-
-   protected function pageRedirect( $uri )
-   {
-      $this->response->pageRedirect( $uri );
-      throw new \Exception();
-   }
-
+    protected function pageRedirect($uri)
+    {
+        $this->response->pageRedirect($uri);
+        throw new \Exception();
+    }
 }
 
 //__END_OF_FILE__

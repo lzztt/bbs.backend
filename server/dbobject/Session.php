@@ -18,21 +18,19 @@ use lzx\db\DB;
  */
 class Session extends DBObject
 {
-
-   public function __construct( $id = null, $properties = '' )
-   {
-      $db = DB::getInstance();
-      $table = 'sessions';
-      $fields = [
-         'id' => 'id',
-         'atime' => 'atime',
-         'uid' => 'uid',
-         'cid' => 'cid',
-         'crc' => 'crc'
-      ];
-      parent::__construct( $db, $table, $fields, $id, $properties );
-   }
-
+    public function __construct($id = null, $properties = '')
+    {
+        $db = DB::getInstance();
+        $table = 'sessions';
+        $fields = [
+            'id' => 'id',
+            'atime' => 'atime',
+            'uid' => 'uid',
+            'cid' => 'cid',
+            'crc' => 'crc'
+        ];
+        parent::__construct($db, $table, $fields, $id, $properties);
+    }
 }
 
 //__END_OF_FILE__

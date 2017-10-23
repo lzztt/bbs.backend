@@ -17,44 +17,38 @@ use lzx\html\FormElement;
  */
 class TextArea extends FormElement
 {
+    public function __construct($name, $label = '', $help = '', $required = false)
+    {
+        $value = '';
+        parent::__construct($name, $label, $value, $help, $required);
+    }
 
-   public function __construct($name, $label = '', $help = '', $required = FALSE)
-   {
-      $value = '';
-      parent::__construct($name, $label, $value, $help, $required);
-   }
+    /**
+     *
+     * @return \lzx\html\HTMLElement
+     */
+    public function toHTMLElement()
+    {
+        $div = new HTMLElement('div', $this->_label(), ['class' => self::ELEMENT_CLASS]);
 
-   /**
-    *
-    * @return \lzx\html\HTMLElement
-    */
-   public function toHTMLElement()
-   {
-      $div = new HTMLElement('div', $this->_label(), ['class' => self::ELEMENT_CLASS]);
+        $this->attributes = \array_merge(['rows' => '5', 'cols' => '50'], $this->attributes);
 
-      $this->attributes = \array_merge(['rows' => '5', 'cols' => '50'], $this->attributes);
+        $input_attr = [
+            'name' => $this->name,
+        ];
+        if ($this->required) {
+            $input_attr['required'] = 'required';
+        }
+        $input = new HTMLElement('textarea', $this->_value, \array_merge($this->attributes, $input_attr));
 
-      $input_attr = [
-         'name' => $this->name,
-      ];
-      if ($this->required)
-      {
-         $input_attr['required'] = 'required';
-      }
-      $input = new HTMLElement('textarea', $this->_value, \array_merge($this->attributes, $input_attr));
+        if ($this->_inline) {
+            $div->addElement($input);
+        } else {
+            $div->addElement(new HTMLElement('div', $input, ['class' => self::INPUT_CLASS]));
+        }
 
-      if ($this->_inline)
-      {
-         $div->addElement($input);
-      }
-      else
-      {
-         $div->addElement(new HTMLElement('div', $input, ['class' => self::INPUT_CLASS]));
-      }
-
-      return $div;
-   }
-
+        return $div;
+    }
 }
 
 //__END_OF_FILE__

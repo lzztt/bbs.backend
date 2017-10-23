@@ -22,19 +22,16 @@ use site\Session;
  */
 abstract class Adm extends Controller
 {
+    public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
+    {
+        parent::__construct($req, $response, $config, $logger, $session);
 
-   public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
-   {
-      parent::__construct( $req, $response, $config, $logger, $session );
+        if ($this->request->uid !== self::UID_ADMIN) {
+            $this->pageNotFound();
+        }
 
-      if ( $this->request->uid !== self::UID_ADMIN )
-      {
-         $this->pageNotFound();
-      }
-
-      Template::$theme = $this->config->theme[ 'adm' ];
-   }
-
+        Template::$theme = $this->config->theme['adm'];
+    }
 }
 
 //__END_OF_FILE__

@@ -19,14 +19,12 @@ use lzx\cache\PageCache;
  */
 class WeddingCtrler extends Wedding
 {
+    public function run()
+    {
+        $this->cache = new PageCache($this->request->uri);
 
-   public function run()
-   {
-      $this->cache = new PageCache( $this->request->uri );
-      
-      $this->_var[ 'body' ] = new Template( 'join_form' );
-   }
-
+        $this->_var['body'] = new Template('join_form');
+    }
 }
 
 //__END_OF_FILE__

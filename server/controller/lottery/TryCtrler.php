@@ -7,32 +7,27 @@ use lzx\html\Template;
 
 class TryCtrler extends Lottery
 {
+    public function run()
+    {
+        $lottery = is_array($this->session->lottery) ? $this->session->lottery : [];
 
-   public function run()
-   {
-      $lottery = is_array( $this->session->lottery ) ? $this->session->lottery : [ ];
+        if ($this->args[0] === 'run') {
+            if (isset($lottery[$this->request->timestamp])) {
+                die('Please Slow Down<br /><a href="' . $this->request->referer . '">go back</a>');
+            }
+            $lottery[$this->request->timestamp] = \mt_rand(0, 100);
+            $this->session->lottery = $lottery;
+            $this->pageRedirect($this->request->referer);
+        }
+        if ($this->args[0] === 'clear') {
+            unset($this->session->lottery);
+            $this->pageRedirect($this->request->referer);
+        }
 
-      if ( $this->args[ 0 ] === 'run' )
-      {
-         if ( isset( $lottery[ $this->request->timestamp ] ) )
-         {
-            die( 'Please Slow Down<br /><a href="' . $this->request->referer . '">go back</a>' );
-         }
-         $lottery[ $this->request->timestamp ] = \mt_rand( 0, 100 );
-         $this->session->lottery = $lottery;
-         $this->pageRedirect( $this->request->referer );
-      }
-      if ( $this->args[ 0 ] === 'clear' )
-      {
-         unset( $this->session->lottery );
-         $this->pageRedirect( $this->request->referer );
-      }
+        \krsort($lottery);
 
-      \krsort( $lottery );
-
-      $this->_var[ 'content' ] = new Template( 'lotteryTry', ['lottery' => $lottery ] );
-   }
-
+        $this->_var['content'] = new Template('lotteryTry', ['lottery' => $lottery]);
+    }
 }
 
 //__END_OF_FILE__

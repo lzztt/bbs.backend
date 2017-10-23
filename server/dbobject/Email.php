@@ -13,18 +13,18 @@ use lzx\db\DB;
  */
 class Email extends DBObject
 {
-   public function __construct($id = null, $properties = '')
-   {
-      $db = DB::getInstance();
-      $table = 'emails';
-      $fields = [
-         'email' => 'email',
-         'name' => 'name',
-         'time' => 'time', 
-         'cid' => 'cid'
-      ];
-      parent::__construct( $db, $table, $fields, $id, $properties );
-   }
+    public function __construct($id = null, $properties = '')
+    {
+        $db = DB::getInstance();
+        $table = 'emails';
+        $fields = [
+            'email' => 'email',
+            'name' => 'name',
+            'time' => 'time',
+            'cid' => 'cid'
+        ];
+        parent::__construct($db, $table, $fields, $id, $properties);
+    }
 }
 
 //__END_OF_FILE__
