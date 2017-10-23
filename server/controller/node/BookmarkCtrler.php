@@ -8,23 +8,19 @@ use site\dbobject\User;
 
 class BookmarkCtrler extends Node
 {
+    public function run()
+    {
+        if ($this->request->uid == self::UID_GUEST || !$this->id) {
+            $this->pageForbidden();
+        }
 
-   public function run()
-   {
+        $nid = $this->id;
 
-      if ( $this->request->uid == self::UID_GUEST || !$this->id )
-      {
-         $this->pageForbidden();
-      }
+        $u = new User($this->request->uid, null);
 
-      $nid = $this->id;
-
-      $u = new User( $this->request->uid, NULL );
-
-      $u->addBookmark( $nid );
-      $this->html = NULL;
-   }
-
+        $u->addBookmark($nid);
+        $this->html = null;
+    }
 }
 
 //__END_OF_FILE__

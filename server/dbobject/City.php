@@ -18,21 +18,19 @@ use lzx\db\DB;
  */
 class City extends DBObject
 {
-
-   public function __construct( $id = null, $properties = '' )
-   {
-      $db = DB::getInstance();
-      $table = 'cities';
-      $fields = [
-         'id' => 'id',
-         'name' => 'name',
-         'uriName' => 'uri_name',
-         'ForumRootID' => 'tid_forum',
-         'YPRootID' => 'tid_yp'
-      ];
-      parent::__construct( $db, $table, $fields, $id, $properties );
-   }
-
+    public function __construct($id = null, $properties = '')
+    {
+        $db = DB::getInstance();
+        $table = 'cities';
+        $fields = [
+            'id' => 'id',
+            'name' => 'name',
+            'uriName' => 'uri_name',
+            'ForumRootID' => 'tid_forum',
+            'YPRootID' => 'tid_yp'
+        ];
+        parent::__construct($db, $table, $fields, $id, $properties);
+    }
 }
 
 //__END_OF_FILE__

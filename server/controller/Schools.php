@@ -11,7 +11,6 @@ use site\Controller;
  */
 abstract class Schools extends Controller
 {
-   
 }
 
 //__END_OF_FILE__

@@ -16,7 +16,6 @@ use site\Controller;
  */
 abstract class AD extends Controller
 {
-
 }
 
 //__END_OF_FILE__
