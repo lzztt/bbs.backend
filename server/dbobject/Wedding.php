@@ -18,39 +18,37 @@ use lzx\db\DB;
  * @property $guests
  * @property $time
  * @property $checkin
- * @property $status 
+ * @property $status
  * @property $table
  */
 class Wedding extends DBObject
 {
+    public function __construct($id = null, $properties = '')
+    {
+        $db = DB::getInstance();
+        $table = 'wedding';
+        $fields = [
+            'id' => 'id',
+            'name' => 'name',
+            'email' => 'email',
+            'phone' => 'phone',
+            'guests' => 'guests',
+            'comment' => 'comment',
+            'time' => 'time',
+            'checkin' => 'checkin',
+            'status' => 'status',
+            'tid' => 'tid',
+            'gift' => 'gift',
+            'value' => 'value'
+        ];
+        parent::__construct($db, $table, $fields, $id, $properties);
+    }
 
-   public function __construct( $id = null, $properties = '' )
-   {
-      $db = DB::getInstance();
-      $table = 'wedding';
-      $fields = [
-         'id' => 'id',
-         'name' => 'name',
-         'email' => 'email',
-         'phone' => 'phone',
-         'guests' => 'guests',
-         'comment' => 'comment',
-         'time' => 'time',
-         'checkin' => 'checkin',
-         'status' => 'status',
-         'tid' => 'tid',
-         'gift' => 'gift',
-         'value' => 'value'
-      ];
-      parent::__construct( $db, $table, $fields, $id, $properties );
-   }
-
-   public function getTotal()
-   {
-      $arr = $this->_db->query( 'SELECT SUM(guests) FROM wedding' );
-      return \array_pop( $arr[0] );
-   }
-
+    public function getTotal()
+    {
+        $arr = $this->_db->query('SELECT SUM(guests) FROM wedding');
+        return \array_pop($arr[0]);
+    }
 }
 
 //__END_OF_FILE__

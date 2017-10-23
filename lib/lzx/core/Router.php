@@ -13,7 +13,7 @@ namespace lzx\core;
  */
 class Router
 {
-   //put your code here
+    //put your code here
 }
 
 //__END_OF_FILE__

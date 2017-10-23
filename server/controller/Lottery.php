@@ -6,7 +6,6 @@ use site\Controller;
 
 abstract class Lottery extends Controller
 {
-
 }
 
 //__END_OF_FILE__

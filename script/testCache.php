@@ -20,11 +20,11 @@ $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 $domain = 'houstonbbs.com';
 $siteDir = \dirname(__DIR__);
 $path = [
-   'lzx' => $siteDir . '/lzx',
-   'root' => $siteDir,
-   'log' => $siteDir . '/logs',
-   'theme' => $siteDir . '/themes',
-   'backup' => $siteDir . '/backup',
+    'lzx' => $siteDir . '/lzx',
+    'root' => $siteDir,
+    'log' => $siteDir . '/logs',
+    'theme' => $siteDir . '/themes',
+    'backup' => $siteDir . '/backup',
 ];
 
 require_once $path['lzx'] . '/Core/ClassLoader.php';
@@ -49,28 +49,26 @@ $task = $argv[1];
 
 $func = __NAMESPACE__ . '\do_' . $task;
 
-if (!\function_exists($func))
-{
-   $logger->info('CRON JOB: wrong action : ' . $task);
-   exit;
+if (!\function_exists($func)) {
+    $logger->info('CRON JOB: wrong action : ' . $task);
+    exit;
 }
 
 $func($path, $logger, $config);
 
 function do_cache($path, $logger, $config)
 {
-   $cacheKey = 'recentActivities';
-   $cache = Cache::getInstance($config->cache_path, 'pc', 'member');
-   $cache->setLogger($logger);
-   $cache->store('t_key', 't_value');
+    $cacheKey = 'recentActivities';
+    $cache = Cache::getInstance($config->cache_path, 'pc', 'member');
+    $cache->setLogger($logger);
+    $cache->store('t_key', 't_value');
 
-   echo \disk_free_space($config->cache_path);
-   if (\disk_free_space($config->cache_path) < 1024)
-   {
-      $logger->info("no free space left");
-      echo '1';
-      $cache->clearAllCache();
-   }
-   echo '2';
-   $cache->clearAllCache();
+    echo \disk_free_space($config->cache_path);
+    if (\disk_free_space($config->cache_path) < 1024) {
+        $logger->info("no free space left");
+        echo '1';
+        $cache->clearAllCache();
+    }
+    echo '2';
+    $cache->clearAllCache();
 }

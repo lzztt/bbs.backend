@@ -19,39 +19,32 @@ use site\dbobject\Wedding as WeddingAttendee;
  */
 class AddCtrler extends Wedding
 {
+    public function run()
+    {
+        Template::$theme = $this->config->theme['wedding2'];
+        // login first
+        if (!$this->session->loginStatus) {
+            $this->_displayLogin();
+            return;
+        }
 
-   public function run()
-   {
-      Template::$theme = $this->config->theme[ 'wedding2' ];
-      // login first
-      if ( !$this->session->loginStatus )
-      {
-         $this->_displayLogin();
-         return;
-      }
+        // logged in
+        $this->_var['navbar'] = new Template('navbar');
+        if ($this->request->post) {
+            // save changes for one guest
+            $a = new WeddingAttendee();
 
-      // logged in      
-      $this->_var[ 'navbar' ] = new Template( 'navbar' );
-      if ( $this->request->post )
-      {
-         // save changes for one guest
-         $a = new WeddingAttendee();
-
-         foreach ( $this->request->post as $k => $v )
-         {
-            $a->$k = $v;
-         }
-         $a->time = $this->request->timestamp;
-         $a->status = 1;
-         $a->add();
-         $this->_var[ 'body' ] = $a->name . '已经被添加';
-      }
-      else
-      {
-         $this->_var[ 'body' ] = new Template( 'join_form' );
-      }
-   }
-
+            foreach ($this->request->post as $k => $v) {
+                $a->$k = $v;
+            }
+            $a->time = $this->request->timestamp;
+            $a->status = 1;
+            $a->add();
+            $this->_var['body'] = $a->name . '已经被添加';
+        } else {
+            $this->_var['body'] = new Template('join_form');
+        }
+    }
 }
 
 //__END_OF_FILE__

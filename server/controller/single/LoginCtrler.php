@@ -6,25 +6,21 @@ use site\controller\Single;
 
 class LoginCtrler extends Single
 {
+    public function run()
+    {
+        $defaultRedirect = '/single/attendee';
 
-   public function run()
-   {
-      $defaultRedirect = '/single/attendee';
+        if ($this->request->post) {
+            if ($this->request->post['password'] == 'alexmika6630') {
+                $this->session->loginStatus = true;
+                $uri = $this->session->loginRedirect;
+                unset($this->session->loginRedirect);
+                $this->pageRedirect($uri ? $uri : $defaultRedirect);
+            }
+        }
 
-      if ( $this->request->post )
-      {
-         if ( $this->request->post[ 'password' ] == 'alexmika6630' )
-         {
-            $this->session->loginStatus = TRUE;
-            $uri = $this->session->loginRedirect;
-            unset( $this->session->loginRedirect );
-            $this->pageRedirect( $uri ? $uri : $defaultRedirect  );
-         }
-      }
-
-      $this->_displayLogin();
-   }
-
+        $this->_displayLogin();
+    }
 }
 
 //__END_OF_FILE__

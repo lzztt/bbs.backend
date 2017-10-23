@@ -19,35 +19,33 @@ use lzx\core\JSON;
  */
 abstract class Service
 {
+    public $logger;
+    public $request;
+    public $response;
 
-   public $logger;
-   public $request;
-   public $response;
+    public function __construct(Request $req, Response $response, Logger $logger)
+    {
+        $this->request = $req;
+        $this->response = $response;
+        $this->logger = $logger;
+    }
 
-   public function __construct( Request $req, Response $response, Logger $logger )
-   {
-      $this->request = $req;
-      $this->response = $response;
-      $this->logger = $logger;
-   }
+    protected function _json(array $return = null)
+    {
+        $this->response->type = Response::JSON;
+        $this->response->setContent(new JSON($return));
+    }
 
-   protected function _json( array $return = NULL )
-   {
-      $this->response->type = Response::JSON;
-      $this->response->setContent( new JSON( $return ) );
-   }
+    protected function error($msg)
+    {
+        $this->_json(['error' => $msg]);
+        throw new \Exception();
+    }
 
-   protected function error( $msg )
-   {
-      $this->_json( [ 'error' => $msg ] );
-      throw new \Exception();
-   }
-
-   protected function forbidden()
-   {
-      $this->error( 'forbidden' );
-   }
-
+    protected function forbidden()
+    {
+        $this->error('forbidden');
+    }
 }
 
 //__END_OF_FILE__

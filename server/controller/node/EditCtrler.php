@@ -11,141 +11,126 @@ use site\dbobject\Comment;
 
 class EditCtrler extends Node
 {
+    public function run()
+    {
+        list($nid, $type) = $this->_getNodeType();
+        $method = '_edit' . $type;
+        $this->$method($nid);
+    }
 
-   public function run()
-   {
+    private function _editForumTopic($nid)
+    {
+        // edit existing comment
+        $node = new NodeObject($nid, 'uid,status');
 
-      list($nid, $type) = $this->_getNodeType();
-      $method = '_edit' . $type;
-      $this->$method( $nid );
-   }
+        if (!$node->exists() || $node->status == 0) {
+            $this->error('node does not exist.');
+        }
 
-   private function _editForumTopic( $nid )
-   {
-      // edit existing comment
-      $node = new NodeObject( $nid, 'uid,status' );
+        if (\strlen($this->request->post['body']) < 5 || \strlen($this->request->post['title']) < 5) {
+            $this->error('Topic title or body is too short.');
+        }
 
-      if ( !$node->exists() || $node->status == 0 )
-      {
-         $this->error( 'node does not exist.' );
-      }
+        if ($this->request->uid != 1 && $this->request->uid != $node->uid) {
+            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->pageForbidden();
+        }
 
-      if ( \strlen( $this->request->post[ 'body' ] ) < 5 || \strlen( $this->request->post[ 'title' ] ) < 5 )
-      {
-         $this->error( 'Topic title or body is too short.' );
-      }
+        $node->title = $this->request->post['title'];
+        //$node->body = $this->request->post['body'];
+        $node->lastModifiedTime = $this->request->timestamp;
 
-      if ( $this->request->uid != 1 && $this->request->uid != $node->uid )
-      {
-         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->pageForbidden();
-      }
+        try {
+            $node->update();
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+            $this->error($e->getMessage());
+        }
 
-      $node->title = $this->request->post[ 'title' ];
-      //$node->body = $this->request->post[ 'body' ];
-      $node->lastModifiedTime = $this->request->timestamp;
+        $comment = new Comment();
+        $comment->nid = $nid;
+        $arr = $comment->getList('id', 1);
 
-      try
-      {
-         $node->update();
-      }
-      catch ( \Exception $e )
-      {
-         $this->logger->error( $e->getMessage() );
-         $this->error( $e->getMessage() );
-      }
-      
-      $comment = new Comment();
-      $comment->nid = $nid;
-      $arr = $comment->getList('id', 1);
-      
-      $comment = new Comment();
-      $comment->id = $arr[0]['id'];
-      $comment->body = $this->request->post[ 'body' ];
-      $comment->lastModifiedTime = $this->request->timestamp;
-      $comment->update();
-      
+        $comment = new Comment();
+        $comment->id = $arr[0]['id'];
+        $comment->body = $this->request->post['body'];
+        $comment->lastModifiedTime = $this->request->timestamp;
+        $comment->update();
 
-      $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
-      $file = new Image();
-      $file->cityID = self::$_city->id;
-      $file->updateFileList( $files, $this->config->path[ 'file' ], $nid, $comment->id );
 
-      $this->_getCacheEvent( 'ImageUpdate' )->trigger();
-      $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
+        $files = \is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+        $file = new Image();
+        $file->cityID = self::$_city->id;
+        $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
 
-      $this->pageRedirect( $this->request->referer );
-   }
+        $this->_getCacheEvent('ImageUpdate')->trigger();
+        $this->_getCacheEvent('NodeUpdate', $nid)->trigger();
 
-   private function _editYellowPage( $nid )
-   {
-      $node = new NodeObject( $nid, 'uid,status' );
+        $this->pageRedirect($this->request->referer);
+    }
 
-      if ( !$node->exists() || $node->status == 0 )
-      {
-         $this->error( 'node does not exist.' );
-      }
+    private function _editYellowPage($nid)
+    {
+        $node = new NodeObject($nid, 'uid,status');
 
-      if ( $this->request->uid != 1 && $this->request->uid != $node->uid )
-      {
-         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->pageForbidden();
-      }
+        if (!$node->exists() || $node->status == 0) {
+            $this->error('node does not exist.');
+        }
 
-      if ( empty( $this->request->post ) )
-      {
-         // display edit interface
-         $nodeObj = new NodeObject();
-         $contents = $nodeObj->getYellowPageNode( $nid );
-         
-         $comment = new Comment();
-         $comment->nid = $nid;
-         $arr = $comment->getList('id', 1);
+        if ($this->request->uid != 1 && $this->request->uid != $node->uid) {
+            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->pageForbidden();
+        }
 
-         $comment = new Comment($arr[0]['id'], 'body');
-         $contents['body'] = $comment->body;
+        if (empty($this->request->post)) {
+            // display edit interface
+            $nodeObj = new NodeObject();
+            $contents = $nodeObj->getYellowPageNode($nid);
 
-         $this->_var[ 'content' ] = new Template( 'editor_bbcode_yp', $contents );
-      }
-      else
-      {
-         // save modification
-         $node = new NodeObject( $nid, 'tid' );
-         $node->title = $this->request->post[ 'title' ];
-         // $node->body = $this->request->post[ 'body' ];
-         $node->lastModifiedTime = $this->request->timestamp;
-         $node->update();
+            $comment = new Comment();
+            $comment->nid = $nid;
+            $arr = $comment->getList('id', 1);
 
-         $node_yp = new NodeYellowPage( $nid, 'nid' );
-         $keys = ['address', 'phone', 'email', 'website', 'fax' ];
-         foreach ( $keys as $k )
-         {
-            $node_yp->$k = \strlen( $this->request->post[ $k ] ) ? $this->request->post[ $k ] : NULL;
-         }
+            $comment = new Comment($arr[0]['id'], 'body');
+            $contents['body'] = $comment->body;
 
-         $node_yp->update();
+            $this->_var['content'] = new Template('editor_bbcode_yp', $contents);
+        } else {
+            // save modification
+            $node = new NodeObject($nid, 'tid');
+            $node->title = $this->request->post['title'];
+            // $node->body = $this->request->post['body'];
+            $node->lastModifiedTime = $this->request->timestamp;
+            $node->update();
 
-         $comment = new Comment();
-         $comment->nid = $nid;
-         $arr = $comment->getList('id', 1);
+            $node_yp = new NodeYellowPage($nid, 'nid');
+            $keys = ['address', 'phone', 'email', 'website', 'fax'];
+            foreach ($keys as $k) {
+                $node_yp->$k = \strlen($this->request->post[$k]) ? $this->request->post[$k] : null;
+            }
 
-         $comment = new Comment();
-         $comment->id = $arr[0]['id'];
-         $comment->body = $this->request->post[ 'body' ];
-         $comment->lastModifiedTime = $this->request->timestamp;
-         $comment->update();
+            $node_yp->update();
 
-         $files = \is_array( $this->request->post[ 'files' ] ) ? $this->request->post[ 'files' ] : [ ];
-         $file = new Image();
-         $file->cityID = self::$_city->id;
-         $file->updateFileList( $files, $this->config->path[ 'file' ], $nid, $comment->id );
+            $comment = new Comment();
+            $comment->nid = $nid;
+            $arr = $comment->getList('id', 1);
 
-         $this->_getCacheEvent( 'NodeUpdate', $nid )->trigger();
+            $comment = new Comment();
+            $comment->id = $arr[0]['id'];
+            $comment->body = $this->request->post['body'];
+            $comment->lastModifiedTime = $this->request->timestamp;
+            $comment->update();
 
-         $this->pageRedirect( '/node/' . $nid );
-      }
-   }
+            $files = \is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+            $file = new Image();
+            $file->cityID = self::$_city->id;
+            $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
 
+            $this->_getCacheEvent('NodeUpdate', $nid)->trigger();
+
+            $this->pageRedirect('/node/' . $nid);
+        }
+    }
 }
 
 //__END_OF_FILE__

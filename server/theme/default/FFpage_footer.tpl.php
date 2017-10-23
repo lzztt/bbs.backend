@@ -10,7 +10,7 @@
 
 
 <div class="bottomright">
-    Contact us at <span class="highlight">feedback@houstonbbs.com</span><br />
-    Copyright © 2009-2013 <a href="http://www.houstonbbs.com">HoustonBBS.com</a>. All rights reserved.
+   Contact us at <span class="highlight">feedback@houstonbbs.com</span><br />
+   Copyright © 2009-2013 <a href="http://www.houstonbbs.com">HoustonBBS.com</a>. All rights reserved.
 </div>
 </div>
