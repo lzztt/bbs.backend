@@ -14,141 +14,123 @@ namespace lzx\core;
  */
 class Session
 {
+    private $_status = false;
+    private $_sid = null;
+    private $_handler;
 
-   private $_status = FALSE;
-   private $_sid = NULL;
-   private $_handler;
+    // CLASS FUNCTIONS
 
-   // CLASS FUNCTIONS
-
-   private function __construct( \SessionHandlerInterface $handler = NULL )
-   {
-      if ( $handler instanceof \SessionHandlerInterface )
-      {
-         \session_set_save_handler( $handler, FALSE );
-         \session_start();
-         $this->_sid = \session_id();
-         $this->_status = TRUE;
-         $this->_handler = $handler;
-         if ( !isset( $this->uid ) )
-         {
-            $this->uid = 0;
-         }
-
-         if ( $this->uid > 0 )
-         {
-            // validate user agent string
-            if ( $this->crc32 != $this->_crc32() )
-            {
-               // this is really shouldn't happen
-               // notify the user?
-               // clear session for now
-               $this->clear();
+    private function __construct(\SessionHandlerInterface $handler = null)
+    {
+        if ($handler instanceof \SessionHandlerInterface) {
+            \session_set_save_handler($handler, false);
+            \session_start();
+            $this->_sid = \session_id();
+            $this->_status = true;
+            $this->_handler = $handler;
+            if (!isset($this->uid)) {
+                $this->uid = 0;
             }
-         }
-      }
-      else
-      {
-         $this->uid = 0;
-      }
-   }
 
-   final public function __get( $key )
-   {
-      if ( $key == 'id' )
-      {
-         return $this->_sid;
-      }
+            if ($this->uid > 0) {
+                // validate user agent string
+                if ($this->crc32 != $this->_crc32()) {
+                    // this is really shouldn't happen
+                    // notify the user?
+                    // clear session for now
+                    $this->clear();
+                }
+            }
+        } else {
+            $this->uid = 0;
+        }
+    }
 
-      return \array_key_exists( $key, $_SESSION ) ? $_SESSION[ $key ] : NULL;
-   }
+    final public function __get($key)
+    {
+        if ($key == 'id') {
+            return $this->_sid;
+        }
 
-   final public function __set( $key, $val )
-   {
-      if ( $key == 'id' )
-      {
-         throw new Exception( 'trying to set session id, which is read-only.' );
-      }
+        return \array_key_exists($key, $_SESSION) ? $_SESSION[$key] : null;
+    }
 
-      $_SESSION[ $key ] = $val;
-   }
+    final public function __set($key, $val)
+    {
+        if ($key == 'id') {
+            throw new Exception('trying to set session id, which is read-only.');
+        }
 
-   final public function __isset( $key )
-   {
-      if ( $key == 'id' )
-      {
-         return isset( $this->_sid );
-      }
+        $_SESSION[$key] = $val;
+    }
 
-      return \array_key_exists( $key, $_SESSION ) ? isset( $_SESSION[ $key ] ) : FALSE;
-   }
+    final public function __isset($key)
+    {
+        if ($key == 'id') {
+            return isset($this->_sid);
+        }
 
-   final public function __unset( $key )
-   {
-      if ( $key == 'id' )
-      {
-         throw new Exception( 'trying to unset session id, which is read-only.' );
-      }
+        return \array_key_exists($key, $_SESSION) ? isset($_SESSION[$key]) : false;
+    }
 
-      if ( \array_key_exists( $key, $_SESSION ) )
-      {
-         unset( $_SESSION[ $key ] );
-      }
-   }
+    final public function __unset($key)
+    {
+        if ($key == 'id') {
+            throw new Exception('trying to unset session id, which is read-only.');
+        }
 
-   public function close()
-   {
-      if ( $this->_status )
-      {
-         if ( $this->uid > 0 && !$this->crc32 )
-         {
-            $this->crc32 = $this->_crc32();
-         }
-         \session_write_close();
-      }
-      $this->clear();
-      $this->_status = FALSE;
-   }
+        if (\array_key_exists($key, $_SESSION)) {
+            unset($_SESSION[$key]);
+        }
+    }
 
-   public function clear()
-   {
-      $_SESSION = [ ];
-      $this->uid = 0;
-   }
+    public function close()
+    {
+        if ($this->_status) {
+            if ($this->uid > 0 && !$this->crc32) {
+                $this->crc32 = $this->_crc32();
+            }
+            \session_write_close();
+        }
+        $this->clear();
+        $this->_status = false;
+    }
 
-   public function regenerateID()
-   {
-      \session_regenerate_id();
-      
-      $this->_sid = \session_id();
-   }
+    public function clear()
+    {
+        $_SESSION = [];
+        $this->uid = 0;
+    }
 
-   /**
-    * Return the Session object
-    *
-    * @return Session
-    */
-   public static function getInstance( \SessionHandlerInterface $handler = NULL )
-   {
-      static $instance;
+    public function regenerateID()
+    {
+        \session_regenerate_id();
 
-      if ( !isset( $instance ) )
-      {
-         $instance = new self( $handler );
-      }
-      else
-      {
-         throw new \Exception( 'Session instance already exists, cannot create a new instance with handler' );
-      }
+        $this->_sid = \session_id();
+    }
 
-      return $instance;
-   }
+    /**
+     * Return the Session object
+     *
+     * @return Session
+     */
+    public static function getInstance(\SessionHandlerInterface $handler = null)
+    {
+        static $instance;
 
-   private function _crc32()
-   {
-      return \crc32( $_SERVER[ 'REMOTE_ADDR' ] . $_SERVER[ 'HTTP_USER_AGENT' ] );
-   }
+        if (!isset($instance)) {
+            $instance = new self($handler);
+        } else {
+            throw new \Exception('Session instance already exists, cannot create a new instance with handler');
+        }
 
+        return $instance;
+    }
+
+    private function _crc32()
+    {
+        return \crc32($_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
+    }
 }
 
 //__END_OF_FILE__

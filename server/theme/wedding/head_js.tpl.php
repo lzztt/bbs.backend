@@ -2,5 +2,5 @@
 <script src="/themes/wedding/js/main.01.js"></script>
 
 <!--[if IE]>
-	<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->

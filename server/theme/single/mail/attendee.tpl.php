@@ -1,7 +1,7 @@
 <?php print $name; ?> 你好，你的活动报名已收到
 
 活动地点: 松柏园 (Pine Forest Garden)
-   地址: 9108 Bellaire Blvd, Houston, TX 77036
+  地址: 9108 Bellaire Blvd, Houston, TX 77036
 
 周六(8月15号)，下午3:30开始
 

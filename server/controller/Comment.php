@@ -11,18 +11,15 @@ use site\Session;
 
 abstract class Comment extends Controller
 {
+    public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
+    {
+        parent::__construct($req, $response, $config, $logger, $session);
 
-   public function __construct( Request $req, Response $response, Config $config, Logger $logger, Session $session )
-   {
-      parent::__construct( $req, $response, $config, $logger, $session );
-      
-      if ( $this->request->uid == 0 )
-      {
-         $this->logger->warn( 'wrong action : uid = ' . $this->request->uid );
-         $this->pageForbidden();
-      }
-   }
-
+        if ($this->request->uid == 0) {
+            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->pageForbidden();
+        }
+    }
 }
 
 //__END_OF_FILE__

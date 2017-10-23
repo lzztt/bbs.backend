@@ -21,24 +21,22 @@ use lzx\db\DB;
  */
 class Comment extends DBObject
 {
-
-   public function __construct( $id = null, $properties = '' )
-   {
-      $db = DB::getInstance();
-      $table = 'comments';
-      $fields = [
-         'id' => 'id',
-         'nid' => 'nid',
-         'uid' => 'uid',
-         'tid' => 'tid',
-         'body' => 'body',
-//         'hash' => 'hash',
-         'createTime' => 'create_time',
-         'lastModifiedTime' => 'last_modified_time'
-      ];
-      parent::__construct( $db, $table, $fields, $id, $properties );
-   }
-
+    public function __construct($id = null, $properties = '')
+    {
+        $db = DB::getInstance();
+        $table = 'comments';
+        $fields = [
+            'id' => 'id',
+            'nid' => 'nid',
+            'uid' => 'uid',
+            'tid' => 'tid',
+            'body' => 'body',
+//            'hash' => 'hash',
+            'createTime' => 'create_time',
+            'lastModifiedTime' => 'last_modified_time'
+        ];
+        parent::__construct($db, $table, $fields, $id, $properties);
+    }
 }
 
 //__END_OF_FILE__

@@ -6,14 +6,12 @@ use site\Service;
 
 class BugAPI extends Service
 {
-
-   public function post()
-   {
-      $this->logger->warn( $this->request->post );
-      $this->response->setContent( NULL );
-      $this->_json( NULL );
-   }
-
+    public function post()
+    {
+        $this->logger->warn($this->request->post);
+        $this->response->setContent(null);
+        $this->_json(null);
+    }
 }
 
 //__END_OF_FILE__

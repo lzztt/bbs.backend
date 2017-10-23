@@ -8,39 +8,35 @@ use site\dbobject\Activity as ActivityObject;
 
 class ActivityCtrler extends Activity
 {
+    public function run()
+    {
+        $act = new ActivityObject();
+        $act->status = 1;
+        $total = $act->getCount();
 
-   public function run()
-   {
-      $act = new ActivityObject();
-      $act->status = 1;
-      $total = $act->getCount();
+        if ($total == 0) {
+            $this->error('目前没有活动。');
+        }
 
-      if ( $total == 0 )
-      {
-         $this->error( '目前没有活动。' );
-      }
+        list($pageNo, $pageCount) = $this->_getPagerInfo($total, self::NODES_PER_PAGE);
+        $pager = Template::pager($pageNo, $pageCount, '/activity');
 
-      list($pageNo, $pageCount) = $this->_getPagerInfo( $total, self::NODES_PER_PAGE );
-      $pager = Template::pager( $pageNo, $pageCount, '/activity' );
+        $limit = self::NODES_PER_PAGE;
+        $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
+        $actList = $act->getActivityList($limit, $offset);
 
-      $limit = self::NODES_PER_PAGE;
-      $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
-      $actList = $act->getActivityList( $limit, $offset );
+        foreach ($actList as $k => $n) {
+            $type = ($n['start_time'] < $this->request->timestamp) ? (($n['end_time'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
+            $data .= '<a href="/node/' . $n['nid'] . '" class="' . $type . '" data-before="' . \date('m/d', $n['start_time']) . '">' . $n['title'] . '</a>';
+        }
 
-      foreach ( $actList as $k => $n )
-      {
-         $type = ($n[ 'start_time' ] < $this->request->timestamp) ? (($n[ 'end_time' ] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
-         $data .= '<a href="/node/' . $n[ 'nid' ] . '" class="' . $type . '" data-before="' . \date( 'm/d', $n[ 'start_time' ] ) . '">' . $n[ 'title' ] . '</a>';
-      }
+        $contents = [
+            'pager' => $pager,
+            'data' => $data
+        ];
 
-      $contents = [
-         'pager' => $pager,
-         'data' => $data
-      ];
-
-      $this->_var[ 'content' ] = new Template( 'activity_list', $contents );
-   }
-
+        $this->_var['content'] = new Template('activity_list', $contents);
+    }
 }
 
 //__END_OF_FILE__

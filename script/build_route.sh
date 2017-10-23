@@ -39,8 +39,7 @@ use site\ControllerFactory;
  */
 class ControllerRouter extends ControllerFactory
 {
-
-   protected static $_route = [
+    protected static $_route = [
 EOF
 
 {
@@ -60,11 +59,10 @@ if [[ -d $serverdir/api ]]; then
         echo \'$uri\'' => '\''site\\'$(echo $api | sed 's!/!\\\\!g')\'','
     done | sort -t \' -k 2,2
 fi
-} | column -t | sed 's/^/      /' >> $tmp_file
+} | column -t | sed 's/^/        /' >> $tmp_file
 
 cat >> $tmp_file <<'EOF'
-   ];
-
+    ];
 }
 
 //__END_OF_FILE__

@@ -13,133 +13,120 @@ use lzx\core\Mailer;
  */
 class AJAXCtrler extends Single
 {
+    // attend activity
+    public function run()
+    {
+        // uri = /single/ajax/attend
+        if (!$this->args) {
+            $this->error('错误: 错误的请求');
+        }
+        $method = '_' . $this->args[0];
+        if (\method_exists($this, $method)) {
+            $this->$method();
+        } else {
+            $this->error('错误: 错误的请求');
+        }
+    }
 
-   // attend activity
-   public function run()
-   {
-      // uri = /single/ajax/attend
-      if ( !$this->args )
-      {
-         $this->error( '错误: 错误的请求' );
-      }
-      $method = '_' . $this->args[ 0 ];
-      if ( \method_exists( $this, $method ) )
-      {
-         $this->$method();
-      }
-      else
-      {
-         $this->error( '错误: 错误的请求' );
-      }
-   }
+    protected function _attend()
+    {
+        if (\file_exists($this->config->path['file'] . '/single.msg') && !$this->session->loginStatus) {
+            $this->error('错误: ' . \file_get_contents($this->config->path['file'] . '/single.msg'));
+        }
 
-   protected function _attend()
-   {
-      if ( \file_exists( $this->config->path[ 'file' ] . '/single.msg' ) && !$this->session->loginStatus )
-      {
-         $this->error( '错误: ' . \file_get_contents( $this->config->path[ 'file' ] . '/single.msg' ) );
-      }
+        if (empty($this->request->post['name']) || \strlen($this->request->post['sex']) < 1 || empty($this->request->post['age']) || empty($this->request->post['email'])) {
+            $this->error('错误: 带星号(*)选项为必填选项');
+        }
 
-      if ( empty( $this->request->post[ 'name' ] ) || \strlen( $this->request->post[ 'sex' ] ) < 1 || empty( $this->request->post[ 'age' ] ) || empty( $this->request->post[ 'email' ] ) )
-      {
-         $this->error( '错误: 带星号(*)选项为必填选项' );
-      }
+        $a = \array_pop($this->db->query('CALL get_latest_single_activity()'));
+        if ($this->request->post['aid'] != $a['id']) {
+            $this->error('错误: 错误的活动');
+        }
 
-      $a = \array_pop( $this->db->query( 'CALL get_latest_single_activity()' ) );
-      if ( $this->request->post[ 'aid' ] != $a[ 'id' ] )
-      {
-         $this->error( '错误: 错误的活动' );
-      }
+        $attendee = new FFAttendee();
 
-      $attendee = new FFAttendee();
+        $attendee->aid = $a['id'];
+        $attendee->name = $this->request->post['name'];
+        $attendee->sex = $this->request->post['sex'];
+        $attendee->age = $this->request->post['age'];
+        $attendee->email = $this->request->post['email'];
+        $attendee->phone = $this->request->post['phone'];
 
-      $attendee->aid = $a[ 'id' ];
-      $attendee->name = $this->request->post[ 'name' ];
-      $attendee->sex = $this->request->post[ 'sex' ];
-      $attendee->age = $this->request->post[ 'age' ];
-      $attendee->email = $this->request->post[ 'email' ];
-      $attendee->phone = $this->request->post[ 'phone' ];
+        if ($this->request->post['comment']) {
+            $comment = new FFComment();
+            $comment->aid = $a['id'];
+            $comment->name = $this->request->post['anonymous'] ? $this->request->ip : $this->request->post['name'];
+            $comment->body = $this->request->post['comment'];
+            $comment->time = $this->request->timestamp;
+            $comment->add();
+            $attendee->cid = $comment->id;
 
-      if ( $this->request->post[ 'comment' ] )
-      {
+            $comments = (string) $this->_getComments($a['id']);
+        }
 
-         $comment = new FFComment();
-         $comment->aid = $a[ 'id' ];
-         $comment->name = $this->request->post[ 'anonymous' ] ? $this->request->ip : $this->request->post[ 'name' ];
-         $comment->body = $this->request->post[ 'comment' ];
-         $comment->time = $this->request->timestamp;
-         $comment->add();
-         $attendee->cid = $comment->id;
+        $attendee->time = $this->request->timestamp;
+        $attendee->add();
 
-         $comments = (string) $this->_getComments( $a[ 'id' ] );
-      }
+        $chart = (string) $this->_getChart($a);
 
-      $attendee->time = $this->request->timestamp;
-      $attendee->add();
+        $url = 'https://www.houstonbbs.com/single/info?u=' . $attendee->id . '&c=' . $this->_getCode($attendee->id);
 
-      $chart = (string) $this->_getChart( $a );
+        $mailer = new Mailer();
 
-      $url = 'https://www.houstonbbs.com/single/info?u=' . $attendee->id . '&c=' . $this->_getCode( $attendee->id );
+        $mailer->to = $attendee->email;
+        $mailer->subject = $attendee->name . '，您的单身聚会报名已经收到';
+        $mailer->body = new Template('mail/attendee_final', ['name' => $attendee->name, 'url' => $url]);
+        $mailer->signature = '';
 
-      $mailer = new Mailer();
+        if (!$mailer->send()) {
+            $this->error('错误: 报名确认邮件发送失败');
+        }
 
-      $mailer->to = $attendee->email;
-      $mailer->subject = $attendee->name . '，您的单身聚会报名已经收到';
-      $mailer->body = new Template( 'mail/attendee_final', [ 'name' => $attendee->name, 'url' => $url ] );
-      $mailer->signature = '';
+        $this->ajax([
+            'message' => '报名成功，确认邮件已发送。<br /><a href="/single">返回首页</a>',
+            'chart' => $chart,
+            'comments' => $comments
+        ]);
 
-      if ( !$mailer->send() )
-      {
-         $this->error( '错误: 报名确认邮件发送失败' );
-      }
+        $this->_getIndependentCache('/single')->delete();
+    }
 
-      $this->ajax( [
-         'message' => '报名成功，确认邮件已发送。<br /><a href="/single">返回首页</a>',
-         'chart' => $chart,
-         'comments' => $comments
-      ] );
+    protected function _checkin()
+    {
+        $a = new FFAttendee($this->request->get['u'], 'name,email,sex,aid');
 
-      $this->_getIndependentCache( '/single' )->delete();
-   }
+        if (!$a->exists()) {
+            $this->error('user does not exist');
+        }
 
-   protected function _checkin()
-   {
-      $a = new FFAttendee( $this->request->get[ 'u' ], 'name,email,sex,aid' );
+        $a->checkin = $this->request->timestamp;
+        $a->update('checkin');
 
-      if ( !$a->exists() )
-      {
-         $this->error( 'user does not exist' );
-      }
+        $mailer = new Mailer();
+        $mailer->subject = '七夕单身聚会 通讯录';
 
-      $a->checkin = $this->request->timestamp;
-      $a->update( 'checkin' );
+        $url = 'https://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode($a->id);
+        $mailer->body = new Template('mail/attendees', ['name' => $a->name, 'url' => $url]);
+        $mailer->to = $a->email;
+        //$mailer->to = 'ikki3355@gmail.com';
+        $mailer->send();
 
-      $mailer = new Mailer();
-      $mailer->subject = '七夕单身聚会 通讯录';
+        $aTmp = new FFAttendee();
+        $aTmp->where('aid', $a->aid, '=');
+        $aTmp->where('sex', $a->sex, '=');
+        $aTmp->where('checkin', 0, '>');
 
-      $url = 'https://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode( $a->id );
-      $mailer->body = new Template( 'mail/attendees', [ 'name' => $a->name, 'url' => $url ] );
-      $mailer->to = $a->email;
-      //$mailer->to = 'ikki3355@gmail.com';
-      $mailer->send();
+        $this->ajax([
+            'sex' => $a->sex,
+            'checkinID' => $aTmp->getCount()
+        ]);
+    }
 
-      $aTmp = new FFAttendee();
-      $aTmp->where( 'aid', $a->aid, '=' );
-      $aTmp->where( 'sex', $a->sex, '=' );
-      $aTmp->where( 'checkin', 0, '>' );
-
-      $this->ajax( [
-         'sex' => $a->sex,
-         'checkinID' => $aTmp->getCount()
-      ] );
-   }
-
-   protected function error( $msg )
-   {
-      $this->ajax( [ 'error' => $msg ] );
-      throw new \Exception();
-   }
-
+    protected function error($msg)
+    {
+        $this->ajax(['error' => $msg]);
+        throw new \Exception();
+    }
 }
 
 //__END_OF_FILE__

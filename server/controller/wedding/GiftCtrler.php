@@ -19,25 +19,22 @@ use site\dbobject\Wedding as WeddingAttendee;
  */
 class GiftCtrler extends Wedding
 {
+    public function run()
+    {
+        Template::$theme = $this->config->theme['wedding2'];
+        // login first
+        if (!$this->session->loginStatus) {
+            $this->_displayLogin();
+            return;
+        }
 
-   public function run()
-   {
-      Template::$theme = $this->config->theme[ 'wedding2' ];
-      // login first
-      if ( !$this->session->loginStatus )
-      {
-         $this->_displayLogin();
-         return;
-      }
+        // logged in
+        $this->_var['navbar'] = new Template('navbar');
+        $a = new WeddingAttendee();
+        list($table_guests, $table_counts, $total) = $this->_getTableGuests($a->getList('name,tid,gift,value,guests,comment'), 'value');
 
-      // logged in      
-      $this->_var[ 'navbar' ] = new Template( 'navbar' );
-      $a = new WeddingAttendee();
-      list($table_guests, $table_counts, $total) = $this->_getTableGuests( $a->getList( 'name,tid,gift,value,guests,comment' ), 'value' );
-
-      $this->_var[ 'body' ] = new Template( 'gifts', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total ] );
-   }
-
+        $this->_var['body'] = new Template('gifts', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total]);
+    }
 }
 
 //__END_OF_FILE__
