@@ -38,7 +38,6 @@ class NodeCtrler extends YP
             $node->tid = $tid;
             $node->uid = $this->request->uid;
             $node->title = $this->request->post['title'];
-            // $node->body = $this->request->post['body'];
             $node->createTime = $this->request->timestamp;
             $node->status = 1;
             $node->add();
@@ -66,7 +65,7 @@ class NodeCtrler extends YP
 
             $tag = new Tag($tid, 'parent');
 
-            foreach (['latestYellowPages', '/yp/' . $tid, '/yp/' . $tag->parent] as $key) {
+            foreach (['latestYellowPages', '/yp/' . $tid, '/yp/' . $tag->parent, '/'] as $key) {
                 $this->_getIndependentCache($key)->delete();
             }
 
