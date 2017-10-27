@@ -2,8 +2,8 @@
   <div>
     <h3>宁静夏日  七夕单身聚会信息收集</h3>
   </div>
-  <form action="<?php print $action; ?>" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="uid" value="<?php print $uid; ?>">
+  <form action="<?= $action ?>" method="post" accept-charset="UTF-8">
+    <input type="hidden" name="uid" value="<?= $uid ?>">
     <div class='form-row'>
       <label>问题1</label>
       <div class='input'>

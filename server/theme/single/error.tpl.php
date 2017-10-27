@@ -1,5 +1,5 @@
-<?php foreach ( $errors as $e ): ?>
-  <div><?php print $e; ?></div>
-<?php endforeach; ?>
+<?php foreach ($errors as $e): ?>
+  <div><?= $e ?></div>
+<?php endforeach ?>
 
 

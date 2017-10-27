@@ -1,4 +1,4 @@
-<?php print $name; ?> 你好，
+<?= $name ?> 你好，
 
 谢谢来参加我们的新婚答谢宴！
 地点: 江南人家 (6348 Corporate Dr Houston TX 77036 黄金广场后面，Corporate路边一小广场)

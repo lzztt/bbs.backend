@@ -20,15 +20,15 @@
 <script>(typeof JSON === 'object') || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.0/json3.min.js"><\/script>')</script>
 <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
 
-<!--script src="/themes/<?php print $tpl_theme; ?>/js/min_1367737911.js"></script-->
+<!--script src="/themes/<?= $tpl_theme ?>/js/min_1367737911.js"></script-->
 
-<script src="/themes/<?php print $tpl_theme; ?>/js/jquery.cookie.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.bbcode.set.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/hoverIntent.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/superfish.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/coin-slider.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/jquery.MetaData.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/jquery.rating.js"></script>
-<script src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/jquery.cookie.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/jquery.upload-1.0.2.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/jquery.markitup.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/jquery.markitup.bbcode.set.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/hoverIntent.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/superfish.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/coin-slider.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/jquery.MetaData.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/jquery.rating.js"></script>
+<script src="/themes/<?= $tpl_theme ?>/js/main.js"></script>

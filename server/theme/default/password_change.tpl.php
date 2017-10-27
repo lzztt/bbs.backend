@@ -1,4 +1,4 @@
-<?php print $userLinks; ?>
+<?= $userLinks ?>
 <form accept-charset="UTF-8" autocomplete="off" method="post" action="/password/change" id="user-pass">
   <div class="form_element">
     <label>旧密码</label><input size="22" name="password_old" type="password" required="required">

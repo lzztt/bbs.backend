@@ -6,13 +6,13 @@
   <li><a href="/forum">论坛</a>
     <ul style="display: none;">
       <li><a href="/help">论坛帮助</a></li>
-      <?php print $forumMenu; ?>
+      <?= $forumMenu ?>
     </ul>
   </li>
   <li><a href="/yp" style="color:red;">黄页</a>
     <ul style="display: none;">
       <li><a href="/yp/join">加入黄页</a></li>
-      <?php print $ypMenu; ?>
+      <?= $ypMenu ?>
     </ul>
   </li>
 </ul>

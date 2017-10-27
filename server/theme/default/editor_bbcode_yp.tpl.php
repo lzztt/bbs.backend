@@ -1,35 +1,35 @@
-<div id="editor-div" data-urole='<?php print $urole_adm; ?>'>
-  <form enctype="multipart/form-data" id="editor-form" method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
+<div id="editor-div" data-urole='<?= $urole_adm ?>'>
+  <form enctype="multipart/form-data" id="editor-form" method="post" accept-charset="UTF-8" action="<?= $form_handler ?>">
     <div id="edit-title" class="form-item">
       <label for="title">标题:<span title="此项必填。" class="form-required">*</span></label>
-      <input type="text" class="form-text required" value="<?php print $title; ?>" size="60" id="title" name="title" maxlength="50" required="required" />
+      <input type="text" class="form-text required" value="<?= $title ?>" size="60" id="title" name="title" maxlength="50" required="required" />
     </div>
     <fieldset class="group-bcard">
       <legend>名片</legend>
       <div id="edit-address-wrapper" class="form-item">
         <label for="edit-address">地址:<span title="此项必填。" class="form-required">*</span></label>
-        <input type="text" class="form-text required text" value="<?php print $address; ?>" size="60" id="edit-address" name="address" required="required" />
+        <input type="text" class="form-text required text" value="<?= $address ?>" size="60" id="edit-address" name="address" required="required" />
       </div>
       <div id="edit-phone-wrapper" class="form-item">
         <label for="edit-phone">电话:<span title="此项必填。" class="form-required">*</span></label>
-        <input type="text" class="form-text required text" value="<?php print $phone; ?>" size="60" id="edit-phone" name="phone" required="required" />
+        <input type="text" class="form-text required text" value="<?= $phone ?>" size="60" id="edit-phone" name="phone" required="required" />
       </div>
       <div id="edit-fax-wrapper" class="form-item">
         <label for="edit-fax">传真:</label>
-        <input type="text" class="form-text text" value="<?php print $fax; ?>" size="60" id="edit-fax" name="fax" />
+        <input type="text" class="form-text text" value="<?= $fax ?>" size="60" id="edit-fax" name="fax" />
       </div>
       <div id="edit-email-wrapper" class="form-item">
         <label for="edit-email">电子邮箱:</label>
-        <input type="email" class="form-text text" value="<?php print $email; ?>" size="60" id="edit-email" name="email" />
+        <input type="email" class="form-text text" value="<?= $email ?>" size="60" id="edit-email" name="email" />
       </div>
       <div id="edit-website-wrapper" class="form-item">
         <label for="edit-website">网站:</label>
-        <input type="url" class="form-text text" value="<?php print $website; ?>" size="60" id="edit-website" name="website" />
+        <input type="url" class="form-text text" value="<?= $website ?>" size="60" id="edit-website" name="website" />
       </div>
     </fieldset>
     <div id="edit-body" class="form-item">
       <label for="BBCodeEditor">正文:</label>
-      <textarea rows="20" cols="60" name="body" id="BBCodeEditor" class="text-full form-textarea" required="required"><?php print $body; ?></textarea>
+      <textarea rows="20" cols="60" name="body" id="BBCodeEditor" class="text-full form-textarea" required="required"><?= $body ?></textarea>
 
       <div class="attachments">
         <fieldset class=" collapsible collapsed">
@@ -37,7 +37,7 @@
           <div class="fieldset-wrapper">
 
             <input type="hidden" name='update_file' value='1' />
-            <table id="ajax-file-list" <?php if (!\is_array($files) || \sizeof($files) < 1): ?> style="display:none;" <?php endif; ?> >
+            <table id="ajax-file-list" <?php if (!\is_array($files) || \sizeof($files) < 1): ?> style="display:none;" <?php endif ?> >
               <thead class="tableHeader-processed">
                 <tr><th>文字描述</th><th>BBCode</th><th>删除</th></tr>
               </thead>
@@ -45,13 +45,13 @@
               <tbody>
                 <?php if (\is_array($files)): ?>
                   <?php foreach ($files as $f): ?>
-                    <tr id="editfile-<?php print $f['id']; ?>">
-                      <td><input type="text" maxlength="30" name="files[<?php print $f['id']; ?>][name]" id="editfile-<?php print $f['id']; ?>-name" size="30" value="<?php print $f['name']; ?>" class="form-text"></td>
-                      <td style="padding: 0 10px;">[img]<?php print $f['path']; ?>[/img]<input type="text" style="display:none;" name="files[<?php print $f['id']; ?>][path]" value="<?php print $f['path']; ?>"></td>
-                      <td style="text-align: center;"><a href="/file/delete?id=<?php print $f['id']; ?>" class="ajax-file-delete" id="editfile-<?php print $f['id']; ?>-delete">X</a></td>
+                    <tr id="editfile-<?= $f['id'] ?>">
+                      <td><input type="text" maxlength="30" name="files[<?= $f['id'] ?>][name]" id="editfile-<?= $f['id'] ?>-name" size="30" value="<?= $f['name'] ?>" class="form-text"></td>
+                      <td style="padding: 0 10px;">[img]<?= $f['path'] ?>[/img]<input type="text" style="display:none;" name="files[<?= $f['id'] ?>][path]" value="<?= $f['path'] ?>"></td>
+                      <td style="text-align: center;"><a href="/file/delete?id=<?= $f['id'] ?>" class="ajax-file-delete" id="editfile-<?= $f['id'] ?>-delete">X</a></td>
                     </tr>
-                  <?php endforeach; ?>
-                <?php endif; ?>
+                  <?php endforeach ?>
+                <?php endif ?>
               </tbody>
             </table>
 

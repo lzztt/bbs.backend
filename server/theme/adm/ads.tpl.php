@@ -6,14 +6,14 @@
         <th>过期日期</th>
         <th>联系邮箱</th>
       </tr>
-      <?php foreach ( $ads as $i => $a ): ?>
-        <tr <?php echo ($i % 2 == 0) ? '' : 'class="alt"'; ?> >
-          <td><?php echo $a['name']; ?></td>
-          <td><?php echo $a['type_id'] == 1 ? '电子黄页' : '页顶广告'; ?></td>
-          <td><?php echo date( 'm/d/Y', $a['exp_time'] ); ?></td>
-          <td><?php echo $a['email'] ?></td>
+      <?php foreach ($ads as $i => $a): ?>
+        <tr <?= ($i % 2 == 0) ? '' : 'class="alt"' ?> >
+          <td><?= $a['name'] ?></td>
+          <td><?= $a['type_id'] == 1 ? '电子黄页' : '页顶广告' ?></td>
+          <td><?= date('m/d/Y', $a['exp_time']) ?></td>
+          <td><?= $a['email'] ?></td>
         </tr>
-      <?php endforeach; ?>
+      <?php endforeach ?>
     </tbody>
   </table>
   <br />
@@ -25,15 +25,15 @@
         <th>过期日期</th>
         <th>备注</th>
       </tr>
-      <?php foreach ( $payments as $i => $p ): ?>
-        <tr <?php echo ($i % 2 == 0) ? '' : 'class="alt"'; ?> >
-          <td><?php echo $p['name']; ?></td>
-          <td><?php echo '$' . $p['amount']; ?></td>
-          <td><?php echo date( 'm/d/Y', $p['pay_time'] ); ?></td>
-          <td><?php echo date( 'm/d/Y', $p['exp_time'] ); ?></td>
-          <td><?php echo $p['comment'] ?></td>
+      <?php foreach ($payments as $i => $p): ?>
+        <tr <?= ($i % 2 == 0) ? '' : 'class="alt"' ?> >
+          <td><?= $p['name'] ?></td>
+          <td><?= '$' . $p['amount'] ?></td>
+          <td><?= date('m/d/Y', $p['pay_time']) ?></td>
+          <td><?= date('m/d/Y', $p['exp_time']) ?></td>
+          <td><?= $p['comment'] ?></td>
         </tr>
-      <?php endforeach; ?>
+      <?php endforeach ?>
     </tbody>
   </table>
 </div>

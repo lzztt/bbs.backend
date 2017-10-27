@@ -9,4 +9,4 @@
     <button type="submit">Send</button>
   </fieldset>
 </form>
-<?php print $message; ?>
+<?= $message ?>

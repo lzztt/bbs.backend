@@ -9,20 +9,20 @@
       <th>时间</th>
       <th>签到</th>
     </tr>
-    <?php foreach ( $tables as $i => $guests ): ?>
-      <?php foreach ( $guests as $g ): ?>
+    <?php foreach ($tables as $i => $guests): ?>
+      <?php foreach ($guests as $g): ?>
         <tr>
-          <td><?php echo $g['name']; ?></td>
-          <td><?php echo $g['tid']; ?></td>
-          <td><?php echo $g['guests']; ?></td>
-          <td><?php echo $g['email']; ?></td>
-          <td><?php echo $g['phone']; ?></td>
-          <td><?php echo \date( 'm/d/Y', $g['time'] ); ?></td>
-          <td><?php echo $g['checkin'] ? \date( 'm/d/Y H:m:s', $g['checkin'] ) : ''; ?></td>
+          <td><?= $g['name'] ?></td>
+          <td><?= $g['tid'] ?></td>
+          <td><?= $g['guests'] ?></td>
+          <td><?= $g['email'] ?></td>
+          <td><?= $g['phone'] ?></td>
+          <td><?= \date('m/d/Y', $g['time']) ?></td>
+          <td><?= $g['checkin'] ? \date('m/d/Y H:m:s', $g['checkin']) : '' ?></td>
         </tr>
-      <?php endforeach; ?>
-        <tr style="background-color: gold;"><td colspan="10">人数：<?php print $counts[$i]; ?></td></tr>
-    <?php endforeach; ?>
-    <tr style="background-color: #A7C942;"><td colspan="10">总人数：<?php print $total; ?></td></tr>
+      <?php endforeach ?>
+        <tr style="background-color: gold;"><td colspan="10">人数：<?= $counts[$i] ?></td></tr>
+    <?php endforeach ?>
+    <tr style="background-color: #A7C942;"><td colspan="10">总人数：<?= $total ?></td></tr>
   </tbody>
 </table>

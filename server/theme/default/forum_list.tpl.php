@@ -1,14 +1,14 @@
 <div id="content">
-   <?php print $breadcrumb; ?>
+   <?= $breadcrumb ?>
    <div id="forum">
       <div class="forum-top-links"></div>
       <table id="forum-0" class="forum-table forums-overview">
         <tbody class="js_even_odd_parent">
-           <?php foreach ( $groups as $group_id => $tags ): ?>
+           <?php foreach ($groups as $group_id => $tags): ?>
               <tr id="forum-list-1" class="first-row container container-1" >
                 <td colspan="2" class="container">
                    <div class="forum-details">
-                      <div class="description"><?php print $tags[$group_id]['description']; ?></div>
+                      <div class="description"><?= $tags[$group_id]['description'] ?></div>
                    </div>
                 </td>
                 <td class="topics">主题</td>
@@ -16,27 +16,27 @@
                 <td class="last-reply">最新文章</td>
               </tr>
 
-              <?php foreach ( $tags[$group_id]['children'] as $board_id ): ?>
+              <?php foreach ($tags[$group_id]['children'] as $board_id): ?>
                 <tr id="forum-list-4" class="middle-row in-container-0">
                    <td class="forum-icon"> <img src="/themes/default/images/forum/forum-folder.png" alt="文件夹" title="文件夹" width="33" height="29" /> </td>
                    <td>
                       <div class="forum-details">
-                        <div class="name"><a href="/forum/<?php print $board_id; ?>"><?php print $tags[$board_id]['name']; ?></a></div>
-                        <div class="description"><?php print $tags[$board_id]['description']; ?></div>
+                        <div class="name"><a href="/forum/<?= $board_id ?>"><?= $tags[$board_id]['name'] ?></a></div>
+                        <div class="description"><?= $tags[$board_id]['description'] ?></div>
                       </div>
                    </td>
                    <td class="topics">
-                      <?php print $nodeInfo[$board_id]['node_count']; ?>
+                      <?= $nodeInfo[$board_id]['node_count'] ?>
                    </td>
                    <td class="topics">
-                      <?php print $nodeInfo[$board_id]['comment_count']; ?>
+                      <?= $nodeInfo[$board_id]['comment_count'] ?>
                    </td>
                    <td class="last-reply">
-                      <a href="/node/<?php print $nodeInfo[$board_id]['nid']; ?>"><?php print $nodeInfo[$board_id]['title']; ?></a><br />作者 <?php print $nodeInfo[$board_id]['username']; ?><br /><?php print $nodeInfo[$board_id]['create_time']; ?>
+                      <a href="/node/<?= $nodeInfo[$board_id]['nid'] ?>"><?= $nodeInfo[$board_id]['title'] ?></a><br />作者 <?= $nodeInfo[$board_id]['username'] ?><br /><?= $nodeInfo[$board_id]['create_time'] ?>
                    </td>
                 </tr>
-              <?php endforeach; ?>
-           <?php endforeach; ?>
+              <?php endforeach ?>
+           <?php endforeach ?>
 
         </tbody>
       </table>

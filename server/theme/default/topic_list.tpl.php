@@ -1,22 +1,22 @@
 <div id="content">
    <div id="content-header">
-      <?php print $breadcrumb; ?>
+      <?= $breadcrumb ?>
    </div> <!-- /#content-header -->
 
    <div id="content-area">
       <div id="forum">
-        <div class="forum-description"><?php print $boardDescription; ?></div>
+        <div class="forum-description"><?= $boardDescription ?></div>
         <div class="forum-top-links">
            <ul class="links forum-links">
-              <li data-urole='<?php print $urole_user; ?>'><a rel="nofollow" class="bb-create-node button" href="/forum/<?php print $tid; ?>/node">发表新话题</a></li>
-              <li data-urole='<?php print $urole_guest; ?>'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题</li>
+              <li data-urole='<?= $urole_user ?>'><a rel="nofollow" class="bb-create-node button" href="/forum/<?= $tid ?>/node">发表新话题</a></li>
+              <li data-urole='<?= $urole_guest ?>'>您需要先<a rel="nofollow" href="/user">登录</a>或<a href="/user/register">注册</a>才能发表新话题</li>
            </ul>
         </div>
 
-        <?php if ( isset( $pager ) ): ?>
-           <div class="item-list"><ul class="pager"><?php print $pager; ?></ul></div>
-        <?php endif; ?>
-        <?php if ( isset( $nodes ) ): ?>
+        <?php if (isset($pager)): ?>
+           <div class="item-list"><ul class="pager"><?= $pager ?></ul></div>
+        <?php endif ?>
+        <?php if (isset($nodes)): ?>
            <table id="forum-topic-4" class="forum-topics">
               <thead>
                 <tr>
@@ -30,42 +30,42 @@
               </thead>
 
               <tbody class='js_even_odd_parent' id="ajax_node_list">
-                <?php foreach ( $nodes as $node ): ?>
-                   <tr class="<?php print ($node['weight'] >= 2) ? ' sticky-topic' : ''; ?>">
+                <?php foreach ($nodes as $node): ?>
+                   <tr class="<?= ($node['weight'] >= 2) ? ' sticky-topic' : '' ?>">
                       <td class="icon"><div class="forum-icon">
 
-                           <img src="/themes/default/images/forum/topic-<?php print ($node['weight'] >= 2) ? 'sticky' : 'default' ?>.png" alt="" title="" width="22" height="22" />
+                           <img src="/themes/default/images/forum/topic-<?= ($node['weight'] >= 2) ? 'sticky' : 'default' ?>.png" alt="" title="" width="22" height="22" />
                         </div></td>
 
                       <td class="title">
-                        <?php print ($node['weight'] >= 2) ? '置顶: ' : '' ?><a href="/node/<?php print $node['id']; ?>"><?php print $node['title']; ?></a>
+                        <?= ($node['weight'] >= 2) ? '置顶: ' : '' ?><a href="/node/<?= $node['id'] ?>"><?= $node['title'] ?></a>
                       </td>
 
                       <td class="replies">
-                        <div class="num num-replies"><?php print $node['comment_count']; ?></div>
+                        <div class="num num-replies"><?= $node['comment_count'] ?></div>
                       </td>
 
                       <td class="replies">
-                        <div class="num num-view" id="ajax_viewCount_<?php print $node['id']; ?>"></div>
+                        <div class="num num-view" id="ajax_viewCount_<?= $node['id'] ?>"></div>
                       </td>
 
 
                       <td class="created">
-                        作者 <?php print $node['creater_name']; ?><br /><?php print ($node['create_time']); ?></td>
+                        作者 <?= $node['creater_name'] ?><br /><?= ($node['create_time']) ?></td>
 
                       <td class="last-reply">
-                        <?php if ( $node['comment_count'] > 0 ): ?>
-                           作者 <?php print $node['commenter_name']; ?><br /><?php print ($node['comment_time']); ?>
-                        <?php endif; ?>
+                        <?php if ($node['comment_count'] > 0): ?>
+                           作者 <?= $node['commenter_name'] ?><br /><?= ($node['comment_time']) ?>
+                        <?php endif ?>
                       </td>
                    </tr>
-                <?php endforeach; ?>
+                <?php endforeach ?>
 
               </tbody>
            </table>
            <script type="text/javascript">
               $(document).ready(function() {
-                $.getJSON('<?php print $ajaxURI; ?>', function(data) {
+                $.getJSON('<?= $ajaxURI ?>', function(data) {
                    var stat = $('#ajax_node_list');
                    for (var prop in data)
                    {
@@ -74,9 +74,9 @@
                 });
               });
            </script>
-        <?php endif; ?>
+        <?php endif ?>
 
-        <?php print $editor; ?>
+        <?= $editor ?>
 
         <div class="forum-topic-legend forum-smalltext clear-block">
            <div class="legend-group">
@@ -115,9 +115,9 @@
            </div>
         </div>
 
-        <?php if ( isset( $pager ) ): ?>
-           <div class="item-list"><ul class="pager"><?php print $pager; ?></ul></div>
-           <?php endif; ?>
+        <?php if (isset($pager)): ?>
+           <div class="item-list"><ul class="pager"><?= $pager ?></ul></div>
+           <?php endif ?>
       </div>
    </div>
 

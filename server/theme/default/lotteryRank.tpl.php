@@ -10,7 +10,7 @@
 
   <h1>圣诞-春节 节日抽奖</h1>
 
-  <div class="headerbox">共有 <span class="highlight"><?php print $userCount; ?></span> 位用户参与，抽奖 <span class="highlight"><?php print $recordCount; ?></span> 次</div>
+  <div class="headerbox">共有 <span class="highlight"><?= $userCount ?></span> 位用户参与，抽奖 <span class="highlight"><?= $recordCount ?></span> 次</div>
 
   <table>
     <thead>
@@ -29,17 +29,17 @@
     <tbody>
       <?php foreach ($rank as $k => $r): ?>
         <tr>
-          <td><?php print $k + 1; ?></td>
-          <td><?php print '<a href="/user/' . $r['uid'] . '">' . $r['username'] . '</a>'; ?></td>
-          <td><?php print sprintf('%8.3f', $r['points']); ?></td>
-          <td><?php print '<a href="/lottery/rank/record/' . $r['uid'] . '">查看</a>'; ?></td>
-          <td><?php print ($r['points1'] > 0.0001) ? sprintf('%8.3f', $r['points1']) : ''; ?></td>
-          <td><?php print ($r['points2'] > 0.0001) ? sprintf('%8.3f', $r['points2']) : ''; ?></td>
-          <td><?php print ($r['points3'] > 0.0001) ? sprintf('%8.3f', $r['points3']) : ''; ?></td>
-          <td><?php print ($r['points4'] > 0.0001) ? sprintf('%8.3f', $r['points4']) : ''; ?></td>
-          <td><?php print ($r['points5'] > 0.0001) ? sprintf('%8.3f', $r['points5']) : ''; ?></td>
+          <td><?= $k + 1 ?></td>
+          <td><?= '<a href="/user/' . $r['uid'] . '">' . $r['username'] . '</a>' ?></td>
+          <td><?= sprintf('%8.3f', $r['points']) ?></td>
+          <td><?= '<a href="/lottery/rank/record/' . $r['uid'] . '">查看</a>' ?></td>
+          <td><?= ($r['points1'] > 0.0001) ? sprintf('%8.3f', $r['points1']) : '' ?></td>
+          <td><?= ($r['points2'] > 0.0001) ? sprintf('%8.3f', $r['points2']) : '' ?></td>
+          <td><?= ($r['points3'] > 0.0001) ? sprintf('%8.3f', $r['points3']) : '' ?></td>
+          <td><?= ($r['points4'] > 0.0001) ? sprintf('%8.3f', $r['points4']) : '' ?></td>
+          <td><?= ($r['points5'] > 0.0001) ? sprintf('%8.3f', $r['points5']) : '' ?></td>
         </tr>
-      <?php endforeach; ?>
+      <?php endforeach ?>
     </tbody>
   </table>
 

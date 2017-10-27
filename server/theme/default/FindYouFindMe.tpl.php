@@ -47,18 +47,18 @@
       <div id="page">
 
         <div id="header">
-          <?php print $header; ?>
+          <?= $header ?>
         </div>
 
         <div class="spacer"></div>
 
         <div id="content">
-          <?php print $content; ?>
+          <?= $content ?>
         </div>
       </div>
     </div>
     <div id="footer">
-      <?php print $footer; ?>
+      <?= $footer ?>
     </div>
 
 
