@@ -9,15 +9,15 @@
            <th>留言</th>
         </tr>
         <?php foreach ($attendees as $i => $a): ?>
-           <tr <?php print ($i % 2 == 0) ? '' : 'class="alt"'; ?> >
-              <td><?php print $i + 1; ?></td>
-              <td><?php print $a['name']; ?></td>
-              <td><?php print $a['sex'] ? '男' : '女'; ?></td>
-              <td><?php print $a['email']; ?></td>
-              <td><?php print date('m/d H:i', $a['time']); ?></td>
-              <td style="width: 40%"><?php print nl2br($a['body']); ?></td>
+           <tr <?= ($i % 2 == 0) ? '' : 'class="alt"' ?> >
+              <td><?= $i + 1 ?></td>
+              <td><?= $a['name'] ?></td>
+              <td><?= $a['sex'] ? '男' : '女' ?></td>
+              <td><?= $a['email'] ?></td>
+              <td><?= date('m/d H:i', $a['time']) ?></td>
+              <td style="width: 40%"><?= nl2br($a['body']) ?></td>
            </tr>
-        <?php endforeach; ?>
+        <?php endforeach ?>
       </tbody>
    </table>
 <br />

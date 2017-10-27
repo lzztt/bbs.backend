@@ -18,13 +18,13 @@
   <div style="margin: 10px 0;"><a class="bigbutton" href="/lottery/try/run">点击抽奖</a></div>
 
 
-  <?php print '奖券平均值 : ' . sprintf('%8.3f', sizeof($lottery) > 0 ? (array_sum($lottery) / sizeof($lottery)) : 0) . ' (抽奖次数 : ' . @sizeof($lottery) . ' 次)<br />'; ?>
+  <?= '奖券平均值 : ' . sprintf('%8.3f', sizeof($lottery) > 0 ? (array_sum($lottery) / sizeof($lottery)) : 0) . ' (抽奖次数 : ' . @sizeof($lottery) . ' 次)<br />' ?>
 
   <br />抽奖记录 (<a href="/lottery/try/clear">清空</a>) :
   <ul>
     <?php foreach ($lottery as $k => $v): ?>
-      <li><?php print '[' . date('m/d/Y H:i:s', $k) . '] : ' . $v; ?> </li>
-    <?php endforeach; ?>
+      <li><?= '[' . date('m/d/Y H:i:s', $k) . '] : ' . $v ?> </li>
+    <?php endforeach ?>
   </ul>
 
 </div>

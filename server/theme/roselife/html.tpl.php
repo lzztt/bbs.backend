@@ -18,39 +18,39 @@
     </script>
     <script>(typeof JSON === 'object') || document.write('<script defer src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
 
-    <?php if ( $tpl_debug ): ?>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.cookie.js"></script>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.imageslider.js"></script>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.hoverIntent.js"></script>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.superfish.js"></script>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.js"></script>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.markitup.bbcode.set.js"></script>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/jquery.upload-1.0.2.js"></script>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/js/main.js"></script>
+    <?php if ($tpl_debug): ?>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.cookie.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.imageslider.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.hoverIntent.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.superfish.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.markitup.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.markitup.bbcode.set.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.upload-1.0.2.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/main.js"></script>
     <?php else: ?>
-      <script defer src="/themes/<?php print $tpl_theme; ?>/min/<?php print $min_version; ?>.min.js"></script>
-    <?php endif; ?>
+      <script defer src="/themes/<?= $tpl_theme ?>/min/<?= $min_version ?>.min.js"></script>
+    <?php endif ?>
     <!--END JS-->
 
     <!--BEGIN CSS-->
-    <?php if ( $tpl_debug ): ?>
-      <link href="/themes/<?php print $tpl_theme; ?>/css/normalize.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.style.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/markitup.bbcode.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/nav_xs.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/nav_sm.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/main_xs.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/main_sm.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/main_md.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/main_lg.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?php print $tpl_theme; ?>/css/fontello.css" rel="stylesheet" type="text/css">
+    <?php if ($tpl_debug): ?>
+      <link href="/themes/<?= $tpl_theme ?>/css/normalize.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/markitup.style.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/markitup.bbcode.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/nav_xs.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/nav_sm.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/main_xs.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/main_sm.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/main_md.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/main_lg.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/fontello.css" rel="stylesheet" type="text/css">
     <?php else: ?>
-      <link href="/themes/<?php print $tpl_theme; ?>/min/<?php print $min_version; ?>.min.css" rel="stylesheet" type="text/css">
-    <?php endif; ?>
+      <link href="/themes/<?= $tpl_theme ?>/min/<?= $min_version ?>.min.css" rel="stylesheet" type="text/css">
+    <?php endif ?>
     <!--END CSS-->
 
-    <title><?php print $head_title; ?></title>
-    <meta name='description' content='<?php print $head_description; ?>'>
+    <title><?= $head_title ?></title>
+    <meta name='description' content='<?= $head_description ?>'>
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({
@@ -67,7 +67,7 @@
         </div>
         <div id="logo_div">
           <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-          <span><?php print $sitename; ?></span>
+          <span><?= $sitename ?></span>
         </div>
         <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
               href="http://hubs.ly/H08jRyK0" target="_blank"><img src="/data/ad/lendbuzz.gif"></a><a
@@ -85,9 +85,9 @@
           <li class='v_guest'><a href="/app/user/forget_username">忘记用户名</a></li>
           <li class='v_guest'><a href="/app/user/register">注册帐号</a></li>
         </ul>
-        <?php print $page_navbar; ?>
+        <?= $page_navbar ?>
       </nav>
-      <section id='page_body'><?php print $content; ?></section>
+      <section id='page_body'><?= $content ?></section>
       <footer id='page_footer'>
         <div id='copyright'>网站管理员<a href="mailto:admin@houstonbbs.com">admin@houstonbbs.com</a> | © 2009-2017 HoustonBBS 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:ad@houstonbbs.com?subject=想在HoustonBBS上做个广告">广告洽谈</a></div>
       </footer>
@@ -96,7 +96,7 @@
     <div id="popupbox"></div>
     <a id="goTop" class="button">返回顶部</a>
   </body>
-  <?php if ( !$debug ): ?>
+  <?php if (!$debug): ?>
     <script>
       (function(i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r;
@@ -113,5 +113,5 @@
       ga('create', 'UA-36671672-1', 'auto');
       ga('send', 'pageview');
     </script>
-  <?php endif; ?>
+  <?php endif ?>
 </html>

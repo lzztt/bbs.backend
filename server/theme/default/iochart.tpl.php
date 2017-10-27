@@ -80,7 +80,7 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 
       // Create random stock values, just like it works in reality.
       data.addRows([
-       <?php include '/tmp/tps_04-07_pick.stat'; ?>
+       <?php include '/tmp/tps_04-07_pick.stat' ?>
       ]);
 
       dashboard.bind(control, chart);

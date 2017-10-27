@@ -1,8 +1,8 @@
-<?php print $username; ?> 您好，
+<?= $username ?> 您好，
 
 周末愉快！
 
-春天来了，天气变好了，<?php print SITENAME; ?> 近期也做了系统升级，可以点击 http://www.houstonbbs.com 体验
+春天来了，天气变好了，<?= SITENAME ?> 近期也做了系统升级，可以点击 http://www.houstonbbs.com 体验
 
 网站近况通报如下:
 
@@ -24,6 +24,6 @@
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-您收到此信息是由于您注册了<?php print SITENAME; ?>会员，
-如果您有任何问题，或者以后不想再收到来自 <?php print SITENAME; ?> 的此类邮件，都可以与网站管理员联系 admin@houstonbbs.com
+您收到此信息是由于您注册了<?= SITENAME ?>会员，
+如果您有任何问题，或者以后不想再收到来自 <?= SITENAME ?> 的此类邮件，都可以与网站管理员联系 admin@houstonbbs.com
 (You received this message because you have registered as a member at HoustonBBS.com. If you want to unsubscribe this message, please send an email to admin@houstonbbs.com)

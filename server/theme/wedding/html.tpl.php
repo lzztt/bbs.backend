@@ -4,8 +4,8 @@
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
 
-    <?php include $tpl_path . '/head_js.tpl.php'; ?>
-    <?php include $tpl_path . '/head_css.tpl.php'; ?>
+    <?php include $tpl_path . '/head_js.tpl.php' ?>
+    <?php include $tpl_path . '/head_css.tpl.php' ?>
 
     <title>Alex & Mika Wedding</title>
 
@@ -23,7 +23,7 @@
         </ul>
         <button id="bgswitch" type="button">停止图片轮播</button>
         <div id="content">
-          <?php echo $body; ?>
+          <?= $body ?>
         </div>
       </div>
     </div>
