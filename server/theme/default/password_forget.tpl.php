@@ -1,4 +1,4 @@
-<?php print $userLinks; ?>
+<?= $userLinks ?>
 <form accept-charset="UTF-8" autocomplete="off" method="post" action="/user/password" id="user-pass">
   <div class="form_element">
     <label data-help="输入您的用户名">用户名</label><input size="22" name="username" type="text" required="required" />

@@ -2,12 +2,12 @@
 <html lang='zh' dir='ltr'>
   <head>
     <meta charset='UTF-8' />
-    <meta name='description' content='<?php echo $head_description; ?>' />
+    <meta name='description' content='<?= $head_description ?>' />
 
-    <?php include $tpl_path . '/head_js.tpl.php'; ?>
-    <?php include $tpl_path . '/head_css.tpl.php'; ?>
+    <?php include $tpl_path . '/head_js.tpl.php' ?>
+    <?php include $tpl_path . '/head_css.tpl.php' ?>
 
-    <title><?php echo $head_title; ?></title>
+    <title><?= $head_title ?></title>
     <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
     <link rel='apple-touch-icon' sizes='72x72' href='/apple-touch-icon-72x72.png' />
     <link rel='apple-touch-icon' sizes='114x114' href='/apple-touch-icon-114x114.png' />
@@ -16,7 +16,7 @@
     <div id='page_overlay'><div id='popup'></div><div id='popup_bg'></div></div>
     <div id='page_header'>
       <div id='page_header_inner'>
-        <div data-umode='<?php echo $umode_pc; ?>' style='position:relative; height:150px'>
+        <div data-umode='<?= $umode_pc ?>' style='position:relative; height:150px'>
           <div id='topmenu'>
             <form action='http://groups.google.com/group/houstonbbs/boxsubscribe'>
               <input type='hidden' name='hl' value='en'>
@@ -33,17 +33,17 @@
             <div id='site-slogan'><span style='color: #32CD32;'>We share</span><span style='color: #A0522D;'> - </span><span style='color: #1E90FF;'>We care</span><span style='color: #A0522D;'> - </span><span style='color: #B22222;'>We inspire</span></div>
           </div>
         </div>
-        <?php echo $page_navbar; ?>
+        <?= $page_navbar ?>
         <div style="clear:both;"></div>
       </div>
     </div>
     <div id='page_body'>
       <div id='page_body_inner'>
-        <?php echo $content; ?>
+        <?= $content ?>
       </div>
       <div style="clear:both;"></div>
     </div>
-    <div id='page_navbar_mobile' data-umode='<?php echo $umode_mobile; ?>'><div>页面结束，以下为站内快捷链接：</div></div>
+    <div id='page_navbar_mobile' data-umode='<?= $umode_mobile ?>'><div>页面结束，以下为站内快捷链接：</div></div>
     <div id='page_footer'>
       <div id='page_footer_inner'>
         <div id='copyright'>Contact the Web Administrator at
@@ -52,6 +52,6 @@
       </div>
       <div style="clear:both;"></div>
     </div>
-    <div id='page_data' style='display:none;'><?php echo $page_data; ?></div>
+    <div id='page_data' style='display:none;'><?= $page_data ?></div>
   </body>
 </html>

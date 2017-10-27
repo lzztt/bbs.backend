@@ -1,13 +1,13 @@
-<form enctype="multipart/form-data" id="bbcode_editor" class='v_user' method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
-  <fieldset class="node_title"<?php if ( !$displayTitle ): ?> style='display: none;'<?php endif; ?>>
+<form enctype="multipart/form-data" id="bbcode_editor" class='v_user' method="post" accept-charset="UTF-8" action="<?= $form_handler ?>">
+  <fieldset class="node_title"<?php if (!$displayTitle): ?> style='display: none;'<?php endif ?>>
     <label class='label' for="title">标题</label>
-    <input type="text" name="title" value="<?php print $title; ?>" placeholder="最少5个字母或3个汉字">
+    <input type="text" name="title" value="<?= $title ?>" placeholder="最少5个字母或3个汉字">
   </fieldset>
   <fieldset>
     <label class='label' for="body">正文</label>
     <textarea name="body" required placeholder="最少5个字母或3个汉字"></textarea>
   </fieldset>
-  <?php if ( $hasFile ): ?>
+  <?php if ($hasFile): ?>
     <fieldset>
       <label class='label'>文件附件</label>
       <input type="hidden" name='update_file' value='1'>
@@ -21,6 +21,6 @@
         <div class="description">分辨率大于 <em>600x960</em> 的图片将被调整尺寸。 文件最大上传大小为 <em>1 MB</em> 。只允许以下上传文件格式：<em>jpg jpeg gif png</em> 。 </div>
       </div>
     </fieldset>
-  <?php endif; ?>
+  <?php endif ?>
   <fieldset><button type="submit">发布</button></fieldset>
 </form>

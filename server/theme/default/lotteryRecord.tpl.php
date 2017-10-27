@@ -11,10 +11,10 @@
   <h1>圣诞-春节 节日抽奖</h1>
 
   <div class="headerbox">
-    <span class="highlight"><?php print $username; ?></span> 的抽奖记录
+    <span class="highlight"><?= $username ?></span> 的抽奖记录
   </div>
 
-  <?php print '综合分数 : ' . sprintf('%8.3f', $average) . '<br />奖券平均值 : ' . sprintf('%8.3f', $aPoints[sizeof($aPoints)]) . ' (抽奖次数 : ' . sizeof($results[sizeof($results)]) . ' 次)<br />'; ?>
+  <?= '综合分数 : ' . sprintf('%8.3f', $average) . '<br />奖券平均值 : ' . sprintf('%8.3f', $aPoints[sizeof($aPoints)]) . ' (抽奖次数 : ' . sizeof($results[sizeof($results)]) . ' 次)<br />' ?>
 
   <br />抽奖记录 :
   <table>
@@ -22,15 +22,15 @@
       <?php foreach ($results as $round => $roundResults): ?>
         <tr>
           <th>时间</th>
-          <th>分数 <?php print '(' . sprintf('%4.1f', $aPoints[$round]) . ')'; ?></th>
+          <th>分数 <?= '(' . sprintf('%4.1f', $aPoints[$round]) . ')' ?></th>
         </tr>
         <?php foreach ($roundResults as $r): ?>
           <tr>
-            <td><?php print date('m/d/Y H:i:s', $r['time']); ?> </td>
-            <td><?php print $r['points']; ?> </td>
+            <td><?= date('m/d/Y H:i:s', $r['time']) ?> </td>
+            <td><?= $r['points'] ?> </td>
           </tr>
-        <?php endforeach; ?>
-      <?php endforeach; ?>
+        <?php endforeach ?>
+      <?php endforeach ?>
     </tbody>
   </table>
 

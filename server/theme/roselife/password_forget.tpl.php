@@ -1,4 +1,4 @@
-<?php print $userLinks; ?>
+<?= $userLinks ?>
 <form accept-charset="UTF-8" autocomplete="off" method="post">
   <fieldset>
     <label class='label' data-help="输入您的用户名">用户名</label><input name="username" type="text" required  autofocus>

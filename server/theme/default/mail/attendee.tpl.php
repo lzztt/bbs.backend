@@ -1,8 +1,8 @@
-<?php print $name; ?> 你好，你的活动报名已收到
+<?= $name ?> 你好，你的活动报名已收到
 
-目前已有 <?php print $male; ?>个男生，<?php print $female; ?>个女生报名参加活动
+目前已有 <?= $male ?>个男生，<?= $female ?>个女生报名参加活动
 
-地点: 在Westheimer上的苏丝黄 ( Suzie Wong's World )
+地点: 在Westheimer上的苏丝黄 (Suzie Wong's World)
 12151 Westheimer Rd, Houston, TX 77077
 
 活动内容:

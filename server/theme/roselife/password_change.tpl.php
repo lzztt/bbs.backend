@@ -1,4 +1,4 @@
-<?php print $userLinks; ?>
+<?= $userLinks ?>
 <form accept-charset="UTF-8" autocomplete="off" method="post">
   <fieldset>
     <label class="label oldpassword">旧密码</label><input name="password_old" type="password" required autofocus>

@@ -1,20 +1,20 @@
 <div style="background-color: #76a3f0;">
-  <?php foreach ( $groups as $i => $attendees ): ?>
-    <div><h3><?php print $i ? '男生' : '女生'  ?></h3>
-      <?php foreach ( $attendees as $i => $a ): ?>
+  <?php foreach ($groups as $i => $attendees): ?>
+    <div><h3><?= $i ? '男生' : '女生'  ?></h3>
+      <?php foreach ($attendees as $i => $a): ?>
         <div class="even_odd">
-          <div class="atd_name"><span class="atd_no"><?php print $i + 1; ?></span><?php print $a['name']; ?></div>
-          <div class="atd_email"><?php print $a['email']; ?></div>
-          <?php if ( $a['info'] ): ?>
-            <div class="atd_info"><?php print \nl2br( $a['info'] ); ?></div>
-          <?php endif; ?>
-          <?php if ( $a['questions'] ): ?>
-            <div class="atd_questions"><?php print \implode( '<br />', $a['questions'] ); ?></div>
-          <?php endif; ?>
+          <div class="atd_name"><span class="atd_no"><?= $i + 1 ?></span><?= $a['name'] ?></div>
+          <div class="atd_email"><?= $a['email'] ?></div>
+          <?php if ($a['info']): ?>
+            <div class="atd_info"><?= \nl2br($a['info']) ?></div>
+          <?php endif ?>
+          <?php if ($a['questions']): ?>
+            <div class="atd_questions"><?= \implode('<br />', $a['questions']) ?></div>
+          <?php endif ?>
         </div>
-      <?php endforeach; ?>
+      <?php endforeach ?>
     </div>
-  <?php endforeach; ?>
+  <?php endforeach ?>
 </div>
 
 <style type="text/css">
