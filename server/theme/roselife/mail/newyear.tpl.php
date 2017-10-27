@@ -6,9 +6,9 @@
   </head>
   <body>
    <article>
-    Hi <?php print $username; ?>，<br>
+    Hi <?= $username ?>，<br>
     <br>
-    新的一年又到了，感谢您<?php print $time; ?>对缤纷<?php print $city; ?>网的支持和关注。<br><br>
+    新的一年又到了，感谢您<?= $time ?>对缤纷<?= $city ?>网的支持和关注。<br><br>
     祝您和您的家人 新年快乐，鸡年吉祥！<br>
     在新的一年里 身体健康，心想事成！<br>
     <br>

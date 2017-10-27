@@ -1,11 +1,11 @@
 <div>
-  <h3><?php print \date( 'n月j日 ', $activity['time'] ) . $activity['name']; ?> 报名</h3>
+  <h3><?= \date('n月j日 ', $activity['time']) . $activity['name'] ?> 报名</h3>
   报名后，现场check in 可得到 Email contact list.
-  <a href="/node/<?php print $activity['nid']; ?>">活动讨论贴</a><br>
+  <a href="/node/<?= $activity['nid'] ?>">活动讨论贴</a><br>
   以下带星号(<span class="form_required" title="此项必填。">*</span>)选项为必填选项，报名提交后会收到email确认活动信息
 </div>
 <form id="ajax-attend" action="/single/ajax/attend" method="post" accept-charset="UTF-8">
-  <input type="hidden" name="aid" value="<?php print $activity['id']; ?>">
+  <input type="hidden" name="aid" value="<?= $activity['id'] ?>">
   <div class='form-row'>
     <label>姓名 / 昵称 *</label>
     <div class='input'>

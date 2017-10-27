@@ -7,8 +7,8 @@
   <div><a href="/help#activity">如何发布活动</a></div>
 
   <?php if (isset($pager)): ?>
-   <div class="item-list"><ul class="pager"><?php print $pager; ?></ul></div>
-  <?php endif; ?>
+   <div class="item-list"><ul class="pager"><?= $pager ?></ul></div>
+  <?php endif ?>
 
-  <ul class='activity_list'><?php print $data; ?></ul>
+  <ul class='activity_list'><?= $data ?></ul>
 </div>

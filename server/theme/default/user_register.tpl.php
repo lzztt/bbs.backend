@@ -1,4 +1,4 @@
-<?php print $userLinks; ?>
+<?= $userLinks ?>
 <form accept-charset="UTF-8" autocomplete="off" method="post" action="/user/register">
   <section>
     <div class="form_element">
@@ -14,8 +14,8 @@
   <section>
     <div class="form_element">
       <label>右边图片的内容是什么？</label><input size="22" name="captcha" type="text" required="required">
-      <img id="captchaImage" title="图形验证" alt="图形验证未能正确显示，请刷新" src="<?php print $captcha; ?>">
-      <a onclick="document.getElementById('captchaImage').setAttribute('src', '<?php print $captcha; ?>/' + Math.random().toString().slice(2));
+      <img id="captchaImage" title="图形验证" alt="图形验证未能正确显示，请刷新" src="<?= $captcha ?>">
+      <a onclick="document.getElementById('captchaImage').setAttribute('src', '<?= $captcha ?>/' + Math.random().toString().slice(2));
           event.preventDefault();" href="#">看不清，换一张</a>
     </div>
   </section>

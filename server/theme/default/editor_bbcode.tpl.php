@@ -1,9 +1,9 @@
-<div id="editor-div" data-urole='<?php print $urole_user; ?>'>
-  <form enctype="multipart/form-data" id="editor-form" method="post" accept-charset="UTF-8" action="<?php print $form_handler; ?>">
-   <span id='node-title' style='display: none'><?php print $title; ?></span>
-   <div id="edit-title" class="form-item" style="display:<?php print ($show_title ? 'block' : 'none'); ?>;">
+<div id="editor-div" data-urole='<?= $urole_user ?>'>
+  <form enctype="multipart/form-data" id="editor-form" method="post" accept-charset="UTF-8" action="<?= $form_handler ?>">
+   <span id='node-title' style='display: none'><?= $title ?></span>
+   <div id="edit-title" class="form-item" style="display:<?= ($show_title ? 'block' : 'none') ?>;">
     <label for="title">标题:<span title="此项必填。" class="form-required">*</span></label>
-    <input type="text" class="form-text required" value="<?php print $title; ?>" size="60" id="title" name="title" maxlength="50" placeholder="最少5个字母或3个汉字" />
+    <input type="text" class="form-text required" value="<?= $title ?>" size="60" id="title" name="title" maxlength="50" placeholder="最少5个字母或3个汉字" />
    </div>
    <div id="edit-body" class="form-item">
     <label for="BBCodeEditor">正文:<span title="此项必填。" class="form-required">*</span></label>

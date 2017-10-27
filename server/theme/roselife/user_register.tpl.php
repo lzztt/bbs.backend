@@ -1,4 +1,4 @@
-<?php print $userLinks; ?>
+<?= $userLinks ?>
 <form accept-charset="UTF-8" method="post">
   <fieldset>
     <label class='label' data-help="允许空格，不允许&quot;.&quot;、“-”、“_”以外的其他符号">用户名</label><input name="username" type="text" required autofocus>
@@ -11,8 +11,8 @@
   </fieldset>
   <fieldset>
     <label class='label'>右边图片的内容是什么？</label><input name="captcha" type="text" required>
-    <img id="captchaImage" title="图形验证" alt="图形验证未能正确显示，请刷新" src="<?php print $captcha; ?>">
-    <a onclick="document.getElementById('captchaImage').setAttribute('src', '<?php print $captcha; ?>' + Math.random().toString().slice(2));
+    <img id="captchaImage" title="图形验证" alt="图形验证未能正确显示，请刷新" src="<?= $captcha ?>">
+    <a onclick="document.getElementById('captchaImage').setAttribute('src', '<?= $captcha ?>' + Math.random().toString().slice(2));
         event.preventDefault();" href="#">看不清，换一张</a>
   </fieldset>
   <fieldset><a href="/node/23200">网站使用规范</a><br><a href="/term">免责声明</a></fieldset>

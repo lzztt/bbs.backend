@@ -1,3 +1,3 @@
-<div id="activity"><?php print $activity; ?></div>
-<div id="statistics"><?php print $statistics; ?></div>
-<div id="comments"><?php print $comments; ?></div>
+<div id="activity"><?= $activity ?></div>
+<div id="statistics"><?= $statistics ?></div>
+<div id="comments"><?= $comments ?></div>
