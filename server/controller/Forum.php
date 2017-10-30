@@ -9,7 +9,7 @@ abstract class Forum extends Controller
 {
     const NODES_PER_PAGE = 30;
 
-    protected function _getTagObj()
+    protected function getTagObj()
     {
         if ($this->id) {
             $tid = $this->id;
@@ -22,7 +22,7 @@ abstract class Forum extends Controller
                 }
 
                 $tagRoot = $tag->getTagRoot();
-                if (!\array_key_exists(self::$_city->ForumRootID, $tagRoot)) {
+                if (!array_key_exists(self::$city->ForumRootID, $tagRoot)) {
                     $this->pageNotFound();
                 }
             } else {
@@ -30,7 +30,7 @@ abstract class Forum extends Controller
             }
         } else {
             // main forum
-            $tag = new Tag(self::$_city->ForumRootID, null);
+            $tag = new Tag(self::$city->ForumRootID, null);
         }
 
         return $tag;

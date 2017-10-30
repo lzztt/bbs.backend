@@ -46,8 +46,8 @@ class Wedding extends DBObject
 
     public function getTotal()
     {
-        $arr = $this->_db->query('SELECT SUM(guests) FROM wedding');
-        return \array_pop($arr[0]);
+        $arr = $this->db->query('SELECT SUM(guests) FROM wedding');
+        return array_pop($arr[0]);
     }
 }
 

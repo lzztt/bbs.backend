@@ -13,11 +13,11 @@ class TermCtrler extends Term
         $this->cache = new PageCache($this->request->uri);
 
         $sitename = [
-            'site_zh_cn' => '缤纷' . self::$_city->name . '华人网',
-            'site_en_us' => \ucfirst(self::$_city->uriName) . 'BBS.com'
+            'site_zh_cn' => '缤纷' . self::$city->name . '华人网',
+            'site_en_us' => ucfirst(self::$city->uriName) . 'BBS.com'
         ];
 
-        $this->_var['content'] = new Template('term', $sitename);
+        $this->var['content'] = new Template('term', $sitename);
     }
 }
 

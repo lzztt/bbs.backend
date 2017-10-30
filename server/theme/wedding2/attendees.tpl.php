@@ -17,8 +17,8 @@
           <td><?= $g['guests'] ?></td>
           <td><?= $g['email'] ?></td>
           <td><?= $g['phone'] ?></td>
-          <td><?= \date('m/d/Y', $g['time']) ?></td>
-          <td><?= $g['checkin'] ? \date('m/d/Y H:m:s', $g['checkin']) : '' ?></td>
+          <td><?= date('m/d/Y', $g['time']) ?></td>
+          <td><?= $g['checkin'] ? date('m/d/Y H:m:s', $g['checkin']) : '' ?></td>
         </tr>
       <?php endforeach ?>
         <tr style="background-color: gold;"><td colspan="10">人数：<?= $counts[$i] ?></td></tr>

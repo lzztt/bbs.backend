@@ -24,16 +24,16 @@ class GiftCtrler extends Wedding
         Template::$theme = $this->config->theme['wedding2'];
         // login first
         if (!$this->session->loginStatus) {
-            $this->_displayLogin();
+            $this->displayLogin();
             return;
         }
 
         // logged in
-        $this->_var['navbar'] = new Template('navbar');
+        $this->var['navbar'] = new Template('navbar');
         $a = new WeddingAttendee();
-        list($table_guests, $table_counts, $total) = $this->_getTableGuests($a->getList('name,tid,gift,value,guests,comment'), 'value');
+        list($table_guests, $table_counts, $total) = $this->getTableGuests($a->getList('name,tid,gift,value,guests,comment'), 'value');
 
-        $this->_var['body'] = new Template('gifts', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total]);
+        $this->var['body'] = new Template('gifts', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total]);
     }
 }
 

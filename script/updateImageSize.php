@@ -6,7 +6,7 @@ use lzx\App;
 use lzx\core\MySQL;
 use site\dataobject\Image;
 
-$_SERVERDIR = \dirname(__DIR__);
+$SERVERDIR = dirname(__DIR__);
 require_once __DIR__ . '/../../lib/lzx/App.php';
 
 class Script extends App
@@ -22,9 +22,9 @@ class Script extends App
 
         foreach ($arr as $i) {
             try {
-                $info = \getimagesize($filePath . $i['path']);
-                $width = \intval($info[0]);
-                $height = \intval($info[1]);
+                $info = getimagesize($filePath . $i['path']);
+                $width = intval($info[0]);
+                $height = intval($info[1]);
                 if ($height > 0 && $width > 0) {
                     $db->query('UPDATE Image SET height = ' . $height . ', width = ' . $width . ' WHERE fid = ' . $i['fid']);
                 } else {
@@ -39,7 +39,7 @@ class Script extends App
     }
 }
 
-$app = new Script($_SERVERDIR . '/config.php', [__NAMESPACE__ => $_SERVERDIR]);
+$app = new Script($SERVERDIR . '/config.php', [__NAMESPACE__ => $SERVERDIR]);
 $app->run($argc, $argv);
 
 //_END_OF_FILE

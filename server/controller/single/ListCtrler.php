@@ -17,13 +17,13 @@ class ListCtrler extends Single
     {
         // login first
         if (!$this->session->loginStatus) {
-            $this->_displayLogin();
+            $this->displayLogin();
             return;
         }
 
         // logged in
         if (true) {//$this->request->timestamp < strtotime( "09/16/2013 22:00:00 CDT" ) )
-            $act = \array_pop($this->db->query('CALL get_latest_single_activity()'));
+            $act = array_pop($this->db->query('CALL get_latest_single_activity()'));
             $atd = new FFAttendee();
             $atd->aid = (int) $act['id'];
             $atd->status = 1;
@@ -33,16 +33,16 @@ class ListCtrler extends Single
             foreach ($atd->getList('id,name,sex,email,info') as $attendee) {
                 $question->aid = $attendee['id'];
 
-                $attendee['questions'] = \array_slice(\array_column($question->getList('body'), 'body'), -3);
-                \array_walk($attendee['questions'], function (&$q) {
+                $attendee['questions'] = array_slice(array_column($question->getList('body'), 'body'), -3);
+                array_walk($attendee['questions'], function (&$q) {
                     $q = ' - ' . $q;
                 });
                 $groups[(int) $attendee['sex']][] = $attendee;
             }
 
-            $this->_var['content'] = new Template('attendees', ['groups' => $groups]);
+            $this->var['content'] = new Template('attendees', ['groups' => $groups]);
         } else {
-            $this->_var['content'] = "<p>ERROR: The page you request is not available anymore</p>";
+            $this->var['content'] = "<p>ERROR: The page you request is not available anymore</p>";
         }
     }
 }

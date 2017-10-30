@@ -9,7 +9,7 @@ class LotteryCtrler extends Lottery
 {
     public function run()
     {
-        $this->_var['content'] = new Template('lotteryRules');
+        $this->var['content'] = new Template('lotteryRules');
     }
 }
 

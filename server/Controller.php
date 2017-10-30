@@ -28,9 +28,9 @@ use site\dbobject\City;
  * @property \site\Session $session
  * @property \site\Config $config
  * @property \lzx\cache\PageCache $cache
- * @property \lzx\cache\Cache[]  $_independentCacheList
- * @property \lzx\cache\CacheEvent[] $_cacheEvents
- * @property \site\dbobject\City $_city
+ * @property \lzx\cache\Cache[]  $independentCacheList
+ * @property \lzx\cache\CacheEvent[] $cacheEvents
+ * @property \site\dbobject\City $city
  *
  */
 abstract class Controller extends LzxCtrler
@@ -39,18 +39,18 @@ abstract class Controller extends LzxCtrler
     const UID_ADMIN = 1;
 
     protected static $l = [];
-    protected static $_city;
-    private static $_requestProcessed = false;
-    private static $_cacheHandler;
+    protected static $city;
+    private static $requestProcessed = false;
+    private static $cacheHandler;
     public $args;
     public $id;
     public $config;
     public $cache;
     public $site;
     public $session;
-    protected $_var = [];
-    protected $_independentCacheList = [];
-    protected $_cacheEvents = [];
+    protected $var = [];
+    protected $independentCacheList = [];
+    protected $cacheEvents = [];
 
     /**
      * public methods
@@ -60,23 +60,23 @@ abstract class Controller extends LzxCtrler
         parent::__construct($req, $response, $logger);
         $this->session = $session;
 
-        if (!self::$_requestProcessed) {
+        if (!self::$requestProcessed) {
             // set site info
-            $site = \preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
+            $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
 
             Template::setSite($site);
 
-            self::$_cacheHandler = CacheHandler::getInstance();
-            self::$_cacheHandler->setCacheTreeTable(self::$_cacheHandler->getCacheTreeTable() . '_' . $site);
-            self::$_cacheHandler->setCacheEventTable(self::$_cacheHandler->getCacheEventTable() . '_' . $site);
+            self::$cacheHandler = CacheHandler::getInstance();
+            self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
+            self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
 
             // validate site for session
-            self::$_city = new City();
-            self::$_city->uriName = $site;
-            self::$_city->load();
-            if (self::$_city->exists()) {
-                if (self::$_city->id != $this->session->getCityID()) {
-                    $this->session->setCityID(self::$_city->id);
+            self::$city = new City();
+            self::$city->uriName = $site;
+            self::$city->load();
+            if (self::$city->exists()) {
+                if (self::$city->id != $this->session->getCityID()) {
+                    $this->session->setCityID(self::$city->id);
                 }
             } else {
                 $this->error('unsupported website: ' . $this->request->domain);
@@ -89,16 +89,16 @@ abstract class Controller extends LzxCtrler
                 $user->call('update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',"' . $this->request->ip . '")');
             }
 
-            self::$_requestProcessed = true;
+            self::$requestProcessed = true;
         }
 
         // language info
         $this->config = $config;
-        $class = \get_class($this);
-        if (!\array_key_exists($class, self::$l)) {
+        $class = get_class($this);
+        if (!array_key_exists($class, self::$l)) {
             // GetText: use po language file
-            $lang_file = $lang_path . \str_replace('\\', '/', $class) . '.' . Template::$language . '.po';
-            if (\is_file($lang_file)) {
+            $lang_file = $lang_path . str_replace('\\', '/', $class) . '.' . Template::$language . '.po';
+            if (is_file($lang_file)) {
                 include_once $lang_file;
             }
             self::$l[$class] = isset($language) ? $language : [];
@@ -119,11 +119,11 @@ abstract class Controller extends LzxCtrler
                 $this->cache = null;
             }
 
-            foreach ($this->_independentCacheList as $s) {
+            foreach ($this->independentCacheList as $s) {
                 $s->flush();
             }
 
-            foreach ($this->_cacheEvents as $e) {
+            foreach ($this->cacheEvents as $e) {
                 $e->flush();
             }
         }
@@ -135,18 +135,18 @@ abstract class Controller extends LzxCtrler
     public function update(Template $html)
     {
         // set navbar
-        $navbarCache = $this->_getIndependentCache('page_navbar');
+        $navbarCache = $this->getIndependentCache('page_navbar');
         $navbar = $navbarCache->fetch();
         if (!$navbar) {
-            if (self::$_city->YPRootID) {
+            if (self::$city->YPRootID) {
                 $vars = [
-                    'forumMenu' => $this->_createMenu(self::$_city->ForumRootID),
-                    'ypMenu' => $this->_createMenu(self::$_city->YPRootID),
+                    'forumMenu' => $this->createMenu(self::$city->ForumRootID),
+                    'ypMenu' => $this->createMenu(self::$city->YPRootID),
                     'uid' => $this->request->uid
                 ];
             } else {
                 $vars = [
-                    'forumMenu' => $this->_createMenu(self::$_city->ForumRootID),
+                    'forumMenu' => $this->createMenu(self::$city->ForumRootID),
                     'uid' => $this->request->uid
                 ];
             }
@@ -154,36 +154,36 @@ abstract class Controller extends LzxCtrler
             $navbar = new Template('page_navbar', $vars);
             $navbarCache->store($navbar);
         }
-        $this->_var['page_navbar'] = $navbar;
+        $this->var['page_navbar'] = $navbar;
 
         // set headers
-        if (!$this->_var['head_title']) {
-            $this->_var['head_title'] = '缤纷' . self::$_city->name . '华人网';
+        if (!$this->var['head_title']) {
+            $this->var['head_title'] = '缤纷' . self::$city->name . '华人网';
         }
 
-        if (!$this->_var['head_description']) {
-            $this->_var['head_description'] = self::$_city->name . ' 华人 旅游 黄页 移民 周末活动 单身 交友 ' . \ucfirst(self::$_city->uriName) . ' Chinese ' . self::$_city->uriName . 'bbs';
+        if (!$this->var['head_description']) {
+            $this->var['head_description'] = self::$city->name . ' 华人 旅游 黄页 移民 周末活动 单身 交友 ' . ucfirst(self::$city->uriName) . ' Chinese ' . self::$city->uriName . 'bbs';
         } else {
-            $this->_var['head_description'] = $this->_var['head_description'] . ' ' . self::$_city->name . ' 华人 ' . \ucfirst(self::$_city->uriName) . ' Chinese ' . self::$_city->uriName . 'bbs';
+            $this->var['head_description'] = $this->var['head_description'] . ' ' . self::$city->name . ' 华人 ' . ucfirst(self::$city->uriName) . ' Chinese ' . self::$city->uriName . 'bbs';
         }
-        $this->_var['sitename'] = '缤纷' . self::$_city->name;
+        $this->var['sitename'] = '缤纷' . self::$city->name;
 
         // set min version for css and js
         if (!Template::$debug) {
             $min_version = $this->config->path['file'] . '/themes/' . Template::$theme . '/min/min.current';
-            if (\file_exists($min_version)) {
-                $this->_var['min_version'] = \file_get_contents($min_version);
+            if (file_exists($min_version)) {
+                $this->var['min_version'] = file_get_contents($min_version);
             }
         }
 
         // populate template variables and remove self as an observer
-        $html->setVar($this->_var);
+        $html->setVar($this->var);
         $html->detach($this);
     }
 
     protected function ajax($return)
     {
-        $json = \json_encode($return, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+        $json = json_encode($return, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
         if ($json === false) {
             $json = '{"error":"ajax json encode error"}';
         }
@@ -195,14 +195,14 @@ abstract class Controller extends LzxCtrler
      *
      * @return \lzx\cache\Cache
      */
-    protected function _getIndependentCache($key)
+    protected function getIndependentCache($key)
     {
-        $_key = self::$_cacheHandler->getCleanName($key);
-        if (\array_key_exists($_key, $this->_independentCacheList)) {
-            return $this->_independentCacheList[$_key];
+        $key = self::$cacheHandler->getCleanName($key);
+        if (array_key_exists($key, $this->independentCacheList)) {
+            return $this->independentCacheList[$key];
         } else {
-            $cache = self::$_cacheHandler->createCache($_key);
-            $this->_independentCacheList[$_key] = $cache;
+            $cache = self::$cacheHandler->createCache($key);
+            $this->independentCacheList[$key] = $cache;
             return $cache;
         }
     }
@@ -211,25 +211,25 @@ abstract class Controller extends LzxCtrler
      *
      * @return \lzx\cache\CacheEvent
      */
-    protected function _getCacheEvent($name, $objectID = 0)
+    protected function getCacheEvent($name, $objectID = 0)
     {
-        $_name = self::$_cacheHandler->getCleanName($name);
-        $_objID = (int) $objectID;
-        if ($_objID < 0) {
-            $_objID = 0;
+        $name = self::$cacheHandler->getCleanName($name);
+        $objID = (int) $objectID;
+        if ($objID < 0) {
+            $objID = 0;
         }
 
-        $key = $_name . $_objID;
-        if (\array_key_exists($key, $this->_cacheEvents)) {
-            return $this->_cacheEvents[$key];
+        $key = $name . $objID;
+        if (array_key_exists($key, $this->cacheEvents)) {
+            return $this->cacheEvents[$key];
         } else {
-            $event = new CacheEvent($_name, $_objID);
-            $this->_cacheEvents[$key] = $event;
+            $event = new CacheEvent($name, $objID);
+            $this->cacheEvents[$key] = $event;
             return $event;
         }
     }
 
-    protected function _forward($uri)
+    protected function forward($uri)
     {
         $newReq = clone $this->request;
         $newReq->uri = $uri;
@@ -238,17 +238,17 @@ abstract class Controller extends LzxCtrler
         $ctrler->run();
     }
 
-    protected function _displayLogin()
+    protected function displayLogin()
     {
         $this->response->pageRedirect('/app/user/login');
     }
 
-    protected function _createSecureLink($uid, $uri)
+    protected function createSecureLink($uid, $uri)
     {
         $slink = new SecureLink();
         $slink->uid = $uid;
         $slink->time = $this->request->timestamp;
-        $slink->code = \mt_rand();
+        $slink->code = mt_rand();
         $slink->uri = $uri;
         $slink->add();
         return $slink;
@@ -259,14 +259,14 @@ abstract class Controller extends LzxCtrler
      * @param type $uri
      * @return \site\dbobject\SecureLink|null
      */
-    protected function _getSecureLink($uri)
+    protected function getSecureLink($uri)
     {
-        $arr = \explode('?', $uri);
-        if (\sizeof($arr) == 2) {
+        $arr = explode('?', $uri);
+        if (sizeof($arr) == 2) {
             $l = new SecureLink();
 
             $l->uri = $arr[0];
-            \parse_str($arr[1], $get);
+            parse_str($arr[1], $get);
 
             if (isset($get['r']) && isset($get['u']) && isset($get['c']) && isset($get['t'])) {
                 $l->id = $get['r'];
@@ -287,24 +287,24 @@ abstract class Controller extends LzxCtrler
      * create menu tree for root tags
      */
 
-    protected function _createMenu($tid)
+    protected function createMenu($tid)
     {
         $tag = new Tag($tid, null);
         $tree = $tag->getTagTree();
         $type = 'tag';
-        $root_id = \array_shift(\array_keys($tag->getTagRoot()));
-        if (self::$_city->ForumRootID == $root_id) {
+        $root_id = array_shift(array_keys($tag->getTagRoot()));
+        if (self::$city->ForumRootID == $root_id) {
             $type = 'forum';
-        } elseif (self::$_city->YPRootID == $root_id) {
+        } elseif (self::$city->YPRootID == $root_id) {
             $type = 'yp';
         }
         $liMenu = '';
 
-        if (\sizeof($tree) > 0) {
+        if (sizeof($tree) > 0) {
             foreach ($tree[$tid]['children'] as $branch_id) {
                 $branch = $tree[$branch_id];
                 $liMenu .= '<li><a title="' . $branch['name'] . '" href="/' . $type . '/' . $branch['id'] . '">' . $branch['name'] . '</a>';
-                if (\sizeof($branch['children'])) {
+                if (sizeof($branch['children'])) {
                     $liMenu .= '<ul style="display: none;">';
                     foreach ($branch['children'] as $leaf_id) {
                         $leaf = $tree[$leaf_id];
@@ -319,17 +319,17 @@ abstract class Controller extends LzxCtrler
         return $liMenu;
     }
 
-    protected function _getPagerInfo($nTotal, $nPerPage)
+    protected function getPagerInfo($nTotal, $nPerPage)
     {
         if ($nPerPage <= 0) {
             throw new \Exception('invalid value for number of items per page: ' . $nPerPage);
         }
 
-        $pageCount = $nTotal > 0 ? \ceil($nTotal / $nPerPage) : 1;
+        $pageCount = $nTotal > 0 ? ceil($nTotal / $nPerPage) : 1;
         if ($this->request->get['p']) {
             if ($this->request->get['p'] === 'l') {
                 $pageNo = $pageCount;
-            } elseif (\is_numeric($this->request->get['p'])) {
+            } elseif (is_numeric($this->request->get['p'])) {
                 $pageNo = (int) $this->request->get['p'];
 
                 if ($pageNo < 1 || $pageNo > $pageCount) {

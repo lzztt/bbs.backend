@@ -16,14 +16,14 @@ class ActivitiesCtrler extends Single
         $act = new FFActivity();
         $act->order('id', 'DESC');
         $activities = $act->getList();
-        \array_shift($activities);
+        array_shift($activities);
 
         foreach ($activities as $i => $a) {
-            $activities[$i]['chart'] = $this->_getChart($a);
-            $activities[$i]['comments'] = $this->_getComments($a['id'], 'ASC');
+            $activities[$i]['chart'] = $this->getChart($a);
+            $activities[$i]['comments'] = $this->getComments($a['id'], 'ASC');
         }
 
-        $this->_var['content'] = new Template('activities', ['activities' => $activities]);
+        $this->var['content'] = new Template('activities', ['activities' => $activities]);
     }
 }
 

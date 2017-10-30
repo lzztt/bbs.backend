@@ -22,11 +22,11 @@ class AdAPI extends Service
 
         if ($this->args) {
             if ($this->args[0] == 'name') {
-                $this->_json($ad->getList('name'));
+                $this->json($ad->getList('name'));
             }
         } else {
             $a_month_ago = $this->request->timestamp - 2592000;
-            $this->_json($ad->getAllAds($a_month_ago));
+            $this->json($ad->getAllAds($a_month_ago));
         }
     }
 
@@ -49,6 +49,6 @@ class AdAPI extends Service
         $ad->expTime = $this->request->timestamp;
         $ad->add();
 
-        $this->_json(['id' => $ad->id, 'name' => $ad->name, 'email' => $ad->email]);
+        $this->json(['id' => $ad->id, 'name' => $ad->name, 'email' => $ad->email]);
     }
 }

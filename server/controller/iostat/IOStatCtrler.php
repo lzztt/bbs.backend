@@ -20,24 +20,24 @@ class IOStatCtrler extends IOStat
     public function run()
     {
         $this->error('not available yet :(');
-        $this->_var['content'] = $this->sarChart();
+        $this->var['content'] = $this->sarChart();
     }
 
     protected function sarChart()
     {
         $sar = 'sar -b -s 00:00:01 -e 23:59:59 -f ';
-        $file = '/var/log/sysstat/sa' . \date('d');
+        $file = '/var/log/sysstat/sa' . date('d');
 
         // using an old date file
         if ($this->id) {
-            $_file = '/var/log/sysstat/sa' . \sprintf('%2d', $this->id);
-            if (\is_file($_file) && \is_readable($_file)) {
-                $file = $_file;
+            $file = '/var/log/sysstat/sa' . sprintf('%2d', $this->id);
+            if (is_file($file) && is_readable($file)) {
+                $file = $file;
             }
         }
 
         // check the date file
-        if (!(\is_file($file) && \is_readable($file))) {
+        if (!(is_file($file) && is_readable($file))) {
             $this->error('io stat data does not exist');
         }
 

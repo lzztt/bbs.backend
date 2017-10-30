@@ -15,13 +15,13 @@ class WeatherCtrler extends Weather
         } else {
             $zip = '77036';
         }
-        $this->_var['content'] = $this->_get_weather($zip);
+        $this->var['content'] = $this->getWeather($zip);
     }
 
-    protected function _get_weather_div($zip)
+    protected function getWeatherDiv($zip)
     {
         try {
-            return '<div style="float: right">' . $this->_get_weather($zip) . '</div>';
+            return '<div style="float: right">' . $this->getWeather($zip) . '</div>';
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 
@@ -29,20 +29,20 @@ class WeatherCtrler extends Weather
         }
     }
 
-    protected function _get_weather($zip)
+    protected function getWeather($zip)
     {
         //$key = 'weather_' . $zip;
 
         //if ($data === FALSE)
         //{
-        $weather = $this->_get_weather_detail($zip);
-        $data = $this->_display_weather($weather);
+        $weather = $this->getWeatherDetail($zip);
+        $data = $this->displayWeather($weather);
 
         //}
         return $data;
     }
 
-    protected function _display_weather($weather)
+    protected function displayWeather($weather)
     {
         $title = $weather[0];
         $days = $weather[1];
@@ -56,7 +56,7 @@ class WeatherCtrler extends Weather
                 $v = (int) $v;
             }
 
-            $day[3] = \implode('-', \array_reverse($tmp)) . ' &deg;F';
+            $day[3] = implode('-', array_reverse($tmp)) . ' &deg;F';
 
             $css = ($i % 2 == 0) ? '' : ' style="background-color: #FCF1D0;"';
             $str .= '<tr' . $css . '>';
@@ -68,8 +68,8 @@ class WeatherCtrler extends Weather
             $i++;
         }
 
-        $time = \trim($update[0]);
-        $time = \substr($time, 0, -7) . \str_replace('CT', \date('T', $this->request->timestamp), \strtoupper(substr($time, -7))) . '</div>';
+        $time = trim($update[0]);
+        $time = substr($time, 0, -7) . str_replace('CT', date('T', $this->request->timestamp), strtoupper(substr($time, -7))) . '</div>';
         $str .= '<tr><td colspan="4" style="text-align: right">' . $time . '</td></tr>';
 
         $str .= '</tbody></table>';
@@ -77,16 +77,16 @@ class WeatherCtrler extends Weather
         return $str;
     }
 
-    protected function _get_weather_detail($zip)
+    protected function getWeatherDetail($zip)
     {
         $doc = new \DOMDocument();
         // We need to validate our document before refering to the id
-        $xml_error_internal = \libxml_use_internal_errors(true);
+        $xml_error_internal = libxml_use_internal_errors(true);
         //$doc->validateOnParse = TRUE;
         @$doc->loadHtml($this->request->curlGetData('http://www.weather.com/weather/print/' . $zip));
-        //var_dump(\libxml_get_errors());
-        \libxml_clear_errors();
-        \libxml_use_internal_errors($xml_error_internal);
+        //var_dump(libxml_get_errors());
+        libxml_clear_errors();
+        libxml_use_internal_errors($xml_error_internal);
 
         foreach ($doc->getElementsByTagName('div') as $div) {
             if ($div->getAttribute('class') == 'WRprintTitle') {

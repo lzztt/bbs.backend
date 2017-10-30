@@ -14,7 +14,7 @@ class EditCtrler extends Comment
         // edit existing comment
         $cid = $this->id;
 
-        if (\strlen($this->request->post['body']) < 5) {
+        if (strlen($this->request->post['body']) < 5) {
             $this->error('Comment body is too short.');
         }
 
@@ -34,15 +34,15 @@ class EditCtrler extends Comment
 
         // FORUM comments images
         if ($this->request->post['update_file']) {
-            $files = \is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+            $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
             $file = new Image();
-            $file->cityID = self::$_city->id;
+            $file->cityID = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $comment->nid, $cid);
-            $this->_getIndependentCache('imageSlider')->delete();
+            $this->getIndependentCache('imageSlider')->delete();
         }
 
         // YP comments
-        if (isset($this->request->post['star']) && \is_numeric($this->request->post['star'])) {
+        if (isset($this->request->post['star']) && is_numeric($this->request->post['star'])) {
             $rating = (int) $this->request->post['star'];
             if ($rating > 0) {
                 $node = new Node();
@@ -50,7 +50,7 @@ class EditCtrler extends Comment
             }
         }
 
-        $this->_getCacheEvent('NodeUpdate', $comment->nid)->trigger();
+        $this->getCacheEvent('NodeUpdate', $comment->nid)->trigger();
 
         $this->pageRedirect($this->request->referer);
     }

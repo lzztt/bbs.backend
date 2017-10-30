@@ -39,10 +39,10 @@ class Image extends DBObject
         parent::__construct($db, $table, $fields, $id, $properties);
     }
 
-    private function _rmTmpFile($file)
+    private function rmTmpFile($file)
     {
         try {
-            \unlink($file);
+            unlink($file);
         } catch (\Exception $e) {
             $logger = Logger::getInstance();
             $logger->error($e->getMessage() . ' : ' . $file);
@@ -67,7 +67,7 @@ class Image extends DBObject
         $savedFile = [];
         // save files
         foreach ($files as $type => $fileList) {
-            $path = $config['path'] . '/data/' . $type . '/' . $config['prefix'] . \mt_rand(0, 9);
+            $path = $config['path'] . '/data/' . $type . '/' . $config['prefix'] . mt_rand(0, 9);
 
             foreach ($fileList as $i => $f) {
                 $fileName = $f['name'];
@@ -80,7 +80,7 @@ class Image extends DBObject
                         'error' => $errmsg[$f['error']],
                     ];
                     if ($tmpFile) {
-                        $this->_rmTmpFile($tmpFile);
+                        $this->rmTmpFile($tmpFile);
                     }
                     continue;
                 }
@@ -92,26 +92,26 @@ class Image extends DBObject
                         'error' => $errmsg[\UPLOAD_ERR_INI_SIZE],
                     ];
                     if ($tmpFile) {
-                        $this->_rmTmpFile($tmpFile);
+                        $this->rmTmpFile($tmpFile);
                     }
                     continue;
                 }
 
 
-                $imageInfo = \getimagesize($tmpFile); // not requiring GD
+                $imageInfo = getimagesize($tmpFile); // not requiring GD
                 // check image type
-                if ($imageInfo === false || !\in_array($imageInfo[2], $config['types'])) {
+                if ($imageInfo === false || !in_array($imageInfo[2], $config['types'])) {
                     $errorFile[] = [
                         'name'  => $fileName,
                         'error' => $errmsg[102],
                     ];
                     if ($tmpFile) {
-                        $this->_rmTmpFile($tmpFile);
+                        $this->rmTmpFile($tmpFile);
                     }
                     continue;
                 }
 
-                $savePath = $path . $i . \image_type_to_extension($imageInfo[2], true); // not requiring GD
+                $savePath = $path . $i . image_type_to_extension($imageInfo[2], true); // not requiring GD
                 $width = $imageInfo[0];
                 $height = $imageInfo[1];
 
@@ -120,16 +120,16 @@ class Image extends DBObject
                     if ($width > $config['width'] || $height > $config['height']) {
                         // resize image
                         $im = new \Imagick($tmpFile);
-                        $this->_autoRotateImage($im);
+                        $this->autoRotateImage($im);
                         $im->resizeImage($config['width'], $config['height'], \Imagick::FILTER_LANCZOS, 1, true);
                         $im->writeImage($savePath);
                         $im->clear();
                         if ($tmpFile) {
-                            $this->_rmTmpFile($tmpFile);
+                            $this->rmTmpFile($tmpFile);
                         }
                     } else {
                         // copy image
-                        \move_uploaded_file($tmpFile, $savePath);
+                        move_uploaded_file($tmpFile, $savePath);
                     }
                 } catch (\Exception $e) {
                     if (isset($im)) {
@@ -137,7 +137,7 @@ class Image extends DBObject
                         unset($im);
                     }
                     if ($tmpFile) {
-                        $this->_rmTmpFile($tmpFile);
+                        $this->rmTmpFile($tmpFile);
                     }
                     $logger = Logger::getInstance();
                     $logger->error($e->getMessage());
@@ -148,11 +148,11 @@ class Image extends DBObject
                     continue;
                 }
 
-                $p = \strrpos($fileName, '.');
+                $p = strrpos($fileName, '.');
 
-                $uri = \substr($savePath, \strlen($config['path']));
+                $uri = substr($savePath, strlen($config['path']));
                 $savedFile[] = [
-                    'name' => $p > 0 ? \substr($fileName, 0, $p) : $fileName,
+                    'name' => $p > 0 ? substr($fileName, 0, $p) : $fileName,
                     'path' => $uri
                 ];
                 $this->call('image_add_tmp("' . $uri . '")');
@@ -162,7 +162,7 @@ class Image extends DBObject
         return ['error' => $errorFile, 'saved' => $savedFile];
     }
 
-    private function _autoRotateImage(\Imagick $img)
+    private function autoRotateImage(\Imagick $img)
     {
         $orientation = $img->getImageOrientation();
 
@@ -186,7 +186,7 @@ class Image extends DBObject
     {
         foreach ($files as $file) {
             if ($file['action'] == 'add') {
-                $info = \getimagesize($filePath . $file['path']);
+                $info = getimagesize($filePath . $file['path']);
                 $width = $info[0];
                 $height = $info[1];
                 $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
@@ -203,13 +203,13 @@ class Image extends DBObject
 
     public function updateImages(array $files, $filePath, $nid, $cid = null)
     {
-        if (\sizeof($files) > 0) {
+        if (sizeof($files) > 0) {
             $deletedIDs = [];
 
             foreach ($files as $file) {
                 switch ($file["action"]) {
                     case 'add':
-                        $info = \getimagesize($filePath . $file['path']);
+                        $info = getimagesize($filePath . $file['path']);
                         $width = $info[0];
                         $height = $info[1];
                         $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
@@ -235,7 +235,7 @@ class Image extends DBObject
             }
 
             if (sizeof($deletedIDs) > 0) {
-                $this->call('image_delete("' . \implode(',', $deletedIDs) . '")');
+                $this->call('image_delete("' . implode(',', $deletedIDs) . '")');
             }
         }
 
@@ -260,7 +260,7 @@ class Image extends DBObject
         }
 
         foreach ($files as $fid => $file) {
-            if (\is_numeric($fid)) {
+            if (is_numeric($fid)) {
                 // existing image
                 $fid = (int) $fid;
                 if ($file['name'] != $images[$fid]['name']) {
@@ -270,7 +270,7 @@ class Image extends DBObject
             } else {
                 // new uploaded files
                 try {
-                    $info = \getimagesize($filePath . $file['path']);
+                    $info = getimagesize($filePath . $file['path']);
                     $width = $info[0];
                     $height = $info[1];
                     $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [':nid'      => $nid,
@@ -289,7 +289,7 @@ class Image extends DBObject
         }
         // delete old saved files are not in new version
         if ($images) {
-            $this->call('image_delete("' . \implode(',', \array_keys($images)) . '")');
+            $this->call('image_delete("' . implode(',', array_keys($images)) . '")');
         }
     }
 

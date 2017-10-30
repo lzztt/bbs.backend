@@ -33,7 +33,7 @@ class LoginCtrler extends Wedding
             }
         }
 
-        $this->_displayLogin();
+        $this->displayLogin();
     }
 }
 

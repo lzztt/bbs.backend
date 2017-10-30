@@ -24,11 +24,11 @@ class EditCtrler extends Wedding
         Template::$theme = $this->config->theme['wedding2'];
         // login first
         if (!$this->session->loginStatus) {
-            $this->_displayLogin();
+            $this->displayLogin();
             return;
         }
 
-        $this->_var['navbar'] = new Template('navbar');
+        $this->var['navbar'] = new Template('navbar');
         $a = new WeddingAttendee();
         if ($this->request->post) {
             // save changes for one guest
@@ -36,16 +36,16 @@ class EditCtrler extends Wedding
                 $a->$k = $v;
             }
             $a->update();
-            $this->_var['body'] = $a->name . '的更新信息已经被保存';
+            $this->var['body'] = $a->name . '的更新信息已经被保存';
         } else {
             if ($this->id) {
                 // edit one guest
                 $a->id = $this->id;
-                $this->_var['body'] = new Template('edit', \array_pop($a->getList()));
+                $this->var['body'] = new Template('edit', array_pop($a->getList()));
             } else {
                 // all guests in a list;
                 $a->order('tid');
-                $this->_var['body'] = new Template('edit_list', ['attendees' => $a->getList('name')]);
+                $this->var['body'] = new Template('edit_list', ['attendees' => $a->getList('name')]);
             }
         }
     }

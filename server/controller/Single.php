@@ -25,8 +25,8 @@ abstract class Single extends Controller
 
         Template::$theme = $this->config->theme['single'];
 
-        if ($this->session->loginStatus !== true && \file_exists('/tmp/single')) {
-            $this->_register_end = true;
+        if ($this->session->loginStatus !== true && file_exists('/tmp/single')) {
+            $this->register_end = true;
         }
 
         $this->db = DB::getInstance();
@@ -39,13 +39,13 @@ abstract class Single extends Controller
     public function update(Template $html)
     {
         // populate template variables and remove self as an observer
-        $html->setVar($this->_var);
+        $html->setVar($this->var);
         $html->detach($this);
     }
 
-    protected function _getChart($activity)
+    protected function getChart($activity)
     {
-        $data = $this->_getAgeStatJSON($activity['id']);
+        $data = $this->getAgeStatJSON($activity['id']);
 
         $stat = [
             [
@@ -63,7 +63,7 @@ abstract class Single extends Controller
         return new Template('chart', ['stat' => $stat]);
     }
 
-    protected function _getAgeStatJSON($aid)
+    protected function getAgeStatJSON($aid)
     {
         $counts = $this->db->query('CALL get_age_stat_single(' . $aid . ')');
         $ages = [
@@ -116,14 +116,14 @@ abstract class Single extends Controller
         foreach ($stat as $sex => $counts) {
             $stat[$sex] = [
                 'total' => $total[$sex],
-                'json' => \json_encode($counts)
+                'json' => json_encode($counts)
             ];
         }
 
         return $stat;
     }
 
-    protected function _getComments($aid, $order = 'DESC')
+    protected function getComments($aid, $order = 'DESC')
     {
         $ffcomments = new FFComment();
         $ffcomments->aid = $aid;
@@ -131,7 +131,7 @@ abstract class Single extends Controller
         return new Template('comments', ['comments' => $ffcomments->getList()]);
     }
 
-    protected function _displayLogin()
+    protected function displayLogin()
     {
         $defaultRedirect = '/single/attendee';
         if ($this->request->referer && $this->request->referer !== '/single/login') {
@@ -140,12 +140,12 @@ abstract class Single extends Controller
             $this->session->loginRedirect = $defaultRedirect;
         }
 
-        $this->_var['content'] = new Template('login', ['uri' => $this->request->uri]);
+        $this->var['content'] = new Template('login', ['uri' => $this->request->uri]);
     }
 
-    protected function _getCode($uid)
+    protected function getCode($uid)
     {
-        return \crc32(\substr(\md5('alexmika' . $uid), 5, 10));
+        return \crc32(substr(\md5('alexmika' . $uid), 5, 10));
     }
 }
 

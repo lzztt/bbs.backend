@@ -19,7 +19,7 @@ class NodeAPI extends Service
      */
     public function get()
     {
-        if (empty($this->args) || !\is_numeric($this->args[0])) {
+        if (empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
         }
 
@@ -34,10 +34,10 @@ class NodeAPI extends Service
             $this->error('page not found');
         }
 
-        $data['tags'] = \array_values($nodeObj->getTags($nid));
+        $data['tags'] = array_values($nodeObj->getTags($nid));
 
         // get page info
-        list($pageNo, $pageCount) = $this->_getPagerInfo($node['comment_count'], self::COMMENTS_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo($node['comment_count'], self::COMMENTS_PER_PAGE);
 
         if ($pageNo == 1) {
             $data['topic'] = $node;
@@ -62,14 +62,14 @@ class NodeAPI extends Service
                 $comments[$i]['city'] = $this->request->getCityFromIP($c['last_access_ip']);
                 unset($comments[$i]['last_access_ip']);
 
-                if (\strpos($c['body'], '[/') !== false) {
+                if (strpos($c['body'], '[/') !== false) {
                     $comments[$i]['body'] = BBCodeMarkx::parse($c['body']);
                 }
             }
             $data['comments'] = $comments;
         }
 
-        $this->_json($data);
+        $this->json($data);
     }
 
     /**
@@ -83,14 +83,14 @@ class NodeAPI extends Service
             $this->forbidden();
         }
 
-        if (\strlen($this->request->json['body']) < 5 || \strlen($this->request->json['title']) < 5) {
+        if (strlen($this->request->json['body']) < 5 || strlen($this->request->json['title']) < 5) {
             $this->error('错误：标题或正文字数太少。');
         }
 
         $user = new User($this->request->uid, 'createTime,status');
         try {
             // validate post for houston
-            if (self::$_city->id == 1) {
+            if (self::$city->id == 1) {
                 $user->validatePost($this->request->ip, $this->request->timestamp, $this->request->json['body'], $this->request->json['title']);
             }
 
@@ -105,7 +105,7 @@ class NodeAPI extends Service
         } catch (\Exception $e) {
             // spammer found
             if ($user->isSpammer()) {
-                $this->_handleSpammer($user);
+                $this->handleSpammer($user);
             }
 
             $this->logger->error($e->getMessage() . \PHP_EOL . ' --node-- ' . $this->request->json['title'] . PHP_EOL . $this->request->json['body']);
@@ -115,12 +115,12 @@ class NodeAPI extends Service
         // add files
         if (isset($this->request->json['files']) && sizeof($this->request->json['files']) > 0) {
             $image = new Image();
-            $image->cityID = self::$_city->id;
+            $image->cityID = self::$city->id;
             $image->addImages($this->request->json['files'], $this->config->path['file'], $node->id);
-            $this->_getCacheEvent('ImageUpdate')->trigger();
+            $this->getCacheEvent('ImageUpdate')->trigger();
         }
 
-        $this->_json(['nid' => $node->id]);
+        $this->json(['nid' => $node->id]);
     }
 
     /**
@@ -134,11 +134,11 @@ class NodeAPI extends Service
             $this->forbidden();
         }
 
-        if (isset($this->request->json['title']) && \strlen($this->request->json['title']) < 5) {
+        if (isset($this->request->json['title']) && strlen($this->request->json['title']) < 5) {
             $this->error('错误：标题字数太少。');
         }
 
-        if (isset($this->request->json['body']) && \strlen($this->request->json['body']) < 5) {
+        if (isset($this->request->json['body']) && strlen($this->request->json['body']) < 5) {
             $this->error('错误：正文字数太少。');
         }
 
@@ -157,7 +157,7 @@ class NodeAPI extends Service
         $user = new User($this->request->uid, 'createTime,status');
         try {
             // validate post for houston
-            if (self::$_city->id == 1) {
+            if (self::$city->id == 1) {
                 $user->validatePost($this->request->ip, $this->request->timestamp, $this->request->json['body'], $this->request->json['title']);
             }
 
@@ -176,7 +176,7 @@ class NodeAPI extends Service
         } catch (\Exception $e) {
             // spammer found
             if ($user->isSpammer()) {
-                $this->_handleSpammer($user);
+                $this->handleSpammer($user);
             }
 
             $this->logger->error($e->getMessage() . \PHP_EOL . ' --node-- ' . $this->request->json['title'] . PHP_EOL . $this->request->json['body']);
@@ -187,12 +187,12 @@ class NodeAPI extends Service
         $imageList = [];
         if (isset($this->request->json['files']) && sizeof($this->request->json['files']) > 0) {
             $image = new Image();
-            $image->cityID = self::$_city->id;
+            $image->cityID = self::$city->id;
             $imageList = $image->updateImages($this->request->json['files'], $this->config->path['file'], $nid);
-            $this->_getCacheEvent('ImageUpdate')->trigger();
+            $this->getCacheEvent('ImageUpdate')->trigger();
         }
 
-        $this->_json(['files' => $imageList]);
+        $this->json(['files' => $imageList]);
     }
 
     /**
@@ -207,8 +207,8 @@ class NodeAPI extends Service
 
         $nids = [];
 
-        foreach (\explode(',', $this->args[0]) as $nid) {
-            if (\is_numeric($nid) && \intval($nid) > 0) {
+        foreach (explode(',', $this->args[0]) as $nid) {
+            if (is_numeric($nid) && intval($nid) > 0) {
                 $nids[] = (int) $nid;
             }
         }
@@ -220,7 +220,7 @@ class NodeAPI extends Service
             $n->update();
         }
 
-        $this->_json(null);
+        $this->json(null);
     }
 }
 

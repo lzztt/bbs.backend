@@ -14,7 +14,7 @@ class IdentificationCodeAPI extends Service
     public function post()
     {
         // validate captcha
-        if (\strtolower($this->session->captcha) != \strtolower($this->request->post['captcha'])) {
+        if (strtolower($this->session->captcha) != strtolower($this->request->post['captcha'])) {
             $this->error('图形验证码错误');
         }
         unset($this->session->captcha);
@@ -40,7 +40,7 @@ class IdentificationCodeAPI extends Service
             if ($this->sendIdentCode($user) === false) {
                 $this->error('sending email error: ' . $user->email);
             } else {
-                $this->_json(null);
+                $this->json(null);
             }
         } else {
             $this->error('你输入的用户名不存在');

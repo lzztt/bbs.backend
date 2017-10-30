@@ -18,7 +18,7 @@ use lzx\cache\CacheHandler;
 /**
  * @property site\Config $config
  */
-require_once \dirname(__DIR__) . '/lib/lzx/App.php';
+require_once dirname(__DIR__) . '/lib/lzx/App.php';
 
 class WebApp extends App
 {
@@ -69,11 +69,11 @@ class WebApp extends App
             $request->language = $this->config->language;
         }
 
-        $getCount = \count($request->get);
+        $getCount = count($request->get);
         if ($getCount) {
-            $request->get = \array_intersect_key($request->get, \array_flip($this->config->getkeys));
+            $request->get = array_intersect_key($request->get, array_flip($this->config->getkeys));
             // do not cache page with unsupport get keys
-            if (\count($request->get) != $getCount) {
+            if (count($request->get) != $getCount) {
                 $this->config->cache = false;
             }
         }
@@ -89,7 +89,7 @@ class WebApp extends App
         Cache::setLogger($this->logger);
 
         // initialize session
-        $session = Session::getInstance($this->_isRobot() ? null : $db);
+        $session = Session::getInstance($this->isRobot() ? null : $db);
 
         // update request uid based on session uid
         $request->uid = (int) $session->getUserID();
@@ -97,7 +97,7 @@ class WebApp extends App
         // set user info for logger
         $userinfo = [
             'uid'  => 'https://www.houstonbbs.com/app/user/' . $request->uid,
-            'role' => $this->_isRobot() ? 'robot' : $session->urole];
+            'role' => $this->isRobot() ? 'robot' : $session->urole];
         $this->logger->setUserInfo($userinfo);
 
         $response = Response::getInstance();
@@ -142,13 +142,13 @@ class WebApp extends App
 
                 // controller flush cache
                 if ($debug) {
-                    $_timer = \microtime(true);
+                    $timer = microtime(true);
                     if ($ctrler) {
                         $ctrler->flushCache();
                     }
                     $db->flush();
-                    $_timer = \microtime(true) - $_timer;
-                    $this->logger->info(\sprintf('cache flush time: %8.6f', $_timer));
+                    $timer = microtime(true) - $timer;
+                    $this->logger->info(sprintf('cache flush time: %8.6f', $timer));
                 } else {
                     if ($ctrler) {
                         $ctrler->flushCache();
@@ -164,12 +164,12 @@ class WebApp extends App
         $this->logger->flush();
     }
 
-    private function _isRobot()
+    private function isRobot()
     {
         static $isRobot;
 
         if (!isset($isRobot)) {
-            $isRobot = (bool) \preg_match('/(http|yahoo|bot|spider)/i', $_SERVER['HTTP_USER_AGENT']);
+            $isRobot = (bool) preg_match('/(http|yahoo|bot|spider)/i', $_SERVER['HTTP_USER_AGENT']);
         }
 
         return $isRobot;

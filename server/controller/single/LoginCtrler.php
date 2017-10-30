@@ -19,7 +19,7 @@ class LoginCtrler extends Single
             }
         }
 
-        $this->_displayLogin();
+        $this->displayLogin();
     }
 }
 

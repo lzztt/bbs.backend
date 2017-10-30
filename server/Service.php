@@ -20,22 +20,22 @@ use site\dbobject\User;
 
 /**
  * @property \site\Session $session
- * @property \site\dbobject\City $_city
+ * @property \site\dbobject\City $city
  */
 abstract class Service extends LzxService
 {
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
 
-    protected static $_city;
-    private static $_actions = ['get', 'post', 'put', 'delete'];
-    private static $_staticProcessed = false;
-    private static $_cacheHandler;
+    protected static $city;
+    private static $actions = ['get', 'post', 'put', 'delete'];
+    private static $staticProcessed = false;
+    private static $cacheHandler;
     public $action;
     public $args;
     public $session;
-    private $_independentCacheList = [];
-    private $_cacheEvents = [];
+    private $independentCacheList = [];
+    private $cacheEvents = [];
 
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
@@ -43,21 +43,21 @@ abstract class Service extends LzxService
         $this->session = $session;
         $this->config = $config;
 
-        if (!self::$_staticProcessed) {
+        if (!self::$staticProcessed) {
             // set site info
-            $site = \preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
+            $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
 
-            self::$_cacheHandler = CacheHandler::getInstance();
-            self::$_cacheHandler->setCacheTreeTable(self::$_cacheHandler->getCacheTreeTable() . '_' . $site);
-            self::$_cacheHandler->setCacheEventTable(self::$_cacheHandler->getCacheEventTable() . '_' . $site);
+            self::$cacheHandler = CacheHandler::getInstance();
+            self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
+            self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
 
             // validate site for session
-            self::$_city = new City();
-            self::$_city->uriName = $site;
-            self::$_city->load();
-            if (self::$_city->exists()) {
-                if (self::$_city->id != $this->session->getCityID()) {
-                    $this->session->setCityID(self::$_city->id);
+            self::$city = new City();
+            self::$city->uriName = $site;
+            self::$city->load();
+            if (self::$city->exists()) {
+                if (self::$city->id != $this->session->getCityID()) {
+                    $this->session->setCityID(self::$city->id);
                 }
             } else {
                 $this->error('unsupported website: ' . $this->request->domain);
@@ -65,7 +65,7 @@ abstract class Service extends LzxService
         }
 
         // set action
-        if (\array_key_exists('action', $req->get) && \in_array($req->get['action'], self::$_actions)) {
+        if (array_key_exists('action', $req->get) && in_array($req->get['action'], self::$actions)) {
             $this->action = $req->get['action'];
         } else {
             $this->action = ($req->post || $req->json) ? 'post' : 'get';
@@ -100,11 +100,11 @@ abstract class Service extends LzxService
     {
         $config = Config::getInstance();
         if ($config->cache) {
-            foreach ($this->_independentCacheList as $c) {
+            foreach ($this->independentCacheList as $c) {
                 $c->flush();
             }
 
-            foreach ($this->_cacheEvents as $e) {
+            foreach ($this->cacheEvents as $e) {
                 $e->flush();
             }
         }
@@ -114,14 +114,14 @@ abstract class Service extends LzxService
      *
      * @return \lzx\cache\Cache
      */
-    protected function _getIndependentCache($key)
+    protected function getIndependentCache($key)
     {
-        $_key = self::$_cacheHandler->getCleanName($key);
-        if (\array_key_exists($_key, $this->_independentCacheList)) {
-            return $this->_independentCacheList[$_key];
+        $key = self::$cacheHandler->getCleanName($key);
+        if (array_key_exists($key, $this->independentCacheList)) {
+            return $this->independentCacheList[$key];
         } else {
-            $cache = self::$_cacheHandler->createCache($_key);
-            $this->_independentCacheList[$_key] = $cache;
+            $cache = self::$cacheHandler->createCache($key);
+            $this->independentCacheList[$key] = $cache;
             return $cache;
         }
     }
@@ -130,35 +130,35 @@ abstract class Service extends LzxService
      *
      * @return \lzx\cache\CacheEvent
      */
-    protected function _getCacheEvent($name, $objectID = 0)
+    protected function getCacheEvent($name, $objectID = 0)
     {
-        $_name = self::$_cacheHandler->getCleanName($name);
-        $_objID = (int) $objectID;
-        if ($_objID < 0) {
-            $_objID = 0;
+        $name = self::$cacheHandler->getCleanName($name);
+        $objID = (int) $objectID;
+        if ($objID < 0) {
+            $objID = 0;
         }
 
-        $key = $_name . $_objID;
-        if (\array_key_exists($key, $this->_cacheEvents)) {
-            return $this->_cacheEvents[$key];
+        $key = $name . $objID;
+        if (array_key_exists($key, $this->cacheEvents)) {
+            return $this->cacheEvents[$key];
         } else {
-            $event = new CacheEvent($_name, $_objID);
-            $this->_cacheEvents[$key] = $event;
+            $event = new CacheEvent($name, $objID);
+            $this->cacheEvents[$key] = $event;
             return $event;
         }
     }
 
-    protected function _getPagerInfo($nTotal, $nPerPage)
+    protected function getPagerInfo($nTotal, $nPerPage)
     {
         if ($nPerPage <= 0) {
             throw new \Exception('invalid value for number of items per page: ' . $nPerPage);
         }
 
-        $pageCount = $nTotal > 0 ? \ceil($nTotal / $nPerPage) : 1;
+        $pageCount = $nTotal > 0 ? ceil($nTotal / $nPerPage) : 1;
         if ($this->request->get['p']) {
             if ($this->request->get['p'] === 'l') {
                 $pageNo = $pageCount;
-            } elseif (\is_numeric($this->request->get['p'])) {
+            } elseif (is_numeric($this->request->get['p'])) {
                 $pageNo = (int) $this->request->get['p'];
 
                 if ($pageNo < 1 || $pageNo > $pageCount) {
@@ -178,7 +178,7 @@ abstract class Service extends LzxService
     {
         // generate identCode
         $identCode = [
-            'code'     => \mt_rand(100000, 999999),
+            'code'     => mt_rand(100000, 999999),
             'uid'      => $uid,
             'attamps' => 0,
             'expTime' => $this->request->timestamp + 600
@@ -219,7 +219,7 @@ abstract class Service extends LzxService
         // create user action and send out email
         $mailer = new Mailer('system');
         $mailer->to = $user->email;
-        $siteName = \ucfirst(self::$_city->uriName) . 'BBS';
+        $siteName = ucfirst(self::$city->uriName) . 'BBS';
         $mailer->subject = $user->username . '在' . $siteName . '的用户安全验证码';
         $contents = [
             'username'    => $user->username,
@@ -231,15 +231,15 @@ abstract class Service extends LzxService
         return $mailer->send();
     }
 
-    protected function _handleSpammer(User $user)
+    protected function handleSpammer(User $user)
     {
         $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
         $user->delete();
         $u = new User();
-        $u->lastAccessIP = \inet_pton($this->request->ip);
+        $u->lastAccessIP = inet_pton($this->request->ip);
         $users = $u->getList('createTime');
         $deleteAll = true;
-        if (\sizeof($users) > 1) {
+        if (sizeof($users) > 1) {
             // check if we have old users that from this ip
             foreach ($users as $u) {
                 if ($this->request->timestamp - $u['createTime'] > 2592000) {
@@ -261,7 +261,7 @@ abstract class Service extends LzxService
 
         if (false && $this->config->webmaster) { // turn off spammer email
             $mailer = new Mailer();
-            $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
+            $mailer->subject = 'SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
             $mailer->body = ' --node-- ' . $this->request->json['title'] . PHP_EOL . $this->request->json['body'];
             $mailer->to = $this->config->webmaster;
             $mailer->send();
