@@ -20,25 +20,25 @@ class AJAXCtrler extends Single
         if (!$this->args) {
             $this->error('错误: 错误的请求');
         }
-        $method = '_' . $this->args[0];
-        if (\method_exists($this, $method)) {
+        $method = $this->args[0];
+        if (method_exists($this, $method)) {
             $this->$method();
         } else {
             $this->error('错误: 错误的请求');
         }
     }
 
-    protected function _attend()
+    protected function attend()
     {
-        if (\file_exists($this->config->path['file'] . '/single.msg') && !$this->session->loginStatus) {
-            $this->error('错误: ' . \file_get_contents($this->config->path['file'] . '/single.msg'));
+        if (file_exists($this->config->path['file'] . '/single.msg') && !$this->session->loginStatus) {
+            $this->error('错误: ' . file_get_contents($this->config->path['file'] . '/single.msg'));
         }
 
-        if (empty($this->request->post['name']) || \strlen($this->request->post['sex']) < 1 || empty($this->request->post['age']) || empty($this->request->post['email'])) {
+        if (empty($this->request->post['name']) || strlen($this->request->post['sex']) < 1 || empty($this->request->post['age']) || empty($this->request->post['email'])) {
             $this->error('错误: 带星号(*)选项为必填选项');
         }
 
-        $a = \array_pop($this->db->query('CALL get_latest_single_activity()'));
+        $a = array_pop($this->db->query('CALL get_latest_single_activity()'));
         if ($this->request->post['aid'] != $a['id']) {
             $this->error('错误: 错误的活动');
         }
@@ -61,15 +61,15 @@ class AJAXCtrler extends Single
             $comment->add();
             $attendee->cid = $comment->id;
 
-            $comments = (string) $this->_getComments($a['id']);
+            $comments = (string) $this->getComments($a['id']);
         }
 
         $attendee->time = $this->request->timestamp;
         $attendee->add();
 
-        $chart = (string) $this->_getChart($a);
+        $chart = (string) $this->getChart($a);
 
-        $url = 'https://www.houstonbbs.com/single/info?u=' . $attendee->id . '&c=' . $this->_getCode($attendee->id);
+        $url = 'https://www.houstonbbs.com/single/info?u=' . $attendee->id . '&c=' . $this->getCode($attendee->id);
 
         $mailer = new Mailer();
 
@@ -88,10 +88,10 @@ class AJAXCtrler extends Single
             'comments' => $comments
         ]);
 
-        $this->_getIndependentCache('/single')->delete();
+        $this->getIndependentCache('/single')->delete();
     }
 
-    protected function _checkin()
+    protected function checkin()
     {
         $a = new FFAttendee($this->request->get['u'], 'name,email,sex,aid');
 
@@ -105,7 +105,7 @@ class AJAXCtrler extends Single
         $mailer = new Mailer();
         $mailer->subject = '七夕单身聚会 通讯录';
 
-        $url = 'https://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->_getCode($a->id);
+        $url = 'https://www.houstonbbs.com/single/attendee?u=' . $a->id . '&c=' . $this->getCode($a->id);
         $mailer->body = new Template('mail/attendees', ['name' => $a->name, 'url' => $url]);
         $mailer->to = $a->email;
         //$mailer->to = 'ikki3355@gmail.com';

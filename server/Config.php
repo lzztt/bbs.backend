@@ -33,10 +33,10 @@ class Config
             'server' => __DIR__,
             'language' => __DIR__ . '/language',
             'theme' => __DIR__ . '/theme',
-            'site' => \dirname(__DIR__),
-            'log' => \dirname(__DIR__) . '/log',
-            'file' => \dirname(__DIR__) . '/client',
-            'backup' => \dirname(__DIR__) . '/backup',
+            'site' => dirname(__DIR__),
+            'log' => dirname(__DIR__) . '/log',
+            'file' => dirname(__DIR__) . '/client',
+            'backup' => dirname(__DIR__) . '/backup',
             'cache' => '/tmp/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
         ];
         $this->cache = false;
@@ -55,7 +55,7 @@ class Config
             'single' => 'single',
             'roselife' => 'roselife'
         ];
-        $this->domain = \implode('.', \array_slice(\explode('.', $_SERVER['HTTP_HOST']), -2));
+        $this->domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
         $this->webmaster = 'ikki3355@gmail.com';
 
         $this->image = [

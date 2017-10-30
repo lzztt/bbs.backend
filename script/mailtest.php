@@ -12,13 +12,13 @@ use lzx\html\Template;
 use lzx\core\Cache;
 use site\dataobject\User;
 
-\mb_internal_encoding("UTF-8");
+mb_internal_encoding("UTF-8");
 
 // note: cache path in php and nginx are using servername
 $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 
 $domain = 'houstonbbs.com';
-$siteDir = \dirname(__DIR__);
+$siteDir = dirname(__DIR__);
 $path = [
     'lzx' => $siteDir . '/lzx',
     'root' => $siteDir,
@@ -49,7 +49,7 @@ $task = $argv[1];
 
 $func = __NAMESPACE__ . '\do_' . $task;
 
-if (!\function_exists($func)) {
+if (!function_exists($func)) {
     $logger->info('CRON JOB: wrong action : ' . $task);
     exit;
 }
@@ -65,7 +65,7 @@ function do_user($path, $logger, $config)
     $user->where('uid', 126, '=');
     $users = $user->getList('uid,username,email');
 
-    if (\sizeof($users) > 0) {
+    if (sizeof($users) > 0) {
         $mailer = new Mailer($config->mail->domain);
         Template::$path = $path['theme'] . '/' . $config->theme . '/' . 'pc';
         foreach ($users as $u) {
@@ -112,7 +112,7 @@ function do_activity($path, $logger, $config)
     $db->setLogger($logger);
 
     $activities = $db->query('SELECT a.startTime, n.nid, n.title, u.username, u.email FROM Activity AS a JOIN nodes AS n ON a.nid = n.nid JOIN users AS u ON n.uid = u.uid WHERE a.status IS NULL');
-    if (\sizeof($activities) > 0) {
+    if (sizeof($activities) > 0) {
         $mailer = new Mailer($config->mail->domain);
         Template::$path = $path['theme'] . '/' . $config->theme . '/' . 'pc';
 
@@ -139,21 +139,21 @@ function do_activity($path, $logger, $config)
 
         // delete cache and reschedule next refresh time
         $cache->delete($cacheKey);
-        $refreshTime = \is_readable($refreshTimeFile) ? \intval(\file_get_contents($refreshTimeFile)) : 0;
-        $currentTime = \intval($_SERVER['REQUEST_TIME']);
+        $refreshTime = is_readable($refreshTimeFile) ? intval(file_get_contents($refreshTimeFile)) : 0;
+        $currentTime = intval($_SERVER['REQUEST_TIME']);
         $newActivityStartTime = $activities[0]['startTime'];
         if ($refreshTime < $currentTime || $refreshTime > $newActivityStartTime) {
             updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime);
         }
 
         $mailer->to = 'admin@houstonbbs.com';
-        $mailer->subject = '[活动] ' . \sizeof($activities) . '个新活动已被系统自动激活';
-        $mailer->body = \implode("\n\n", $newActivities);
+        $mailer->subject = '[活动] ' . sizeof($activities) . '个新活动已被系统自动激活';
+        $mailer->body = implode("\n\n", $newActivities);
         $mailer->send();
     } // refresh cache based on the next refresh timestamp
     else {
-        $refreshTime = \is_readable($refreshTimeFile) ? \intval(\file_get_contents($refreshTimeFile)) : 0;
-        $currentTime = \intval($_SERVER['REQUEST_TIME']);
+        $refreshTime = is_readable($refreshTimeFile) ? intval(file_get_contents($refreshTimeFile)) : 0;
+        $currentTime = intval($_SERVER['REQUEST_TIME']);
         if ($currentTime > $refreshTime) {
             $cache->delete($cacheKey);
             updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime);
@@ -178,7 +178,7 @@ function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $cu
             }
         }
     }
-    \file_put_contents($refreshTimeFile, $nextRefreshTime);
+    file_put_contents($refreshTimeFile, $nextRefreshTime);
 }
 
 // daily at 00:00 CDT
@@ -209,7 +209,7 @@ function do_session($path, $logger, $config)
 {
     $db = MySQL::getInstance($config->database, true);
     $db->setLogger($logger);
-    $currentTime = \intval($_SERVER['REQUEST_TIME']);
+    $currentTime = intval($_SERVER['REQUEST_TIME']);
     $db->query('DELETE FROM Session WHERE uid = 0 AND mtime < ' . ($currentTime - 21600));
     $db->query('DELETE FROM Session WHERE mtime < ' . ($currentTime - $config->cookie->lifetime));
 }
@@ -222,8 +222,8 @@ function do_backup($path, $logger, $config)
     $gzip = '/bin/gzip';
     $cmd = $mysqldump . ' --opt --routines --default-character-set=utf8 --set-charset'
         . ' --user=' . $db->username . ' --password=' . $db->passwd . ' ' . $db->dbname
-        . ' | ' . $gzip . ' > ' . $path['backup'] . '/' . \date('Y-m-d', \intval($_SERVER['REQUEST_TIME']) - 86400) . '.sql.gz';
-    echo \shell_exec($cmd);
+        . ' | ' . $gzip . ' > ' . $path['backup'] . '/' . date('Y-m-d', intval($_SERVER['REQUEST_TIME']) - 86400) . '.sql.gz';
+    echo shell_exec($cmd);
     /*
       $db = MySQL::getInstance($config->database, TRUE);
       $db->setLogger($logger);
@@ -234,21 +234,21 @@ function do_backup($path, $logger, $config)
       $res = $db->query('SHOW TABLES');
       foreach ($res as $row)
       {
-      $tables[] = \array_pop($row);
+      $tables[] = array_pop($row);
       }
 
-      $date = \date('Y-m-d', \intval($_SERVER['REQUEST_TIME']) - 18000);
-      $f = \gzopen($path['backup'] . '/' . $date . '.sql.gz', 'w9');
+      $date = date('Y-m-d', intval($_SERVER['REQUEST_TIME']) - 18000);
+      $f = gzopen($path['backup'] . '/' . $date . '.sql.gz', 'w9');
 
-      \gzwrite($f, 'SET NAMES "utf8";' . "\n\n");
+      gzwrite($f, 'SET NAMES "utf8";' . "\n\n");
 
       //cycle through table
       foreach ($tables as $table)
       {
       $sql = 'DROP TABLE IF EXISTS `' . $table . '`;';
       $r = $db->row('SHOW CREATE TABLE ' . $table);
-      $sql .= "\n\n" . \array_pop($r) . ";\n\nLOCK TABLES `$table` WRITE;\n";
-      \gzwrite($f, $sql);
+      $sql .= "\n\n" . array_pop($r) . ";\n\nLOCK TABLES `$table` WRITE;\n";
+      gzwrite($f, $sql);
 
       $rows = $db->query('SELECT * FROM ' . $table);
       $num_fields = $db->num_fields();
@@ -268,22 +268,22 @@ function do_backup($path, $logger, $config)
       {
       $vs[] = isset($v) ? (($types[$k] == 'numeric') ? $v : $db->str($v)) : 'NULL';
       }
-      $values[] = '(' . \implode(',', $vs) . ')';
+      $values[] = '(' . implode(',', $vs) . ')';
 
       // write to file for every $bulk records
       if (($i + 1) % $bulk == 0)
       {
-      \gzwrite($f, 'INSERT INTO `' . $table . '` VALUES ' . \implode(',', $values) . ";\n");
+      gzwrite($f, 'INSERT INTO `' . $table . '` VALUES ' . implode(',', $values) . ";\n");
       $values = [);
       }
       }
 
       if (sizeof($values) > 0)
       {
-      \gzwrite($f, 'INSERT INTO `' . $table . '` VALUES ' . \implode(',', $values) . ";\n");
+      gzwrite($f, 'INSERT INTO `' . $table . '` VALUES ' . implode(',', $values) . ";\n");
       }
       // echo $table . ' : ' . memory_get_usage(TRUE)/1024/1024 . "MB\n";
-      \gzwrite($f, "UNLOCK TABLES;\n\n\n");
+      gzwrite($f, "UNLOCK TABLES;\n\n\n");
       }
 
       $procedures = [);
@@ -301,8 +301,8 @@ function do_backup($path, $logger, $config)
       }
 
       //save file
-      \gzwrite($f, $sql);
-      \gzclose($f);
+      gzwrite($f, $sql);
+      gzclose($f);
      *
      */
 }
@@ -310,21 +310,21 @@ function do_backup($path, $logger, $config)
 // daily at 23:55 CDT
 function do_alexa($path, $logger, $config)
 {
-    $c = \curl_init('http://data.alexa.com/data?cli=10&dat=s&url=http://www.houstonbbs.com');
-    \curl_setopt_array($c, [
+    $c = curl_init('http://data.alexa.com/data?cli=10&dat=s&url=http://www.houstonbbs.com');
+    curl_setopt_array($c, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 2,
         CURLOPT_TIMEOUT => 3
     ]);
-    $contents = \curl_exec($c);
-    \curl_close($c);
+    $contents = curl_exec($c);
+    curl_close($c);
 
     if ($contents) {
-        \preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $contents, $p);
+        preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $contents, $p);
         if ($p[2]) {
-            $rank = \number_format(intval($p[2]));
-            $data = 'HoustonBBS最近三个月平均访问量<a href="http://www.alexa.com/data/details/main?url=http://www.houstonbbs.com" title="HoustonBBS近三个月的访问量统计">Alexa排名</a>:<br /><a href="/node/5641" title="Houston各中文网站 月访问量 横向比较">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . \date('m/d/Y H:i:s T', \intval($_SERVER['REQUEST_TIME'])) . ')';
-            \file_put_contents($path['theme'] . '/' . $config->theme . '/alexa.tpl.php', $data);
+            $rank = number_format(intval($p[2]));
+            $data = 'HoustonBBS最近三个月平均访问量<a href="http://www.alexa.com/data/details/main?url=http://www.houstonbbs.com" title="HoustonBBS近三个月的访问量统计">Alexa排名</a>:<br /><a href="/node/5641" title="Houston各中文网站 月访问量 横向比较">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
+            file_put_contents($path['theme'] . '/' . $config->theme . '/alexa.tpl.php', $data);
         } else {
             $logger->info('Get Alexa Rank Error');
         }

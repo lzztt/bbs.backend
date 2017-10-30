@@ -15,12 +15,12 @@ class DeleteCtrler extends Node
             $this->pageForbidden();
         }
 
-        list($nid, $type) = $this->_getNodeType();
-        $method = '_delete' . $type;
+        list($nid, $type) = $this->getNodeType();
+        $method = 'delete' . $type;
         $this->$method($nid);
     }
 
-    private function _deleteForumTopic($nid)
+    private function deleteForumTopic($nid)
     {
         $node = new NodeObject($nid, 'uid,tid,status');
         $tags = $node->getTags($nid);
@@ -48,13 +48,13 @@ class DeleteCtrler extends Node
         $user->update( 'points' );
          */
 
-        $this->_getCacheEvent('NodeUpdate', $nid)->trigger();
-        $this->_getCacheEvent('ForumUpdate', $node->tid)->trigger();
+        $this->getCacheEvent('NodeUpdate', $nid)->trigger();
+        $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
 
         $this->pageRedirect('/forum/' . $node->tid);
     }
 
-    private function _deleteYellowPage($nid)
+    private function deleteYellowPage($nid)
     {
         if ($this->request->uid != 1) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
@@ -66,8 +66,8 @@ class DeleteCtrler extends Node
             $node->update('status');
         }
 
-        $this->_getCacheEvent('NodeUpdate', $nid)->trigger();
-        $this->_getCacheEvent('YellowPageUpdate', $node->tid)->trigger();
+        $this->getCacheEvent('NodeUpdate', $nid)->trigger();
+        $this->getCacheEvent('YellowPageUpdate', $node->tid)->trigger();
 
         $this->pageRedirect('/yp/' . $node->tid);
     }

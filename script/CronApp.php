@@ -15,35 +15,43 @@ $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 // $config->domain need http_host
 $_SERVER['HTTP_HOST'] = 'www.houstonbbs.com';
 
-require_once \dirname(__DIR__) . '/lib/lzx/App.php';
+require_once dirname(__DIR__) . '/lib/lzx/App.php';
 
 class CronApp extends App
 {
     protected $timestamp;
     protected $config;
+    protected $actions;
 
     public function __construct()
     {
         parent::__construct();
         // register current namespaces
-        $this->loader->registerNamespace(__NAMESPACE__, \dirname(__DIR__) . '/server');
+        $this->loader->registerNamespace(__NAMESPACE__, dirname(__DIR__) . '/server');
 
-        $this->timestamp = \intval($_SERVER['REQUEST_TIME']);
+        $this->timestamp = intval($_SERVER['REQUEST_TIME']);
         $this->config = Config::getInstance();
         $this->logger->setUserInfo(['uid' => 'cron', 'umode' => 'cli', 'urole' => 'adm']);
         $this->logger->setDir($this->config->path['log']);
         $this->logger->setEmail($this->config->webmaster);
+        
+        $this->actions = [];
+        foreach (get_class_methods(__CLASS__) as $method) {
+            if (substr($method, 0, 2) == 'do') {
+                $this->actions[strtolower(substr($method, 2))] = $method;
+            }
+        }
     }
 
     public function run($argc, array $argv = [])
     {
-        $task = $argv[1];
-        $func = 'do_' . $task;
+        $task = strtolower($argv[1]);
+        $func = $this->actions[$task];
 
         // for logger mail subject
         $_SERVER['REQUEST_URI'] = 'cron->' . $task;
 
-        if (\method_exists($this, $func)) {
+        if (method_exists($this, $func)) {
             $this->$func();
         } else {
             $this->logger->info('CRON JOB: wrong action : ' . $task);
@@ -51,7 +59,7 @@ class CronApp extends App
         }
     }
 
-    protected function do_activity()
+    protected function doActivity()
     {
         // config cache
         $db = DB::getInstance($this->config->db);
@@ -68,7 +76,7 @@ class CronApp extends App
         $refreshTimeFile = $this->config->path['log'] . '/activity_cache_refresh_time.txt';
 
         $activities = $db->query('SELECT a.start_time, n.id, n.title, u.username, u.email FROM activities AS a JOIN nodes AS n ON a.nid = n.id JOIN users AS u ON n.uid = u.id WHERE a.status IS NULL');
-        if (\sizeof($activities) > 0) {
+        if (sizeof($activities) > 0) {
             $mailer = new Mailer();
             Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
 
@@ -97,7 +105,7 @@ class CronApp extends App
             // delete cache and reschedule next refresh time
             $cache->delete();
             $cache->flush();
-            $refreshTime = \is_readable($refreshTimeFile) ? (int) \file_get_contents($refreshTimeFile) : 0;
+            $refreshTime = is_readable($refreshTimeFile) ? (int) file_get_contents($refreshTimeFile) : 0;
             $currentTime = (int) $_SERVER['REQUEST_TIME'];
             $newActivityStartTime = $activities[0]['start_time'];
             if ($refreshTime < $currentTime || $refreshTime > $newActivityStartTime) {
@@ -105,13 +113,13 @@ class CronApp extends App
             }
 
             $mailer->to = 'admin@houstonbbs.com';
-            $mailer->subject = '[活动] ' . \sizeof($activities) . '个新活动已被系统自动激活';
-            $mailer->body = \implode("\n\n", $newActivities);
+            $mailer->subject = '[活动] ' . sizeof($activities) . '个新活动已被系统自动激活';
+            $mailer->body = implode("\n\n", $newActivities);
             $mailer->send();
         } // refresh cache based on the next refresh timestamp
         else {
-            $refreshTime = \is_readable($refreshTimeFile) ? \intval(\file_get_contents($refreshTimeFile)) : 0;
-            $currentTime = \intval($_SERVER['REQUEST_TIME']);
+            $refreshTime = is_readable($refreshTimeFile) ? intval(file_get_contents($refreshTimeFile)) : 0;
+            $currentTime = intval($_SERVER['REQUEST_TIME']);
             if ($currentTime > $refreshTime) {
                 $cache->delete();
                 $cache->flush();
@@ -137,11 +145,11 @@ class CronApp extends App
                 }
             }
         }
-        \file_put_contents($refreshTimeFile, $nextRefreshTime);
+        file_put_contents($refreshTimeFile, $nextRefreshTime);
     }
 
 // daily at 23:55 CDT
-    protected function do_session()
+    protected function doSession()
     {
         $db = DB::getInstance($this->config->db);
         $currentTime = (int) $_SERVER['REQUEST_TIME'];
@@ -150,14 +158,14 @@ class CronApp extends App
     }
 
 // daily
-    protected function do_backup()
+    protected function doBackup()
     {
         // clean database before backup
         $db = DB::getInstance($this->config->db);
         $db->query('CALL clean()');
         $cacheTables = [];
         foreach ($db->query('SHOW TABLES LIKE "cache_%"') as $row) {
-            $cacheTables[] = \array_shift($row);
+            $cacheTables[] = array_shift($row);
         }
         unset($db);
 
@@ -169,11 +177,11 @@ class CronApp extends App
             $cmd = $cmd . ' --ignore-table=' . $db['dsn'] . '.' . $t;
         }
 
-        $cmd = $cmd . ' | ' . $gzip . ' > ' . $this->config->path['backup'] . '/' . \date('Y-m-d', \intval($_SERVER['REQUEST_TIME']) - 86400) . '.sql.gz';
-        echo \shell_exec($cmd);
+        $cmd = $cmd . ' | ' . $gzip . ' > ' . $this->config->path['backup'] . '/' . date('Y-m-d', intval($_SERVER['REQUEST_TIME']) - 86400) . '.sql.gz';
+        echo shell_exec($cmd);
     }
 
-    protected function do_ad()
+    protected function doAd()
     {
         $db = DB::getInstance($this->config->db);
 
@@ -185,17 +193,17 @@ class CronApp extends App
         // expiring in seven days
         $ads = $db->query('SELECT * FROM ads WHERE exp_time > ' . ($this->timestamp + 518400) . ' AND exp_time < ' . ($this->timestamp + 604800));
         foreach ($ads as $ad) {
-            $this->_notifyAdUser($mailer, $ad, '七天内');
+            $this->notifyAdUser($mailer, $ad, '七天内');
         }
 
         // expiring in one day
         $ads = $db->query('SELECT * FROM ads WHERE exp_time > ' . ($this->timestamp - 86400) . ' AND exp_time < ' . ($this->timestamp));
         foreach ($ads as $ad) {
-            $this->_notifyAdUser($mailer, $ad, '今天');
+            $this->notifyAdUser($mailer, $ad, '今天');
         }
     }
 
-    private function _notifyAdUser($mailer, $ad, $time)
+    private function notifyAdUser($mailer, $ad, $time)
     {
         $mailer->subject = $ad['name'] . '在HoustonBBS的' . ($ad['type_id'] == 1 ? '电子黄页' : '页顶广告') . $time . '到期';
         $mailer->to = $ad['email'];
@@ -207,37 +215,37 @@ class CronApp extends App
     }
 
     // daily at 23:55 CDT
-    protected function do_alexa()
+    protected function doAlexa()
     {
         foreach (['houston', 'dallas', 'austin'] as $city) {
-            $this->_updateAlexa($city);
+            $this->updateAlexa($city);
         }
     }
 
-    private function _updateAlexa($city)
+    private function updateAlexa($city)
     {
-        $c = \curl_init('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
-        \curl_setopt_array($c, [
+        $c = curl_init('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
+        curl_setopt_array($c, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CONNECTTIMEOUT => 2,
             CURLOPT_TIMEOUT => 3
         ]);
-        $contents = \curl_exec($c);
-        \curl_close($c);
+        $contents = curl_exec($c);
+        curl_close($c);
 
         if ($contents) {
-            \preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $contents, $p);
+            preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $contents, $p);
             if ($p[2]) {
-                $rank = \number_format(intval($p[2]));
-                $data = \ucfirst($city) . 'BBS最近三个月平均访问量<a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">Alexa排名</a>:<br /><a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . \date('m/d/Y H:i:s T', \intval($_SERVER['REQUEST_TIME'])) . ')';
-                \file_put_contents($this->config->path['theme'] . '/' . $this->config->theme['roselife'] . '/alexa.' . $city . '.tpl.php', $data);
+                $rank = number_format(intval($p[2]));
+                $data = ucfirst($city) . 'BBS最近三个月平均访问量<a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">Alexa排名</a>:<br /><a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
+                file_put_contents($this->config->path['theme'] . '/' . $this->config->theme['roselife'] . '/alexa.' . $city . '.tpl.php', $data);
             } else {
                 $this->logger->info('Get Alexa Rank Error');
             }
         }
     }
 
-    protected function do_checkSpamer()
+    protected function doCheckSpamer()
     {
         $db = DB::getInstance($this->config->db);
 
@@ -251,17 +259,17 @@ class CronApp extends App
 
         foreach ($users as $u) {
             // skip usernames with uppercase letters
-            if (\preg_match('/[A-Z]/', $u['username']) || !\preg_match('/[a-z][0-9]+[a-z]/', $u['username'])) {
+            if (preg_match('/[A-Z]/', $u['username']) || !preg_match('/[a-z][0-9]+[a-z]/', $u['username'])) {
                 continue;
             }
 
-            $geo = \geoip_record_by_name(\long2ip($u['last_access_ip']));
+            $geo = geoip_record_by_name(\long2ip($u['last_access_ip']));
             if ($geo) {
                 $city = $geo['city'] ? $geo['city'] : 'NA';
                 $region = $geo['region'] ? $geo['region'] : 'NA';
             }
 
-            echo \implode("\t", [$u['nc'], $u['cc'], $u['id'], $city , $region, $u['username'], $u['email']]) . \PHP_EOL;
+            echo implode("\t", [$u['nc'], $u['cc'], $u['id'], $city , $region, $u['username'], $u['email']]) . \PHP_EOL;
         }
     }
 }

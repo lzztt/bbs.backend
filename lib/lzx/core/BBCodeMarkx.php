@@ -6,49 +6,49 @@ namespace lzx\core;
 
 class BBCodeMarkx
 {
-    private static function _bbcode_ulist($s)
+    private static function ulist($s)
     {
         // '/\[list\](.*?)\[\/list\]/ms'
         return preg_replace('/\[\*\]\s?/ms', '- ', $s[1]);
     }
 
-    private static function _bbcode_olist($s)
+    private static function olist($s)
     {
         return preg_replace('/\[\*\]\s?/ms', '1. ', $s[2]);
     }
 
-    private static function _quote($text)
+    private static function quote($text)
     {
         return "\n> " . str_replace("\n", "\n> ", trim(preg_replace(['/\[quote.*\[\/quote\]/ms', '/\n{2,}/ms'], ['', "\n"], $text)));
     }
 
-    private static function _bbcode_quote($s)
+    private static function bbcodeQuote($s)
     {
         $text = $s[1];
         //[quote] in /[quote(.*)\[\/quote\]/ms
         if ($text[0] == ']') {
-            return self::_quote(substr($text, 1));
+            return self::quote(substr($text, 1));
         }
         //[quote="name"] in /[quote(.*)\[\/quote\]/ms
         if ($text[0] == '=') {
             $p = strpos($text, ']');
-            return "\n> [*" . trim(substr($text, 1, $p - 1), ' \'"') . " :* g]" . self::_quote(substr($text, $p + 1));
+            return "\n> [*" . trim(substr($text, 1, $p - 1), ' \'"') . " :* g]" . self::quote(substr($text, $p + 1));
         }
     }
 
     public static function parse($text)
     {
-        if (\strpos($text, '[/') === false) {
+        if (strpos($text, '[/') === false) {
             // if no colose tag, don't borther
             return $text;
         }
 
         // BBCode [code]
-        //$text = preg_replace_callback( '/\[code\](.*?)\[\/code\]/ms', [self, '_bbcode_escape'], $text );
+        //$text = preg_replace_callback( '/\[code\](.*?)\[\/code\]/ms', [self, 'escape'], $text );
         $text = str_replace(['[code]', '[/code]'], ['`', '`'], $text);
-        $text = preg_replace_callback('/\[list\](.*?)\[\/list\]/ms', [self, '_bbcode_ulist'], $text);
-        $text = preg_replace_callback('/\[list\=(.*?)\](.*?)\[\/list\]/ms', [self, '_bbcode_olist'], $text);
-        $text = preg_replace_callback('/\[quote(.*)\[\/quote\]/ms', [self, '_bbcode_quote'], $text);
+        $text = preg_replace_callback('/\[list\](.*?)\[\/list\]/ms', [self, 'ulist'], $text);
+        $text = preg_replace_callback('/\[list\=(.*?)\](.*?)\[\/list\]/ms', [self, 'olist'], $text);
+        $text = preg_replace_callback('/\[quote(.*)\[\/quote\]/ms', [self, 'quote'], $text);
 
 
         // Smileys to find...
@@ -104,9 +104,9 @@ class BBCodeMarkx
         //$text = str_replace("\r", "", $text);
         //$text = "<p>" . preg_replace("/(\n){2,}/", "</p><p>", $text) . "</p>";
         //$text = nl2br( $text );
-        //$text = preg_replace_callback( '/<pre>(.*?)<\/pre>/ms', [self, '_bbcode_removeBr'], $text );
+        //$text = preg_replace_callback( '/<pre>(.*?)<\/pre>/ms', [self, 'removeBr'], $text );
         //$text = preg_replace('/<p><pre>(.*?)<\/pre><\/p>/ms', "<pre>\\1</pre>", $text);
-        //$text = preg_replace_callback( '/<ul>(.*?)<\/ul>/ms', [self, '_bbcode_removeBr'], $text );
+        //$text = preg_replace_callback( '/<ul>(.*?)<\/ul>/ms', [self, 'removeBr'], $text );
         //$text = preg_replace('/<p><ul>(.*?)<\/ul><\/p>/ms', "<ul>\\1</ul>", $text);
         // matches an "xxxx://yyyy" URL at the start of a line, or after a space.
         // xxxx can only be alpha characters.

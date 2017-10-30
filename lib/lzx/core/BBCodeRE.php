@@ -7,7 +7,7 @@ namespace lzx\core;
 
 class BBCodeRE
 {
-    private static function _bbcode_escape($s)
+    private static function escape($s)
     {
  // all input should has already been processed by htmlentity() function before stored, to prevent html injunction
         $code = $s[1];
@@ -17,7 +17,7 @@ class BBCodeRE
 
     // clean some tags to remain strict
     // not very elegant, but it works. No time to do better ;)
-    private static function _bbcode_removeBr($s)
+    private static function removeBr($s)
     {
         return str_replace('<br />', '', $s[0]);
     }
@@ -30,7 +30,7 @@ class BBCodeRE
         }
 
         // BBCode [code]
-        $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [self, '_bbcode_escape'], $text);
+        $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [self, 'escape'], $text);
 
         // Smileys to find...
         // Add closing tags to prevent users from disruping your site's HTML
@@ -97,10 +97,10 @@ class BBCodeRE
         $text = nl2br($text);
 
 
-        $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [self, '_bbcode_removeBr'], $text);
+        $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [self, 'removeBr'], $text);
         //$text = preg_replace('/<p><pre>(.*?)<\/pre><\/p>/ms', "<pre>\\1</pre>", $text);
 
-        $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [self, '_bbcode_removeBr'], $text);
+        $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [self, 'removeBr'], $text);
         //$text = preg_replace('/<p><ul>(.*?)<\/ul><\/p>/ms', "<ul>\\1</ul>", $text);
         // matches an "xxxx://yyyy" URL at the start of a line, or after a space.
         // xxxx can only be alpha characters.

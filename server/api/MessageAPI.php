@@ -11,7 +11,7 @@ class MessageAPI extends Service
 {
     const TOPICS_PER_PAGE = 25;
 
-    private static $_mailbox = ['inbox', 'sent'];
+    private static $mailbox = ['inbox', 'sent'];
 
     /**
      * get private messages in user's mailbox (inbox,sent)
@@ -30,17 +30,17 @@ class MessageAPI extends Service
             $this->forbidden();
         }
 
-        if (\is_numeric($this->args[0])) {
-            $return = $this->_getMessage((int) $this->args[0]);
+        if (is_numeric($this->args[0])) {
+            $return = $this->getMessage((int) $this->args[0]);
         } else {
             if ($this->args[0] == 'new') {
-                $return = $this->_getNewMessageCount();
+                $return = $this->getNewMessageCount();
             } else {
-                $return = $this->_getMessageList($this->args[0]);
+                $return = $this->getMessageList($this->args[0]);
             }
         }
 
-        $this->_json($return);
+        $this->json($return);
     }
 
     /**
@@ -56,7 +56,7 @@ class MessageAPI extends Service
         }
 
         $topicMID = null;
-        if (\array_key_exists('topicMID', $this->request->post)) {
+        if (array_key_exists('topicMID', $this->request->post)) {
             $topicMID = (int) $this->request->post['topicMID'];
             if ($topicMID <= 0) {
                 $topicMID = null;
@@ -94,7 +94,7 @@ class MessageAPI extends Service
         }
 
         // save pm to database
-        if (\strlen($this->request->post['body']) < 5) {
+        if (strlen($this->request->post['body']) < 5) {
             $this->error('短信正文需最少5个字母或3个汉字');
         }
 
@@ -124,7 +124,7 @@ class MessageAPI extends Service
         }
 
         $sender = new User($this->request->uid, 'username,avatar');
-        $this->_json([
+        $this->json([
             'id'         => $pm->id,
             'mid'        => $pm->msgID,
             'time'      => $pm->time,
@@ -147,8 +147,8 @@ class MessageAPI extends Service
 
         $mids = [];
 
-        foreach (\explode(',', $this->args[0]) as $mid) {
-            if (\is_numeric($mid) && \intval($mid) > 0) {
+        foreach (explode(',', $this->args[0]) as $mid) {
+            if (is_numeric($mid) && intval($mid) > 0) {
                 $mids[] = (int) $mid;
             }
         }
@@ -164,10 +164,10 @@ class MessageAPI extends Service
             }
         }
 
-        $this->_json($error ? ['error' => $error] : null);
+        $this->json($error ? ['error' => $error] : null);
     }
 
-    private function _getMessage($mid)
+    private function getMessage($mid)
     {
         if ($mid > 0) {
             $pm = new PrivMsg();
@@ -178,7 +178,7 @@ class MessageAPI extends Service
 
             foreach ($msgs as $i => $m) {
                 if (empty($m['avatar'])) {
-                    $msgs[$i]['avatar'] = '/data/avatars/avatar0' . \mt_rand(1, 5) . '.jpg';
+                    $msgs[$i]['avatar'] = '/data/avatars/avatar0' . mt_rand(1, 5) . '.jpg';
                 }
             }
 
@@ -188,22 +188,22 @@ class MessageAPI extends Service
         }
     }
 
-    private function _getMessageList($mailbox)
+    private function getMessageList($mailbox)
     {
         $user = new User($this->request->uid, null);
-        if (!\in_array($mailbox, self::$_mailbox)) {
+        if (!in_array($mailbox, self::$mailbox)) {
             $this->error('mailbox does not exist: ' . $mailbox);
         }
 
         $pmCount = $user->getPrivMsgsCount($mailbox);
 
-        list($pageNo, $pageCount) = $this->_getPagerInfo($pmCount, self::TOPICS_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo($pmCount, self::TOPICS_PER_PAGE);
         $msgs = $pmCount > 0 ? $user->getPrivMsgs($mailbox, self::TOPICS_PER_PAGE, ($pageNo - 1) * self::TOPICS_PER_PAGE) : [];
 
         return ['msgs' => $msgs, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount]];
     }
 
-    private function _getNewMessageCount()
+    private function getNewMessageCount()
     {
         $user = new User($this->request->uid, null);
         return ['count' => $user->getPrivMsgsCount('new')];

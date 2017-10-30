@@ -9,12 +9,12 @@ class TagCtrler extends Node
 {
     public function run()
     {
-        list($nid, $type) = $this->_getNodeType();
-        $method = '_tag' . $type;
+        list($nid, $type) = $this->getNodeType();
+        $method = 'tag' . $type;
         $this->$method($nid);
     }
 
-    private function _tagForumTopic($nid)
+    private function tagForumTopic($nid)
     {
         if (empty($this->args)) {
             $this->error('no tag id specified');
@@ -29,7 +29,7 @@ class TagCtrler extends Node
             $nodeObj->update('tid');
 
             foreach (['/forum/' . $oldTagID, '/forum/' . $newTagID, '/node/' . $nid] as $key) {
-                $this->_getIndependentCache($key)->delete();
+                $this->getIndependentCache($key)->delete();
             }
 
             $this->pageRedirect('/node/' . $nid);
@@ -39,7 +39,7 @@ class TagCtrler extends Node
         }
     }
 
-    private function _tagYellowPage($nid)
+    private function tagYellowPage($nid)
     {
         if (empty($this->args)) {
             $this->error('no tag id specified');
@@ -54,7 +54,7 @@ class TagCtrler extends Node
             $nodeObj->update('tid');
 
             foreach (['/yp/' . $oldTagID, '/yp/' . $newTagID, '/node/' . $nid] as $key) {
-                $this->_getIndependentCache($key)->delete();
+                $this->getIndependentCache($key)->delete();
             }
 
             $this->pageRedirect('/node/' . $nid);

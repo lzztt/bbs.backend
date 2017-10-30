@@ -5,7 +5,7 @@ namespace lzx\core;
 use lzx\core\Mailer;
 
 /**
- * @param Mailer $_mailer
+ * @param Mailer $mailer
  */
 class Logger
 {
@@ -16,29 +16,29 @@ class Logger
     const WARNING = 'WARNING';
     const ERROR = 'ERROR';
 
-    private $_userinfo = [];
-    private $_dir;
-    private $_file;
-    private $_time;
-    private $_mailer = null;
-    private $_logCache;
+    private $userinfo = [];
+    private $dir;
+    private $file;
+    private $time;
+    private $mailer = null;
+    private $logCache;
 
     private function __construct()
     {
-        $this->_file = [
+        $this->file = [
             self::INFO => 'php_info.log',
             self::DEBUG => 'php_debug.log',
             self::WARNING => 'php_warning.log',
             self::ERROR => 'php_error.log'
         ];
         // initialize cache
-        $this->_logCache = [
+        $this->logCache = [
             self::INFO => '',
             self::DEBUG => '',
             self::WARNING => '',
             self::ERROR => ''
         ];
-        $this->_time = \date('Y-m-d H:i:s T', (int) $_SERVER['REQUEST_TIME']);
+        $this->time = date('Y-m-d H:i:s T', (int) $_SERVER['REQUEST_TIME']);
     }
 
     public function __destruct()
@@ -59,7 +59,7 @@ class Logger
     {
         static $instance;
 
-        if (\is_null($instance)) {
+        if (is_null($instance)) {
             $instance = new self();
         }
 
@@ -69,12 +69,12 @@ class Logger
     // only set Dir once
     public function setDir($dir)
     {
-        if (!isset($this->_dir)) {
-            if (\is_dir($dir) && \is_writable($dir)) {
-                foreach ($this->_file as $l => $f) {
-                    $this->_file[$l] = $dir . '/' . $f;
+        if (!isset($this->dir)) {
+            if (is_dir($dir) && is_writable($dir)) {
+                foreach ($this->file as $l => $f) {
+                    $this->file[$l] = $dir . '/' . $f;
                 }
-                $this->_dir = $dir;
+                $this->dir = $dir;
             } else {
                 throw new \InvalidArgumentException('Log dir is not an readable directory : ' . $dir);
             }
@@ -85,9 +85,9 @@ class Logger
 
     public function setEmail($email)
     {
-        if (\filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-            $this->_mailer = new Mailer('logger');
-            $this->_mailer->to = $email;
+        if (filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            $this->mailer = new Mailer('logger');
+            $this->mailer->to = $email;
         } else {
             throw new \Exception('Invalid email address: ' . $email);
         }
@@ -95,48 +95,48 @@ class Logger
 
     public function setUserInfo(array $userinfo)
     {
-        $this->_userinfo = $userinfo;
+        $this->userinfo = $userinfo;
     }
 
     public function info($str)
     {
-        $this->_log($str, self::INFO);
+        $this->log($str, self::INFO);
     }
 
     public function debug($var)
     {
-        \ob_start();
-        \var_dump($var);
-        $str = \ob_get_contents();    // Get the contents of the buffer
-        \ob_end_clean();
+        ob_start();
+        var_dump($var);
+        $str = ob_get_contents();    // Get the contents of the buffer
+        ob_end_clean();
 
-        $this->_log(\trim($str), self::DEBUG);
+        $this->log(trim($str), self::DEBUG);
     }
 
     public function warn($str)
     {
-        $this->_log($str, self::WARNING);
+        $this->log($str, self::WARNING);
     }
 
     public function error($str, array $traces = [])
     {
-        $this->_log($str, self::ERROR, $traces);
+        $this->log($str, self::ERROR, $traces);
     }
 
     public function flush()
     {
-        if ($this->_dir) {
-            foreach ($this->_logCache as $type => $log) {
+        if ($this->dir) {
+            foreach ($this->logCache as $type => $log) {
                 if ($log) {
-                    \file_put_contents($this->_file[$type], $log, \FILE_APPEND | \LOCK_EX);
+                    file_put_contents($this->file[$type], $log, \FILE_APPEND | \LOCK_EX);
                 }
             }
         } else {
-            \error_log(\implode('', $this->_logCache));
+            error_log(implode('', $this->logCache));
         }
 
         // clear the cache
-        $this->_logCache = [
+        $this->logCache = [
             self::INFO => '',
             self::DEBUG => '',
             self::WARNING => '',
@@ -144,10 +144,10 @@ class Logger
         ];
     }
 
-    private function _log($str, $type, array $traces = null)
+    private function log($str, $type, array $traces = null)
     {
-        $log = ['time' => $this->_time, 'type' => $type];
-        foreach ($this->_userinfo as $k => $v) {
+        $log = ['time' => $this->time, 'type' => $type];
+        foreach ($this->userinfo as $k => $v) {
             $log[$k] = $v;
         }
         $log['uri'] = $_SERVER['REQUEST_URI'];
@@ -155,28 +155,28 @@ class Logger
         $log['message'] = $str;
 
         if ($traces !== null) {
-            $log['trace'] = $this->_get_debug_print_backtrace($traces);
+            $log['trace'] = $this->getBacktrace($traces);
         }
 
-        if ($type == self::ERROR && isset($this->_mailer)) {
-            $this->_mailer->subject = 'web error: ' . $_SERVER['REQUEST_URI'];
-            $this->_mailer->body = \json_encode($log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
-            $this->_mailer->send();
+        if ($type == self::ERROR && isset($this->mailer)) {
+            $this->mailer->subject = 'web error: ' . $_SERVER['REQUEST_URI'];
+            $this->mailer->body = json_encode($log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+            $this->mailer->send();
             $log['_SERVER'] = $_SERVER;
         }
 
-        $this->_logCache[$type] .= \json_encode($log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) . \PHP_EOL;
+        $this->logCache[$type] .= json_encode($log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) . \PHP_EOL;
     }
 
-    private function _get_debug_print_backtrace(array $traces)
+    private function getBacktrace(array $traces)
     {
         if (empty($traces)) {
-            $traces = \array_slice(\debug_backtrace(), 2);
+            $traces = array_slice(debug_backtrace(), 2);
         }
         $ret = [];
 
         foreach ($traces as $i => $call) {
-            $ret[] = '#' . \str_pad($i, 3, ' ')
+            $ret[] = '#' . str_pad($i, 3, ' ')
                 . ($call['class'] ? $call['class'] . $call['type'] . $call['function'] : $call['function'])
                 . ' @ ' . $call['file'] . ':' . $call['line'];
         }

@@ -13,12 +13,12 @@ class CacheAPI extends Service
      */
     public function get()
     {
-        if ($this->request->uid != 1 || \in_array('..', $this->args)) {
+        if ($this->request->uid != 1 || in_array('..', $this->args)) {
             $this->forbidden();
         }
 
-        $cacheList = \scandir(CacheHandler::$path . '/' . \implode('/', $this->args));
-        $this->_json($cacheList);
+        $cacheList = scandir(CacheHandler::$path . '/' . implode('/', $this->args));
+        $this->json($cacheList);
     }
 
     /**
@@ -27,22 +27,22 @@ class CacheAPI extends Service
      */
     public function delete()
     {
-        if ($this->request->uid != 1 || empty($this->args) || \in_array('..', $this->args)) {
+        if ($this->request->uid != 1 || empty($this->args) || in_array('..', $this->args)) {
             $this->forbidden();
         }
 
-        $cacheName = \implode('/', $this->args);
-        if (\substr($cacheName, 0, 5) === 'page/') {
-            $cacheName = urldecode(\substr($cacheName, 4)); // get page cache key, including the leading slash
-        } elseif (\substr($cacheName, 0, 8) === 'segment/') {
-            $cacheName = \substr($cacheName, 8); // get segment cache key, excluding teh leading slash
+        $cacheName = implode('/', $this->args);
+        if (substr($cacheName, 0, 5) === 'page/') {
+            $cacheName = urldecode(substr($cacheName, 4)); // get page cache key, including the leading slash
+        } elseif (substr($cacheName, 0, 8) === 'segment/') {
+            $cacheName = substr($cacheName, 8); // get segment cache key, excluding teh leading slash
         } else {
             $this->error('wrong cache type');
         }
 
-        $cache = $this->_getIndependentCache($cacheName);
+        $cache = $this->getIndependentCache($cacheName);
         $cache->delete();
 
-        $this->_json(['cacheName' => $cacheName]);
+        $this->json(['cacheName' => $cacheName]);
     }
 }

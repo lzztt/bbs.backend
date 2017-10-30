@@ -15,7 +15,7 @@ use site\ControllerFactory;
  */
 class ControllerRouter extends ControllerFactory
 {
-    protected static $_route = [
+    protected static $route = [
         'activity'                =>  'site\\controller\\activity\\ActivityCtrler',
         'ad'                      =>  'site\\controller\\ad\\ADCtrler',
         'app/ad'                  =>  'site\\controller\\app\\ADCtrler',

@@ -12,13 +12,13 @@ use lzx\html\Template;
 use lzx\core\Cache;
 use site\dataobject\User;
 
-\mb_internal_encoding("UTF-8");
+mb_internal_encoding("UTF-8");
 
 // note: cache path in php and nginx are using servername
 $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 
 $domain = 'houstonbbs.com';
-$siteDir = \dirname(__DIR__);
+$siteDir = dirname(__DIR__);
 $path = [
     'lzx' => $siteDir . '/lzx',
     'root' => $siteDir,
@@ -49,7 +49,7 @@ $task = $argv[1];
 
 $func = __NAMESPACE__ . '\do_' . $task;
 
-if (!\function_exists($func)) {
+if (!function_exists($func)) {
     $logger->info('CRON JOB: wrong action : ' . $task);
     exit;
 }
@@ -63,8 +63,8 @@ function do_cache($path, $logger, $config)
     $cache->setLogger($logger);
     $cache->store('t_key', 't_value');
 
-    echo \disk_free_space($config->cache_path);
-    if (\disk_free_space($config->cache_path) < 1024) {
+    echo disk_free_space($config->cache_path);
+    if (disk_free_space($config->cache_path) < 1024) {
         $logger->info("no free space left");
         echo '1';
         $cache->clearAllCache();

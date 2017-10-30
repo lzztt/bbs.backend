@@ -12,7 +12,7 @@ class SearchCtrler extends Search
         $this->cache = new PageCache($this->request->uri);
 
         $searchEngineIDs = ['houston' => 'ff_lfzbzonw', 'dallas' => 'gznplywzy7a', 'austin' => 'ihghalygyj8'];
-        $seid = $searchEngineIDs[self::$_city->uriName];
+        $seid = $searchEngineIDs[self::$city->uriName];
 
         $html = <<<HTML
 <div id="cse-search-form">Loading</div>
@@ -59,7 +59,7 @@ display:none !important;
 <div id="cse"></div>
 HTML;
 
-        $this->_var['content'] = $html;
+        $this->var['content'] = $html;
     }
 }
 

@@ -6,11 +6,11 @@ use site\controller\App;
 
 class WebCtrler extends App
 {
-    private $_name = 'web';
+    private $name = 'web';
 
     public function run()
     {
-        $this->response->setContent(\file_get_contents($this->_getLatestVersion($this->_name) . '/index.html'));
+        $this->response->setContent(file_get_contents($this->getLatestVersion($this->name) . '/index.html'));
     }
 }
 

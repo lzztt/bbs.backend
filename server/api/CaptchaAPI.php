@@ -18,24 +18,24 @@ class CaptchaAPI extends Service
         // generate a CAPTCHA code
         $chars = 'aABCdEeFfGHKLMmNPRSTWXY23456789';
         $code_length = 5;
-        $code = \substr(\str_shuffle($chars), 0, $code_length);
+        $code = substr(str_shuffle($chars), 0, $code_length);
         $this->session->captcha = $code;
 
         // generate the image
         $this->response->type = Response::JPEG;
-        $this->response->setContent($this->_generate_image(\str_split($code), 'jpeg'));
+        $this->response->setContent($this->generateImage(str_split($code), 'jpeg'));
     }
 
-    private function _get_rand_color()
+    private function getRandomColor()
     {
-        $hex_dark = '#' . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9) . \mt_rand(0, 9);
+        $hex_dark = '#' . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9);
         return new \ImagickPixel($hex_dark);
     }
 
     /**
      * Base public function for generating a image CAPTCHA.
      */
-    private function _generate_image($code, $format)
+    private function generateImage($code, $format)
     {
         // Get font.
         $config = Config::getInstance();
@@ -56,10 +56,10 @@ class CaptchaAPI extends Service
         $cages = new \Imagick();
         foreach ($code as $c) {
             $cages->newimage($cage_width, $cage_height, '#FFFFFF', $format);
-            $text->setFillColor($this->_get_rand_color());
-            $x = \mt_rand(-3, 3);
-            $y = \mt_rand(-8, 8);
-            $a = \mt_rand(-20, 20);
+            $text->setFillColor($this->getRandomColor());
+            $x = mt_rand(-3, 3);
+            $y = mt_rand(-8, 8);
+            $a = mt_rand(-20, 20);
             $cages->annotateimage($text, $x, $y, $a, $c);
         }
         $cages->rewind();
@@ -72,12 +72,12 @@ class CaptchaAPI extends Service
         $noise->setstrokewidth(1);
         $noiseLevel = 6;
         for ($i = 0; $i < $noiseLevel; $i++) {
-            $noise->setstrokecolor($this->_get_rand_color());
-            $noise->line(\mt_rand(0, $w), \mt_rand(0, $h), \mt_rand(0, $w), \mt_rand(0, $h));
+            $noise->setstrokecolor($this->getRandomColor());
+            $noise->line(mt_rand(0, $w), mt_rand(0, $h), mt_rand(0, $w), mt_rand(0, $h));
         }
         $image->drawImage($noise);
 
-        $image->waveImage(3, \mt_rand(60, 100));
+        $image->waveImage(3, mt_rand(60, 100));
         $image->addnoiseimage(\imagick::NOISE_IMPULSE);
         return $image;
     }

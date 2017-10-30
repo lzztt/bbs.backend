@@ -12,9 +12,9 @@ $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 // $config->domain need http_host
 $_SERVER['HTTP_HOST'] = 'www.houstonbbs.com';
 
-$_LZXROOT = \dirname(__DIR__) . '/lib/lzx';
+$LZXROOT = dirname(__DIR__) . '/lib/lzx';
 
-require_once $_LZXROOT . '/App.php';
+require_once $LZXROOT . '/App.php';
 
 class MailApp extends App
 {
@@ -22,9 +22,9 @@ class MailApp extends App
     {
         parent::__construct();
         // register current namespaces
-        $this->loader->registerNamespace(__NAMESPACE__, \dirname(__DIR__) . '/server');
+        $this->loader->registerNamespace(__NAMESPACE__, dirname(__DIR__) . '/server');
 
-        $this->timestamp = \intval($_SERVER['REQUEST_TIME']);
+        $this->timestamp = intval($_SERVER['REQUEST_TIME']);
         $this->config = Config::getInstance();
         $this->logger->setUserInfo(['uid' => 'cron', 'umode' => 'cli', 'urole' => 'adm']);
         $this->logger->setDir($this->config->path['log']);
@@ -55,7 +55,7 @@ class MailApp extends App
         $cities = ['休斯顿', '达拉斯', '奥斯汀'];
         $domain = ['houston', 'dallas', 'austin'];
 
-        if (\sizeof($users) > 0) {
+        if (sizeof($users) > 0) {
             $mailer = new Mailer();
             $mailer->from = 'newyear';
 
@@ -74,7 +74,7 @@ class MailApp extends App
                     'username' => $u['username'],
                     'time' => $this->time($u['create_time']),
                     'city' => $city,
-                    'mailid' => \mt_rand()
+                    'mailid' => mt_rand()
                 ];
 
                 $mailer->body = new Template('mail/newyear', $contents);
@@ -87,27 +87,27 @@ class MailApp extends App
                     $this->logger->flush();
                 }
                 if ($i % 100 == 99) {
-                    $db->query('INSERT INTO mails (uid, status) values ' . \implode(',', $status));
+                    $db->query('INSERT INTO mails (uid, status) values ' . implode(',', $status));
                     $db->flush();
                     $status = [];
                 }
 
-                \sleep(6);
+                sleep(6);
             }
 
             if ($status) {
-                $db->query('INSERT INTO mails (uid, status) values ' . \implode(',', $status));
+                $db->query('INSERT INTO mails (uid, status) values ' . implode(',', $status));
                 $db->flush();
             }
 
-            $last = \array_pop($users);
+            $last = array_pop($users);
             return $last['id'];
         }
     }
 
     private function time($timestamp)
     {
-        $intv = ( new \DateTime() )->diff(new \DateTime(\date('Y-m-d H:i:s', $timestamp)));
+        $intv = ( new \DateTime() )->diff(new \DateTime(date('Y-m-d H:i:s', $timestamp)));
         $days = $intv->days;
         if ($days / 365 > 6) {
             return '六年多以来';
@@ -143,21 +143,21 @@ class MailApp extends App
 
 $flag = '/tmp/mail/sending';
 $lock = '/tmp/mail/lock';
-if (\file_exists($flag)) {
-    if (\file_exists($lock)) {
+if (file_exists($flag)) {
+    if (file_exists($lock)) {
         echo 'unable to get mail sending lock, aborting';
         exit(1);
     } else {
-        \touch($lock);
+        touch($lock);
 
-        $uid = \intval(\file_get_contents($flag));
+        $uid = intval(file_get_contents($flag));
         $app = new MailApp();
-        $uid_new = \intval($app->run(1, [$uid]));
+        $uid_new = intval($app->run(1, [$uid]));
         if ($uid_new > $uid) {
-            \file_put_contents($flag, $uid_new);
+            file_put_contents($flag, $uid_new);
         }
 
-        \unlink($lock);
+        unlink($lock);
     }
 }
 
