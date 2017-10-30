@@ -13,7 +13,7 @@ class SchoolsCtrler extends Schools
 {
     public function run()
     {
-        $this->_var['content'] = $this->getSchoolList();
+        $this->var['content'] = $this->getSchoolList();
     }
 
     //put your code here
@@ -26,7 +26,7 @@ class SchoolsCtrler extends Schools
         $doc->resolveExternals = false;
         $doc->substituteEntities = false;
         $doc->strictErrorChecking = false;
-        //\libxml_use_internal_errors(TRUE);
+        //libxml_use_internal_errors(TRUE);
         @$doc->loadHTML($this->curlGetData('http://www.har.com/school/dispExempSchools.cfm'), LIBXML_NOENT|LIBXML_NOERROR|LIBXML_NOWARNING);
 
         $schoolElements = [
@@ -82,14 +82,14 @@ class SchoolsCtrler extends Schools
 
     private function curlGetData($url)
     {
-        $c = \curl_init($url);
-        \curl_setopt_array($c, [
+        $c = curl_init($url);
+        curl_setopt_array($c, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CONNECTTIMEOUT => 20,
             CURLOPT_TIMEOUT => 30
         ]);
-        $data = \str_replace('&', '#_AMP_#', \preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", \curl_exec($c)));
-        \curl_close($c);
+        $data = str_replace('&', '#_AMP_#', preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", curl_exec($c)));
+        curl_close($c);
 
         return $data; // will return FALSE on failure
     }

@@ -17,13 +17,13 @@ class Cookie
     protected static $lifetime;
     protected static $path;
     protected static $domain;
-    protected $_now;
-    protected $_send = false;
-    protected $_cookie_dirty = [];
+    protected $now;
+    protected $send = false;
+    protected $cookie_dirty = [];
 
     private function __construct()
     {
-        $this->_now = (int) $_SERVER['REQUEST_TIME'];
+        $this->now = (int) $_SERVER['REQUEST_TIME'];
     }
 
     /**
@@ -44,9 +44,9 @@ class Cookie
 
     public function __get($key)
     {
-        if (\array_key_exists($key, $this->_cookie_dirty)) {
-            return $this->_cookie_dirty[$key];
-        } elseif (\array_key_exists($key, $_COOKIE)) {
+        if (array_key_exists($key, $this->cookie_dirty)) {
+            return $this->cookie_dirty[$key];
+        } elseif (array_key_exists($key, $_COOKIE)) {
             return $_COOKIE[$key];
         } else {
             return null;
@@ -55,14 +55,14 @@ class Cookie
 
     public function __set($key, $val)
     {
-        $this->_cookie_dirty[$key] = $val;
+        $this->cookie_dirty[$key] = $val;
     }
 
     public function __isset($key)
     {
-        if (\array_key_exists($key, $this->_cookie_dirty)) {
-            return isset($this->_cookie_dirty[$key]);
-        } elseif (\array_key_exists($key, $_COOKIE)) {
+        if (array_key_exists($key, $this->cookie_dirty)) {
+            return isset($this->cookie_dirty[$key]);
+        } elseif (array_key_exists($key, $_COOKIE)) {
             return isset($_COOKIE[$key]);
         } else {
             return false;
@@ -71,23 +71,23 @@ class Cookie
 
     public function __unset($key)
     {
-        $this->_cookie_dirty[$key] = null;
+        $this->cookie_dirty[$key] = null;
     }
 
     public function send()
     {
-        if ($this->_send) {
-            foreach ($this->_cookie_dirty as $k => $v) {
+        if ($this->send) {
+            foreach ($this->cookie_dirty as $k => $v) {
                 if (isset($v)) {
-                    //\setcookie( $k, $v, $this->_now + self::$lifetime, self::$path, self::$domain );
+                    //setcookie( $k, $v, $this->now + self::$lifetime, self::$path, self::$domain );
                     $_COOKIE[$k] = $v;
                 } else {
-                    if (\array_key_exists($k, $_COOKIE)) {
-                        //\setcookie( $k, '', $this->_now - self::$lifetime, self::$path, self::$domain );
+                    if (array_key_exists($k, $_COOKIE)) {
+                        //setcookie( $k, '', $this->now - self::$lifetime, self::$path, self::$domain );
                     }
                 }
             }
-            $this->_cookie_dirty = [];
+            $this->cookie_dirty = [];
         }
     }
 
@@ -109,12 +109,12 @@ class Cookie
 
     public function setNoSend()
     {
-        $this->_send = false;
+        $this->send = false;
     }
 
     public function clear()
     {
-        foreach (\array_keys($_COOKIE) as $key) {
+        foreach (array_keys($_COOKIE) as $key) {
             unset($this->$key);
         }
     }

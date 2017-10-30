@@ -38,7 +38,7 @@ class AD extends DBObject
             'email' => 'email'
         ];
 
-        return $this->_convertFields($this->call('get_ads(' . $from_time . ')'), $fields);
+        return $this->convertFields($this->call('get_ads(' . $from_time . ')'), $fields);
     }
 
     public function getAllAdPayments($from_time = 0)
@@ -51,7 +51,7 @@ class AD extends DBObject
             'payTime' => 'pay_time',
             'comment' => 'comment'
          ];
-         return $this->_convertFields($this->call('get_ad_payments(' . $from_time . ')'), $fields);
+         return $this->convertFields($this->call('get_ad_payments(' . $from_time . ')'), $fields);
     }
 
     public function getAllAdTypes()

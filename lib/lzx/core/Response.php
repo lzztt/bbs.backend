@@ -12,15 +12,15 @@ class Response
     const JPEG = 'jpeg';
 
     public $type;
-    private $_status;
-    private $_data;
-    private $_sent;
+    private $status;
+    private $data;
+    private $sent;
 
     private function __construct()
     {
         $this->type = self::HTML;
-        $this->_status = 200;
-        $this->_sent = false;
+        $this->status = 200;
+        $this->sent = false;
     }
 
     /**
@@ -40,67 +40,67 @@ class Response
 
     public function getStatus()
     {
-        return $this->_status;
+        return $this->status;
     }
 
     public function setContent($data)
     {
-        $this->_data = $data;
+        $this->data = $data;
     }
 
     public function cacheContent(PageCache $cache)
     {
-        if ($this->_status < 300 && $this->_data instanceof Template) {
-            $cache->store($this->_data);
+        if ($this->status < 300 && $this->data instanceof Template) {
+            $cache->store($this->data);
         } else {
-            throw new \Exception('Cache content failed: status=' . $this->_status . ' response content type=' . \gettype($this->_data));
+            throw new \Exception('Cache content failed: status=' . $this->status . ' response content type=' . gettype($this->data));
         }
     }
 
     public function pageNotFound()
     {
-        $this->_data = null;
-        $this->_status = 404;
-        \header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+        $this->data = null;
+        $this->status = 404;
+        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     }
 
     public function pageForbidden()
     {
-        $this->_data = null;
-        $this->_status = 403;
-        \header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
+        $this->data = null;
+        $this->status = 403;
+        header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
     }
 
     public function pageRedirect($uri)
     {
-        $this->_data = null;
-        $this->_status = 302;
-        \header('Location: ' . $uri);
+        $this->data = null;
+        $this->status = 302;
+        header('Location: ' . $uri);
     }
 
     public function send()
     {
-        if (!$this->_sent) {
+        if (!$this->sent) {
             // set output header
             switch ($this->type) {
                 case self::JSON:
-                    \header('Content-Type: application/json');
+                    header('Content-Type: application/json');
                     break;
                 case self::JPEG:
-                    \header('Content-type: image/jpeg');
+                    header('Content-type: image/jpeg');
                     break;
                 default:
-                    \header('Content-Type: text/html; charset=UTF-8');
+                    header('Content-Type: text/html; charset=UTF-8');
             }
 
             // send page content
-            if ($this->_data) {
-                echo $this->_data;
+            if ($this->data) {
+                echo $this->data;
             }
 
-            \fastcgi_finish_request();
+            fastcgi_finish_request();
 
-            $this->_sent = true;
+            $this->sent = true;
         }
     }
 }

@@ -29,9 +29,9 @@ class TextArea extends FormElement
      */
     public function toHTMLElement()
     {
-        $div = new HTMLElement('div', $this->_label(), ['class' => self::ELEMENT_CLASS]);
+        $div = new HTMLElement('div', $this->label(), ['class' => self::ELEMENT_CLASS]);
 
-        $this->attributes = \array_merge(['rows' => '5', 'cols' => '50'], $this->attributes);
+        $this->attributes = array_merge(['rows' => '5', 'cols' => '50'], $this->attributes);
 
         $input_attr = [
             'name' => $this->name,
@@ -39,9 +39,9 @@ class TextArea extends FormElement
         if ($this->required) {
             $input_attr['required'] = 'required';
         }
-        $input = new HTMLElement('textarea', $this->_value, \array_merge($this->attributes, $input_attr));
+        $input = new HTMLElement('textarea', $this->value, array_merge($this->attributes, $input_attr));
 
-        if ($this->_inline) {
+        if ($this->inline) {
             $div->addElement($input);
         } else {
             $div->addElement(new HTMLElement('div', $input, ['class' => self::INPUT_CLASS]));

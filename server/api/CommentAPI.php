@@ -23,7 +23,7 @@ class CommentAPI extends Service
             $this->forbidden();
         }
 
-        if (\strlen($this->request->json['body']) < 5) {
+        if (strlen($this->request->json['body']) < 5) {
             $this->error('错误：评论正文字数太少。');
         }
 
@@ -36,7 +36,7 @@ class CommentAPI extends Service
         $user = new User($this->request->uid, 'createTime,status');
         try {
             // validate post for houston
-            if (self::$_city->id == 1) {
+            if (self::$city->id == 1) {
                 $user->validatePost($this->request->ip, $this->request->timestamp, $this->request->json['body']);
             }
 
@@ -51,7 +51,7 @@ class CommentAPI extends Service
         } catch (\Exception $e) {
             // spammer found
             if ($user->isSpammer()) {
-                $this->_handleSpammer($user);
+                $this->handleSpammer($user);
             }
 
             $this->logger->warn($e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->json['body']);
@@ -61,15 +61,15 @@ class CommentAPI extends Service
         // add files
         if (isset($this->request->json['files']) && sizeof($this->request->json['files']) > 0) {
             $image = new Image();
-            $image->cityID = self::$_city->id;
+            $image->cityID = self::$city->id;
             $image->addImages($this->request->json['files'], $this->config->path['file'], $nid, $c->id);
-            $this->_getCacheEvent('ImageUpdate')->trigger();
+            $this->getCacheEvent('ImageUpdate')->trigger();
         }
 
         $return = null;
-        if (isset($this->request->json['returnCommentsAfter']) && \intval($this->request->json['returnCommentsAfter']) > 0) {
+        if (isset($this->request->json['returnCommentsAfter']) && intval($this->request->json['returnCommentsAfter']) > 0) {
             $node = new Node();
-            $comments = $node->getForumNodeCommentsAfter($nid, self::COMMENTS_PER_PAGE, \intval($this->request->json['returnCommentsAfter']));
+            $comments = $node->getForumNodeCommentsAfter($nid, self::COMMENTS_PER_PAGE, intval($this->request->json['returnCommentsAfter']));
             foreach ($comments as $i => $c) {
                 $comments[$i]['city'] = $this->request->getCityFromIP($c['last_access_ip']);
                 unset($comments[$i]['last_access_ip']);
@@ -77,7 +77,7 @@ class CommentAPI extends Service
             $return['comments'] = $comments;
         }
 
-        $this->_json($return);
+        $this->json($return);
     }
 
     /**
@@ -92,7 +92,7 @@ class CommentAPI extends Service
             $this->forbidden();
         }
 
-        if (\strlen($this->request->json['body']) < 5) {
+        if (strlen($this->request->json['body']) < 5) {
             $this->error('错误：评论正文字数太少。');
         }
 
@@ -116,7 +116,7 @@ class CommentAPI extends Service
         $user = new User($this->request->uid, 'createTime,status');
         try {
             // validate post for houston
-            if (self::$_city->id == 1) {
+            if (self::$city->id == 1) {
                 $user->validatePost($this->request->ip, $this->request->timestamp, $this->request->json['body']);
             }
 
@@ -127,7 +127,7 @@ class CommentAPI extends Service
         } catch (\Exception $e) {
             // spammer found
             if ($user->isSpammer()) {
-                $this->_handleSpammer($user);
+                $this->handleSpammer($user);
             }
 
             $this->logger->warn($e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->json['body']);
@@ -139,36 +139,36 @@ class CommentAPI extends Service
         $imageList = [];
         if (isset($this->request->json['files']) && sizeof($this->request->json['files']) > 0) {
             $image = new Image();
-            $image->cityID = self::$_city->id;
+            $image->cityID = self::$city->id;
             $imageList = $image->updateImages($this->request->json['files'], $this->config->path['file'], $c->nid, $cid);
-            $this->_getCacheEvent('ImageUpdate')->trigger();
+            $this->getCacheEvent('ImageUpdate')->trigger();
         }
 
-        $this->_json(['files' => $imageList]);
+        $this->json(['files' => $imageList]);
 
         /*
           if ( $this->request->json['files'] )
           {
           $file = new Image();
-          $file->cityID = self::$_city->id;
+          $file->cityID = self::$city->id;
           $file->updateFileList( $this->request->json['files'], $this->config->path['file'], $nid, $c->id );
-          $this->_getCacheEvent( 'ImageUpdate' )->trigger();
+          $this->getCacheEvent( 'ImageUpdate' )->trigger();
           } */
 
         // FORUM comments images
         /*
           if ( $this->request->json['update_file'] )
           {
-          $files = \is_array( $this->request->json['files'] ) ? $this->request->json['files'] : [];
+          $files = is_array( $this->request->json['files'] ) ? $this->request->json['files'] : [];
           $file = new Image();
-          $file->cityID = self::$_city->id;
+          $file->cityID = self::$city->id;
           $file->updateFileList( $files, $this->config->path['file'], $comment->nid, $cid );
-          $this->_getIndependentCache( 'imageSlider' )->delete();
+          $this->getIndependentCache( 'imageSlider' )->delete();
           } */
 
         // YP comments
         /*
-          if ( isset( $this->request->json['star'] ) && \is_numeric( $this->request->json['star'] ) )
+          if ( isset( $this->request->json['star'] ) && is_numeric( $this->request->json['star'] ) )
           {
           $rating = (int) $this->request->json['star'];
           if ( $rating > 0 )
@@ -178,9 +178,9 @@ class CommentAPI extends Service
           }
           } */
         /*
-          $this->_getCacheEvent( 'NodeUpdate', $c->nid )->trigger();
+          $this->getCacheEvent( 'NodeUpdate', $c->nid )->trigger();
 
-          $this->_json( NULL ); */
+          $this->json( NULL ); */
     }
 
     /**
@@ -202,7 +202,7 @@ class CommentAPI extends Service
             $this->forbidden();
         }
 
-        $this->_json(null);
+        $this->json(null);
     }
 }
 

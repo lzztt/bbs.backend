@@ -24,14 +24,14 @@ class CheckinCtrler extends Wedding
         Template::$theme = $this->config->theme['wedding2'];
         // login first
         if (!$this->session->loginStatus) {
-            $this->_displayLogin();
+            $this->displayLogin();
             return;
         }
 
         $a = new WeddingAttendee();
         $a->where('tid', 0, '>');
-        list($table_guests, $table_counts, $total) = $this->_getTableGuests($a->getList('name,guests,checkin,tid'), 'guests');
-        $this->_var['body'] = new Template('checkin', ['tables' => $table_guests]);
+        list($table_guests, $table_counts, $total) = $this->getTableGuests($a->getList('name,guests,checkin,tid'), 'guests');
+        $this->var['body'] = new Template('checkin', ['tables' => $table_guests]);
     }
 }
 

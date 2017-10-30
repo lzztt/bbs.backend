@@ -62,7 +62,7 @@ class ReportAPI extends Service
                     $body = $arr[0]['body'];
 
                     $title = '举报';
-                    if ($reporter->points > 0 && ( $spammer->points < 2 || ( \strpos($body, 'http') && $spammer->points < 18 ) !== false )) {
+                    if ($reporter->points > 0 && ( $spammer->points < 2 || ( strpos($body, 'http') && $spammer->points < 18 ) !== false )) {
                         // check complains
                         $complain = new NodeComplain();
                         $complain->where('uid', $uid, '=');
@@ -70,8 +70,8 @@ class ReportAPI extends Service
                         $complain->where('weight', 0, '>');
                         if ($complain->getCount() >= 3) {
                             $spammer->delete();
-                            foreach ($spammer->getAllNodeIDs() as $_nid) {
-                                $this->_getIndependentCache('/node/' . $_nid)->delete();
+                            foreach ($spammer->getAllNodeIDs() as $nid) {
+                                $this->getIndependentCache('/node/' . $nid)->delete();
                             }
                             $title = '删除被举报用户';
                         }
@@ -81,14 +81,14 @@ class ReportAPI extends Service
                     $mailer = new Mailer('complain');
                     $mailer->to = 'ikki3355@gmail.com';
                     $mailer->subject = $title . ': ' . $spammer->username . ' <' . $spammer->email . '>';
-                    $mailer->body = \print_r([
+                    $mailer->body = print_r([
                         'spammer'  => [
                             'id'         => 'https://' . $this->request->domain . '/app/user/' . $uid,
                             'username' => $spammer->username,
                             'email'     => $spammer->email,
                             'city'      => $this->request->getLocationFromIP($spammer->lastAccessIP),
                             'points'    => $spammer->points,
-                            'register' => \date($spammer->createTime)
+                            'register' => date($spammer->createTime)
                         ],
                         'node'      => [
                             'id'     => 'https://' . $this->request->domain . '/node/' . $nid,
@@ -101,7 +101,7 @@ class ReportAPI extends Service
                             'email'     => $reporter->email,
                             'city'      => $this->request->getLocationFromIP($this->request->ip),
                             'points'    => $reporter->points,
-                            'register' => \date($reporter->createTime)
+                            'register' => date($reporter->createTime)
                         ]
                     ], true);
                     $mailer->send();
@@ -109,7 +109,7 @@ class ReportAPI extends Service
             }
         }
 
-        $this->_json(null);
+        $this->json(null);
     }
 }
 

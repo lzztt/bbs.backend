@@ -15,7 +15,7 @@ class BookmarkAPI extends Service
      */
     public function get()
     {
-        if (!$this->request->uid || empty($this->args) || !\is_numeric($this->args[0])) {
+        if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
         }
 
@@ -28,11 +28,11 @@ class BookmarkAPI extends Service
         $u = new User($this->request->uid, null);
 
         $nodeCount = $u->countBookmark();
-        list($pageNo, $pageCount) = $this->_getPagerInfo($nodeCount, self::NODES_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo($nodeCount, self::NODES_PER_PAGE);
 
         $nodes = $nodeCount > 0 ? $u->listBookmark(self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE) : [];
 
-        $this->_json(['nodes' => $nodes, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount]]);
+        $this->json(['nodes' => $nodes, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount]]);
     }
 
     /**
@@ -55,7 +55,7 @@ class BookmarkAPI extends Service
 
         $u->addBookmark($nid);
 
-        $this->_json(null);
+        $this->json(null);
     }
 
     /**
@@ -70,8 +70,8 @@ class BookmarkAPI extends Service
 
         $nids = [];
 
-        foreach (\explode(',', $this->args[0]) as $nid) {
-            if (\is_numeric($nid) && \intval($nid) > 0) {
+        foreach (explode(',', $this->args[0]) as $nid) {
+            if (is_numeric($nid) && intval($nid) > 0) {
                 $nids[] = (int) $nid;
             }
         }
@@ -81,7 +81,7 @@ class BookmarkAPI extends Service
             $u->deleteBookmark($nid);
         }
 
-        $this->_json(null);
+        $this->json(null);
     }
 }
 

@@ -20,11 +20,11 @@ class MySQLStatement extends DBStatement
          $this->params = $params;
     }
 
-    public function bind_param(array $params)
+    public function bindParam(array $params)
     {
         foreach ($params as $k => $v) {
-            if (\in_array($k, $this->params)) {
-                if (\is_int()) {
+            if (in_array($k, $this->params)) {
+                if (is_int()) {
                     $this->values[$k] = $v;
                 }
             }
@@ -36,12 +36,12 @@ class MySQLStatement extends DBStatement
          return $this->statement->execute();
     }
 
-    public function insert_id()
+    public function insertId()
     {
          return $this->statement->insert_id;
     }
 
-    public function affected_rows()
+    public function affectedRows()
     {
          return $this->statement->affected_rows;
     }

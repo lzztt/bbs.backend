@@ -18,7 +18,7 @@ class ActivityCtrler extends Activity
             $this->error('目前没有活动。');
         }
 
-        list($pageNo, $pageCount) = $this->_getPagerInfo($total, self::NODES_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo($total, self::NODES_PER_PAGE);
         $pager = Template::pager($pageNo, $pageCount, '/activity');
 
         $limit = self::NODES_PER_PAGE;
@@ -27,7 +27,7 @@ class ActivityCtrler extends Activity
 
         foreach ($actList as $k => $n) {
             $type = ($n['start_time'] < $this->request->timestamp) ? (($n['end_time'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
-            $data .= '<a href="/node/' . $n['nid'] . '" class="' . $type . '" data-before="' . \date('m/d', $n['start_time']) . '">' . $n['title'] . '</a>';
+            $data .= '<a href="/node/' . $n['nid'] . '" class="' . $type . '" data-before="' . date('m/d', $n['start_time']) . '">' . $n['title'] . '</a>';
         }
 
         $contents = [
@@ -35,7 +35,7 @@ class ActivityCtrler extends Activity
             'data' => $data
         ];
 
-        $this->_var['content'] = new Template('activity_list', $contents);
+        $this->var['content'] = new Template('activity_list', $contents);
     }
 }
 

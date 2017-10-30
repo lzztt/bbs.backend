@@ -20,10 +20,10 @@ class InfoCtrler extends Single
         // not a user request
         if ($uid == 0) {
             $action = $this->args[0];
-            if ($action && \method_exists($this, $action)) {
+            if ($action && method_exists($this, $action)) {
                 // login first
                 if (!$this->session->loginStatus) {
-                    $this->_displayLogin();
+                    $this->displayLogin();
                     return;
                 }
 
@@ -36,7 +36,7 @@ class InfoCtrler extends Single
         }
         //verify user's access code
         $code = $this->request->get['c'];
-        if ($code != $this->_getCode($uid)) {
+        if ($code != $this->getCode($uid)) {
             $this->pageForbidden();
         }
 
@@ -58,27 +58,27 @@ class InfoCtrler extends Single
                 $a->update('info');
             }
 
-            $this->_var['content'] = '<div id="activity">您的信息已经被保存。<br /><a href="/single">返回首页</a></div>';
+            $this->var['content'] = '<div id="activity">您的信息已经被保存。<br /><a href="/single">返回首页</a></div>';
         } else {
-            $this->_var['content'] = new Template('info', ['uid' => $uid, 'action' => $this->request->uri]);
+            $this->var['content'] = new Template('info', ['uid' => $uid, 'action' => $this->request->uri]);
         }
     }
 
-    protected function _mail()
+    protected function mail()
     {
         // check the email flag
-        if (!\file_exists('/tmp/single_mail')) {
+        if (!file_exists('/tmp/single_mail')) {
             $this->pageForbidden();
         }
 
-        $act = \array_pop($this->db->query('CALL get_latest_single_activity()'));
+        $act = array_pop($this->db->query('CALL get_latest_single_activity()'));
 
         $attendee = new FFAttendee();
         $attendee->aid = $act['id'];
         $mailer = new Mailer();
         $mailer->subject = '七夕单身聚会 活动详情 (本周六下午)';
         foreach ($attendee->getList('id,name,email') as $a) {
-            $url = 'https://www.houstonbbs.com/single/info?u=' . $a['id'] . '&c=' . $this->_getCode($a['id']);
+            $url = 'https://www.houstonbbs.com/single/info?u=' . $a['id'] . '&c=' . $this->getCode($a['id']);
             $mailer->body = new Template('mail/attendee_final', ['name' => $a['name'], 'url' => $url]);
             $mailer->to = $a['email'];
             $mailer->send();
@@ -88,7 +88,7 @@ class InfoCtrler extends Single
         $mailer->to = 'ikki3355@gmail.com';
         $mailer->send();
 
-        $this->_var['content'] = '<div id="activity">email sent<br /><a href="/single">返回首页</a></div>';
+        $this->var['content'] = '<div id="activity">email sent<br /><a href="/single">返回首页</a></div>';
     }
 }
 

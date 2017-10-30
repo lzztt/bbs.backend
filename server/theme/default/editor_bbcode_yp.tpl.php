@@ -37,13 +37,13 @@
           <div class="fieldset-wrapper">
 
             <input type="hidden" name='update_file' value='1' />
-            <table id="ajax-file-list" <?php if (!\is_array($files) || \sizeof($files) < 1): ?> style="display:none;" <?php endif ?> >
+            <table id="ajax-file-list" <?php if (!is_array($files) || sizeof($files) < 1): ?> style="display:none;" <?php endif ?> >
               <thead class="tableHeader-processed">
                 <tr><th>文字描述</th><th>BBCode</th><th>删除</th></tr>
               </thead>
 
               <tbody>
-                <?php if (\is_array($files)): ?>
+                <?php if (is_array($files)): ?>
                   <?php foreach ($files as $f): ?>
                     <tr id="editfile-<?= $f['id'] ?>">
                       <td><input type="text" maxlength="30" name="files[<?= $f['id'] ?>][name]" id="editfile-<?= $f['id'] ?>-name" size="30" value="<?= $f['name'] ?>" class="form-text"></td>

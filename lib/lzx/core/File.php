@@ -25,17 +25,17 @@ class File
 
     public function __construct($path = null)
     {
-        if (\is_file($path)) {
+        if (is_file($path)) {
             $this->path = $path;
-            $this->name = \basename($path);
-            $this->type = \substr(\strrchr($this->name, '.'), 1); // file extension
-            $this->size = \filesize($path);
+            $this->name = basename($path);
+            $this->type = substr(strrchr($this->name, '.'), 1); // file extension
+            $this->size = filesize($path);
         }
     }
 
     public function isWebImage()
     {
-        $fileInfo = \getimagesize($this->path);
+        $fileInfo = getimagesize($this->path);
 
         if ($fileInfo === false || $fileInfo[2] > IMAGETYPE_PNG) { // Image Type: 1 = IMAGETYPE_GIF, 2 = IMAGETYPE_JPEG, 3 = IMAGETYPE_PNG
             return false;
@@ -78,14 +78,14 @@ class File
                 return 'Invalid Image File Size. Maximum size: ' . ($size / 1024) . 'KB';
             }
 
-            $f->name = $this->_toUTF8($file['name']);
+            $f->name = $this->toUTF8($file['name']);
 
             $funcName[IMAGETYPE_GIF] = 'gif';
             $funcName[IMAGETYPE_JPEG] = 'jpeg';
             $funcName[IMAGETYPE_PNG] = 'png';
 
-            $fileInfo = \getimagesize($f->path);
-            $f->type = \image_type_to_extension($fileInfo[2], FALSE);
+            $fileInfo = getimagesize($f->path);
+            $f->type = image_type_to_extension($fileInfo[2], FALSE);
 
             $savePath = self::$file_path . '/data/' . $type . '/' . $_SERVER['REQUEST_TIME'] . self::$uid . mt_rand(0, 9) . '.' . $f->type;
 
@@ -110,18 +110,18 @@ class File
                     $h_new = $maxHeight; // resize based on height
                 }
 
-                $image_new = \imagecreatetruecolor($w_new, $h_new);
-                \imagecopyresampled($image_new, $image, 0, 0, 0, 0, $w_new, $h_new, $width, $height);
+                $image_new = imagecreatetruecolor($w_new, $h_new);
+                imagecopyresampled($image_new, $image, 0, 0, 0, 0, $w_new, $h_new, $width, $height);
                 $func = 'image' . $f->type;
                 $func($image_new, $savePath);
 
-                \imagedestroy($image_new);
-                \imagedestroy($image);
+                imagedestroy($image_new);
+                imagedestroy($image);
             }
             else
             {
                 // copy image
-                $is_saved = \move_uploaded_file($f->path, $savePath);
+                $is_saved = move_uploaded_file($f->path, $savePath);
                 if (!$is_saved)
                 {
                     Log::error('File Save Error: ' . $f->path . ' to ' . $savePath);

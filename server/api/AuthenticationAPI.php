@@ -18,15 +18,15 @@ class AuthenticationAPI extends Service
     public function get()
     {
         if (empty($this->args) || $this->args[0] != $this->session->getSessionID()) {
-            $this->_json(['sessionID' => $this->session->getSessionID(), 'uid' => 0]);
+            $this->json(['sessionID' => $this->session->getSessionID(), 'uid' => 0]);
             return;
         }
 
         if ($this->request->uid) {
             $user = new User($this->request->uid, 'username');
-            $this->_json(['sessionID' => $this->session->getSessionID(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
+            $this->json(['sessionID' => $this->session->getSessionID(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
         } else {
-            $this->_json(['sessionID' => $this->session->getSessionID(), 'uid' => 0]);
+            $this->json(['sessionID' => $this->session->getSessionID(), 'uid' => 0]);
         }
     }
 
@@ -44,7 +44,7 @@ class AuthenticationAPI extends Service
 
             if ($loggedIn) {
                 $this->session->setUserID($user->id);
-                $this->_json(['sessionID' => $this->session->getSessionID(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
+                $this->json(['sessionID' => $this->session->getSessionID(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
                 return;
             } else {
                 $this->logger->info('Login Fail: ' . $user->email . ' | ' . $this->request->ip);
@@ -77,7 +77,7 @@ class AuthenticationAPI extends Service
 
         $this->session->clear(); // keep session record but clear session data
 
-        $this->_json(null);
+        $this->json(null);
     }
 }
 

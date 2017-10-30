@@ -28,7 +28,7 @@ class Hidden extends FormElement
      */
     public function toHTMLElement()
     {
-        $attr = ['name' => $this->name, 'value' => $this->_value, 'type' => 'hidden'];
+        $attr = ['name' => $this->name, 'value' => $this->value, 'type' => 'hidden'];
         return new HTMLElement('input', null, $attr);
     }
 }

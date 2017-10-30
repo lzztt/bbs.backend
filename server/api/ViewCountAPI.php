@@ -16,14 +16,14 @@ class ViewCountAPI extends Service
         $viewCount = [];
         $nids = [];
 
-        foreach (\explode(',', $this->args[0]) as $nid) {
-            if (\is_numeric($nid) && \intval($nid) > 0) {
+        foreach (explode(',', $this->args[0]) as $nid) {
+            if (is_numeric($nid) && intval($nid) > 0) {
                 $nids[] = (int) $nid;
             }
         }
         if ($nids) {
             $node = new Node();
-            if (\sizeof($nids) > 1) {
+            if (sizeof($nids) > 1) {
                 // multiple nodes
                 foreach ($node->getViewCounts($nids) as $r) {
                     $viewCount['viewCount' . $r['id']] = (int) $r['view_count'];
@@ -44,7 +44,7 @@ class ViewCountAPI extends Service
             $this->error('invalid node ids: ' . $this->args[0]);
         }
 
-        $this->_json($viewCount);
+        $this->json($viewCount);
     }
 }
 

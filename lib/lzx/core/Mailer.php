@@ -19,7 +19,7 @@ class Mailer
         if ($domain) {
             $this->domain = $domain;
         } else {
-            $this->domain = \implode('.', \array_slice(\explode('.', $_SERVER['HTTP_HOST']), -2));
+            $this->domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
         }
         $this->from = $from;
     }
@@ -39,10 +39,10 @@ class Mailer
             return false;
         }
 
-        $subject = "=?UTF-8?B?" . \base64_encode(\trim(\str_replace(["\r", \PHP_EOL, "\r\n"], "", $this->subject))) . "?=";
+        $subject = "=?UTF-8?B?" . \base64_encode(trim(str_replace(["\r", \PHP_EOL, "\r\n"], "", $this->subject))) . "?=";
         $body = $this->body . $this->signature;
 
-        if (\mail($this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain)) {
+        if (mail($this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain)) {
             return true;
         } else {
             return false;

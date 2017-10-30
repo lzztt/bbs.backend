@@ -6,11 +6,11 @@ use site\controller\App;
 
 class CacheCtrler extends App
 {
-    private $_name = 'cache';
+    private $name = 'cache';
 
     public function run()
     {
-        $this->response->setContent(\file_get_contents($this->_getLatestVersion($this->_name) . '/index.html'));
+        $this->response->setContent(file_get_contents($this->getLatestVersion($this->name) . '/index.html'));
     }
 }
 

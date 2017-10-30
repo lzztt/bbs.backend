@@ -23,7 +23,7 @@ use site\Session;
  */
 abstract class Wedding extends Controller
 {
-    private $_register_end = false;
+    private $register_end = false;
 
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
@@ -31,18 +31,18 @@ abstract class Wedding extends Controller
 
         Template::$theme = $this->config->theme['wedding'];
 
-        if ($this->session->loginStatus !== true && \file_exists('/tmp/wedding')) {
-            $this->_register_end = true;
+        if ($this->session->loginStatus !== true && file_exists('/tmp/wedding')) {
+            $this->register_end = true;
         }
     }
 
-    public function _getTableGuests(array $guests, $countField)
+    public function getTableGuests(array $guests, $countField)
     {
         $table_guests = [];
         $table_counts = [];
         $total = 0;
         foreach ($guests as $g) {
-            if (!\array_key_exists($g['tid'], $table_guests)) {
+            if (!array_key_exists($g['tid'], $table_guests)) {
                 $table_guests[$g['tid']] = [];
                 $table_counts[$g['tid']] = 0;
             }
@@ -51,12 +51,12 @@ abstract class Wedding extends Controller
             $total += $g[$countField];
         }
 
-        \ksort($table_guests);
+        ksort($table_guests);
 
         return [$table_guests, $table_counts, $total];
     }
 
-    protected function _displayLogin()
+    protected function displayLogin()
     {
         Template::$theme = $this->config->theme['wedding2'];
 
@@ -67,7 +67,7 @@ abstract class Wedding extends Controller
             $this->session->loginRedirect = $defaultRedirect;
         }
 
-        $this->_var['body'] = new Template('login', ['uri' => $this->request->uri]);
+        $this->var['body'] = new Template('login', ['uri' => $this->request->uri]);
     }
 }
 

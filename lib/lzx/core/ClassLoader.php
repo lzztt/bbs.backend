@@ -8,7 +8,7 @@ class ClassLoader
 
     private function __construct()
     {
-        if (\spl_autoload_register([$this, 'loadClass']) === false) {
+        if (spl_autoload_register([$this, 'loadClass']) === false) {
             throw new \Exception('failed to register autoload function');
         }
     }
@@ -62,11 +62,11 @@ class ClassLoader
      */
     public function registerNamespace($namespace, $path)
     {
-        if (!\is_string($namespace)) {
+        if (!is_string($namespace)) {
             throw new \InvalidArgumentException('invalid namespace name for autoload registration');
         }
         //if(!is_string($path) || substr($, $start))
-        $this->namespaces[\trim($namespace, '\\')] = DIRECTORY_SEPARATOR . \trim($path, DIRECTORY_SEPARATOR);
+        $this->namespaces[trim($namespace, '\\')] = DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
     }
 
     /**
@@ -76,7 +76,7 @@ class ClassLoader
      */
     public function loadClass($class)
     {
-        $pos = \strpos($class, '\\');
+        $pos = strpos($class, '\\');
         if ($pos === false || $pos == 0) {
             //$class = substr($class, 1);
             // we do not define and use user classes in global scope. please use namespace.
@@ -84,14 +84,14 @@ class ClassLoader
         }
 
         // namespaced class name
-        $namespace = \substr($class, 0, $pos);
+        $namespace = substr($class, 0, $pos);
 
-        if (!\array_key_exists($namespace, $this->namespaces)) {
+        if (!array_key_exists($namespace, $this->namespaces)) {
             throw new \Exception('unregistered namespace : ' . $namespace);
         }
-        $file = $this->namespaces[$namespace] . \str_replace('\\', DIRECTORY_SEPARATOR, \substr($class, $pos)) . '.php';
+        $file = $this->namespaces[$namespace] . str_replace('\\', DIRECTORY_SEPARATOR, substr($class, $pos)) . '.php';
 
-        if (\is_file($file) && \is_readable($file)) {
+        if (is_file($file) && is_readable($file)) {
             require $file;
         } else {
             throw new \ErrorException('failed to load class : ' . $class);

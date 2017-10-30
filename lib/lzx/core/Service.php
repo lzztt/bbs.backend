@@ -30,7 +30,7 @@ abstract class Service
         $this->logger = $logger;
     }
 
-    protected function _json(array $return = null)
+    protected function json(array $return = null)
     {
         $this->response->type = Response::JSON;
         $this->response->setContent(new JSON($return));
@@ -38,7 +38,7 @@ abstract class Service
 
     protected function error($msg)
     {
-        $this->_json(['error' => $msg]);
+        $this->json(['error' => $msg]);
         throw new \Exception();
     }
 

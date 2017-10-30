@@ -19,7 +19,7 @@ class TagAPI extends Service
      */
     public function get()
     {
-        if (empty($this->args) || !\is_numeric($this->args[0])) {
+        if (empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
         }
 
@@ -32,23 +32,23 @@ class TagAPI extends Service
             }
 
             $tagRoot = $tag->getTagRoot();
-            if (!\array_key_exists(self::$_city->ForumRootID, $tagRoot)) {
+            if (!array_key_exists(self::$city->ForumRootID, $tagRoot)) {
                 $this->error("tag does not exist");
             }
         }
 
         $node = new Node();
-        list($pageNo, $pageCount) = $this->_getPagerInfo($node->getNodeCount($tid), self::NODES_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount($tid), self::NODES_PER_PAGE);
         $pager = Template::pager($pageNo, $pageCount, '/forum/' . $tid);
 
-        $nodes = $node->getForumNodeList(self::$_city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
+        $nodes = $node->getForumNodeList(self::$city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
         $db = \lzx\db\DB::getInstance();
         $nodes = $db->query('select ');
 
 
         $nodes = $t->getNodeList(1, self::NODES_PER_PAGE, 0);
 
-        $this->_json($nodes);
+        $this->json($nodes);
     }
 }
 

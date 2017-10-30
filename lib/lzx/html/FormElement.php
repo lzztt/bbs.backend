@@ -32,8 +32,8 @@ abstract class FormElement
     public $help;
     public $required;
     public $attributes = [];
-    protected $_value;
-    protected $_inline = false;
+    protected $value;
+    protected $inline = false;
 
     public function __construct($name, $label = '', $value = '', $help = '', $required = false)
     {
@@ -41,17 +41,17 @@ abstract class FormElement
         $this->label = $label;
         $this->help = $help;
         $this->required = $required;
-        $this->_value = $value;
+        $this->value = $value;
     }
 
-    protected function _label()
+    protected function label()
     {
-        if (\strlen($this->label) == 0 || \is_null($this->label)) {
-            $this->_inline = true;
+        if (strlen($this->label) == 0 || is_null($this->label)) {
+            $this->inline = true;
             return null;
         }
 
-        if ($this->_inline) {
+        if ($this->inline) {
             $label = new HTMLElement('label', $this->label);
         } else {
             $label = new HTMLElement('div', new HTMLElement('label', $this->label), ['class' => self::LABEL_CLASS]);
@@ -72,13 +72,13 @@ abstract class FormElement
      */
     public function inline()
     {
-        $this->_inline = true;
+        $this->inline = true;
         return $this;
     }
 
     public function getValue()
     {
-        return $this->_value;
+        return $this->value;
     }
 
     /*
@@ -88,7 +88,7 @@ abstract class FormElement
     public function setValue($value = null)
     {
         if ($value !== null) {
-            $this->_value = $value;
+            $this->value = $value;
         }
         return $this;
     }

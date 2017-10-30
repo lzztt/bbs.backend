@@ -24,11 +24,11 @@ class FileAPI extends Service
             $res = $fobj->saveFile($this->request->files, $imgConf);
         }
 
-        if (\is_string($res)) {
+        if (is_string($res)) {
             $res = ['error' => $res];
         }
 
-        $this->_json($res);
+        $this->json($res);
 
         // use iframe and html to return the JSON result
         $this->response->type = Response::HTML;

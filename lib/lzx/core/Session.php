@@ -10,31 +10,31 @@ namespace lzx\core;
  */
 
 /**
- * @property SessionHandlerInterface $_handler
+ * @property SessionHandlerInterface $handler
  */
 class Session
 {
-    private $_status = false;
-    private $_sid = null;
-    private $_handler;
+    private $status = false;
+    private $sid = null;
+    private $handler;
 
     // CLASS FUNCTIONS
 
     private function __construct(\SessionHandlerInterface $handler = null)
     {
         if ($handler instanceof \SessionHandlerInterface) {
-            \session_set_save_handler($handler, false);
-            \session_start();
-            $this->_sid = \session_id();
-            $this->_status = true;
-            $this->_handler = $handler;
+            session_set_save_handler($handler, false);
+            session_start();
+            $this->sid = session_id();
+            $this->status = true;
+            $this->handler = $handler;
             if (!isset($this->uid)) {
                 $this->uid = 0;
             }
 
             if ($this->uid > 0) {
                 // validate user agent string
-                if ($this->crc32 != $this->_crc32()) {
+                if ($this->crc32 != $this->crc32()) {
                     // this is really shouldn't happen
                     // notify the user?
                     // clear session for now
@@ -49,10 +49,10 @@ class Session
     final public function __get($key)
     {
         if ($key == 'id') {
-            return $this->_sid;
+            return $this->sid;
         }
 
-        return \array_key_exists($key, $_SESSION) ? $_SESSION[$key] : null;
+        return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : null;
     }
 
     final public function __set($key, $val)
@@ -67,10 +67,10 @@ class Session
     final public function __isset($key)
     {
         if ($key == 'id') {
-            return isset($this->_sid);
+            return isset($this->sid);
         }
 
-        return \array_key_exists($key, $_SESSION) ? isset($_SESSION[$key]) : false;
+        return array_key_exists($key, $_SESSION) ? isset($_SESSION[$key]) : false;
     }
 
     final public function __unset($key)
@@ -79,21 +79,21 @@ class Session
             throw new Exception('trying to unset session id, which is read-only.');
         }
 
-        if (\array_key_exists($key, $_SESSION)) {
+        if (array_key_exists($key, $_SESSION)) {
             unset($_SESSION[$key]);
         }
     }
 
     public function close()
     {
-        if ($this->_status) {
+        if ($this->status) {
             if ($this->uid > 0 && !$this->crc32) {
-                $this->crc32 = $this->_crc32();
+                $this->crc32 = $this->crc32();
             }
-            \session_write_close();
+            session_write_close();
         }
         $this->clear();
-        $this->_status = false;
+        $this->status = false;
     }
 
     public function clear()
@@ -104,9 +104,9 @@ class Session
 
     public function regenerateID()
     {
-        \session_regenerate_id();
+        session_regenerate_id();
 
-        $this->_sid = \session_id();
+        $this->sid = session_id();
     }
 
     /**
@@ -127,7 +127,7 @@ class Session
         return $instance;
     }
 
-    private function _crc32()
+    private function crc32()
     {
         return \crc32($_SERVER['REMOTE_ADDR'] . $_SERVER['HTTP_USER_AGENT']);
     }

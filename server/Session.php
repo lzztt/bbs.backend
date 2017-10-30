@@ -11,62 +11,62 @@ use lzx\db\DB;
  */
 class Session
 {
-    private static $_cookieName = 'LZXSID';
-    private $_isNew = false;
-    private $_db;
-    private $_sid = null;
-    private $_uid = 0;
-    private $_cid = 0;
-    private $_atime = 0;
-    private $_data = [];
-    private $_uidOriginal = 0;
-    private $_cidOriginal = 0;
-    private $_dataOriginal = [];
+    private static $cookieName = 'LZXSID';
+    private $isNew = false;
+    private $db;
+    private $sid = null;
+    private $uid = 0;
+    private $cid = 0;
+    private $atime = 0;
+    private $data = [];
+    private $uidOriginal = 0;
+    private $cidOriginal = 0;
+    private $dataOriginal = [];
 
     // id is 15 charactors
     private function __construct(DB $db = null)
     {
         if ($db) {
-            if ($_COOKIE[self::$_cookieName]) {
+            if ($_COOKIE[self::$cookieName]) {
                 // client has a session id
-                $this->_sid = $_COOKIE[self::$_cookieName];
+                $this->sid = $_COOKIE[self::$cookieName];
             } else {
                 // client has no session id
-                $this->_startNewSession();
+                $this->startNewSession();
             }
 
-            $this->_db = $db;
+            $this->db = $db;
 
-            if (!$this->_isNew) {
+            if (!$this->isNew) {
                 // load session from database
-                $arr = $db->query('SELECT * FROM sessions WHERE id = "' . $this->_sid . '"');
+                $arr = $db->query('SELECT * FROM sessions WHERE id = "' . $this->sid . '"');
                 if ($arr) {
                     // validate session's user agent crc checksum
-                    if ($this->_crc32() === (int) $arr[0]['crc']) {
+                    if ($this->crc32() === (int) $arr[0]['crc']) {
                         // valid agent
-                        $this->_uid = (int) $arr[0]['uid'];
-                        $this->_cid = (int) $arr[0]['cid'];
-                        $this->_atime = (int) $arr[0]['atime'];
+                        $this->uid = (int) $arr[0]['uid'];
+                        $this->cid = (int) $arr[0]['cid'];
+                        $this->atime = (int) $arr[0]['atime'];
 
-                        $this->_uidOriginal = $this->_uid;
-                        $this->_cidOriginal = $this->_cid;
+                        $this->uidOriginal = $this->uid;
+                        $this->cidOriginal = $this->cid;
 
                         if ($arr[0]['data']) {
-                            $this->_data = \json_decode($arr[0]['data'], true);
+                            $this->data = json_decode($arr[0]['data'], true);
 
-                            if (\is_array($this->_data)) {
-                                $this->_dataOriginal = $this->_data;
+                            if (is_array($this->data)) {
+                                $this->dataOriginal = $this->data;
                             } else {
-                                $this->_data = [];
+                                $this->data = [];
                             }
                         }
                     } else {
                         // invalid agent. this shouldn't happen!!
-                        $this->_startNewSession();
+                        $this->startNewSession();
                     }
                 } else {
                     // no session found in database, start new session
-                    $this->_startNewSession();
+                    $this->startNewSession();
                 }
             }
         }
@@ -74,27 +74,27 @@ class Session
 
     final public function __get($key)
     {
-        return \array_key_exists($key, $this->_data) ? $this->_data[$key] : null;
+        return array_key_exists($key, $this->data) ? $this->data[$key] : null;
     }
 
     final public function __set($key, $val)
     {
-        if (\is_null($val)) {
+        if (is_null($val)) {
             unset($this->$key);
         } else {
-            $this->_data[$key] = $val;
+            $this->data[$key] = $val;
         }
     }
 
     final public function __isset($key)
     {
-        return \array_key_exists($key, $this->_data) ? isset($this->_data[$key]) : false;
+        return array_key_exists($key, $this->data) ? isset($this->data[$key]) : false;
     }
 
     final public function __unset($key)
     {
-        if (\array_key_exists($key, $this->_data)) {
-            unset($this->_data[$key]);
+        if (array_key_exists($key, $this->data)) {
+            unset($this->data[$key]);
         }
     }
 
@@ -118,93 +118,93 @@ class Session
 
     public function getSessionID()
     {
-        return $this->_sid;
+        return $this->sid;
     }
 
     public function getCityID()
     {
-        return $this->_cid;
+        return $this->cid;
     }
 
     public function setCityID($cid)
     {
-        $this->_cid = (int) $cid;
+        $this->cid = (int) $cid;
     }
 
     public function getUserID()
     {
-        return $this->_uid;
+        return $this->uid;
     }
 
     public function setUserID($uid)
     {
-        $this->_uid = (int) $uid;
+        $this->uid = (int) $uid;
     }
 
     public function clear()
     {
-        $this->_uid = 0;
-        $this->_data = [];
+        $this->uid = 0;
+        $this->data = [];
     }
 
     public function close()
     {
-        if ($this->_db) {
-            if ($this->_isNew) {
+        if ($this->db) {
+            if ($this->isNew) {
                 // db insert for new session
-                $this->_db->query('INSERT INTO sessions VALUES (:id, :data, :atime, :uid, :cid, :crc)', [
-                    ':id' => $this->_sid,
-                    ':data' => $this->_data ? \json_encode($this->_data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) : '',
+                $this->db->query('INSERT INTO sessions VALUES (:id, :data, :atime, :uid, :cid, :crc)', [
+                    ':id' => $this->sid,
+                    ':data' => $this->data ? json_encode($this->data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) : '',
                     ':atime' => $_SERVER['REQUEST_TIME'],
-                    ':uid' => $this->_uid,
-                    ':cid' => $this->_cid,
-                    ':crc' => $this->_crc32()
+                    ':uid' => $this->uid,
+                    ':cid' => $this->cid,
+                    ':crc' => $this->crc32()
                 ]);
             } else {
                 // db update for existing session
                 $fields = [];
                 $values = [];
 
-                if ($this->_uid != $this->_uidOriginal) {
+                if ($this->uid != $this->uidOriginal) {
                     $fields[] = 'uid=:uid';
-                    $values[':uid'] = $this->_uid;
+                    $values[':uid'] = $this->uid;
                 }
 
-                if ($this->_cid != $this->_cidOriginal) {
+                if ($this->cid != $this->cidOriginal) {
                     $fields[] = 'cid=:cid';
-                    $values[':cid'] = $this->_cid;
+                    $values[':cid'] = $this->cid;
                 }
 
-                if ($this->_data != $this->_dataOriginal) {
+                if ($this->data != $this->dataOriginal) {
                     $fields[] = 'data=:data';
-                    $values[':data'] = $this->_data ? \json_encode($this->_data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) : '';
+                    $values[':data'] = $this->data ? json_encode($this->data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) : '';
                 }
 
                 // update access timestamp older than 1 minute
                 $time = (int) $_SERVER['REQUEST_TIME'];
-                if ($time - $this->_atime > 60) {
+                if ($time - $this->atime > 60) {
                     $fields[] = 'atime=:atime';
                     $values[':atime'] = $time;
                 }
 
                 if ($fields) {
-                    $sql = 'UPDATE sessions SET ' . \implode($fields, ',') . ' WHERE id = "' . $this->_sid . '"';
-                    $this->_db->query($sql, $values);
+                    $sql = 'UPDATE sessions SET ' . implode($fields, ',') . ' WHERE id = "' . $this->sid . '"';
+                    $this->db->query($sql, $values);
                 }
             }
         }
     }
 
-    private function _startNewSession()
+    private function startNewSession()
     {
-        $this->_sid = \sprintf("%02x", \mt_rand(0, 255)) . \uniqid();
-        \setcookie(self::$_cookieName, $this->_sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000 ), '/', '.' . \implode('.', \array_slice(\explode('.', $_SERVER['HTTP_HOST']), -2)));
-        $this->_isNew = true;
+        $this->sid = sprintf("%02x", mt_rand(0, 255)) . uniqid();
+        setcookie(self::$cookieName, $this->sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000 ), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2)));
+        $this->isNew = true;
     }
 
-    private function _crc32()
+    private function crc32()
     {
-        return \crc32($_SERVER['HTTP_USER_AGENT'] . $this->_sid);
+        return \crc32($_SERVER['HTTP_USER_AGENT'] . $this->sid);
     }
 }
 
