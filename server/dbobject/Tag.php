@@ -45,7 +45,7 @@ class Tag extends DBObject
             $ids = [];
             $tree = $this->getTagTree();
             foreach ($tree as $i => $t) {
-                if (!\array_key_exists('children', $t)) {
+                if (!array_key_exists('children', $t)) {
                     $ids[] = $i;
                 }
             }
@@ -63,13 +63,13 @@ class Tag extends DBObject
         static $root = [];
 
         if (isset($this->id)) {
-            if (!\array_key_exists($this->id, $root)) {
-                $arr = \array_reverse($this->call('get_tag_root(' . $this->id . ')'));
+            if (!array_key_exists($this->id, $root)) {
+                $arr = array_reverse($this->call('get_tag_root(' . $this->id . ')'));
 
                 $tags = [];
                 foreach ($arr as $r) {
                     $id = (int) $r['id'];
-                    $parent = \is_null($r['parent']) ? null : (int) $r['parent'];
+                    $parent = is_null($r['parent']) ? null : (int) $r['parent'];
                     $tags[$id] = [
                         'id' => $id,
                         'name' => $r['name'],
@@ -90,14 +90,14 @@ class Tag extends DBObject
         static $tree = [];
 
         if (isset($this->id)) {
-            if (!\array_key_exists($this->id, $tree)) {
+            if (!array_key_exists($this->id, $tree)) {
                 $arr = $this->call('get_tag_tree(' . $this->id . ')');
 
                 $tags = [];
                 $children = [];
                 foreach ($arr as $r) {
                     $id = (int) $r['id'];
-                    $parent = \is_null($r['parent']) ? null : (int) $r['parent'];
+                    $parent = is_null($r['parent']) ? null : (int) $r['parent'];
 
                     $tags[$id] = [
                         'id' => $id,
@@ -105,7 +105,7 @@ class Tag extends DBObject
                         'description' => $r['description'],
                         'parent' => $parent,
                     ];
-                    if (!\is_null($parent)) {
+                    if (!is_null($parent)) {
                         $children[$parent][] = $id;
                     }
                 }
@@ -130,13 +130,13 @@ class Tag extends DBObject
     public function getParent($properties = '')
     {
         $this->load('parent');
-        if (\is_null($this->parent)) {
+        if (is_null($this->parent)) {
             return null;
         } else {
             $tag = new Tag();
             $tag->id = $this->parent;
             $parent = $tag->getList($properties, 1);
-            return \array_pop($parent);
+            return array_pop($parent);
         }
     }
 

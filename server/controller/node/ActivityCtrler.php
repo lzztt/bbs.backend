@@ -16,12 +16,12 @@ class ActivityCtrler extends Node
             $this->pageForbidden();
         }
 
-        list($nid, $type) = $this->_getNodeType();
-        $method = '_activity' . $type;
+        list($nid, $type) = $this->getNodeType();
+        $method = 'activity' . $type;
         $this->$method($nid);
     }
 
-    private function _activityForumTopic($nid)
+    private function activityForumTopic($nid)
     {
         $node = new NodeObject($nid, 'tid,uid,title');
 
@@ -43,7 +43,7 @@ class ActivityCtrler extends Node
             $tags = $node->getTags($nid);
             $breadcrumb = [];
             foreach ($tags as $i => $t) {
-                $breadcrumb[$t['name']] = ($i === self::$_city->ForumRootID ? '/forum' : ('/forum/' . $i));
+                $breadcrumb[$t['name']] = ($i === self::$city->ForumRootID ? '/forum' : ('/forum/' . $i));
             }
             $breadcrumb[$node->title] = null;
 
@@ -51,7 +51,7 @@ class ActivityCtrler extends Node
                 'breadcrumb' => Template::breadcrumb($breadcrumb),
                 'exampleDate' => $this->request->timestamp - ($this->request->timestamp % 3600) + 259200
             ];
-            $this->_var['content'] = new Template('activity_create', $content);
+            $this->var['content'] = new Template('activity_create', $content);
         } else {
             $startTime = strtotime($this->request->post['start_time']);
             $endTime = strtotime($this->request->post['end_time']);
@@ -75,7 +75,7 @@ class ActivityCtrler extends Node
                 $mailer = new Mailer();
                 $mailer->to = 'admin@' . $this->config->domain;
                 $mailer->subject = '新活动 ' . $nid . ' 长于一天 (请检查)';
-                $mailer->body = $node->title . ' : ' . \date('m/d/Y H:i', $startTime) . ' - ' . \date('m/d/Y H:i', $endTime);
+                $mailer->body = $node->title . ' : ' . date('m/d/Y H:i', $startTime) . ' - ' . date('m/d/Y H:i', $endTime);
                 if ($mailer->send() === false) {
                     $this->logger->info('sending long activity notice email error.');
                 }
@@ -84,9 +84,9 @@ class ActivityCtrler extends Node
             $activity = new Activity();
             $activity->addActivity($nid, $startTime, $endTime);
 
-            $this->_getIndependentCache('recentActivities')->delete();
+            $this->getIndependentCache('recentActivities')->delete();
 
-            $this->_var['content'] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
+            $this->var['content'] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
         }
     }
 }

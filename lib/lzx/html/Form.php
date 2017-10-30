@@ -19,27 +19,27 @@ class Form extends HTMLElement
 {
     public function __construct(array $attributes = [])
     {
-        $_attr = [
+        $attr = [
             'accept-charset' => 'UTF-8',
             'autocomplete' => 'off',
             'method' => 'post',
         ];
-        $attributes = \array_merge($_attr, $attributes);
+        $attributes = array_merge($attr, $attributes);
         parent::__construct('form', null, $attributes);
     }
 
     public function setButton(array $buttons)
     {
         $types = ['submit', 'reset'];
-        $_buttons = [];
+        $buttons = [];
         foreach ($buttons as $type => $text) {
-            if (\in_array($type, $types)) {
-                $_buttons[] = new HTMLElement('button', $text, ['type' => $type]);
+            if (in_array($type, $types)) {
+                $buttons[] = new HTMLElement('button', $text, ['type' => $type]);
             }
         }
-        if (sizeof($_buttons) > 0) {
+        if (sizeof($buttons) > 0) {
             $div = new HTMLElement('div', null, ['class' => FormElement::ELEMENT_CLASS]);
-            $div->addElement(new HTMLElement('div', $_buttons, ['class' => FormElement::INPUT_CLASS]));
+            $div->addElement(new HTMLElement('div', $buttons, ['class' => FormElement::INPUT_CLASS]));
             $this->addElement($div);
         }
     }

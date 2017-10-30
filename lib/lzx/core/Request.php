@@ -20,17 +20,17 @@ class Request
     {
         $this->domain = $_SERVER['HTTP_HOST'];
         $this->ip = $_SERVER['REMOTE_ADDR'];
-        $this->uri = \strtolower($_SERVER['REQUEST_URI']);
+        $this->uri = strtolower($_SERVER['REQUEST_URI']);
 
-        $this->timestamp = \intval($_SERVER['REQUEST_TIME']);
+        $this->timestamp = intval($_SERVER['REQUEST_TIME']);
 
-        $this->post = $this->_toUTF8($_POST);
-        $this->get = $this->_toUTF8($_GET);
+        $this->post = $this->toUTF8($_POST);
+        $this->get = $this->toUTF8($_GET);
         $this->files = $this->getUploadFiles();
-        $this->json = $this->_decodeJsonPost();
+        $this->json = $this->decodeJsonPost();
 
-        $arr = \explode($this->domain, $_SERVER['HTTP_REFERER']);
-        $this->referer = \sizeof($arr) > 1 ? $arr[1] : null;
+        $arr = explode($this->domain, $_SERVER['HTTP_REFERER']);
+        $this->referer = sizeof($arr) > 1 ? $arr[1] : null;
     }
 
     /**
@@ -54,34 +54,34 @@ class Request
 
     public function getUploadFiles()
     {
-        static $_files;
+        static $files;
 
-        if (!isset($_files)) {
-            $_files = [];
+        if (!isset($files)) {
+            $files = [];
             foreach ($_FILES as $type => $file) {
-                $_files[$type] = [];
-                if (\is_array($file['error'])) { // file list
-                    for ($i = 0; $i < \sizeof($file['error']); $i++) {
-                        foreach (\array_keys($file) as $key) {
-                            $_files[$type][$i][$key] = $file[$key][$i];
+                $files[$type] = [];
+                if (is_array($file['error'])) { // file list
+                    for ($i = 0; $i < sizeof($file['error']); $i++) {
+                        foreach (array_keys($file) as $key) {
+                            $files[$type][$i][$key] = $file[$key][$i];
                         }
                     }
                 } else // single file
                 {
-                    $_files[$type][] = $file;
+                    $files[$type][] = $file;
                 }
             }
         }
 
-        return $_files;
+        return $files;
     }
 
-    private function _decodeJsonPost()
+    private function decodeJsonPost()
     {
         $json = null;
-        $data = \file_get_contents('php://input');
+        $data = file_get_contents('php://input');
         if (!empty($data)) {
-            $json = \json_decode($data, true);
+            $json = json_decode($data, true);
         }
 
         return $json;
@@ -94,14 +94,14 @@ class Request
      */
     public function getURIargs($uri)
     {
-        static $_URIargs = [];
+        static $URIargs = [];
 
-        if (!\array_key_exists($uri, $_URIargs)) {
-            $_arg = \trim(\strtok($uri, '?'), ' /');
-            $_URIargs[$uri] = empty($_arg) ? [] : \explode('/', $_arg);
+        if (!array_key_exists($uri, $URIargs)) {
+            $arg = trim(strtok($uri, '?'), ' /');
+            $URIargs[$uri] = empty($arg) ? [] : explode('/', $arg);
         }
 
-        return $_URIargs[$uri];
+        return $URIargs[$uri];
     }
 
     public function buildURI(array $args = [], array $get = [])
@@ -111,19 +111,19 @@ class Request
             $query[] = $k . '=' . $v;
         }
 
-        return '/' . \implode('/', $args) . ($query ? '?' . \implode('&', $query) : '');
+        return '/' . implode('/', $args) . ($query ? '?' . implode('&', $query) : '');
     }
 
     public function curlGetData($url)
     {
-        $c = \curl_init($url);
-        \curl_setopt_array($c, [
+        $c = curl_init($url);
+        curl_setopt_array($c, [
             \CURLOPT_RETURNTRANSFER => true,
             \CURLOPT_CONNECTTIMEOUT => 2,
             \CURLOPT_TIMEOUT          => 3
         ]);
-        $data = \curl_exec($c);
-        \curl_close($c);
+        $data = curl_exec($c);
+        curl_close($c);
 
         return $data; // will return FALSE on failure
     }
@@ -133,23 +133,23 @@ class Request
         static $cities = [];
 
         // return from cache;
-        if (\array_key_exists($ip, $cities)) {
+        if (array_key_exists($ip, $cities)) {
             return $cities[$ip];
         }
 
         // get city from geoip database
         $city = 'N/A';
         try {
-            if (\is_null($ip)) {
+            if (is_null($ip)) {
                 return $city;
             }
 
-            $ip = \inet_ntop($ip);
+            $ip = inet_ntop($ip);
             if ($ip === false) {
                 return $city;
             }
 
-            $geo = \geoip_record_by_name($ip);
+            $geo = geoip_record_by_name($ip);
 
             if ($geo['city']) {
                 $city = $geo['city'];
@@ -169,11 +169,11 @@ class Request
         $location = 'N/A';
 
         try {
-            if (\is_null($ip)) {
+            if (is_null($ip)) {
                 return $location;
             }
 
-            $ip = \inet_ntop($ip);
+            $ip = inet_ntop($ip);
             if ($ip === false) {
                 return $location;
             }
@@ -182,7 +182,7 @@ class Request
             $region = 'N/A';
             $country = 'N/A';
 
-            $geo = \geoip_record_by_name($ip);
+            $geo = geoip_record_by_name($ip);
 
             if ($geo['city']) {
                 $city = $geo['city'];
@@ -193,7 +193,7 @@ class Request
             }
 
             if ($geo['region'] && $geo['country_code']) {
-                $region = \geoip_region_name_by_code($geo['country_code'], $geo['region']);
+                $region = geoip_region_name_by_code($geo['country_code'], $geo['region']);
             }
 
             $location = $city . ', ' . $region . ', ' . $country;
@@ -204,24 +204,24 @@ class Request
         return $location;
     }
 
-    private function _toUTF8($in)
+    private function toUTF8($in)
     {
-        if (\is_array($in)) {
+        if (is_array($in)) {
             $out = [];
             foreach ($in as $key => $value) {
-                $out[$this->_toUTF8($key)] = $this->_toUTF8($value);
+                $out[$this->toUTF8($key)] = $this->toUTF8($value);
             }
             return $out;
         }
 
-        if (\is_string($in) && !\mb_check_encoding($in, "UTF-8")) { // user input data is trimed and cleaned here, escapte html tags
+        if (is_string($in) && !mb_check_encoding($in, "UTF-8")) { // user input data is trimed and cleaned here, escapte html tags
             return \utf8_encode($in);
             //return utf8_encode(trim(preg_replace('/<[^>]*>/', '', $in)));
             //to trim all tags: preg_replace('/<[^>]*>/', '',  trim($in))
             //to escape tags: str_replace(['<', '>'), ['&lt;', '&gt;'), trim($in))
         }
 
-        return \trim(\preg_replace('/<[^>]*>/', '', $in));
+        return trim(preg_replace('/<[^>]*>/', '', $in));
     }
 }
 

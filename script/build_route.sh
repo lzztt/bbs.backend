@@ -39,7 +39,7 @@ use site\ControllerFactory;
  */
 class ControllerRouter extends ControllerFactory
 {
-    protected static $_route = [
+    protected static $route = [
 EOF
 
 {

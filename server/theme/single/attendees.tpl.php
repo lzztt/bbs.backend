@@ -9,7 +9,7 @@
             <div class="atd_info"><?= \nl2br($a['info']) ?></div>
           <?php endif ?>
           <?php if ($a['questions']): ?>
-            <div class="atd_questions"><?= \implode('<br />', $a['questions']) ?></div>
+            <div class="atd_questions"><?= implode('<br />', $a['questions']) ?></div>
           <?php endif ?>
         </div>
       <?php endforeach ?>

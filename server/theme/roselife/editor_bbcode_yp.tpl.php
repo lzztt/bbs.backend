@@ -1,5 +1,5 @@
 <form enctype="multipart/form-data" id="bbcode_editor" class='v_user_superadm v_user_8831 v_user_3' method="post" accept-charset="UTF-8" action="<?= $form_handler ?>">
-  <?php if (\is_array($ads)): ?>
+  <?php if (is_array($ads)): ?>
   <fieldset>
     <label class='label' for="title">黄页广告:</label>
     <select name='aid'>
@@ -36,10 +36,10 @@
   <fieldset>
     <label class='label'>文件附件</label>
     <input type="hidden" name='update_file' value='1'>
-    <table id="file_list" <?php if (!\is_array($files) || \sizeof($files) < 1): ?> style="display:none;" <?php endif ?>>
+    <table id="file_list" <?php if (!is_array($files) || sizeof($files) < 1): ?> style="display:none;" <?php endif ?>>
       <thead><tr><th>图片名</th><th>BBCode</th><th>删除</th></tr></thead>
       <tbody>
-        <?php if (\is_array($files)): ?>
+        <?php if (is_array($files)): ?>
           <?php foreach ($files as $f): ?>
             <tr>
               <td><input type="text" name="files[<?= $f['id'] ?>][name]" value="<?= $f['name'] ?>"><input type="hidden" name="files[<?= $f['id'] ?>][path]" value="<?= $f['path'] ?>"></td>

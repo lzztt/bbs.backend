@@ -9,11 +9,11 @@ abstract class Node extends Controller
 {
     const COMMENTS_PER_PAGE = 10;
 
-    protected function _getNodeType()
+    protected function getNodeType()
     {
         $types = [
-            self::$_city->ForumRootID => 'ForumTopic',
-            self::$_city->YPRootID => 'YellowPage',
+            self::$city->ForumRootID => 'ForumTopic',
+            self::$city->YPRootID => 'YellowPage',
         ];
 
         $nid = $this->id;
@@ -27,9 +27,9 @@ abstract class Node extends Controller
             $this->pageNotFound();
         }
 
-        $rootTagID = \array_shift(\array_keys($tags));
+        $rootTagID = array_shift(array_keys($tags));
 
-        if (!\array_key_exists($rootTagID, $types)) {
+        if (!array_key_exists($rootTagID, $types)) {
             //$this->logger->error( 'wrong root tag : nid = ' . $nid );
             $this->pageNotFound();
         }

@@ -5,7 +5,7 @@ namespace script;
 use lzx\App;
 use lzx\db\DB;
 
-require_once \dirname(__DIR__) . '/lib/lzx/App.php';
+require_once dirname(__DIR__) . '/lib/lzx/App.php';
 
 /**
  * Description of FundImporter
@@ -38,12 +38,12 @@ class FundImporter extends App
             exit('ERROR: no input file!' . \PHP_EOL);
         }
         $filename = $argv[1];
-        if (!\is_file($filename)) {
+        if (!is_file($filename)) {
             exit('ERROR: input file does not exist!' . \PHP_EOL);
         }
 
-        $data = \file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $n = \sizeof($data);
+        $data = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $n = sizeof($data);
         $i = 0;
 
         while ($i < $n) {
@@ -51,7 +51,7 @@ class FundImporter extends App
             if ($data[$i++] == "\tFidelity Fund\t") {
                 // family
                 $family = 'Fidelity';
-                if (!\array_key_exists($family, $this->fundFamilies)) {
+                if (!array_key_exists($family, $this->fundFamilies)) {
                     // create object
                     $fundFamily = new FundFamily();
                     $fundFamily->name = $family;
@@ -70,16 +70,16 @@ class FundImporter extends App
                 }
 
                 $name = $data[$i++];
-                $category = \trim($data[$i++]);
+                $category = trim($data[$i++]);
 
-                while (\substr($data[$i], 0, 5) != " Buy ") {
+                while (substr($data[$i], 0, 5) != " Buy ") {
                     $i++;
                 }
-                $symbol = \trim(\substr($data[$i++], 5));
+                $symbol = trim(substr($data[$i++], 5));
 
-                $name = \str_replace([' (' . $symbol . ')', '®'], '', $name);
+                $name = str_replace([' (' . $symbol . ')', '®'], '', $name);
 
-                if (!\array_key_exists($category, $this->fundCategories)) {
+                if (!array_key_exists($category, $this->fundCategories)) {
                     $fundCategory = new FundCategory();
                     $fundCategory->name = $category;
                     $fundCategory->load('id');

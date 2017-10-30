@@ -23,7 +23,7 @@ class WeddingCtrler extends Wedding
     {
         $this->cache = new PageCache($this->request->uri);
 
-        $this->_var['body'] = new Template('join_form');
+        $this->var['body'] = new Template('join_form');
     }
 }
 

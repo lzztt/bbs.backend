@@ -20,9 +20,9 @@ abstract class App
     public function __construct()
     {
         // start auto loader
-        $_file = __DIR__ . '/core/ClassLoader.php';
-        if (\is_file($_file) && \is_readable($_file)) {
-            require_once $_file;
+        $file = __DIR__ . '/core/ClassLoader.php';
+        if (is_file($file) && is_readable($file)) {
+            require_once $file;
         } else {
             throw new \Exception('cannot load autoloader class');
         }

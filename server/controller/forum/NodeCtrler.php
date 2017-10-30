@@ -18,15 +18,15 @@ class NodeCtrler extends Forum
             return;
         }
 
-        $tag = $this->_getTagObj();
+        $tag = $this->getTagObj();
         $tagTree = $tag->getTagTree();
 
-        \sizeof($tagTree[$tag->id]['children']) ? $this->error('Could not post topic in this forum') : $this->createTopic($tag->id);
+        sizeof($tagTree[$tag->id]['children']) ? $this->error('Could not post topic in this forum') : $this->createTopic($tag->id);
     }
 
     public function createTopic($tid)
     {
-        if (\strlen($this->request->post['body']) < 5 || \strlen($this->request->post['title']) < 5) {
+        if (strlen($this->request->post['body']) < 5 || strlen($this->request->post['title']) < 5) {
             $this->error('Topic title or body is too short.');
         }
 
@@ -57,10 +57,10 @@ class NodeCtrler extends Forum
                 $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
                 $user->delete();
                 $u = new User();
-                $u->lastAccessIP = \inet_pton($this->request->ip);
+                $u->lastAccessIP = inet_pton($this->request->ip);
                 $users = $u->getList('createTime');
                 $deleteAll = true;
-                if (\sizeof($users) > 1) {
+                if (sizeof($users) > 1) {
                     // check if we have old users that from this ip
                     foreach ($users as $u) {
                         if ($this->request->timestamp - $u['createTime'] > 2592000) {
@@ -82,7 +82,7 @@ class NodeCtrler extends Forum
 
                 if (false && $this->config->webmaster) { // turn off spammer emails
                     $mailer = new Mailer();
-                    $mailer->subject = 'SPAMMER detected and deleted (' . \sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
+                    $mailer->subject = 'SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
                     $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
                     $mailer->to = $this->config->webmaster;
                     $mailer->send();
@@ -96,9 +96,9 @@ class NodeCtrler extends Forum
 
         if ($this->request->post['files']) {
             $file = new Image();
-            $file->cityID = self::$_city->id;
+            $file->cityID = self::$city->id;
             $file->updateFileList($this->request->post['files'], $this->config->path['file'], $node->id, $comment->id);
-            $this->_getCacheEvent('ImageUpdate')->trigger();
+            $this->getCacheEvent('ImageUpdate')->trigger();
         }
 
         /*
@@ -106,11 +106,11 @@ class NodeCtrler extends Forum
         $user->update( 'points' );
          */
 
-        $this->_getCacheEvent('ForumNode')->trigger();
-        $this->_getCacheEvent('ForumUpdate', $tid)->trigger();
+        $this->getCacheEvent('ForumNode')->trigger();
+        $this->getCacheEvent('ForumUpdate', $tid)->trigger();
 
         if ($node->tid == 15) {
-            $this->_getCacheEvent('ImmigrationNode')->trigger();
+            $this->getCacheEvent('ImmigrationNode')->trigger();
         }
 
         $this->pageRedirect('/node/' . $node->id);

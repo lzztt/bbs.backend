@@ -17,7 +17,7 @@ use lzx\Event\Dispatcher;
 
 abstract class Controller
 {
-    protected $_dispatcher;
+    protected $dispatcher;
 
     //put your code here
     public function __construct(Dispatcher $dispatcher)
@@ -26,14 +26,14 @@ abstract class Controller
 
     protected function getDispatcher()
     {
-        return $this->_dispatcher;
+        return $this->dispatcher;
     }
 
     // function example
     protected function test(stdClass $obj, array $array, callable $function, $function_name_Callable, $id_Int = 0, $price_Float = 0, $name_Str = '', $true_Bool = false)
     {
         $eventName = 'pre_' . get_class($this) . '::' . __FUNCTION__;
-        list() = $this->_hook($eventName, func_get_args());
+        list() = $this->hook($eventName, func_get_args());
 
         if (array_key_exists(__FUNCTION__, $this->bypass)) {
             $return = $this->bypass[__FUNCTION__];
@@ -45,16 +45,16 @@ abstract class Controller
         // validate $args types
 
         $eventName = 'post_' . get_class($this) . '::' . __FUNCTION__;
-        $return = $this->_hook($eventName, [$return]);
+        $return = $this->hook($eventName, [$return]);
 
         // validate $return types
 
         return $return;
     }
 
-    final protected function _hook($eventName, $args)
+    final protected function hook($eventName, $args)
     {
-        if ($this->_dispatcher instanceof Dispatcher) {
+        if ($this->dispatcher instanceof Dispatcher) {
             throw new \Exception('invalid event dispatcher');
         }
 

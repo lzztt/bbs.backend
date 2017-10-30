@@ -14,7 +14,7 @@ class UserAPI extends Service
      */
     public function get()
     {
-        if (!$this->request->uid || empty($this->args) || !\is_numeric($this->args[0])) {
+        if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
         }
 
@@ -25,10 +25,10 @@ class UserAPI extends Service
             $info = $user->toArray();
             unset($info['lastAccessIP']);
             $info['lastAccessCity'] = $this->request->getLocationFromIP($user->lastAccessIP);
-            $info['topics'] = $user->getRecentNodes(self::$_city->ForumRootID, 10);
-            $info['comments'] = $user->getRecentComments(self::$_city->ForumRootID, 10);
+            $info['topics'] = $user->getRecentNodes(self::$city->ForumRootID, 10);
+            $info['comments'] = $user->getRecentComments(self::$city->ForumRootID, 10);
 
-            $this->_json($info);
+            $this->json($info);
         } else {
             $this->error('用户不存在');
         }
@@ -46,7 +46,7 @@ class UserAPI extends Service
      */
     public function put()
     {
-        if (empty($this->args) || !\is_numeric($this->args[0])) {
+        if (empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
         }
 
@@ -68,8 +68,8 @@ class UserAPI extends Service
 
         $u = new User($uid, null);
 
-        if (\array_key_exists('password', $this->request->post)) {
-            if (\array_key_exists('password_old', $this->request->post)) {
+        if (array_key_exists('password', $this->request->post)) {
+            if (array_key_exists('password_old', $this->request->post)) {
                 // user to change password
                 $u->load('password');
 
@@ -88,18 +88,18 @@ class UserAPI extends Service
                 $u->load('username,password,email');
                 if (!$u->password) {
                     // this is a new user
-                    if ($u->username == \strstr($u->email, '@', true)) {
+                    if ($u->username == strstr($u->email, '@', true)) {
                         // load 3 users before this one
                         $userObj = new User();
                         $userObj->where('id', $uid - 4, '>');
                         $userObj->where('id', $uid, '<');
                         foreach ($userObj->getList('username,email,status') as $user) {
-                            if ($user['username'] == \strstr($user['email'], '@', true) && \substr($u->username, 0, 4) == \substr($user['username'], 0, 4)) {
+                            if ($user['username'] == strstr($user['email'], '@', true) && substr($u->username, 0, 4) == substr($user['username'], 0, 4)) {
                                 // found username has the same prefix
                                 // check location
-                                $geo = \geoip_record_by_name($ip);
+                                $geo = geoip_record_by_name($ip);
 
-                                if ((!$geo || $geo['region'] != 'TX' ) || \strpos($this->request->post['password'], $u->username) !== false) {
+                                if ((!$geo || $geo['region'] != 'TX' ) || strpos($this->request->post['password'], $u->username) !== false) {
                                     // non texas user, or username = password
                                     // treat as spammer, make as disabled
                                     $u->status = 0;
@@ -126,12 +126,12 @@ class UserAPI extends Service
             $this->request->post['password'] = $u->hashPW($this->request->post['password']);
         }
 
-        if (\array_key_exists('avatar', $this->request->post)) {
-            $image = \base64_decode(\substr($this->request->post['avatar'], \strpos($this->request->post['avatar'], ',') + 1));
+        if (array_key_exists('avatar', $this->request->post)) {
+            $image = \base64_decode(substr($this->request->post['avatar'], strpos($this->request->post['avatar'], ',') + 1));
             if ($image !== false) {
                 $config = Config::getInstance();
                 $avatarFile = '/data/avatars/' . $this->request->uid . '_' . ($this->request->timestamp % 100) . '.png';
-                \file_put_contents($config->path['file'] . $avatarFile, $image);
+                file_put_contents($config->path['file'] . $avatarFile, $image);
                 $this->request->post['avatar'] = $avatarFile;
             } else {
                 unset($this->request->post['avatar']);
@@ -144,9 +144,9 @@ class UserAPI extends Service
 
         $u->update();
 
-        $this->_json(null);
+        $this->json(null);
 
-        $this->_getIndependentCache('ap' . $u->id)->delete();
+        $this->getIndependentCache('ap' . $u->id)->delete();
     }
 
     /**
@@ -156,7 +156,7 @@ class UserAPI extends Service
     public function post()
     {
         // validate captcha
-        if (\strtolower($this->session->captcha) != \strtolower($this->request->json['captcha'])) {
+        if (strtolower($this->session->captcha) != strtolower($this->request->json['captcha'])) {
             $this->error('图形验证码错误');
         }
         unset($this->session->captcha);
@@ -165,17 +165,17 @@ class UserAPI extends Service
         if (empty($this->request->json['username'])) {
             $this->error('请填写用户名');
         } else {
-            $username = \strtolower($this->request->json['username']);
-            if (\strpos($username, 'admin') !== false || \strpos($username, 'bbs') !== false) {
+            $username = strtolower($this->request->json['username']);
+            if (strpos($username, 'admin') !== false || strpos($username, 'bbs') !== false) {
                 $this->error('不合法的用户名，请选择其他用户名');
             }
         }
 
-        if (!\filter_var($this->request->json['email'], \FILTER_VALIDATE_EMAIL) || \substr($this->request->json['email'], -8) == 'bccto.me') {
+        if (!filter_var($this->request->json['email'], \FILTER_VALIDATE_EMAIL) || substr($this->request->json['email'], -8) == 'bccto.me') {
             $this->error('不合法的电子邮箱 : ' . $this->request->json['email']);
         }
 
-        if (isset($this->request->json['submit']) || $this->_isBot($this->request->json['email'])) {
+        if (isset($this->request->json['submit']) || $this->isBot($this->request->json['email'])) {
             $this->logger->info('STOP SPAMBOT : ' . $this->request->json['email']);
             $this->error('系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。');
         }
@@ -184,8 +184,8 @@ class UserAPI extends Service
         $user->username = $this->request->json['username'];
         $user->password = null;
         $user->email = $this->request->json['email'];
-        $user->lastAccessIP = \inet_pton($this->request->ip);
-        $user->cid = self::$_city->id;
+        $user->lastAccessIP = inet_pton($this->request->ip);
+        $user->cid = self::$city->id;
         $user->status = 1;
 
         // if user record exist, means this is a new-registered user, but need to re-send identification code
@@ -194,7 +194,7 @@ class UserAPI extends Service
             $user->createTime = $this->request->timestamp;
 
             // spammer from Nanning
-            $geo = \geoip_record_by_name($this->request->ip);
+            $geo = geoip_record_by_name($this->request->ip);
             // from Nanning
             if ($geo && $geo['city'] === 'Nanning') {
                 // mark as disabled
@@ -212,7 +212,7 @@ class UserAPI extends Service
         if ($this->sendIdentCode($user) === false) {
             $this->error('sending email error: ' . $user->email);
         } else {
-            $this->_json(null);
+            $this->json(null);
         }
     }
 
@@ -221,7 +221,7 @@ class UserAPI extends Service
      */
     public function delete()
     {
-        if ($this->request->uid != 1 || empty($this->args) || !\is_numeric($this->args[0])) {
+        if ($this->request->uid != 1 || empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
         }
 
@@ -237,14 +237,14 @@ class UserAPI extends Service
         $user->delete();
 
         foreach ($user->getAllNodeIDs() as $nid) {
-            $this->_getIndependentCache('/node/' . $nid)->delete();
+            $this->getIndependentCache('/node/' . $nid)->delete();
         }
-        $this->_json(null);
+        $this->json(null);
     }
 
-    private function _isBot($m)
+    private function isBot($m)
     {
-        $try1 = \unserialize($this->request->curlGetData('http://www.stopforumspam.com/api?f=serial&email=' . $m));
+        $try1 = unserialize($this->request->curlGetData('http://www.stopforumspam.com/api?f=serial&email=' . $m));
         if ($try1['email']['appears'] == 1) {
             return true;
         }

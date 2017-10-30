@@ -13,12 +13,12 @@ class EditCtrler extends Node
 {
     public function run()
     {
-        list($nid, $type) = $this->_getNodeType();
-        $method = '_edit' . $type;
+        list($nid, $type) = $this->getNodeType();
+        $method = 'edit' . $type;
         $this->$method($nid);
     }
 
-    private function _editForumTopic($nid)
+    private function editForumTopic($nid)
     {
         // edit existing comment
         $node = new NodeObject($nid, 'uid,status');
@@ -27,7 +27,7 @@ class EditCtrler extends Node
             $this->error('node does not exist.');
         }
 
-        if (\strlen($this->request->post['body']) < 5 || \strlen($this->request->post['title']) < 5) {
+        if (strlen($this->request->post['body']) < 5 || strlen($this->request->post['title']) < 5) {
             $this->error('Topic title or body is too short.');
         }
 
@@ -58,18 +58,18 @@ class EditCtrler extends Node
         $comment->update();
 
 
-        $files = \is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+        $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
         $file = new Image();
-        $file->cityID = self::$_city->id;
+        $file->cityID = self::$city->id;
         $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
 
-        $this->_getCacheEvent('ImageUpdate')->trigger();
-        $this->_getCacheEvent('NodeUpdate', $nid)->trigger();
+        $this->getCacheEvent('ImageUpdate')->trigger();
+        $this->getCacheEvent('NodeUpdate', $nid)->trigger();
 
         $this->pageRedirect($this->request->referer);
     }
 
-    private function _editYellowPage($nid)
+    private function editYellowPage($nid)
     {
         $node = new NodeObject($nid, 'uid,status');
 
@@ -94,7 +94,7 @@ class EditCtrler extends Node
             $comment = new Comment($arr[0]['id'], 'body');
             $contents['body'] = $comment->body;
 
-            $this->_var['content'] = new Template('editor_bbcode_yp', $contents);
+            $this->var['content'] = new Template('editor_bbcode_yp', $contents);
         } else {
             // save modification
             $node = new NodeObject($nid, 'tid');
@@ -106,7 +106,7 @@ class EditCtrler extends Node
             $node_yp = new NodeYellowPage($nid, 'nid');
             $keys = ['address', 'phone', 'email', 'website', 'fax'];
             foreach ($keys as $k) {
-                $node_yp->$k = \strlen($this->request->post[$k]) ? $this->request->post[$k] : null;
+                $node_yp->$k = strlen($this->request->post[$k]) ? $this->request->post[$k] : null;
             }
 
             $node_yp->update();
@@ -121,12 +121,12 @@ class EditCtrler extends Node
             $comment->lastModifiedTime = $this->request->timestamp;
             $comment->update();
 
-            $files = \is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+            $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
             $file = new Image();
-            $file->cityID = self::$_city->id;
+            $file->cityID = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
 
-            $this->_getCacheEvent('NodeUpdate', $nid)->trigger();
+            $this->getCacheEvent('NodeUpdate', $nid)->trigger();
 
             $this->pageRedirect('/node/' . $nid);
         }

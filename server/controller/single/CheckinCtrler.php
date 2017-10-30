@@ -12,12 +12,12 @@ class CheckinCtrler extends Single
     {
         // login first
         if (!$this->session->loginStatus) {
-            $this->_displayLogin();
+            $this->displayLogin();
             return;
         }
 
         // logged in
-        $act = \array_pop($this->db->query('CALL get_latest_single_activity()'));
+        $act = array_pop($this->db->query('CALL get_latest_single_activity()'));
         $atd = new FFAttendee();
         $atd->aid = (int) $act['id'];
         $atd->status = 1;
@@ -34,7 +34,7 @@ class CheckinCtrler extends Single
             $unconfirmed_groups[(int) $attendee['sex']][] = $attendee;
         }
 
-        $this->_var['content'] = new Template('checkin', ['confirmed_groups' => $confirmed_groups, 'unconfirmed_groups' => $unconfirmed_groups]);
+        $this->var['content'] = new Template('checkin', ['confirmed_groups' => $confirmed_groups, 'unconfirmed_groups' => $unconfirmed_groups]);
     }
 }
 

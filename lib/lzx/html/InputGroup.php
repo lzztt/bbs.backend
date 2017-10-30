@@ -29,7 +29,7 @@ class InputGroup extends FormElement
         if ($e instanceof FormElement) {
               $this->elements[] = $e;
         } else {
-            throw new \ErrorException('wrong from element type (FormElement) : ' . \gettype($e));
+            throw new \ErrorException('wrong from element type (FormElement) : ' . gettype($e));
         }
     }
 
@@ -46,14 +46,14 @@ class InputGroup extends FormElement
       */
     public function toHTMLElement()
     {
-         $div = new HTMLElement('div', $this->_label(), ['class' => self::ELEMENT_CLASS]);
+         $div = new HTMLElement('div', $this->label(), ['class' => self::ELEMENT_CLASS]);
 
          $input = [];
         foreach ($this->elements as $e) {
               $input[] = $e->toHTMLElement();
         }
 
-        if ($this->_inline) {
+        if ($this->inline) {
             $div->setData($input);
         } else {
             $div->addElement(new HTMLElement('div', $input, ['class' => self::INPUT_CLASS]));

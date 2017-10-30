@@ -47,7 +47,7 @@ class PrivMsg extends DBObject
 
     public function getReplyTo($msg_id, $uid)
     {
-         return \array_pop($this->call('get_pm_replyto(' . $msg_id . ',' . $uid . ')'));
+         return array_pop($this->call('get_pm_replyto(' . $msg_id . ',' . $uid . ')'));
     }
 
     public function deleteByUser($uid)

@@ -14,15 +14,15 @@ class ForumCtrler extends Forum
     {
         $this->cache = new PageCache($this->request->uri);
 
-        $tag = $this->_getTagObj();
+        $tag = $this->getTagObj();
         $tagRoot = $tag->getTagRoot();
         $tagTree = $tag->getTagTree();
 
         $tid = $tag->id;
-        $this->_var['head_title'] = $tagTree[$tid]['name'];
-        $this->_var['head_description'] = $tagTree[$tid]['name'];
+        $this->var['head_title'] = $tagTree[$tid]['name'];
+        $this->var['head_description'] = $tagTree[$tid]['name'];
 
-        \sizeof($tagTree[$tid]['children']) ? $this->showForumList($tid, $tagRoot, $tagTree) : $this->showTopicList($tid, $tagRoot);
+        sizeof($tagTree[$tid]['children']) ? $this->showForumList($tid, $tagRoot, $tagTree) : $this->showTopicList($tid, $tagRoot);
     }
 
     // $forum, $groups, $boards are arrays of category id
@@ -30,19 +30,19 @@ class ForumCtrler extends Forum
     {
         $breadcrumb = [];
         foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$_city->ForumRootID ? '/forum' : ('/forum/' . $i));
+            $breadcrumb[$t['name']] = ($i === self::$city->ForumRootID ? '/forum' : ('/forum/' . $i));
         }
 
         $nodeInfo = [];
         $groupTrees = [];
-        if ($tid == self::$_city->ForumRootID) {
+        if ($tid == self::$city->ForumRootID) {
             foreach ($tagTree[$tid]['children'] as $group_id) {
                 $groupTrees[$group_id] = [];
                 $group = $tagTree[$group_id];
                 $groupTrees[$group_id][$group_id] = $group;
                 foreach ($group['children'] as $board_id) {
                     $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
-                    $nodeInfo[$board_id] = $this->_nodeInfo($board_id);
+                    $nodeInfo[$board_id] = $this->nodeInfo($board_id);
                     $this->cache->addParent('/forum/' . $board_id);
                 }
             }
@@ -53,35 +53,35 @@ class ForumCtrler extends Forum
             $groupTrees[$group_id][$group_id] = $group;
             foreach ($group['children'] as $board_id) {
                 $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
-                $nodeInfo[$board_id] = $this->_nodeInfo($board_id);
+                $nodeInfo[$board_id] = $this->nodeInfo($board_id);
                 $this->cache->addParent('/forum/' . $board_id);
             }
         }
         $contents = ['groups' => $groupTrees, 'nodeInfo' => $nodeInfo];
-        if (\sizeof($breadcrumb) > 1) {
+        if (sizeof($breadcrumb) > 1) {
             $contents['breadcrumb'] = Template::breadcrumb($breadcrumb);
         }
-        $this->_var['content'] = new Template('forum_list', $contents);
+        $this->var['content'] = new Template('forum_list', $contents);
     }
 
     public function showTopicList($tid, $tagRoot)
     {
-        $this->_getCacheEvent('ForumUpdate', $tid)->addListener($this->cache);
+        $this->getCacheEvent('ForumUpdate', $tid)->addListener($this->cache);
 
         $breadcrumb = [];
         foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$_city->ForumRootID ? '/forum' : ('/forum/' . $i));
+            $breadcrumb[$t['name']] = ($i === self::$city->ForumRootID ? '/forum' : ('/forum/' . $i));
         }
 
         $node = new Node();
-        list($pageNo, $pageCount) = $this->_getPagerInfo($node->getNodeCount($tid), self::NODES_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount($tid), self::NODES_PER_PAGE);
         $pager = Template::pager($pageNo, $pageCount, '/forum/' . $tid);
 
-        $nodes = $node->getForumNodeList(self::$_city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
-        $nids = \array_column($nodes, 'id');
+        $nodes = $node->getForumNodeList(self::$city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
+        $nids = array_column($nodes, 'id');
         foreach ($nodes as $i => $n) {
-            $nodes[$i]['create_time'] = \date('m/d/Y H:i', $n['create_time']);
-            $nodes[$i]['comment_time'] = \date('m/d/Y H:i', $n['comment_time']);
+            $nodes[$i]['create_time'] = date('m/d/Y H:i', $n['create_time']);
+            $nodes[$i]['comment_time'] = date('m/d/Y H:i', $n['comment_time']);
         }
 
         $editor_contents = [
@@ -100,17 +100,17 @@ class ForumCtrler extends Forum
             'pager' => $pager,
             'nodes' => (empty($nodes) ? null : $nodes),
             'editor' => $editor,
-            'ajaxURI' => '/api/viewcount/' . \implode(',', $nids)
+            'ajaxURI' => '/api/viewcount/' . implode(',', $nids)
         ];
-        $this->_var['content'] = new Template('topic_list', $contents);
+        $this->var['content'] = new Template('topic_list', $contents);
     }
 
-    protected function _nodeInfo($tid)
+    protected function nodeInfo($tid)
     {
         $tag = new Tag($tid, null);
 
         foreach ($tag->getNodeInfo($tid) as $v) {
-            $v['create_time'] = \date('m/d/Y H:i', $v['create_time']);
+            $v['create_time'] = date('m/d/Y H:i', $v['create_time']);
             if ($v['cid'] == 0) {
                 $node = $v;
             } else {

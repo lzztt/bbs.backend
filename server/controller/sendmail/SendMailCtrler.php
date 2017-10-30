@@ -21,12 +21,12 @@ class SendMailCtrler extends SendMail
         }
 
         // display page
-        $this->_var['content'] = new Template('send_mail', ['message' => $message]);
+        $this->var['content'] = new Template('send_mail', ['message' => $message]);
     }
 
     public function send(array $post)
     {
-        if (!\filter_var($post['email'], \FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($post['email'], \FILTER_VALIDATE_EMAIL)) {
             $this->error('不合法的电子邮箱 : ' . $post['email']);
         }
 

@@ -16,13 +16,13 @@ class SingleCtrler extends Single
     {
         $this->cache = new PageCache($this->request->uri);
 
-        $a = \array_pop($this->db->query('CALL get_latest_single_activity()'));
+        $a = array_pop($this->db->query('CALL get_latest_single_activity()'));
 
-        $this->_var['title'] = $a['name'];
-        $this->_var['content'] = new Template('home', [
+        $this->var['title'] = $a['name'];
+        $this->var['content'] = new Template('home', [
             'activity' => new Template('join_form', ['activity' => $a]),
-            'comments' => $this->_getComments($a['id']),
-            'statistics' => $this->_getChart($a)
+            'comments' => $this->getComments($a['id']),
+            'statistics' => $this->getChart($a)
         ]);
     }
 }

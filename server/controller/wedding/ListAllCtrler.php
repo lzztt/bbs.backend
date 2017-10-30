@@ -24,17 +24,17 @@ class ListAllCtrler extends Wedding
         Template::$theme = $this->config->theme['wedding2'];
         // login first
         if (!$this->session->loginStatus) {
-            $this->_displayLogin();
+            $this->displayLogin();
             return;
         }
 
         // logged in
-        $this->_var['navbar'] = new Template('navbar');
+        $this->var['navbar'] = new Template('navbar');
         $a = new WeddingAttendee();
         $a->where('tid', 0, '>');
-        list($table_guests, $table_counts, $total) = $this->_getTableGuests($a->getList('name,tid,guests,email,phone,time,checkin'), 'guests');
+        list($table_guests, $table_counts, $total) = $this->getTableGuests($a->getList('name,tid,guests,email,phone,time,checkin'), 'guests');
 
-        $this->_var['body'] = new Template('attendees', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total]);
+        $this->var['body'] = new Template('attendees', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total]);
     }
 }
 

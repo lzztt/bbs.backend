@@ -14,36 +14,36 @@ class Template
     public static $theme;
     public static $language;
     public static $debug = false;
-    private static $_hasError = false;
-    private static $_site;
+    private static $hasError = false;
+    private static $site;
 
     /**
      * @var Logger $logger
      * @static Logger $logger
      */
-    private static $_logger = null;
+    private static $logger = null;
     //private static $tpl_cache = []; // pool for rendered templates without $var
     public $tpl;
-    private $_var = [];
-    private $_observers;
-    private $_string;
+    private $var = [];
+    private $observers;
+    private $string;
 
     /**
      * Observer design pattern interfaces
      */
     public function attach(Controller $observer)
     {
-        $this->_observers->attach($observer);
+        $this->observers->attach($observer);
     }
 
     public function detach(Controller $observer)
     {
-        $this->_observers->detach($observer);
+        $this->observers->detach($observer);
     }
 
     public function notify()
     {
-        foreach ($this->_observers as $observer) {
+        foreach ($this->observers as $observer) {
             $observer->update($this);
         }
     }
@@ -54,29 +54,29 @@ class Template
      */
     public function __construct($tpl, array $var = [])
     {
-        $this->_observers = new \SplObjectStorage();
+        $this->observers = new \SplObjectStorage();
 
         $this->tpl = $tpl;
         if ($var) {
-            $this->_var = $var;
+            $this->var = $var;
         }
     }
 
     public function setVar(array $var)
     {
-        $this->_var = \array_merge($this->_var, $var);
+        $this->var = array_merge($this->var, $var);
     }
 
     public static function setSite($site)
     {
-        self::$_site = $site;
+        self::$site = $site;
     }
 
     public function __toString()
     {
         // return from string cache
-        if ($this->_string) {
-            return $this->_string;
+        if ($this->string) {
+            return $this->string;
         }
 
         // build the template
@@ -84,71 +84,71 @@ class Template
             // notify observers
             $this->notify();
 
-            \extract($this->_var);
+            extract($this->var);
             $tpl = $this->tpl;
             $tpl_theme = self::$theme;
             $tpl_path = self::$path . '/' . self::$theme;
             $tpl_debug = self::$debug;
 
             // check site files first
-            if (self::$_site) {
-                $tpl_file = $tpl_path . '/' . $tpl . '.' . self::$_site . '.tpl.php';
-                if (!\is_file($tpl_file) || !\is_readable($tpl_file)) {
+            if (self::$site) {
+                $tpl_file = $tpl_path . '/' . $tpl . '.' . self::$site . '.tpl.php';
+                if (!is_file($tpl_file) || !is_readable($tpl_file)) {
                     $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
                 }
             } else {
                 $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
             }
 
-            if (!\is_file($tpl_file) || !\is_readable($tpl_file)) {
-                self::$_hasError = true;
+            if (!is_file($tpl_file) || !is_readable($tpl_file)) {
+                self::$hasError = true;
                 $output = 'template loading error: [' . $tpl_theme . ':' . $tpl . ']';
             } else {
-                \ob_start();                            // Start output buffering
+                ob_start();                            // Start output buffering
                 include $tpl_file;                    // Include the template file
-                $output = \ob_get_contents();     // Get the contents of the buffer
-                \ob_end_clean();                      // End buffering and discard
+                $output = ob_get_contents();     // Get the contents of the buffer
+                ob_end_clean();                      // End buffering and discard
             }
         } catch (\Exception $e) {
-            \ob_end_clean();
-            self::$_hasError = true;
-            if (isset(self::$_logger)) {
-                self::$_logger->error($e->getMessage(), $e->getTrace());
+            ob_end_clean();
+            self::$hasError = true;
+            if (isset(self::$logger)) {
+                self::$logger->error($e->getMessage(), $e->getTrace());
             }
             $output = 'template parsing error: [' . $tpl_theme . ':' . $tpl . ']';
         }
 
         // save to cache
-        $this->_string = $output;
+        $this->string = $output;
         return $output;
     }
 
     public static function setLogger(Logger $logger)
     {
-        self::$_logger = $logger;
+        self::$logger = $logger;
     }
 
     public static function hasError()
     {
-        return self::$_hasError;
+        return self::$hasError;
     }
 
     public static function formatTime($timestamp)
     {
-        return \date('m/d/Y H:i', $timestamp);
+        return date('m/d/Y H:i', $timestamp);
     }
 
     public static function truncate($str, $len = 45)
     {
-        if (\strlen($str) < $len / 2) {
+        if (strlen($str) < $len / 2) {
             return $str;
         }
-        $mb_len = \mb_strlen($str);
-        $rate = \sqrt($mb_len / \strlen($str)); // sqrt(0.7) = 0.837
-        $s_len = ( $rate > 0.837 ? \ceil($len * $rate) : \floor(($len - 2) * $rate) );
+        $mb_len = mb_strlen($str);
+        $rate = sqrt($mb_len / strlen($str)); // sqrt(0.7) = 0.837
+        $s_len = ( $rate > 0.837 ? ceil($len * $rate) : floor(($len - 2) * $rate) );
         // the cut_off length is depend on the rate of non-single characters
-        //var_dump(implode(' - ', [\strlen($str), $mb_len, $s_len, $rate, $str,  \mb_substr($str, 0, $s_len))));
-        return ($mb_len > $s_len) ? \mb_substr($str, 0, $s_len) : $str;
+        //var_dump(implode(' - ', [strlen($str), $mb_len, $s_len, $rate, $str,  mb_substr($str, 0, $s_len))));
+        return ($mb_len > $s_len) ? mb_substr($str, 0, $s_len) : $str;
     }
 
 // local time function. do not touch them
@@ -158,7 +158,7 @@ class Template
 // do not use T in format, timezone info is not correct
     public static function localDate($format, $timestamp)
     {
-        return \date($format, TIMESTAMP + ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
+        return date($format, TIMESTAMP + ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
     }
 
     // get chinese date and time
@@ -166,18 +166,18 @@ class Template
     {
         static $weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
 
-        return $weekdays[\date('w', $timestamp)];
+        return $weekdays[date('w', $timestamp)];
     }
 
     public static function getDateTime($timestamp)
     {
-        return \date('Y年m月d日 H:i', $timestamp);
+        return date('Y年m月d日 H:i', $timestamp);
     }
 
 // do not use timezone info in the $time string
     public static function localStrToTime($time)
     {
-        return (\strtotime($time) - ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
+        return (strtotime($time) - ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
     }
 
     /**
@@ -205,7 +205,7 @@ class Template
     public static function ulist(array $list, array $attributes = [], $even_odd = true)
     {
         if ($even_odd) {
-            if (\array_key_exists('class', $attributes)) {
+            if (array_key_exists('class', $attributes)) {
                 $attributes['class'] .= ' ' . self::EVEN_ODD_CLASS;
             } else {
                 $attributes['class'] = self::EVEN_ODD_CLASS;
@@ -225,30 +225,30 @@ class Template
         return new HTMLElement('ol', self::_li($list), $attributes);
     }
 
-    private static function _li($list)
+    private static function li($list)
     {
-        $_list = [];
+        $list = [];
         foreach ($list as $li) {
-            if (\is_string($li) || $li instanceof HTMLElement) {
-                $_list[] = new HTMLElement('li', $li);
-            } elseif (\is_array($li)) {
-                if (!\array_key_exists('text', $li)) {
+            if (is_string($li) || $li instanceof HTMLElement) {
+                $list[] = new HTMLElement('li', $li);
+            } elseif (is_array($li)) {
+                if (!array_key_exists('text', $li)) {
                     throw new \Exception('list data is not found (missing "text" value in array)');
-                } elseif (!\array_key_exists('attributes', $li)) {
+                } elseif (!array_key_exists('attributes', $li)) {
                     throw new \Exception('list attributes is not found (missing "attributes" value in array)');
                 } else {
-                    $_list[] = new HTMLElement('li', $li['text'], $li['attributes']);
+                    $list[] = new HTMLElement('li', $li['text'], $li['attributes']);
                 }
             }
         }
-        return $_list;
+        return $list;
     }
 
     public static function dlist(array $list, array $attributes = [])
     {
         $dl = new HTMLElement('dl', null, $attributes);
         foreach ($list as $li) {
-            if (!is_array($li) || \sizeof($li) < 2) {
+            if (!is_array($li) || sizeof($li) < 2) {
                 throw new \Exception('$list need to be an array with dt and dd data');
             }
             $dl->addElements([new HTMLElement('dt', $li['dt']), new HTMLElement('dd', (string) $li['dd'])]);
@@ -286,10 +286,10 @@ class Template
         if (array_key_exists('caption', $data) && strlen($data['caption']) > 0) {
             $table->addElement(new HTMLElement('caption', $data['caption']));
         }
-        if (array_key_exists('thead', $data) && \sizeof($data['thead']) > 0) {
+        if (array_key_exists('thead', $data) && sizeof($data['thead']) > 0) {
             $table->addElement(new HTMLElement('thead', self::_table_row($data['thead'], true)));
         }
-        if (array_key_exists('tfoot', $data) && \sizeof($data['tfoot']) > 0) {
+        if (array_key_exists('tfoot', $data) && sizeof($data['tfoot']) > 0) {
             $table->addElement(new HTMLElement('tfoot', self::_table_row($data['tfoot'])));
         }
         if (!array_key_exists('tbody', $data)) {
@@ -309,9 +309,9 @@ class Template
         return $table;
     }
 
-    private static function _table_row($row, $isHeader = false)
+    private static function tableRow($row, $isHeader = false)
     {
-        if (!\array_key_exists('cells', $row)) {
+        if (!array_key_exists('cells', $row)) {
             throw new \Exception('row cells (tr) data is not found');
         }
         if (array_key_exists('attributes', $row)) {
@@ -322,14 +322,14 @@ class Template
 
         $tag = $isHeader ? 'th' : 'td';
         foreach ($row['cells'] as $td) {
-            if (\is_string($td) || $td instanceof HTMLElement) {
+            if (is_string($td) || $td instanceof HTMLElement) {
                 $tr->addElement(new HTMLElement($tag, $td));
-            } elseif (\is_array($td)) {
-                if (!\array_key_exists('text', $td)) {
+            } elseif (is_array($td)) {
+                if (!array_key_exists('text', $td)) {
                     throw new \Exception('cell data is not found (missing "text" value in array)');
                 }
 
-                if (\array_key_exists('attributes', $td)) {
+                if (array_key_exists('attributes', $td)) {
                     $tr->addElement(new HTMLElement($tag, $td['text'], $td['attributes']));
                 } else {
                     $tr->addElement(new HTMLElement($tag, $td['text']));
@@ -347,7 +347,7 @@ class Template
     {
         //input text, radio, checkbox, textarea,
         $attributes['action'] = $action;
-        $attributes['method'] = \in_array($method, ['get', 'post']) ? $method : 'get';
+        $attributes['method'] = in_array($method, ['get', 'post']) ? $method : 'get';
     }
 
     /*
@@ -386,7 +386,7 @@ class Template
             foreach ($options as $op) {
                 $i++;
                 $option = new HTMLElement('li');
-                $input_id = \implode('_', [$type, $name, $i]);
+                $input_id = implode('_', [$type, $name, $i]);
                 $input_attr = [
                     'id' => $input_id,
                     'type' => $type,
@@ -421,15 +421,15 @@ class Template
         foreach ($get as $k => $v) {
             $conditions[] = $k . '=' . $v;
         }
-        $query = \implode('&', $conditions);
+        $query = implode('&', $conditions);
 
-        return \htmlspecialchars('/' . \implode('/', $args) . ($query ? '?' . $query : ''));
+        return htmlspecialchars('/' . implode('/', $args) . ($query ? '?' . $query : ''));
     }
 
     public static function breadcrumb(array $links)
     {
         $list = [];
-        $count = \count($links) - 1;
+        $count = count($links) - 1;
         foreach ($links as $text => $uri) {
             $list[] = $count-- ? self::link($text, $uri) : (string) $text;
         }

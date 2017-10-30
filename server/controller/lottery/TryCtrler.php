@@ -15,7 +15,7 @@ class TryCtrler extends Lottery
             if (isset($lottery[$this->request->timestamp])) {
                 die('Please Slow Down<br /><a href="' . $this->request->referer . '">go back</a>');
             }
-            $lottery[$this->request->timestamp] = \mt_rand(0, 100);
+            $lottery[$this->request->timestamp] = mt_rand(0, 100);
             $this->session->lottery = $lottery;
             $this->pageRedirect($this->request->referer);
         }
@@ -24,9 +24,9 @@ class TryCtrler extends Lottery
             $this->pageRedirect($this->request->referer);
         }
 
-        \krsort($lottery);
+        krsort($lottery);
 
-        $this->_var['content'] = new Template('lotteryTry', ['lottery' => $lottery]);
+        $this->var['content'] = new Template('lotteryTry', ['lottery' => $lottery]);
     }
 }
 

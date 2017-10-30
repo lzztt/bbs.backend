@@ -15,9 +15,9 @@ abstract class DBStatement
 
     abstract public function execute();
 
-    abstract public function insert_id();
+    abstract public function insertId();
 
-    abstract public function affected_rows();
+    abstract public function affectedRows();
 }
 
 //__END_OF_FILE__

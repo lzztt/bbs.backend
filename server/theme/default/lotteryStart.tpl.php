@@ -32,7 +32,7 @@
         </tr>
         <?php foreach ($roundResults as $r): ?>
           <tr>
-            <td><?= \date('m/d/Y H:i:s', $r['time']) ?> </td>
+            <td><?= date('m/d/Y H:i:s', $r['time']) ?> </td>
             <td><?= $r['points'] ?> </td>
             <td><?= $r['code'] ?> </td>
           </tr>

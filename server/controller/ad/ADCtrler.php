@@ -88,7 +88,7 @@ HEAD;
         $form->setDataByIndex(null, $form_banner);
         $content->setDataByIndex(null, $form);
 
-        $this->_var['content'] = $content;
+        $this->var['content'] = $content;
     }
 }
 

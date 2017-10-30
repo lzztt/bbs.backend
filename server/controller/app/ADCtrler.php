@@ -6,11 +6,11 @@ use site\controller\App;
 
 class ADCtrler extends App
 {
-    private $_name = 'ad';
+    private $name = 'ad';
 
     public function run()
     {
-        $this->response->setContent(\file_get_contents($this->_getLatestVersion($this->_name) . '/index.html'));
+        $this->response->setContent(file_get_contents($this->getLatestVersion($this->name) . '/index.html'));
     }
 }
 

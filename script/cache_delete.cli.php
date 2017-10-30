@@ -12,13 +12,13 @@ use Lzx\Core\Template;
 use Lzx\Core\Cache;
 use Site\DataObject\User;
 
-\mb_internal_encoding("UTF-8");
+mb_internal_encoding("UTF-8");
 
 // note: cache path in php and nginx are using servername
 $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 
 $domain = 'houstonbbs.com';
-$siteDir = \dirname(__DIR__);
+$siteDir = dirname(__DIR__);
 $path = [
     'lzx' => $siteDir . '/Lzx',
     'root' => $siteDir,
@@ -46,9 +46,9 @@ Handler::setExceptionHandler();
 $config = Config::getInstance($siteDir . '/config.php');
 
 
-$cacheKeys = \array_slice($argv, 1);
+$cacheKeys = array_slice($argv, 1);
 
-if (\sizeof($cacheKeys) < 1) {
+if (sizeof($cacheKeys) < 1) {
     echo 'usage: php ' . $argv[0] . ' <cacheKeys> ...' . PHP_EOL;
     exit;
 }
