@@ -47,55 +47,28 @@ class NodeCtrler extends Node
         $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
 
         $contents = [
-            'nid'             => $nid,
-            'tid'             => $node['tid'],
+            'nid' => $nid,
+            'tid' => $node['tid'],
             'commentCount' => $node['comment_count'],
-            'status'         => $node['status'],
-            'breadcrumb'    => Template::breadcrumb($breadcrumb),
-            'pager'          => $pager,
+            'status' => $node['status'],
+            'breadcrumb' => Template::breadcrumb($breadcrumb),
+            'pager' => $pager,
             'postNumStart' => $postNumStart,
-            'ajaxURI'        => '/api/viewcount/' . $nid
+            'ajaxURI' => '/api/viewcount/' . $nid
         ];
 
         $posts = [];
 
         $authorPanelInfo = [
-            'uid'         => null,
-            'username'  => null,
-            'avatar'     => null,
-            'sex'         => null,
+            'uid' => null,
+            'username' => null,
+            'avatar' => null,
+            'sex' => null,
             'access_ip' => null,
             'join_time' => null,
-            'points'     => null,
+            'points' => null,
         ];
-/*
-        if ( $pageNo == 1 )
-        { // show node details as the first post
-            $node['type'] = 'node';
-            $node['createTime'] = date( 'm/d/Y H:i', $node['create_time'] );
-            if ( $node['lastModifiedTime'] )
-            {
-                $node['lastModifiedTime'] = date( 'm/d/Y H:i', $node['last_modified_time'] );
-            }
-            try
-            {
-                $node['HTMLbody'] = BBCode::parse( $node['body'] );
-            }
-            catch ( \Exception $e )
-            {
-                $node['HTMLbody'] = \nl2br( $node['body'] );
-                $this->logger->error( $e->getMessage(), $e->getTrace() );
-            }
-            // $node['signature'] = \nl2br( $node['signature'] );
-            $node['authorPanel'] = $this->authorPanel( array_intersect_key( $node, $authorPanelInfo ) );
-            $node['city'] = $this->request->getCityFromIP( $node['access_ip'] );
-            $node['attachments'] = $this->attachments( $node['files'], $node['body'] );
-            $node['filesJSON'] = json_encode( $node['files'] );
-            $node['report'] = ( $node['points'] < 5 || strpos( $node['body'], 'http' ) !== FALSE );
 
-            $posts[] = $node;
-        }
-*/
         $nodeComment = ( $pageNo == 1 );
         $nodeObj = new NodeObject();
         $comments = $nodeObj->getForumNodeComments($nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE);
@@ -172,11 +145,10 @@ class NodeCtrler extends Node
         return $authorPanels[$info['uid']];
     }
 
-    private function attachments($files, $body)
-    {
-        $attachments = null;
-        $files = [];
-        $images = [];
+    private function attachments(array $files, string $body)
+    {        
+        $fileElements = [];
+        $imageElements = [];
 
         foreach ($files as $f) {
             $tmp = explode('.', $f['path']);
@@ -199,19 +171,20 @@ class NodeCtrler extends Node
             }
 
             if ($isImage) {
-                $images[] = new HTMLElement('figure', [
+                $imageElements[] = new HTMLElement('figure', [
                     new HTMLElement('figcaption', $f['name']),
                     new HTMLElement('img', null, ['src' => $f['path'], 'alt' => '图片加载失败 : ' . $f['name']])]);
             } else {
-                $files[] = Template::link($f['name'], $f['path']);
+                $fileElements[] = Template::link($f['name'], $f['path']);
             }
         }
 
-        if (sizeof($images) > 0) {
-            $attachments .= new HTMLElement('div', $images, ['class' => 'attach_images']);
+        $attachments = null;
+        if (sizeof($imageElements) > 0) {
+            $attachments .= new HTMLElement('div', $imageElements, ['class' => 'attach_images']);
         }
-        if (sizeof($files) > 0) {
-            $attachments .= new HTMLElement('div', $files, ['class' => 'attach_files']);
+        if (sizeof($fileElements) > 0) {
+            $attachments .= new HTMLElement('div', $fileElements, ['class' => 'attach_files']);
         }
 
         return $attachments;
@@ -242,33 +215,18 @@ class NodeCtrler extends Node
         $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
 
         $contents = [
-            'nid'             => $nid,
-            'cid'             => $tags[2]['cid'],
+            'nid' => $nid,
+            'cid' => $tags[2]['cid'],
             'commentCount' => $node['comment_count'],
-            'status'         => $node['status'],
-            'breadcrumb'    => Template::breadcrumb($breadcrumb),
-            'pager'          => $pager,
+            'status' => $node['status'],
+            'breadcrumb' => Template::breadcrumb($breadcrumb),
+            'pager' => $pager,
             'postNumStart' => $postNumStart,
-            'ajaxURI'        => '/api/viewcount/' . $nid
+            'ajaxURI' => '/api/viewcount/' . $nid
         ];
 
         $node['type'] = 'node';
-/*
-        if ( $pageNo == 1 )
-        { // show node details as the first post
-            try
-            {
-                $node['HTMLbody'] = BBCode::parse( $node['body'] );
-            }
-            catch ( \Exception $e )
-            {
-                $node['HTMLbody'] = \nl2br( $node['body'] );
-                $this->logger->error( $e->getMessage(), $e->getTrace() );
-            }
-            $node['attachments'] = $this->attachments( $node['files'], $node['body'] );
-            //$node['filesJSON'] = json_encode($node['files']);
-        }
-*/
+
         $nodeComment = ( $pageNo == 1 );
         $comments = $nodeObj->getYellowPageNodeComments($nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE);
 
@@ -313,9 +271,9 @@ class NodeCtrler extends Node
         $editor = new Template('editor_bbcode', $editor_contents);
 
         $contents += [
-            'node'      => $node,
+            'node' => $node,
             'comments' => $cmts,
-            'editor'    => $editor
+            'editor' => $editor
         ];
 
         $this->var['content'] = new Template('node_yellow_page', $contents);
