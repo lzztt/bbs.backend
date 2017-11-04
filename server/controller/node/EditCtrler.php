@@ -37,7 +37,6 @@ class EditCtrler extends Node
         }
 
         $node->title = $this->request->post['title'];
-        //$node->body = $this->request->post['body'];
         $node->lastModifiedTime = $this->request->timestamp;
 
         try {
@@ -93,13 +92,17 @@ class EditCtrler extends Node
 
             $comment = new Comment($arr[0]['id'], 'body');
             $contents['body'] = $comment->body;
+            
+            $image = new Image();
+            $image->nid = $nid;
+            $image->cid = $comment->id;
+            $contents['files'] = $image->getList('id,name,path');
 
             $this->var['content'] = new Template('editor_bbcode_yp', $contents);
         } else {
             // save modification
             $node = new NodeObject($nid, 'tid');
             $node->title = $this->request->post['title'];
-            // $node->body = $this->request->post['body'];
             $node->lastModifiedTime = $this->request->timestamp;
             $node->update();
 
