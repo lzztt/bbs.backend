@@ -38,7 +38,6 @@ abstract class Controller extends LzxCtrler
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
 
-    protected static $l = [];
     protected static $city;
     private static $requestProcessed = false;
     private static $cacheHandler;
@@ -92,17 +91,7 @@ abstract class Controller extends LzxCtrler
             self::$requestProcessed = true;
         }
 
-        // language info
         $this->config = $config;
-        $class = get_class($this);
-        if (!array_key_exists($class, self::$l)) {
-            // GetText: use po language file
-            $lang_file = $lang_path . str_replace('\\', '/', $class) . '.' . Template::$language . '.po';
-            if (is_file($lang_file)) {
-                include_once $lang_file;
-            }
-            self::$l[$class] = isset($language) ? $language : [];
-        }
 
         // register this controller as an observer of the HTML template
         $html = new Template('html');
