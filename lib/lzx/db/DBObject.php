@@ -657,5 +657,3 @@ abstract class DBObject
         }
     }
 }
-
-//__END_OF_FILE__

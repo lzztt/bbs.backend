@@ -19,5 +19,3 @@ class Handler extends Single
         $this->pageRedirect($uri);
     }
 }
-
-//__END_OF_FILE__

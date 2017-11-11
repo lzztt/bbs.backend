@@ -149,5 +149,3 @@ class DB
         }
     }
 }
-
-//__END_OF_FILE__

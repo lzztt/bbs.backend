@@ -55,5 +55,3 @@ class PrivMsg extends DBObject
          return $this->call('delete_pm(' . $this->id . ',' . $uid . ')');
     }
 }
-
-//__END_OF_FILE__

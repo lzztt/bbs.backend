@@ -26,5 +26,3 @@ class Handler extends Single
         $this->var['content'] = new Template('activities', ['activities' => $activities]);
     }
 }
-
-//__END_OF_FILE__

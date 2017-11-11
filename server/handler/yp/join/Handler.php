@@ -16,5 +16,3 @@ class Handler extends YP
         $this->var['head_title'] = '市场推广 先入为主';
     }
 }
-
-//__END_OF_FILE__

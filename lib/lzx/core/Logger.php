@@ -184,5 +184,3 @@ class Logger
         return $ret;
     }
 }
-
-//__END_OF_FILE__

@@ -82,5 +82,3 @@ class Handler extends Service
         return $image;
     }
 }
-
-//__END_OF_FILE__

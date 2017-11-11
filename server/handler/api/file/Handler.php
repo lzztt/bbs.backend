@@ -34,5 +34,3 @@ class Handler extends Service
         $this->response->type = Response::HTML;
     }
 }
-
-//__END_OF_FILE__

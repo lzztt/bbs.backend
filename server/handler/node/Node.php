@@ -37,5 +37,3 @@ abstract class Node extends Controller
         return [$nid, $types[$rootTagID]];
     }
 }
-
-//__END_OF_FILE__

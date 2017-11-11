@@ -101,5 +101,3 @@ abstract class Cache
         }
     }
 }
-
-//__END_OF_FILE__

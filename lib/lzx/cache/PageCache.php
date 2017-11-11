@@ -69,5 +69,3 @@ class PageCache extends Cache
         }
     }
 }
-
-//__END_OF_FILE__

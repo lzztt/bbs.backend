@@ -62,5 +62,3 @@ HTML;
         $this->var['content'] = $html;
     }
 }
-
-//__END_OF_FILE__

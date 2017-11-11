@@ -212,5 +212,3 @@ class HTMLElement
             return $attr;
     }
 }
-
-//__END_OF_FILE__

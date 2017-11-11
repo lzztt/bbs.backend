@@ -36,5 +36,3 @@ abstract class Forum extends Controller
         return $tag;
     }
 }
-
-//__END_OF_FILE__

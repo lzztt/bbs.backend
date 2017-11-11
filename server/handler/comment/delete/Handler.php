@@ -53,5 +53,3 @@ class Handler extends Comment
         $this->pageRedirect($this->request->referer);
     }
 }
-
-//__END_OF_FILE__

@@ -91,5 +91,3 @@ class CacheEvent
         }
     }
 }
-
-//__END_OF_FILE__

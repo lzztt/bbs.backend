@@ -73,5 +73,3 @@ class Handler extends YP
         }
     }
 }
-
-//__END_OF_FILE__

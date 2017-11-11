@@ -255,5 +255,3 @@ class Handler extends Service
         return false;
     }
 }
-
-//__END_OF_FILE__

@@ -20,5 +20,3 @@ class Handler extends Term
         $this->var['content'] = new Template('term', $sitename);
     }
 }
-
-//__END_OF_FILE__

@@ -13,5 +13,3 @@ class Handler extends App
         $this->response->setContent(file_get_contents($this->getLatestVersion($this->name) . '/index.html'));
     }
 }
-
-//__END_OF_FILE__

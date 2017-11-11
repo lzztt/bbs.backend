@@ -30,5 +30,3 @@ interface CacheHandlerInterface
 
     public function addEventListeners($eid, $oid, array $listeners);
 }
-
-//__END_OF_FILE__
