@@ -160,4 +160,3 @@ if (file_exists($flag)) {
         unlink($lock);
     }
 }
-
