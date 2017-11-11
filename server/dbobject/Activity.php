@@ -46,5 +46,3 @@ class Activity extends DBObject
          $this->call('add_activity(' . $nid . ',' . $beginTime . ',' . $endTime . ')');
     }
 }
-
-//__END_OF_FILE__

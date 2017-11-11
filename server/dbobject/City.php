@@ -32,5 +32,3 @@ class City extends DBObject
         parent::__construct($db, $table, $fields, $id, $properties);
     }
 }
-
-//__END_OF_FILE__

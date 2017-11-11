@@ -44,5 +44,3 @@ abstract class App
 
     abstract public function run($argc, array $argv);
 }
-
-//_END_OF_FILE

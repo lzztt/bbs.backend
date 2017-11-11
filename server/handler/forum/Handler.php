@@ -120,5 +120,3 @@ class Handler extends Forum
         return ['node' => $node, 'comment' => $comment];
     }
 }
-
-//__END_OF_FILE__

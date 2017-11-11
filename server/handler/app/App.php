@@ -42,5 +42,3 @@ abstract class App extends Controller
         return $dir;
     }
 }
-
-//__END_OF_FILE__

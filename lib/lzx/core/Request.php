@@ -224,5 +224,3 @@ class Request
         return trim(preg_replace('/<[^>]*>/', '', $in));
     }
 }
-
-//__END_OF_FILE__

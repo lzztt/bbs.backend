@@ -318,5 +318,3 @@ class User extends DBObject
         return array_pop(array_pop($this->call('bookmark_count(' . $this->id . ')')));
     }
 }
-
-//__END_OF_FILE__

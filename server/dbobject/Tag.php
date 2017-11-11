@@ -163,5 +163,3 @@ class Tag extends DBObject
          return $this->call('get_tag_nodes(' . $this->id . ', ' . $cid . ', ' . $limit . ', ' . $offset .')');
     }
 }
-
-//__END_OF_FILE__

@@ -115,5 +115,3 @@ class Handler extends Forum
         $this->pageRedirect('/node/' . $node->id);
     }
 }
-
-//__END_OF_FILE__

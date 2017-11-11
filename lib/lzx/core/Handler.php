@@ -62,5 +62,3 @@ class Handler
         }
     }
 }
-
-//_END_OF_FILE

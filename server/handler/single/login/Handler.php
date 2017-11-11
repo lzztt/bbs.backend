@@ -22,5 +22,3 @@ class Handler extends Single
         $this->displayLogin();
     }
 }
-
-//__END_OF_FILE__

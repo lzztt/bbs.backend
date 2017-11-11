@@ -63,5 +63,3 @@ abstract class Controller
         throw new \Exception();
     }
 }
-
-//__END_OF_FILE__

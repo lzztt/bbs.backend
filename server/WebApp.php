@@ -175,5 +175,3 @@ class WebApp extends App
         return $isRobot;
     }
 }
-
-//__END_OF_FILE__

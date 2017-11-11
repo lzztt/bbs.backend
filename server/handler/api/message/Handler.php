@@ -209,5 +209,3 @@ class Handler extends Service
         return ['count' => $user->getPrivMsgsCount('new')];
     }
 }
-
-//__END_OF_FILE__

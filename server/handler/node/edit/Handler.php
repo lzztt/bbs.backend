@@ -135,5 +135,3 @@ class Handler extends Node
         }
     }
 }
-
-//__END_OF_FILE__

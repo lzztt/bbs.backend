@@ -253,5 +253,3 @@ class CacheHandler implements CacheHandlerInterface
         }
     }
 }
-
-//__END_OF_FILE__

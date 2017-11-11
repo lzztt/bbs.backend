@@ -298,5 +298,3 @@ class Image extends DBObject
         return $this->call('get_recent_images(' . $city_id . ')');
     }
 }
-
-//__END_OF_FILE__

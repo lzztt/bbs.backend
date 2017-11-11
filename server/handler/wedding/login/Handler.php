@@ -36,5 +36,3 @@ class Handler extends Wedding
         $this->displayLogin();
     }
 }
-
-//__END_OF_FILE__

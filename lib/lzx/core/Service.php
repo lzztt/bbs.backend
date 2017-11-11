@@ -47,5 +47,3 @@ abstract class Service
         $this->error('forbidden');
     }
 }
-
-//__END_OF_FILE__

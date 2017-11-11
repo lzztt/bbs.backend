@@ -91,5 +91,3 @@ HEAD;
         $this->var['content'] = $content;
     }
 }
-
-//__END_OF_FILE__

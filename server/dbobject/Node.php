@@ -199,5 +199,3 @@ class Node extends DBObject
         $this->call('delete_node_rating(' . $nid . ',' . $uid . ')');
     }
 }
-
-//__END_OF_FILE__

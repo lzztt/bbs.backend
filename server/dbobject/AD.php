@@ -59,5 +59,3 @@ class AD extends DBObject
         return $this->call('get_ad_types()');
     }
 }
-
-//__END_OF_FILE__

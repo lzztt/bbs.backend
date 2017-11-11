@@ -112,5 +112,3 @@ class FundImporter extends App
 // main function
 $importer = new FundImporter();
 $importer->run($argc, $argv);
-
-//__END_OF_FILE__

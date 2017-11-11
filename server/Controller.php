@@ -334,5 +334,3 @@ abstract class Controller extends LzxCtrler
         return [$pageNo, $pageCount];
     }
 }
-
-//__END_OF_FILE__

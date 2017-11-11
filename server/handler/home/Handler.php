@@ -294,5 +294,3 @@ class Handler extends Home
         return $ul;
     }
 }
-
-//__END_OF_FILE__

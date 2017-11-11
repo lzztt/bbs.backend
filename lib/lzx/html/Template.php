@@ -486,5 +486,3 @@ class Template
         return new HTMLElement('nav', $pager, ['class' => 'pager']);
     }
 }
-
-//__END_OF_FILE__

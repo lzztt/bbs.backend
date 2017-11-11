@@ -60,7 +60,7 @@ class Config
 
         $this->image = [
             'types' => [\IMAGETYPE_GIF, \IMAGETYPE_PNG, \IMAGETYPE_JPEG],
-            'height' => 960,
+            'height' => 9000,
             'width' => 600,
             'size' => 5242880
         ];
@@ -88,9 +88,3 @@ class Config
         return $instance;
     }
 }
-
-/*
- * set timezone in php.ini
- * 'timezone' => 'America/Chicago',
- */
-//__END_OF_FILE__

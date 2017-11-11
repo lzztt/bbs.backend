@@ -46,5 +46,3 @@ class Handler extends Wedding
         }
     }
 }
-
-//__END_OF_FILE__

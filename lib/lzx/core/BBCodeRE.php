@@ -110,5 +110,3 @@ class BBCodeRE
         return $text;
     }
 }
-
-//__END_OF_FILE__
