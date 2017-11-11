@@ -15,8 +15,8 @@ function error_exit
     exit 1;
 } 1>&2
 
-if [[ ! -d $serverdir/controller ]] && [[ ! -d $serverdir/api ]]; then
-    error_exit "no controller or api directory found in $PWD/server"
+if [[ ! -d $serverdir/handler ]]; then
+    error_exit "no handler directory found in $PWD/server"
 fi
 
 rm -rf $tmp_file || error_exit "failed to initialize $tmp_file"
@@ -43,29 +43,17 @@ class ControllerRouter extends ControllerFactory
 EOF
 
 {
-if [[ -d $serverdir/controller ]]; then
-    for i in $serverdir/controller/*/*Ctrler.php; do
-        ctrler=$(echo $i | sed -e "s!^$serverdir/controller/!!" -e 's!.php$!!')
-        uri=$(echo $ctrler | sed 's!Ctrler$!!' | tr '[:upper:]' '[:lower:]' | awk -F '/' '{ if($1 == $2) print $1; else print $1"/"$2; }')
-
-        echo \'$uri\'' => '\''site\\controller\\'$(echo $ctrler | sed 's!/!\\\\!g')\'','
-    done | sort -t \' -k 2,2
-fi
-
-if [[ -d $serverdir/api ]]; then
-    for i in $serverdir/api/*.php; do
-        api=$(echo $i | sed -e "s!^$serverdir/!!" -e 's!.php$!!')
-        uri=$(echo $api | sed 's!API$!!' | tr '[:upper:]' '[:lower:]')
-        echo \'$uri\'' => '\''site\\'$(echo $api | sed 's!/!\\\\!g')\'','
-    done | sort -t \' -k 2,2
-fi
+cd $serverdir
+for i in `find handler -name 'Handler.php'`; do
+    uri=$(dirname $i | cut -c 9-)
+    handler=$(echo $i | sed 's/.php$//')
+    echo \'$uri\'' => '\''site\\'$(echo $handler | sed 's!/!\\\\!g')\'','
+done | sort -t \' -k 2,2
 } | column -t | sed 's/^/        /' >> $tmp_file
 
 cat >> $tmp_file <<'EOF'
     ];
 }
-
-//__END_OF_FILE__
 EOF
 
 if [[ ! -f $serverdir/$out_file ]]; then
