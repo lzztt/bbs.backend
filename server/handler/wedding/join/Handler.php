@@ -58,5 +58,3 @@ class Handler extends Wedding
             . '<div class="down">新婚答谢宴将于6月28日晚上6点28分举行<br />地点等详情已经通过email发送到您的邮箱 ' . $a->email . '<br />请查收~</div>';
     }
 }
-
-//__END_OF_FILE__

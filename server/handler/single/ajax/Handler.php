@@ -128,5 +128,3 @@ class Handler extends Single
         throw new \Exception();
     }
 }
-
-//__END_OF_FILE__

@@ -40,5 +40,3 @@ class JSON
         return $this->string;
     }
 }
-
-//__END_OF_FILE__

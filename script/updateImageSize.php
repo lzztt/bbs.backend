@@ -41,5 +41,3 @@ class Script extends App
 
 $app = new Script($SERVERDIR . '/config.php', [__NAMESPACE__ => $SERVERDIR]);
 $app->run($argc, $argv);
-
-//_END_OF_FILE

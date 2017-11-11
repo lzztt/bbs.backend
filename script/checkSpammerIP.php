@@ -29,5 +29,3 @@ class Script extends App
 
 $app = new Script();
 $app->run($argc, $argv);
-
-//__END_OF_FILE__

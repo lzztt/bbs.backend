@@ -47,5 +47,3 @@ class Handler extends Service
         $this->json($viewCount);
     }
 }
-
-//__END_OF_FILE__

@@ -161,5 +161,3 @@ if (file_exists($flag)) {
     }
 }
 
-
-//__END_OF_FILE__

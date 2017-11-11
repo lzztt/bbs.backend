@@ -207,5 +207,3 @@ class Session
         return \crc32($_SERVER['HTTP_USER_AGENT'] . $this->sid);
     }
 }
-
-//__END_OF_FILE__

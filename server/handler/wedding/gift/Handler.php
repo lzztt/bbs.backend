@@ -36,5 +36,3 @@ class Handler extends Wedding
         $this->var['body'] = new Template('gifts', ['tables' => $table_guests, 'counts' => $table_counts, 'total' => $total]);
     }
 }
-
-//__END_OF_FILE__

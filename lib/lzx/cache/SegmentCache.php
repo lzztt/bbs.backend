@@ -65,5 +65,3 @@ class SegmentCache extends Cache
         }
     }
 }
-
-//__END_OF_FILE__

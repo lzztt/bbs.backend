@@ -37,5 +37,3 @@ class Handler extends Single
         $this->var['content'] = new Template('checkin', ['confirmed_groups' => $confirmed_groups, 'unconfirmed_groups' => $unconfirmed_groups]);
     }
 }
-
-//__END_OF_FILE__

@@ -30,5 +30,3 @@ class Handler extends Wedding
         $this->pageRedirect($uri);
     }
 }
-
-//__END_OF_FILE__

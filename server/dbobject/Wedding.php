@@ -50,5 +50,3 @@ class Wedding extends DBObject
         return array_pop($arr[0]);
     }
 }
-
-//__END_OF_FILE__

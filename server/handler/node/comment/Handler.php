@@ -198,5 +198,3 @@ class Handler extends Node
         $this->pageRedirect('/node/' . $nid . '?p=l#commentomment' . $comment->id);
     }
 }
-
-//__END_OF_FILE__
