@@ -12,5 +12,3 @@ class Handler extends Help
          $this->var['content'] = new Template('help');
     }
 }
-
-//__END_OF_FILE__

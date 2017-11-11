@@ -72,5 +72,3 @@ class Handler extends Node
         $this->pageRedirect('/yp/' . $node->tid);
     }
 }
-
-//__END_OF_FILE__

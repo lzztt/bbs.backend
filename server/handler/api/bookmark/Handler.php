@@ -84,5 +84,3 @@ class Handler extends Service
         $this->json(null);
     }
 }
-
-//__END_OF_FILE__

@@ -70,5 +70,3 @@ abstract class Wedding extends Controller
         $this->var['body'] = new Template('login', ['uri' => $this->request->uri]);
     }
 }
-
-//__END_OF_FILE__

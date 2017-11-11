@@ -94,5 +94,3 @@ class ControllerFactory
         throw new \Exception();
     }
 }
-
-//__END_OF_FILE__

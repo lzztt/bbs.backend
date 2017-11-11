@@ -16,5 +16,3 @@ abstract class Help extends Controller
                . '<li>首页轮换图片是从宽度等于600px，高度不小于300px的15张最新的附件图片中随机选取10张播放</li></ol>';
     }
 }
-
-//__END_OF_FILE__

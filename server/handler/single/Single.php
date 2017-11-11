@@ -148,5 +148,3 @@ abstract class Single extends Controller
         return \crc32(substr(\md5('alexmika' . $uid), 5, 10));
     }
 }
-
-//__END_OF_FILE__

@@ -34,5 +34,3 @@ class Handler extends Wedding
         $this->var['body'] = new Template('checkin', ['tables' => $table_guests]);
     }
 }
-
-//__END_OF_FILE__

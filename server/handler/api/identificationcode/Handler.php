@@ -47,5 +47,3 @@ class Handler extends Service
         }
     }
 }
-
-//__END_OF_FILE__

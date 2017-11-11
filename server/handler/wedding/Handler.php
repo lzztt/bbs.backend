@@ -26,5 +26,3 @@ class Handler extends Wedding
         $this->var['body'] = new Template('join_form');
     }
 }
-
-//__END_OF_FILE__

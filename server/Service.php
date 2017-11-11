@@ -268,5 +268,3 @@ abstract class Service extends LzxService
         }
     }
 }
-
-//__END_OF_FILE__

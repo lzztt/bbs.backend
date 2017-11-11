@@ -38,5 +38,3 @@ class Handler extends Activity
         $this->var['content'] = new Template('activity_list', $contents);
     }
 }
-
-//__END_OF_FILE__

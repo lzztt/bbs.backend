@@ -35,5 +35,3 @@ class Fund extends DBObject
         return $this->symbol . ' : ' . $this->name;
     }
 }
-
-//__END_OF_FILE__

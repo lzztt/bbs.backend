@@ -61,5 +61,3 @@ class Handler extends YP
         $this->var['content'] = new Template('yp_list', $contents);
     }
 }
-
-//__END_OF_FILE__

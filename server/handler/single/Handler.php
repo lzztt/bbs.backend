@@ -26,5 +26,3 @@ class Handler extends Single
         ]);
     }
 }
-
-//__END_OF_FILE__

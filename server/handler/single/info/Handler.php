@@ -91,5 +91,3 @@ class Handler extends Single
         $this->var['content'] = '<div id="activity">email sent<br /><a href="/single">返回首页</a></div>';
     }
 }
-
-//__END_OF_FILE__

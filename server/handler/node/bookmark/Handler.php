@@ -22,5 +22,3 @@ class Handler extends Node
         $this->html = null;
     }
 }
-
-//__END_OF_FILE__

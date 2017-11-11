@@ -279,5 +279,3 @@ class Handler extends Node
         $this->var['content'] = new Template('node_yellow_page', $contents);
     }
 }
-
-//__END_OF_FILE__
