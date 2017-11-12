@@ -16,10 +16,11 @@ abstract class Node extends Controller
             self::$city->YPRootID => 'YellowPage',
         ];
 
-        $nid = $this->id;
+        $nid = (int) $this->args[0];
         if ($nid <= 0) {
             $this->pageNotFound();
         }
+        array_shift($this->args);
 
         $nodeObj = new NodeObject();
         $tags = $nodeObj->getTags($nid);
