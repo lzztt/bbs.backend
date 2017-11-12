@@ -2,11 +2,11 @@
 
 namespace site\handler\term;
 
-use site\handler\term\Term;
+use site\Controller;
 use lzx\html\Template;
 use lzx\cache\PageCache;
 
-class Handler extends Term
+class Handler extends Controller
 {
     public function run()
     {

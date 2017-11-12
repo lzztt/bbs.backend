@@ -2,7 +2,7 @@
 
 namespace site\handler\ad;
 
-use site\handler\ad\AD;
+use site\Controller;
 use lzx\html\HTMLElement;
 
 /*
@@ -15,7 +15,7 @@ use lzx\html\HTMLElement;
  *
  * @author ikki
  */
-class Handler extends AD
+class Handler extends Controller
 {
     public function run()
     {
