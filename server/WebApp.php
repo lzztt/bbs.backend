@@ -10,7 +10,7 @@ use lzx\core\Response;
 use site\Session;
 use lzx\html\Template;
 use site\Config;
-use site\ControllerRouter;
+use site\ControllerFactory;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
@@ -101,13 +101,10 @@ class WebApp extends App
         $this->logger->setUserInfo($userinfo);
 
         $response = Response::getInstance();
-        $ctrler = null;
-        $args = $request->getURIargs($request->uri);
 
         try {
-            $ctrler = ControllerRouter::createController($request, $response, $this->config, $this->logger, $session);
-            $action = $args && $args[0] === 'api' ? $ctrler->action : 'run';
-            $ctrler->$action();
+            $ctrler = ControllerFactory::create($request, $response, $this->config, $this->logger, $session);
+            $ctrler->run();
         } catch (\Exception $e) {
             if ($e->getMessage()) {
                 $this->logger->error($e->getMessage(), $e->getTrace());
