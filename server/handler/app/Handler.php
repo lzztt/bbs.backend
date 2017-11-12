@@ -8,9 +8,8 @@ class Handler extends Controller
 {
     public function run()
     {
-        $args = $this->request->getURIargs($this->request->uri);
-        $name = $args[1];
-        $this->response->setContent(file_get_contents($this->getLatestVersion($name) . '/index.html'));
+        $app = $this->args[0];
+        $this->response->setContent(file_get_contents($this->getLatestVersion($app) . '/index.html'));
     }
 
     protected function getLatestVersion($app)
