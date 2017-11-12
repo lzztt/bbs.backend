@@ -4,8 +4,15 @@ namespace site\handler\app;
 
 use site\Controller;
 
-abstract class App extends Controller
+class Handler extends Controller
 {
+    public function run()
+    {
+        $args = $this->request->getURIargs($this->request->uri);
+        $name = $args[1];
+        $this->response->setContent(file_get_contents($this->getLatestVersion($name) . '/index.html'));
+    }
+
     protected function getLatestVersion($app)
     {
         $current = null;

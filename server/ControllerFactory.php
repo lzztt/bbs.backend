@@ -30,33 +30,29 @@ class ControllerFactory
     public static function createController(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
         $id = null;
-        $args = $req->getURIargs($req->uri);
-        $count = sizeof($args);
-        if ($count == 0) {
-            $ctrler = 'home';
-        } else {
-            // put first argument into controller
-            $ctrler = array_shift($args);
-
-            // further check the second (and third) argument
-            if ($count > 1) {
-                $v = array_shift($args);
-
-                if (is_numeric($v)) {
-                    // second argument is integer, save as ID
+        $args = [];
+        foreach ($req->getURIargs($req->uri) as $v) {
+            if (!is_numeric($v)) {
+                $args[] = $v;
+            } else {
+                // TODO: process all numeric ids for handlers
+                if (is_null($id)) {
                     $id = (int) $v;
-                    if ($count > 2) {
-                        // add third argument into controller
-                        $ctrler = $ctrler . '/' . array_shift($args);
-                    }
-                } else {
-                    // add second argument into controller
-                    $ctrler = $ctrler . '/' . $v;
                 }
             }
         }
 
-        $ctrlerClass = static::$route[$ctrler];
+        if (empty($args)) {
+            $args[] = 'home';
+        }
+
+        $ctrlerClass = null;
+        while ($args && !$ctrlerClass) {
+            $ctrler = implode('/', $args);
+            $ctrlerClass = static::$route[$ctrler];
+            array_pop($args);
+        }
+
         if ($ctrlerClass) {
             $ctrlerObj = new $ctrlerClass($req, $response, $config, $logger, $session);
             $ctrlerObj->args = $args;
