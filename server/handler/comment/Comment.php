@@ -19,5 +19,7 @@ abstract class Comment extends Controller
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
             $this->pageForbidden();
         }
+
+        $this->id = (int) $this->args[0];
     }
 }
