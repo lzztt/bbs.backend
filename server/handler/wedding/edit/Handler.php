@@ -38,9 +38,10 @@ class Handler extends Wedding
             $a->update();
             $this->var['body'] = $a->name . '的更新信息已经被保存';
         } else {
-            if ($this->id) {
+            $aid = $this->args ? (int) $this->args[0] : 0;
+            if ($aid > 0) {
                 // edit one guest
-                $a->id = $this->id;
+                $a->id = $aid;
                 $this->var['body'] = new Template('edit', array_pop($a->getList()));
             } else {
                 // all guests in a list;
