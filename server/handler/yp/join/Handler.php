@@ -2,11 +2,11 @@
 
 namespace site\handler\yp\join;
 
-use site\handler\yp\YP;
+use site\Controller;
 use lzx\html\Template;
 use lzx\cache\PageCache;
 
-class Handler extends YP
+class Handler extends Controller
 {
     public function run()
     {

@@ -2,7 +2,7 @@
 
 namespace site\handler\yp\node;
 
-use site\handler\yp\YP;
+use site\Controller;
 use lzx\html\Template;
 use site\dbobject\Tag;
 use site\dbobject\Node;
@@ -11,7 +11,7 @@ use site\dbobject\Image;
 use site\dbobject\AD;
 use site\dbobject\Comment;
 
-class Handler extends YP
+class Handler extends Controller
 {
     public function run()
     {
@@ -19,7 +19,7 @@ class Handler extends YP
             $this->pageForbidden();
         }
 
-        $tid = $this->id;
+        $tid = $this->args ? (int) $this->args[0] : 0;
         if ($tid <= 0) {
             $this->pageNotFound();
         }
