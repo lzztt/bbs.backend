@@ -13,7 +13,7 @@ use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
 use site\Session;
-use site\ControllerRouter;
+use site\ControllerFactory;
 use site\dbobject\User;
 use site\dbobject\Tag;
 use site\dbobject\SecureLink;
@@ -39,7 +39,7 @@ abstract class Controller extends LzxCtrler
     const UID_ADMIN = 1;
 
     protected static $city;
-    private static $requestProcessed = false;
+    private static $staticInitialized = false;
     private static $cacheHandler;
     public $args;
     public $id;
@@ -59,36 +59,9 @@ abstract class Controller extends LzxCtrler
         parent::__construct($req, $response, $logger);
         $this->session = $session;
 
-        if (!self::$requestProcessed) {
-            // set site info
-            $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
-
-            Template::setSite($site);
-
-            self::$cacheHandler = CacheHandler::getInstance();
-            self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
-            self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
-
-            // validate site for session
-            self::$city = new City();
-            self::$city->uriName = $site;
-            self::$city->load();
-            if (self::$city->exists()) {
-                if (self::$city->id != $this->session->getCityID()) {
-                    $this->session->setCityID(self::$city->id);
-                }
-            } else {
-                $this->error('unsupported website: ' . $this->request->domain);
-            }
-
-            // update user info
-            if ($this->request->uid > 0) {
-                $user = new User($this->request->uid, null);
-                // update access info
-                $user->call('update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',"' . $this->request->ip . '")');
-            }
-
-            self::$requestProcessed = true;
+        if (!self::$staticInitialized) {
+            $this->staticInit();
+            self::$staticInitialized = true;
         }
 
         $this->config = $config;
@@ -97,6 +70,37 @@ abstract class Controller extends LzxCtrler
         $html = new Template('html');
         $html->attach($this);
         $this->response->setContent($html);
+    }
+
+    private function staticInit()
+    {
+        // set site info
+        $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
+
+        Template::setSite($site);
+
+        self::$cacheHandler = CacheHandler::getInstance();
+        self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
+        self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
+
+        // validate site for session
+        self::$city = new City();
+        self::$city->uriName = $site;
+        self::$city->load();
+        if (self::$city->exists()) {
+            if (self::$city->id != $this->session->getCityID()) {
+                $this->session->setCityID(self::$city->id);
+            }
+        } else {
+            $this->error('unsupported website: ' . $this->request->domain);
+        }
+
+        // update user info
+        if ($this->request->uid > 0) {
+            $user = new User($this->request->uid, null);
+            // update access info
+            $user->call('update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',"' . $this->request->ip . '")');
+        }
     }
 
     public function flushCache()
@@ -222,7 +226,7 @@ abstract class Controller extends LzxCtrler
     {
         $newReq = clone $this->request;
         $newReq->uri = $uri;
-        $ctrler = ControllerRouter::createController($newReq, $this->response, $this->config, $this->logger, $this->session);
+        $ctrler = ControllerFactory::create($newReq, $this->response, $this->config, $this->logger, $this->session);
         $ctrler->request = $this->request;
         $ctrler->run();
     }
