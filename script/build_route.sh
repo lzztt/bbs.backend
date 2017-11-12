@@ -1,7 +1,7 @@
 #!/bin/bash
 
 serverdir=server
-out_file=ControllerRouter.php
+out_file=HandlerRouter.php
 
 tmp_file=/tmp/$out_file
 
@@ -30,16 +30,9 @@ cat > $tmp_file <<'EOF'
 
 namespace site;
 
-use site\ControllerFactory;
-
-/**
- * Description of ControllerRouter
- *
- * @author ikki
- */
-class ControllerRouter extends ControllerFactory
+class HandlerRouter
 {
-    protected static $route = [
+    public static $route = [
 EOF
 
 {

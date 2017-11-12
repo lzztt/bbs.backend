@@ -29,7 +29,7 @@ abstract class Service extends LzxService
 
     protected static $city;
     private static $actions = ['get', 'post', 'put', 'delete'];
-    private static $staticProcessed = false;
+    private static $staticInitialized = false;
     private static $cacheHandler;
     public $action;
     public $args;
@@ -43,33 +43,43 @@ abstract class Service extends LzxService
         $this->session = $session;
         $this->config = $config;
 
-        if (!self::$staticProcessed) {
-            // set site info
-            $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
+        if (!self::$staticInitialized) {
+            $this->staticInit();
+            self::$staticInitialized = true;
+        }
+    }
 
-            self::$cacheHandler = CacheHandler::getInstance();
-            self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
-            self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
+    private function staticInit()
+    {
+        // set site info
+        $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
 
-            // validate site for session
-            self::$city = new City();
-            self::$city->uriName = $site;
-            self::$city->load();
-            if (self::$city->exists()) {
-                if (self::$city->id != $this->session->getCityID()) {
-                    $this->session->setCityID(self::$city->id);
-                }
-            } else {
-                $this->error('unsupported website: ' . $this->request->domain);
+        self::$cacheHandler = CacheHandler::getInstance();
+        self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
+        self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
+
+        // validate site for session
+        self::$city = new City();
+        self::$city->uriName = $site;
+        self::$city->load();
+        if (self::$city->exists()) {
+            if (self::$city->id != $this->session->getCityID()) {
+                $this->session->setCityID(self::$city->id);
             }
-        }
-
-        // set action
-        if (array_key_exists('action', $req->get) && in_array($req->get['action'], self::$actions)) {
-            $this->action = $req->get['action'];
         } else {
-            $this->action = ($req->post || $req->json) ? 'post' : 'get';
+            $this->error('unsupported website: ' . $this->request->domain);
         }
+    }
+
+    public function run()
+    {
+        if (array_key_exists('action', $this->request->get)
+                && in_array($this->request->get['action'], self::$actions)) {
+            $action = $this->request->get['action'];
+        } else {
+            $action = ($this->request->post || $this->request->json) ? 'post' : 'get';
+        }
+        $this->$action();
     }
 
     // RESTful get

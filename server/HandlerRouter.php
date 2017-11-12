@@ -6,16 +6,9 @@
 
 namespace site;
 
-use site\ControllerFactory;
-
-/**
- * Description of ControllerRouter
- *
- * @author ikki
- */
-class ControllerRouter extends ControllerFactory
+class HandlerRouter
 {
-    protected static $route = [
+    public static $route = [
         'activity'                =>  'site\\handler\\activity\\Handler',
         'ad'                      =>  'site\\handler\\ad\\Handler',
         'api/ad'                  =>  'site\\handler\\api\\ad\\Handler',

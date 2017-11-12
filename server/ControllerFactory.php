@@ -7,6 +7,7 @@ use lzx\core\Response;
 use site\Config;
 use lzx\core\Logger;
 use site\Session;
+use site\HandlerRouter;
 
 /**
  * Description of ControllerFactory
@@ -27,7 +28,7 @@ class ControllerFactory
      * @param \site\Session $session
      * @return \site\Controller
      */
-    public static function createController(Request $req, Response $response, Config $config, Logger $logger, Session $session)
+    public static function create(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
         list($cls, $args) = self::getHandlerClassAndArgs($req);
 
@@ -57,7 +58,7 @@ class ControllerFactory
         $cls = null;
         while ($keys) {
             $key = implode('/', $keys);
-            $cls = static::$route[$key];
+            $cls = HandlerRouter::$route[$key];
             
             if ($cls) {
                 break;
