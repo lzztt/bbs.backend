@@ -16,10 +16,11 @@ class Handler extends Controller
     {
         $this->cache = new PageCache($this->request->uri);
 
-        if (!$this->id) {
+        $tid = $this->args ? (int) $this->args[0] : 0;
+        if ($tid <= 0) {
             $this->ypHome();
         } else {
-            $this->nodeList($this->id);
+            $this->nodeList($tid);
         }
     }
 
