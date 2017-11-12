@@ -2,12 +2,13 @@
 
 namespace site\handler\activity;
 
-use site\handler\activity\Activity;
+use site\Controller;
 use lzx\html\Template;
 use site\dbobject\Activity as ActivityObject;
 
-class Handler extends Activity
+class Handler extends Controller
 {
+    const NODES_PER_PAGE = 25;
     public function run()
     {
         $act = new ActivityObject();

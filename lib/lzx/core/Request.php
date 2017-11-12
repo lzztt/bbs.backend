@@ -94,14 +94,9 @@ class Request
      */
     public function getURIargs($uri)
     {
-        static $URIargs = [];
-
-        if (!array_key_exists($uri, $URIargs)) {
-            $arg = trim(strtok($uri, '?'), ' /');
-            $URIargs[$uri] = empty($arg) ? [] : explode('/', $arg);
-        }
-
-        return $URIargs[$uri];
+        $parts = explode('?', $uri);
+        $arg = trim($parts[0], '/');
+        return array_values(array_filter(explode('/', $arg), 'strlen'));
     }
 
     public function buildURI(array $args = [], array $get = [])

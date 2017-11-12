@@ -2,7 +2,7 @@
 
 namespace site\handler\home;
 
-use site\handler\home\Home;
+use site\Controller;
 use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Activity;
@@ -11,7 +11,7 @@ use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
 use site\dbobject\Tag;
 
-class Handler extends Home
+class Handler extends Controller
 {
     public function run()
     {

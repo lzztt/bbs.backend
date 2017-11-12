@@ -2,10 +2,10 @@
 
 namespace site\handler\help;
 
-use site\handler\help\Help;
+use site\Controller;
 use lzx\html\Template;
 
-class Handler extends Help
+class Handler extends Controller
 {
     public function run()
     {
