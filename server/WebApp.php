@@ -105,15 +105,9 @@ class WebApp extends App
         $args = $request->getURIargs($request->uri);
 
         try {
-            if ($args && $args[0] === 'api') {
-                // service api controller
-                $ctrler = ControllerRouter::createService($request, $response, $this->config, $this->logger, $session);
-                $ctrler->{$ctrler->action}();
-            } else {
-                // MVC controller
-                $ctrler = ControllerRouter::createController($request, $response, $this->config, $this->logger, $session);
-                $ctrler->run();
-            }
+            $ctrler = ControllerRouter::createController($request, $response, $this->config, $this->logger, $session);
+            $action = $args && $args[0] === 'api' ? $ctrler->action : 'run';
+            $ctrler->$action();
         } catch (\Exception $e) {
             if ($e->getMessage()) {
                 $this->logger->error($e->getMessage(), $e->getTrace());
