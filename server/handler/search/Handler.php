@@ -2,10 +2,10 @@
 
 namespace site\handler\search;
 
-use site\handler\search\Search;
+use site\Controller;
 use lzx\cache\PageCache;
 
-class Handler extends Search
+class Handler extends Controller
 {
     public function run()
     {

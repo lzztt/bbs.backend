@@ -2,14 +2,16 @@
 
 namespace site\handler\yp;
 
-use site\handler\yp\YP;
+use site\Controller;
 use lzx\html\Template;
 use site\dbobject\Tag;
 use site\dbobject\Node;
 use lzx\cache\PageCache;
 
-class Handler extends YP
+class Handler extends Controller
 {
+    const NODES_PER_PAGE = 25;
+
     public function run()
     {
         $this->cache = new PageCache($this->request->uri);
