@@ -186,18 +186,17 @@ abstract class Service extends LzxService
 
     protected function createIdentCode($uid)
     {
-        // generate identCode
-        $identCode = [
-            'code'     => mt_rand(100000, 999999),
+        $code = random_int(100000, 999999);
+
+        // save in session
+        $this->session->identCode = [
+            'code'     => $code,
             'uid'      => $uid,
-            'attamps' => 0,
+            'attempts' => 0,
             'expTime' => $this->request->timestamp + 600
         ];
 
-        // save in session
-        $this->session->identCode = $identCode;
-
-        return $identCode['code'];
+        return $code;
     }
 
     protected function parseIdentCode($code)
@@ -207,8 +206,8 @@ abstract class Service extends LzxService
         }
 
         $idCode = $this->session->identCode;
-        if ($idCode['attamps'] > 5 || $idCode['expTime'] < $this->request->timestamp) {
-            // too many attamps, clear code
+        if ($idCode['attempts'] > 5 || $idCode['expTime'] < $this->request->timestamp) {
+            // too many attempts, clear code
             $this->session->identCode = null;
             return null;
         }
@@ -218,8 +217,8 @@ abstract class Service extends LzxService
             $this->session->identCode = null;
             return $idCode['uid'];
         } else {
-            // attamps + 1
-            $this->session->identCode['attamps'] = $identCode['attamps'] + 1;
+            // attempts + 1
+            $this->session->identCode['attempts'] = $idCode['attempts'] + 1;
             return null;
         }
     }
