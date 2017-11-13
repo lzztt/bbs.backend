@@ -44,12 +44,12 @@ class Handler extends Node
         list($pageNo, $pageCount) = $this->getPagerInfo($node['comment_count'], self::COMMENTS_PER_PAGE);
         $pager = Template::pager($pageNo, $pageCount, '/node/' . $node['id']);
 
-        $postNumStart = ($pageNo > 1) ? ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1 : 0; // first page start from the node and followed by comments
+        $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE; // first page start from the node and followed by comments
 
         $contents = [
             'nid' => $nid,
             'tid' => $node['tid'],
-            'commentCount' => $node['comment_count'],
+            'commentCount' => $node['comment_count'] - 1,
             'status' => $node['status'],
             'breadcrumb' => Template::breadcrumb($breadcrumb),
             'pager' => $pager,
