@@ -11,8 +11,8 @@ abstract class Forum extends Controller
 
     protected function getTagObj()
     {
-        if ($this->id) {
-            $tid = $this->id;
+        if ($this->args) {
+            $tid = (int) $this->args[0];
             if ($tid > 0) {
                 $tag = new Tag($tid, null);
                 $tag->load('id');
