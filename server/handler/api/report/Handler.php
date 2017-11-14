@@ -62,7 +62,7 @@ class Handler extends Service
                     $body = $arr[0]['body'];
 
                     $title = '举报';
-                    if ($reporter->points > 0 && ( $spammer->points < 2 || ( strpos($body, 'http') && $spammer->points < 18 ) !== false )) {
+                    if ($reporter->points > 0 && ($spammer->points < 2 || (strpos($body, 'http') && $spammer->points < 18) !== false)) {
                         // check complains
                         $complain = new NodeComplain();
                         $complain->where('uid', $uid, '=');

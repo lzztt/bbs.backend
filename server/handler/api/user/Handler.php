@@ -99,7 +99,7 @@ class Handler extends Service
                                 // check location
                                 $geo = geoip_record_by_name($ip);
 
-                                if ((!$geo || $geo['region'] != 'TX' ) || strpos($this->request->post['password'], $u->username) !== false) {
+                                if ((!$geo || $geo['region'] != 'TX') || strpos($this->request->post['password'], $u->username) !== false) {
                                     // non texas user, or username = password
                                     // treat as spammer, make as disabled
                                     $u->status = 0;

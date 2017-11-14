@@ -641,9 +641,9 @@ abstract class DBObject
             }
 
             /*
-            if ( is_null( $this->pkey_property ) )
+            if (is_null($this->pkey_property))
             {
-                throw new \Exception( 'no primary key found: ' . $this->table );
+                throw new \Exception('no primary key found: ' . $this->table);
             }*/
 
             if (sizeof($this->fields_type) < sizeof($this->fields)) {
