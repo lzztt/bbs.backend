@@ -38,7 +38,7 @@ class BBCodeRE
         $unclosed = ((int) preg_match_all('/\[quote\="?(.*?)"?\]/ms', $text, $matches)) + substr_count($text, '[quote]') - substr_count($text, '[/quote]');
 
         if ($unclosed < 0) {
-            $text = str_repeat('[quote]', (-$unclosed )) . $text;
+            $text = str_repeat('[quote]', (-$unclosed)) . $text;
         }
         if ($unclosed > 0) {
             $text = $text . str_repeat('[/quote]', $unclosed);

@@ -21,7 +21,7 @@ class Script extends App
         $users = $db->query('select status, id, username, email,inet6_ntoa(last_access_ip) as ip from users where last_access_ip is not null');
         foreach ($users as $u) {
             $geo = geoip_record_by_name($u['ip']);
-            $u['city'] = ( $geo && $geo['city'] ? $geo['city'] : 'NULL' );
+            $u['city'] = ($geo && $geo['city'] ? $geo['city'] : 'NULL');
             echo implode("\t", $u) . \PHP_EOL;
         }
     }

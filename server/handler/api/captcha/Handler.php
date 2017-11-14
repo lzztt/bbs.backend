@@ -10,7 +10,7 @@ class Handler extends Service
 {
     public function get()
     {
-        if (!( $this->request->referer && $this->args )) {
+        if (!($this->request->referer && $this->args)) {
             $this->response->pageForbidden();
             throw new \Exception();
         }

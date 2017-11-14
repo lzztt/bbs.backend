@@ -40,7 +40,7 @@ class Handler extends Single
         }
 
         // logged in or from a valid user link
-        if (true) {//$this->request->timestamp < strtotime( "09/16/2013 22:00:00 CDT" ) )
+        if (true) {//$this->request->timestamp < strtotime("09/16/2013 22:00:00 CDT"))
             $act = array_pop($this->db->query('CALL get_latest_single_activity()'));
             $atd = new FFAttendee();
             $atd->aid = (int) $act['id'];

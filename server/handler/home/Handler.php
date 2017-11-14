@@ -32,7 +32,7 @@ class Handler extends Controller
             'latestForumTopics' => $this->getLatestForumTopics(15),
             'hotForumTopics' => $this->getHotForumTopics(15),
             'latestYellowPages' => $this->getLatestYellowPages(15),
-            //'latestImmigrationPosts' => $this->getLatestImmigrationPosts( 15 ),
+            //'latestImmigrationPosts' => $this->getLatestImmigrationPosts(15),
             'latestForumTopicReplies' => $this->getLatestForumTopicReplies(15),
             'latestYellowPageReplies' => $this->getLatestYellowPageReplies(15),
             'imageSlider' => $this->getImageSlider(),
@@ -148,7 +148,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node() )->getLatestForumTopics(self::$city->ForumRootID, $count) as $n) {
+            foreach ((new Node())->getLatestForumTopics(self::$city->ForumRootID, $count) as $n) {
                 $arr[] = ['after' => date('H:i', $n['create_time']),
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
@@ -167,9 +167,9 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
             // 1 week for houstonbbs, 2 weeks for other cities
-            $start = ( self::$city->id == 1 ? $this->request->timestamp - 604800 : $this->request->timestamp - 604800 * 2 );
+            $start = (self::$city->id == 1 ? $this->request->timestamp - 604800 : $this->request->timestamp - 604800 * 2);
 
-            foreach ((new Node() )->getHotForumTopics(self::$city->ForumRootID, $count, $start) as $i => $n) {
+            foreach ((new Node())->getHotForumTopics(self::$city->ForumRootID, $count, $start) as $i => $n) {
                 $arr[] = ['after' => $i + 1,
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
@@ -187,7 +187,7 @@ class Handler extends Controller
         $ul = unserialize($ulCache->fetch());
         if (!$ul) {
             $ul = [];
-            $ypGroups = array_chunk((new Node() )->getLatestYellowPages(self::$city->YPRootID, $count * 2), $count);
+            $ypGroups = array_chunk((new Node())->getLatestYellowPages(self::$city->YPRootID, $count * 2), $count);
 
             foreach ($ypGroups as $yps) {
                 $arr = [];
@@ -213,7 +213,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node() )->getLatestImmigrationPosts($count) as $n) {
+            foreach ((new Node())->getLatestImmigrationPosts($count) as $n) {
                 $arr[] = ['after' => date('m/d', $n['create_time']),
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
@@ -232,7 +232,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node() )->getLatestForumTopicReplies(self::$city->ForumRootID, $count) as $n) {
+            foreach ((new Node())->getLatestForumTopicReplies(self::$city->ForumRootID, $count) as $n) {
                 $arr[] = ['after' => $n['comment_count'],
                     'uri' => '/node/' . $n['nid'] . '?p=l#comment' . $n['last_cid'],
                     'text' => $n['title']];
@@ -251,7 +251,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node() )->getLatestYellowPageReplies(self::$city->YPRootID, $count) as $n) {
+            foreach ((new Node())->getLatestYellowPageReplies(self::$city->YPRootID, $count) as $n) {
                 $arr[] = ['after' => $n['comment_count'],
                     'uri' => '/node/' . $n['nid'] . '?p=l#comment' . $n['last_cid'],
                     'text' => $n['title']];
@@ -270,7 +270,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Activity() )->getRecentActivities(10, $this->request->timestamp) as $n) {
+            foreach ((new Activity())->getRecentActivities(10, $this->request->timestamp) as $n) {
                 $arr[] = ['class' => 'activity_' . $n['class'],
                     'after' => date('m/d', $n['start_time']),
                     'uri' => '/node/' . $n['nid'],
