@@ -30,13 +30,13 @@ class Handler extends Wedding
         $a->time = $this->request->timestamp;
         $a->status = 1;
         if ($this->register_end) {
-            $days = ceil(( $this->request->timestamp - strtotime('2014/06/19') ) / 86400);
+            $days = ceil(($this->request->timestamp - strtotime('2014/06/19')) / 86400);
         } else {
             $a->add();
         }
 
         $mailer = new Mailer('wedding');
-        $mailer->subject = 'wedding: ' . $a->name . ' ( ' . $a->guests . ' )';
+        $mailer->subject = 'wedding: ' . $a->name . ' (' . $a->guests . ')';
         if ($this->register_end) {
             $mailer->subject = 'LATE ' . $days . ' DAYS : ' . $mailer->subject;
         }

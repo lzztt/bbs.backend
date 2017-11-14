@@ -40,7 +40,7 @@ class MailApp extends App
         $uid = $argv[0];
         $db = DB::getInstance($this->config->db, true);
         $users = $db->query('SELECT id, username, email, create_time FROM users WHERE id > ' . $uid . ' and cid = 1 LIMIT 550');
-        //$users = $db->query( 'SELECT id, username, email, create_time FROM users WHERE id = 3' );
+        //$users = $db->query('SELECT id, username, email, create_time FROM users WHERE id = 3');
 
         if (sizeof($users) > 0) {
             $mailer = new Mailer();

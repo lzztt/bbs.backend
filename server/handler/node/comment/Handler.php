@@ -99,7 +99,7 @@ class Handler extends Node
 
         /*
         $user->points += 1;
-        $user->update( 'points' );
+        $user->update('points');
          */
 
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
@@ -189,7 +189,7 @@ class Handler extends Node
 
         /*
         $user->points += 1;
-        $user->update( 'points' );
+        $user->update('points');
          */
 
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();

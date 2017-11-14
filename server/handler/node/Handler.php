@@ -69,7 +69,7 @@ class Handler extends Node
             'points' => null,
         ];
 
-        $nodeComment = ( $pageNo == 1 );
+        $nodeComment = ($pageNo == 1);
         $nodeObj = new NodeObject();
         $comments = $nodeObj->getForumNodeComments($nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE);
 
@@ -87,7 +87,7 @@ class Handler extends Node
                     $c['HTMLbody'] = \nl2br($c['body']);
                     $this->logger->error($e->getMessage(), $e->getTrace());
                 }
-                // $c['signature'] = \nl2br( $c['signature'] );
+                // $c['signature'] = \nl2br($c['signature']);
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
                 $c['city'] = $this->request->getCityFromIP($c['access_ip']);
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
@@ -95,7 +95,7 @@ class Handler extends Node
                 if ($nodeComment) {
                     $c['type'] = 'node';
                     $c['id'] = $node['id'];
-                    $c['report'] = ( $node['points'] < 5 || strpos($c['body'], 'http') !== false );
+                    $c['report'] = ($node['points'] < 5 || strpos($c['body'], 'http') !== false);
                     $nodeComment = false;
                 }
 
@@ -227,7 +227,7 @@ class Handler extends Node
 
         $node['type'] = 'node';
 
-        $nodeComment = ( $pageNo == 1 );
+        $nodeComment = ($pageNo == 1);
         $comments = $nodeObj->getYellowPageNodeComments($nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE);
 
         $cmts = [];

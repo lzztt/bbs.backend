@@ -139,12 +139,12 @@ class Node extends DBObject
 
     public function getLatestForumTopics($forumRootID, $count)
     {
-        return $this->call('get_tag_recent_nodes("' . implode(',', (new Tag($forumRootID, null) )->getLeafTIDs()) . '", ' . $count . ')');
+        return $this->call('get_tag_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
     public function getHotForumTopics($forumRootID, $count, $timestamp)
     {
-        return $this->call('get_tag_hot_nodes("' . implode(',', (new Tag($forumRootID, null) )->getLeafTIDs()) . '", ' . $timestamp . ', ' . $count . ')');
+        return $this->call('get_tag_hot_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $timestamp . ', ' . $count . ')');
     }
 
     public function getHotForumTopicNIDs($forumRootID, $count, $timestamp)
@@ -154,7 +154,7 @@ class Node extends DBObject
 
     public function getLatestYellowPages($ypRootID, $count)
     {
-        return $this->call('get_tag_recent_nodes_yp("' . implode(',', (new Tag($ypRootID, null) )->getLeafTIDs()) . '", ' . $count . ')');
+        return $this->call('get_tag_recent_nodes_yp("' . implode(',', (new Tag($ypRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
     public function getLatestImmigrationPosts($count)
@@ -164,12 +164,12 @@ class Node extends DBObject
 
     public function getLatestForumTopicReplies($forumRootID, $count)
     {
-        return $this->call('get_tag_recent_comments("' . implode(',', (new Tag($forumRootID, null) )->getLeafTIDs()) . '", ' . $count . ')');
+        return $this->call('get_tag_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
     public function getLatestYellowPageReplies($ypRootID, $count)
     {
-        return $this->call('get_tag_recent_comments_yp("' . implode(',', (new Tag($ypRootID, null) )->getLeafTIDs()) . '", ' . $count . ')');
+        return $this->call('get_tag_recent_comments_yp("' . implode(',', (new Tag($ypRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
     public function getNodeCount($tids)
@@ -180,7 +180,7 @@ class Node extends DBObject
     public function getNodeStat($forumRootID)
     {
         $today = strtotime(date("m/d/Y"));
-        $stats = array_pop($this->call('get_node_stat("' . implode(',', (new Tag($forumRootID, null) )->getLeafTIDs()) . '", ' . $today . ')'));
+        $stats = array_pop($this->call('get_node_stat("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $today . ')'));
         return [
             'nodeCount'            => $stats['node_count_total'],
             'nodeTodayCount'     => $stats['node_count_recent'],

@@ -32,7 +32,7 @@ class Mailer
             ($this->cc ? 'Cc: ' . $this->cc . \PHP_EOL : '') .
             ($this->bcc ? 'Bcc: ' . $this->bcc . \PHP_EOL : '') .
             'MIME-Version: 1.0' . \PHP_EOL .
-            'Content-Type: ' . ( $this->is_html ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8; format=flowed; delsp=yes' ) . \PHP_EOL .
+            'Content-Type: ' . ($this->is_html ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8; format=flowed; delsp=yes') . \PHP_EOL .
             'X-Mailer: WebMailer';
 
         if (!(isset($this->to) && isset($this->subject) && isset($this->body))) {

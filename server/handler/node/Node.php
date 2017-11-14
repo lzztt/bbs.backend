@@ -31,7 +31,7 @@ abstract class Node extends Controller
         $rootTagID = array_shift(array_keys($tags));
 
         if (!array_key_exists($rootTagID, $types)) {
-            //$this->logger->error( 'wrong root tag : nid = ' . $nid );
+            //$this->logger->error('wrong root tag : nid = ' . $nid);
             $this->pageNotFound();
         }
 

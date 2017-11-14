@@ -102,7 +102,7 @@ class Handler extends Forum
 
         /*
         $user->points += 3;
-        $user->update( 'points' );
+        $user->update('points');
          */
 
         $this->getCacheEvent('ForumNode')->trigger();
