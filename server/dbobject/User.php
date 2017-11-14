@@ -150,7 +150,7 @@ class User extends DBObject
             'createTime' => 'create_time'
         ];
 
-        return $this->convertFields($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, null) )->getLeafTIDs()) . '", ' . $this->id . ', 10)'), $fields);
+        return $this->convertFields($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'), $fields);
     }
 
     public function getRecentComments($forumRootID, $limit)
@@ -161,7 +161,7 @@ class User extends DBObject
             'createTime' => 'create_time'
         ];
 
-        return $this->convertFields($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, null) )->getLeafTIDs()) . '", ' . $this->id . ', 10)'), $fields);
+        return $this->convertFields($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'), $fields);
     }
 
     public function getPrivMsgsCount($mailbox = 'inbox')
@@ -202,7 +202,7 @@ class User extends DBObject
             throw new \Exception('This user account cannot post message.');
         }
 
-        $days = (int) ( ($timestamp - $this->createTime) / 86400 );
+        $days = (int) (($timestamp - $this->createTime) / 86400);
         // registered less than 30 days
         if ($days < 30) {
             // check spams
@@ -240,7 +240,7 @@ class User extends DBObject
             }
 
             $textLen = mb_strlen($text);
-            if ($textLen > 35 && ( $textLen - mb_strlen($cleanBody) ) / $textLen > 0.4) {
+            if ($textLen > 35 && ($textLen - mb_strlen($cleanBody)) / $textLen > 0.4) {
                 throw new \Exception('Body text is not valid!');
             }
 
@@ -254,7 +254,7 @@ class User extends DBObject
                 }
                 // not from Texas
                 if (!$geo || $geo['region'] != 'TX') {
-                    $oneday = (int) ( $timestamp - 86400 );
+                    $oneday = (int) ($timestamp - 86400);
                     $count = array_pop(array_pop($this->call('get_user_post_count(' . $this->id . ',' . $oneday . ')')));
                     if ($count >= $days) {
                         throw new \Exception('Quota limitation reached for non-Texas user!<br>Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours.<br>You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.');

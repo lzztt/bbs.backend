@@ -181,29 +181,6 @@ function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $cu
     file_put_contents($refreshTimeFile, $nextRefreshTime);
 }
 
-// daily at 00:00 CDT
-/*
-  function do_log()
-  {
-  $date = date('Y-m-d', TIMESTAMP - 3600);
-
-  $logs = [
-  'info' => DATA_PATH . 'logs/info.log',
-  'debug' => DATA_PATH . 'logs/debug.log',
-  //'error' => ROOT . '/error_log',
-  'resource' => DATA_PATH . 'logs/resource.log',
-  'sql' => DATA_PATH . 'logs/sql.log'
-  );
-
-  foreach ($logs as $k => $f)
-  {
-  if (is_file($f))
-  {
-  rename($f, DATA_PATH . 'logs/' . $date . '_' . $k . '.log');
-  }
-  }
-  } */
-
 // daily at 23:55 CDT
 function do_session($path, $logger, $config)
 {

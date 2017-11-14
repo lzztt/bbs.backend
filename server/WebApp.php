@@ -122,7 +122,7 @@ class WebApp extends App
                 $session->close();
 
                 // output debug message?
-                $debug = ( $this->config->stage == Config::STAGE_DEVELOPMENT );
+                $debug = ($this->config->stage == Config::STAGE_DEVELOPMENT);
 
                 if ($debug) {
                     $this->logger->info($db->queries);

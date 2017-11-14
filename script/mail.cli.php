@@ -40,12 +40,12 @@ class MailApp extends App
         $uid = $argv[0];
         $db = DB::getInstance($this->config->db, true);
         $users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 550');
-        //$users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email NOT LIKE "%@qq.com" LIMIT 550' );
-        //$users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id in (29634,29641,29644,29647,29675,29689,29701,29704,29707,29714,29726) or (id > 29726 and email like "%@qq.com") order by id' );
-        //$users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email LIKE "%@qq.com" LIMIT 300' );
+        //$users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email NOT LIKE "%@qq.com" LIMIT 550');
+        //$users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id in (29634,29641,29644,29647,29675,29689,29701,29704,29707,29714,29726) or (id > 29726 and email like "%@qq.com") order by id');
+        //$users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email LIKE "%@qq.com" LIMIT 300');
         /*
-        $users = $db->query( 'SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 3' );
-        foreach( $users as $i => $u )
+        $users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 3');
+        foreach ($users as $i => $u)
         {
             $users[$i]['email'] = 'ikki3355@gmail.com';
             $users[$i]['cid'] = $i + 1;
@@ -107,7 +107,7 @@ class MailApp extends App
 
     private function time($timestamp)
     {
-        $intv = ( new \DateTime() )->diff(new \DateTime(date('Y-m-d H:i:s', $timestamp)));
+        $intv = (new \DateTime())->diff(new \DateTime(date('Y-m-d H:i:s', $timestamp)));
         $days = $intv->days;
         if ($days / 365 > 6) {
             return '六年多以来';

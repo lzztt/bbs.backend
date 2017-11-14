@@ -145,7 +145,7 @@ class Template
         }
         $mb_len = mb_strlen($str);
         $rate = sqrt($mb_len / strlen($str)); // sqrt(0.7) = 0.837
-        $s_len = ( $rate > 0.837 ? ceil($len * $rate) : floor(($len - 2) * $rate) );
+        $s_len = ($rate > 0.837 ? ceil($len * $rate) : floor(($len - 2) * $rate));
         // the cut_off length is depend on the rate of non-single characters
         //var_dump(implode(' - ', [strlen($str), $mb_len, $s_len, $rate, $str,  mb_substr($str, 0, $s_len))));
         return ($mb_len > $s_len) ? mb_substr($str, 0, $s_len) : $str;

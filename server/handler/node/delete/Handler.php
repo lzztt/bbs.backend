@@ -43,9 +43,9 @@ class Handler extends Node
         }
 
         /*
-        $user = new User( $node->uid, 'points' );
+        $user = new User($node->uid, 'points');
         $user->points -= 3;
-        $user->update( 'points' );
+        $user->update('points');
          */
 
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
