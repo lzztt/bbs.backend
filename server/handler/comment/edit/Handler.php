@@ -12,7 +12,7 @@ class Handler extends Comment
     public function run()
     {
         // edit existing comment
-        $cid = $this->id;
+        $cid = (int) $this->args[0];
 
         if (strlen($this->request->post['body']) < 5) {
             $this->error('Comment body is too short.');
