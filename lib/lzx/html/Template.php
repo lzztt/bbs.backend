@@ -211,7 +211,7 @@ class Template
                 $attributes['class'] = self::EVEN_ODD_CLASS;
             }
         }
-        return new HTMLElement('ul', self::_li($list), $attributes);
+        return new HTMLElement('ul', self::li($list), $attributes);
     }
 
     /**
@@ -222,7 +222,7 @@ class Template
      */
     public static function olist(array $list, array $attributes = [])
     {
-        return new HTMLElement('ol', self::_li($list), $attributes);
+        return new HTMLElement('ol', self::li($list), $attributes);
     }
 
     private static function li($list)
@@ -287,10 +287,10 @@ class Template
             $table->addElement(new HTMLElement('caption', $data['caption']));
         }
         if (array_key_exists('thead', $data) && sizeof($data['thead']) > 0) {
-            $table->addElement(new HTMLElement('thead', self::_table_row($data['thead'], true)));
+            $table->addElement(new HTMLElement('thead', self::tableRow($data['thead'], true)));
         }
         if (array_key_exists('tfoot', $data) && sizeof($data['tfoot']) > 0) {
-            $table->addElement(new HTMLElement('tfoot', self::_table_row($data['tfoot'])));
+            $table->addElement(new HTMLElement('tfoot', self::tableRow($data['tfoot'])));
         }
         if (!array_key_exists('tbody', $data)) {
             throw new \Exception('table body (tbody) data is not found');
@@ -301,7 +301,7 @@ class Template
         $tbody = new HTMLElement('tbody', null, $tbody_attr);
 
         foreach ($data['tbody'] as $tr) {
-            $tbody->addElement(self::_table_row($tr));
+            $tbody->addElement(self::tableRow($tr));
         }
 
         $table->addElement($tbody);
