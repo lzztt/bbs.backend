@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace site\handler\node;
 
@@ -76,9 +76,9 @@ class Handler extends Node
         if (sizeof($comments) > 0) {
             foreach ($comments as $c) {
                 $c['type'] = 'comment';
-                $c['createTime'] = date('m/d/Y H:i', $c['create_time']);
+                $c['createTime'] = date('m/d/Y H:i', (int) $c['create_time']);
                 if ($c['lastModifiedTime']) {
-                    $c['lastModifiedTime'] = date('m/d/Y H:i', $c['last_modified_time']);
+                    $c['lastModifiedTime'] = date('m/d/Y H:i', (int) $c['last_modified_time']);
                 }
 
                 try {
@@ -130,7 +130,7 @@ class Handler extends Node
             $authorPanelCache = $this->getIndependentCache('ap' . $info['uid']);
             $authorPanel = $authorPanelCache->fetch();
             if (!$authorPanel) {
-                $info['joinTime'] = date('m/d/Y', $info['join_time']);
+                $info['joinTime'] = date('m/d/Y', (int) $info['join_time']);
                 $info['sex'] = isset($info['sex']) ? ($info['sex'] == 1 ? '男' : '女') : '未知';
                 if (empty($info['avatar'])) {
                     $info['avatar'] = '/data/avatars/avatar0' . mt_rand(1, 5) . '.jpg';
@@ -248,9 +248,9 @@ class Handler extends Node
                 } else {
                     $c['id'] = $c['id'];
                     $c['type'] = 'comment';
-                    $c['createTime'] = date('m/d/Y H:i', $c['create_time']);
+                    $c['createTime'] = date('m/d/Y H:i', (int) $c['create_time']);
                     if ($c['lastModifiedTime']) {
-                        $c['lastModifiedTime'] = date('m/d/Y H:i', $c['last_modified_time']);
+                        $c['lastModifiedTime'] = date('m/d/Y H:i', (int) $c['last_modified_time']);
                     }
                     $c['HTMLbody'] = \nl2br($c['body']);
                     try {
