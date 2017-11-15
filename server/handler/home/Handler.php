@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace site\handler\home;
 
@@ -106,7 +106,7 @@ class Handler extends Controller
         $tag = new Tag($tid, null);
 
         foreach ($tag->getNodeInfo($tid) as $v) {
-            $v['create_time'] = date('m/d/Y H:i', $v['create_time']);
+            $v['create_time'] = date('m/d/Y H:i', (int) $v['create_time']);
             if ($v['cid'] == 0) {
                 $node = $v;
             } else {
@@ -149,7 +149,7 @@ class Handler extends Controller
             $arr = [];
 
             foreach ((new Node())->getLatestForumTopics(self::$city->ForumRootID, $count) as $n) {
-                $arr[] = ['after' => date('H:i', $n['create_time']),
+                $arr[] = ['after' => date('H:i', (int) $n['create_time']),
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
             }
@@ -184,7 +184,8 @@ class Handler extends Controller
     private function getLatestYellowPages($count)
     {
         $ulCache = $this->cache->getSegment('latestYellowPages');
-        $ul = unserialize($ulCache->fetch());
+        $cache = $ulCache->fetch();
+        $ul = $cache ? unserialize($cache) : null;
         if (!$ul) {
             $ul = [];
             $ypGroups = array_chunk((new Node())->getLatestYellowPages(self::$city->YPRootID, $count * 2), $count);
@@ -192,7 +193,7 @@ class Handler extends Controller
             foreach ($ypGroups as $yps) {
                 $arr = [];
                 foreach ($yps as $n) {
-                    $arr[] = ['after' => date('m/d', $n['exp_time']),
+                    $arr[] = ['after' => date('m/d', (int) $n['exp_time']),
                         'uri' => '/node/' . $n['nid'],
                         'text' => $n['title']];
                 }
@@ -214,7 +215,7 @@ class Handler extends Controller
             $arr = [];
 
             foreach ((new Node())->getLatestImmigrationPosts($count) as $n) {
-                $arr[] = ['after' => date('m/d', $n['create_time']),
+                $arr[] = ['after' => date('m/d', (int) $n['create_time']),
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
             }
@@ -272,7 +273,7 @@ class Handler extends Controller
 
             foreach ((new Activity())->getRecentActivities(10, $this->request->timestamp) as $n) {
                 $arr[] = ['class' => 'activity_' . $n['class'],
-                    'after' => date('m/d', $n['start_time']),
+                    'after' => date('m/d', (int) $n['start_time']),
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
             }

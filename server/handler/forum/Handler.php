@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace site\handler\forum;
 
@@ -80,8 +80,8 @@ class Handler extends Forum
         $nodes = $node->getForumNodeList(self::$city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
         $nids = array_column($nodes, 'id');
         foreach ($nodes as $i => $n) {
-            $nodes[$i]['create_time'] = date('m/d/Y H:i', $n['create_time']);
-            $nodes[$i]['comment_time'] = date('m/d/Y H:i', $n['comment_time']);
+            $nodes[$i]['create_time'] = date('m/d/Y H:i', (int) $n['create_time']);
+            $nodes[$i]['comment_time'] = date('m/d/Y H:i', (int) $n['comment_time']);
         }
 
         $editor_contents = [
@@ -110,7 +110,7 @@ class Handler extends Forum
         $tag = new Tag($tid, null);
 
         foreach ($tag->getNodeInfo($tid) as $v) {
-            $v['create_time'] = date('m/d/Y H:i', $v['create_time']);
+            $v['create_time'] = date('m/d/Y H:i', (int) $v['create_time']);
             if ($v['cid'] == 0) {
                 $node = $v;
             } else {
