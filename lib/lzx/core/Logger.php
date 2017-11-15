@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lzx\core;
 
@@ -176,7 +176,7 @@ class Logger
         $ret = [];
 
         foreach ($traces as $i => $call) {
-            $ret[] = '#' . str_pad($i, 3, ' ')
+            $ret[] = '#' . str_pad((string) $i, 3, ' ')
                 . ($call['class'] ? $call['class'] . $call['type'] . $call['function'] : $call['function'])
                 . ' @ ' . $call['file'] . ':' . $call['line'];
         }
