@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace site\handler\api\captcha;
 
@@ -43,8 +43,8 @@ class Handler extends Service
 
         // get other settings
         $font_size = 36;
-        $cage_width = $font_size;
-        $cage_height = $font_size * 1.2;
+        $box_width = $font_size;
+        $box_height = (int) ($font_size * 1.2);
 
         $text = new \ImagickDraw();
         $text->setFont($font);
@@ -53,18 +53,18 @@ class Handler extends Service
 
         // create image resource
         //$image = imagecreatetruecolor($width, $height);
-        $cages = new \Imagick();
+        $boxes = new \Imagick();
         foreach ($code as $c) {
-            $cages->newimage($cage_width, $cage_height, '#FFFFFF', $format);
+            $boxes->newimage($box_width, $box_height, '#FFFFFF', $format);
             $text->setFillColor($this->getRandomColor());
             $x = mt_rand(-3, 3);
             $y = mt_rand(-8, 8);
             $a = mt_rand(-20, 20);
-            $cages->annotateimage($text, $x, $y, $a, $c);
+            $boxes->annotateimage($text, $x, $y, $a, $c);
         }
-        $cages->rewind();
-        $image = $cages->appendimages(false);
-        $cages->destroy();
+        $boxes->rewind();
+        $image = $boxes->appendimages(false);
+        $boxes->destroy();
 
         $w = $image->getimagewidth();
         $h = $image->getimageheight();

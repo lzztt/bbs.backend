@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace site;
 
@@ -160,7 +160,11 @@ class WebApp extends App
         static $isRobot;
 
         if (!isset($isRobot)) {
-            $isRobot = (bool) preg_match('/(http|yahoo|bot|spider)/i', $_SERVER['HTTP_USER_AGENT']);
+            if ($_SERVER['HTTP_USER_AGENT']) {
+                $isRobot = (bool) preg_match('/(http|yahoo|bot|spider)/i', $_SERVER['HTTP_USER_AGENT']);
+            } else {
+                $isRobot = false;
+            }
         }
 
         return $isRobot;
