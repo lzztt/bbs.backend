@@ -88,7 +88,7 @@ class Handler extends Service
                             'email'     => $spammer->email,
                             'city'      => $this->request->getLocationFromIP($spammer->lastAccessIP),
                             'points'    => $spammer->points,
-                            'register' => date($spammer->createTime)
+                            'register' => date(DateTime::COOKIE, $spammer->createTime)
                         ],
                         'node'      => [
                             'id'     => 'https://' . $this->request->domain . '/node/' . $nid,
@@ -101,7 +101,7 @@ class Handler extends Service
                             'email'     => $reporter->email,
                             'city'      => $this->request->getLocationFromIP($this->request->ip),
                             'points'    => $reporter->points,
-                            'register' => date($reporter->createTime)
+                            'register' => date(DateTime::COOKIE, $reporter->createTime)
                         ]
                     ], true);
                     $mailer->send();
