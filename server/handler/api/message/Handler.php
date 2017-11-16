@@ -178,7 +178,7 @@ class Handler extends Service
 
             foreach ($msgs as $i => $m) {
                 if (empty($m['avatar'])) {
-                    $msgs[$i]['avatar'] = '/data/avatars/avatar0' . mt_rand(1, 5) . '.jpg';
+                    $msgs[$i]['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
             }
 

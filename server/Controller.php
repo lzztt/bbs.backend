@@ -241,7 +241,7 @@ abstract class Controller extends LzxCtrler
         $slink = new SecureLink();
         $slink->uid = $uid;
         $slink->time = $this->request->timestamp;
-        $slink->code = mt_rand();
+        $slink->code = rand();
         $slink->uri = $uri;
         $slink->add();
         return $slink;
