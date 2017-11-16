@@ -74,7 +74,7 @@ class MailApp extends App
                     'username' => $u['username'],
                     'time' => $this->time($u['create_time']),
                     'city' => $city,
-                    'mailid' => mt_rand()
+                    'mailid' => rand()
                 ];
 
                 $mailer->body = new Template('mail/newyear', $contents);

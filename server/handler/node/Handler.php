@@ -133,7 +133,7 @@ class Handler extends Node
                 $info['joinTime'] = date('m/d/Y', (int) $info['join_time']);
                 $info['sex'] = isset($info['sex']) ? ($info['sex'] == 1 ? '男' : '女') : '未知';
                 if (empty($info['avatar'])) {
-                    $info['avatar'] = '/data/avatars/avatar0' . mt_rand(1, 5) . '.jpg';
+                    $info['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
                 $info['city'] = $this->request->getCityFromIP($info['access_ip']);
                 $authorPanel = new Template('author_panel_forum', $info);
