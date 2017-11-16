@@ -67,7 +67,7 @@ class Image extends DBObject
         $savedFile = [];
         // save files
         foreach ($files as $type => $fileList) {
-            $path = $config['path'] . '/data/' . $type . '/' . $config['prefix'] . mt_rand(0, 9);
+            $path = $config['path'] . '/data/' . $type . '/' . $config['prefix'] . rand(0, 9);
 
             foreach ($fileList as $i => $f) {
                 $fileName = $f['name'];

@@ -195,7 +195,7 @@ abstract class Service extends LzxService
 
     protected function createIdentCode($uid)
     {
-        $code = random_int(100000, 999999);
+        $code = rand(100000, 999999);
 
         // save in session
         $this->session->identCode = [
