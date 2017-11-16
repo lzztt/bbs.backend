@@ -155,11 +155,7 @@ class Handler extends Service
      */
     public function post()
     {
-        // validate captcha
-        if (strtolower($this->session->captcha) != strtolower($this->request->json['captcha'])) {
-            $this->error('图形验证码错误');
-        }
-        unset($this->session->captcha);
+        $this->validateCaptcha();
 
         // check username and email first
         if (empty($this->request->json['username'])) {

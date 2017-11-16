@@ -13,11 +13,7 @@ class Handler extends Service
      */
     public function post()
     {
-        // validate captcha
-        if (strtolower($this->session->captcha) != strtolower($this->request->post['captcha'])) {
-            $this->error('图形验证码错误');
-        }
-        unset($this->session->captcha);
+        $this->validateCaptcha();
 
         if (!$this->request->post['username']) {
             $this->error('请输入用户名');
