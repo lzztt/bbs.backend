@@ -28,7 +28,7 @@ class Handler extends Service
 
     private function getRandomColor()
     {
-        $hex_dark = '#' . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9) . mt_rand(0, 9);
+        $hex_dark = '#' . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9);
         return new \ImagickPixel($hex_dark);
     }
 
@@ -57,9 +57,9 @@ class Handler extends Service
         foreach ($code as $c) {
             $boxes->newimage($box_width, $box_height, '#FFFFFF', $format);
             $text->setFillColor($this->getRandomColor());
-            $x = mt_rand(-3, 3);
-            $y = mt_rand(-8, 8);
-            $a = mt_rand(-20, 20);
+            $x = rand(-3, 3);
+            $y = rand(-8, 8);
+            $a = rand(-20, 20);
             $boxes->annotateimage($text, $x, $y, $a, $c);
         }
         $boxes->rewind();
@@ -73,11 +73,11 @@ class Handler extends Service
         $noiseLevel = 6;
         for ($i = 0; $i < $noiseLevel; $i++) {
             $noise->setstrokecolor($this->getRandomColor());
-            $noise->line(mt_rand(0, $w), mt_rand(0, $h), mt_rand(0, $w), mt_rand(0, $h));
+            $noise->line(rand(0, $w), rand(0, $h), rand(0, $w), rand(0, $h));
         }
         $image->drawImage($noise);
 
-        $image->waveImage(3, mt_rand(60, 100));
+        $image->waveImage(3, rand(60, 100));
         $image->addnoiseimage(\imagick::NOISE_IMPULSE);
         return $image;
     }
