@@ -154,7 +154,7 @@ class Session
                 // db insert for new session
                 $this->db->query('INSERT INTO sessions VALUES (:id, :data, :atime, :uid, :cid, :crc)', [
                     ':id' => $this->sid,
-                    ':data' => $this->data ? json_encode($this->data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) : '',
+                    ':data' => $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '',
                     ':atime' => $_SERVER['REQUEST_TIME'],
                     ':uid' => $this->uid,
                     ':cid' => $this->cid,
@@ -177,7 +177,7 @@ class Session
 
                 if ($this->data != $this->dataOriginal) {
                     $fields[] = 'data=:data';
-                    $values[':data'] = $this->data ? json_encode($this->data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) : '';
+                    $values[':data'] = $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
                 }
 
                 // update access timestamp older than 1 minute
@@ -204,6 +204,6 @@ class Session
 
     private function crc32()
     {
-        return \crc32($_SERVER['HTTP_USER_AGENT'] . $this->sid);
+        return crc32($_SERVER['HTTP_USER_AGENT'] . $this->sid);
     }
 }

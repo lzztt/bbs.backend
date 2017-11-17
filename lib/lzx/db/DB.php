@@ -2,8 +2,11 @@
 
 namespace lzx\db;
 
+use PDO;
+use PDOException;
+
 /**
- * @param \PDO $db
+ * @param PDO $db
  */
 class DB
 {
@@ -45,10 +48,10 @@ class DB
 
     private function __construct(array $config = [])
     {
-        $this->db = new \PDO($config['dsn'], $config['user'], $config['password'], [
-            \PDO::ATTR_PERSISTENT => true,
-            \PDO::ATTR_AUTOCOMMIT => false,
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+        $this->db = new PDO($config['dsn'], $config['user'], $config['password'], [
+            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_AUTOCOMMIT => false,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]);
         // this is NEEDED, even AUTOCOMMIT = FALSE :(
         $this->db->beginTransaction();
@@ -58,7 +61,7 @@ class DB
     {
         try {
             $this->db->commit();
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             $this->db->rollBack();
             throw $e;
         }
@@ -68,7 +71,7 @@ class DB
     {
         try {
             $this->db->commit();
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             $this->db->rollBack();
             throw $e;
         }
@@ -86,11 +89,11 @@ class DB
     {
         if (empty($params)) {
             if (!self::$debug) {
-                $statement = $this->db->query($sql, \PDO::FETCH_ASSOC);
+                $statement = $this->db->query($sql, PDO::FETCH_ASSOC);
             } else {
                 // query debug timer and info
                 $timer = microtime(true);
-                $statement = $this->db->query($sql, \PDO::FETCH_ASSOC);
+                $statement = $this->db->query($sql, PDO::FETCH_ASSOC);
                 $this->queries[] = sprintf('%8.6f', microtime(true) - $timer) . ' : [QUERY] ' . $sql;
             }
         } else {
@@ -125,7 +128,7 @@ class DB
             }
         }
 
-        $res = $statement->columnCount() > 0 ? $statement->fetchAll(\PDO::FETCH_ASSOC) : true;
+        $res = $statement->columnCount() > 0 ? $statement->fetchAll(PDO::FETCH_ASSOC) : true;
         $statement->closeCursor();
 
         return $res;

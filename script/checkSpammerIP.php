@@ -22,7 +22,7 @@ class Script extends App
         foreach ($users as $u) {
             $geo = geoip_record_by_name($u['ip']);
             $u['city'] = ($geo && $geo['city'] ? $geo['city'] : 'NULL');
-            echo implode("\t", $u) . \PHP_EOL;
+            echo implode("\t", $u) . PHP_EOL;
         }
     }
 }

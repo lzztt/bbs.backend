@@ -13,7 +13,7 @@ class Handler extends Service
     public function get()
     {
         $node = new Node();
-        $r = $node->getNodeStat(self::$city->ForumRootID);
+        $r = $node->getNodeStat(self::$city->tidForum);
 
         $alexaCache = $this->getIndependentCache('alexa');
         $alexa = $alexaCache->fetch();

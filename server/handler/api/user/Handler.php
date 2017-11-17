@@ -19,14 +19,14 @@ class Handler extends Service
         }
 
         $uid = (int) $this->args[0];
-        $user = new User($uid, 'username,wechat,qq,website,sex,birthday,relationship,occupation,interests,favoriteQuotation,createTime,lastAccessTime,lastAccessIP,avatar,points,status');
+        $user = new User($uid, 'username,wechat,qq,website,sex,birthday,relationship,occupation,interests,favoriteQuotation,createTime,lastAccessTime,lastAccessIp,avatar,points,status');
 
         if ($user->status > 0) {
             $info = $user->toArray();
-            unset($info['lastAccessIP']);
-            $info['lastAccessCity'] = $this->request->getLocationFromIP($user->lastAccessIP);
-            $info['topics'] = $user->getRecentNodes(self::$city->ForumRootID, 10);
-            $info['comments'] = $user->getRecentComments(self::$city->ForumRootID, 10);
+            unset($info['lastAccessIp']);
+            $info['lastAccessCity'] = $this->request->getLocationFromIP($user->lastAccessIp);
+            $info['topics'] = $user->getRecentNodes(self::$city->tidForum, 10);
+            $info['comments'] = $user->getRecentComments(self::$city->tidForum, 10);
 
             $this->json($info);
         } else {
@@ -180,7 +180,7 @@ class Handler extends Service
         $user->username = $this->request->json['username'];
         $user->password = null;
         $user->email = $this->request->json['email'];
-        $user->lastAccessIP = inet_pton($this->request->ip);
+        $user->lastAccessIp = inet_pton($this->request->ip);
         $user->cid = self::$city->id;
         $user->status = 1;
 

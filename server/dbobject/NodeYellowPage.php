@@ -10,6 +10,7 @@ use lzx\db\DB;
 use lzx\db\DBObject;
 
 /**
+ * @property $adId
  * @property $nid
  * @property $address
  * @property $phone
@@ -25,7 +26,7 @@ class NodeYellowPage extends DBObject
         $table = 'node_yellowpages';
         $fields = [
             'nid' => 'nid',
-            'aid' => 'ad_id',
+            'adId' => 'ad_id',
             'address' => 'address',
             'phone' => 'phone',
             'fax' => 'fax',

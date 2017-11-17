@@ -99,7 +99,7 @@ class CronApp extends App
 
                 $db->query('UPDATE activities SET status = 1 WHERE nid = ' . $a['id']);
 
-                $newActivities[] = '[TITLE] ' . $a['title'] . \PHP_EOL . ' [URL] http://www.houstonbbs.com/node/' . $a['id'];
+                $newActivities[] = '[TITLE] ' . $a['title'] . PHP_EOL . ' [URL] http://www.houstonbbs.com/node/' . $a['id'];
             }
 
             // delete cache and reschedule next refresh time
@@ -263,13 +263,13 @@ class CronApp extends App
                 continue;
             }
 
-            $geo = geoip_record_by_name(\long2ip($u['last_access_ip']));
+            $geo = geoip_record_by_name(long2ip($u['last_access_ip']));
             if ($geo) {
                 $city = $geo['city'] ? $geo['city'] : 'NA';
                 $region = $geo['region'] ? $geo['region'] : 'NA';
             }
 
-            echo implode("\t", [$u['nc'], $u['cc'], $u['id'], $city , $region, $u['username'], $u['email']]) . \PHP_EOL;
+            echo implode("\t", [$u['nc'], $u['cc'], $u['id'], $city , $region, $u['username'], $u['email']]) . PHP_EOL;
         }
     }
 }

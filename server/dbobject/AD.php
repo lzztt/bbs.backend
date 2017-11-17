@@ -8,7 +8,7 @@ use lzx\db\DB;
 /**
  * @property $id
  * @property $name
- * @property $typeID
+ * @property $typeId
  * @property $expTime
  * @property $email
  */
@@ -21,7 +21,7 @@ class AD extends DBObject
         $fields = [
             'id' => 'id',
             'name' => 'name',
-            'typeID' => 'type_id',
+            'typeId' => 'type_id',
             'expTime' => 'exp_time',
             'email' => 'email'
         ];
@@ -33,7 +33,7 @@ class AD extends DBObject
         $fields = [
             'id' => 'id',
             'name' => 'name',
-            'typeID' => 'type_id',
+            'typeId' => 'type_id',
             'expTime' => 'exp_time',
             'email' => 'email'
         ];

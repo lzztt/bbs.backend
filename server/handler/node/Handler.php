@@ -37,7 +37,7 @@ class Handler extends Node
 
         $breadcrumb = [];
         foreach ($tags as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->ForumRootID ? '/forum' : ('/forum/' . $i));
+            $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
         }
         $breadcrumb[$node['title']] = null;
 
@@ -84,10 +84,10 @@ class Handler extends Node
                 try {
                     $c['HTMLbody'] = BBCode::parse($c['body']);
                 } catch (\Exception $e) {
-                    $c['HTMLbody'] = \nl2br($c['body']);
+                    $c['HTMLbody'] = nl2br($c['body']);
                     $this->logger->error($e->getMessage(), $e->getTrace());
                 }
-                // $c['signature'] = \nl2br($c['signature']);
+                // $c['signature'] = nl2br($c['signature']);
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
                 $c['city'] = $this->request->getCityFromIP($c['access_ip']);
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
@@ -205,7 +205,7 @@ class Handler extends Node
 
         $breadcrumb = [];
         foreach ($tags as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->YPRootID ? '/yp' : ('/yp/' . $i));
+            $breadcrumb[$t['name']] = ($i === self::$city->tidYp ? '/yp' : ('/yp/' . $i));
         }
         $breadcrumb[$node['title']] = null;
 
@@ -238,7 +238,7 @@ class Handler extends Node
                     try {
                         $node['HTMLbody'] = BBCode::parse($c['body']);
                     } catch (\Exception $e) {
-                        $node['HTMLbody'] = \nl2br($c['body']);
+                        $node['HTMLbody'] = nl2br($c['body']);
                         $this->logger->error($e->getMessage(), $e->getTrace());
                     }
                     $node['attachments'] = $this->attachments($c['files'], $c['body']);
@@ -252,11 +252,11 @@ class Handler extends Node
                     if ($c['lastModifiedTime']) {
                         $c['lastModifiedTime'] = date('m/d/Y H:i', (int) $c['last_modified_time']);
                     }
-                    $c['HTMLbody'] = \nl2br($c['body']);
+                    $c['HTMLbody'] = nl2br($c['body']);
                     try {
                         $c['HTMLbody'] = BBCode::parse($c['body']);
                     } catch (\Exception $e) {
-                        $c['HTMLbody'] = \nl2br($c['body']);
+                        $c['HTMLbody'] = nl2br($c['body']);
                         $this->logger->error($e->getMessage(), $e->getTrace());
                     }
 

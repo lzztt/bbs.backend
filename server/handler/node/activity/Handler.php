@@ -43,7 +43,7 @@ class Handler extends Node
             $tags = $node->getTags($nid);
             $breadcrumb = [];
             foreach ($tags as $i => $t) {
-                $breadcrumb[$t['name']] = ($i === self::$city->ForumRootID ? '/forum' : ('/forum/' . $i));
+                $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
             }
             $breadcrumb[$node->title] = null;
 
