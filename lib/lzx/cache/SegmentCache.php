@@ -2,6 +2,7 @@
 
 namespace lzx\cache;
 
+use Exception;
 use lzx\cache\Cache;
 
 class SegmentCache extends Cache
@@ -55,7 +56,7 @@ class SegmentCache extends Cache
         try {
             // read only if exist!!
             return is_file($file) ? file_get_contents($file) : null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (self::$logger) {
                 self::$logger->warn('Could not read from file [' . $file . ']: ' . $e->getMessage());
             } else {

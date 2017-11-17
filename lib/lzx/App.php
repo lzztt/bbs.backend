@@ -2,6 +2,8 @@
 
 namespace lzx;
 
+use ErrorException;
+use Exception;
 use lzx\core\ClassLoader;
 use lzx\core\Handler;
 use lzx\core\Logger;
@@ -24,7 +26,7 @@ abstract class App
         if (is_file($file) && is_readable($file)) {
             require_once $file;
         } else {
-            throw new \Exception('cannot load autoloader class');
+            throw new Exception('cannot load autoloader class');
         }
 
         // register namespaces

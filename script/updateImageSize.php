@@ -2,6 +2,7 @@
 
 namespace site;
 
+use Exception;
 use lzx\App;
 use lzx\core\MySQL;
 use site\dataobject\Image;
@@ -30,7 +31,7 @@ class Script extends App
                 } else {
                     echo $i['fid'] . PHP_EOL;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 echo $i['fid'] . PHP_EOL;
                 $this->logger->error($e->getMessage());
                 continue;

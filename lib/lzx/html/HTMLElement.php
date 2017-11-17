@@ -7,6 +7,9 @@
 
 namespace lzx\html;
 
+use ErrorException;
+use Exception;
+
 /**
  * Description of HTML
  *
@@ -22,7 +25,7 @@ class HTMLElement
     public function __construct($tag, $data = null, array $attributes = [])
     {
         if (!is_string($tag) || empty($tag)) {
-              throw new \Exception('wrong tag name (should be a non-empty string) : ' . gettype($tag));
+              throw new Exception('wrong tag name (should be a non-empty string) : ' . gettype($tag));
         }
 
           // type hinting force attributes is always an array
@@ -81,12 +84,12 @@ class HTMLElement
       *
       * @param int $index
       * @param NULL/string/HTMLElement $data
-      * @throws \Exception
+      * @throws Exception
       */
     public function setDataByIndex($index, $data)
     {
         if (!($data instanceof self || is_string($data) || is_null($data))) { // not string or Element object or NULL
-            throw new \Exception('wrong data type (NULL, string, ' . __CLASS__ . ') : ' . gettype($data));
+            throw new Exception('wrong data type (NULL, string, ' . __CLASS__ . ') : ' . gettype($data));
         }
 
           // reset only if $index is a valid index
@@ -149,7 +152,7 @@ class HTMLElement
       *
       * @param string $key
       * @param string $value
-      * @throws \Exception
+      * @throws Exception
       */
     public function setAttributeKeyOf($key, $value)
     {
@@ -163,21 +166,21 @@ class HTMLElement
                  $this->attributes[$key] = $value;
             }
         } else {
-            throw new \Exception('wrong attribute type or value (string => string) : ' . $this->tag . '.' . $key . ' => ' . gettype($value));
+            throw new Exception('wrong attribute type or value (string => string) : ' . $this->tag . '.' . $key . ' => ' . gettype($value));
         }
     }
 
      /**
       *
       * @param HTMLElement $e
-      * @throws \ErrorException
+      * @throws ErrorException
       */
     public function addElement(HTMLElement $e)
     {
         if ($e instanceof HTMLElement) {
               $this->setDataByIndex(null, $e);
         } else {
-            throw new \ErrorException('wrong html element type (HTMLElement) : ' . gettype($e));
+            throw new ErrorException('wrong html element type (HTMLElement) : ' . gettype($e));
         }
     }
 

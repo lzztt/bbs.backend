@@ -2,6 +2,8 @@
 
 namespace lzx\core;
 
+use ErrorException;
+use Exception;
 use lzx\core\Logger;
 
 /*
@@ -23,14 +25,14 @@ class Handler
                 set_error_handler($handler, error_reporting());
                 self::$errorHandler = $handler;
             } else {
-                throw new \Exception('failed to set error handler');
+                throw new Exception('failed to set error handler');
             }
         }
     }
 
     public static function errorHandler($errno, $errstr, $errfile, $errline)
     {
-        throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+        throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
     }
 
     public static function setExceptionHandler()
@@ -41,12 +43,12 @@ class Handler
                 set_exception_handler($handler);
                 self::$exceptionHandler = $handler;
             } else {
-                throw new \Exception('failed to set exception handler');
+                throw new Exception('failed to set exception handler');
             }
         }
     }
 
-    public static function exceptionHandler(\Throwable $e)
+    public static function exceptionHandler(Throwable $e)
     {
         $msg = 'Uncaught exception: [' . get_class($e) . '] ' . $e->getMessage();
         if (self::$logger instanceof Logger) {

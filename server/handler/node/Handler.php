@@ -2,6 +2,7 @@
 
 namespace site\handler\node;
 
+use Exception;
 use site\handler\node\Node;
 use lzx\core\BBCodeRE as BBCode;
 use lzx\html\HTMLElement;
@@ -83,7 +84,7 @@ class Handler extends Node
 
                 try {
                     $c['HTMLbody'] = BBCode::parse($c['body']);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $c['HTMLbody'] = nl2br($c['body']);
                     $this->logger->error($e->getMessage(), $e->getTrace());
                 }
@@ -237,7 +238,7 @@ class Handler extends Node
                     // show node details as the first post
                     try {
                         $node['HTMLbody'] = BBCode::parse($c['body']);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $node['HTMLbody'] = nl2br($c['body']);
                         $this->logger->error($e->getMessage(), $e->getTrace());
                     }
@@ -255,7 +256,7 @@ class Handler extends Node
                     $c['HTMLbody'] = nl2br($c['body']);
                     try {
                         $c['HTMLbody'] = BBCode::parse($c['body']);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $c['HTMLbody'] = nl2br($c['body']);
                         $this->logger->error($e->getMessage(), $e->getTrace());
                     }

@@ -2,6 +2,10 @@
 
 namespace site\handler\api\captcha;
 
+use Exception;
+use Imagick;
+use ImagickDraw;
+use ImagickPixel;
 use site\Service;
 use site\Config;
 use lzx\core\Response;
@@ -12,7 +16,7 @@ class Handler extends Service
     {
         if (!($this->request->referer && $this->args)) {
             $this->response->pageForbidden();
-            throw new \Exception();
+            throw new Exception();
         }
 
         // generate a CAPTCHA code
@@ -29,7 +33,7 @@ class Handler extends Service
     private function getRandomColor()
     {
         $hex_dark = '#' . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9);
-        return new \ImagickPixel($hex_dark);
+        return new ImagickPixel($hex_dark);
     }
 
     /**
@@ -46,14 +50,14 @@ class Handler extends Service
         $box_width = $font_size;
         $box_height = (int) ($font_size * 1.2);
 
-        $text = new \ImagickDraw();
+        $text = new ImagickDraw();
         $text->setFont($font);
         $text->setFontSize($font_size);
-        $text->setGravity(\Imagick::GRAVITY_CENTER);
+        $text->setGravity(Imagick::GRAVITY_CENTER);
 
         // create image resource
         //$image = imagecreatetruecolor($width, $height);
-        $boxes = new \Imagick();
+        $boxes = new Imagick();
         foreach ($code as $c) {
             $boxes->newimage($box_width, $box_height, '#FFFFFF', $format);
             $text->setFillColor($this->getRandomColor());
@@ -68,7 +72,7 @@ class Handler extends Service
 
         $w = $image->getimagewidth();
         $h = $image->getimageheight();
-        $noise = new \ImagickDraw();
+        $noise = new ImagickDraw();
         $noise->setstrokewidth(1);
         $noiseLevel = 6;
         for ($i = 0; $i < $noiseLevel; $i++) {
@@ -78,7 +82,7 @@ class Handler extends Service
         $image->drawImage($noise);
 
         $image->waveImage(3, rand(60, 100));
-        $image->addnoiseimage(\imagick::NOISE_IMPULSE);
+        $image->addnoiseimage(Imagick::NOISE_IMPULSE);
         return $image;
     }
 }

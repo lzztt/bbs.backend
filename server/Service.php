@@ -2,6 +2,7 @@
 
 namespace site;
 
+use Exception;
 use lzx\core\Service as LzxService;
 use lzx\core\Request;
 use lzx\core\Response;
@@ -170,7 +171,7 @@ abstract class Service extends LzxService
     protected function getPagerInfo($nTotal, $nPerPage)
     {
         if ($nPerPage <= 0) {
-            throw new \Exception('invalid value for number of items per page: ' . $nPerPage);
+            throw new Exception('invalid value for number of items per page: ' . $nPerPage);
         }
 
         $pageCount = $nTotal > 0 ? ceil($nTotal / $nPerPage) : 1;

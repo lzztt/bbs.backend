@@ -2,6 +2,7 @@
 
 namespace site\handler\api\message;
 
+use Exception;
 use lzx\core\Mailer;
 use site\Service;
 use site\dbobject\PrivMsg;
@@ -166,7 +167,7 @@ class Handler extends Service
             $pm = new PrivMsg($mid, null);
             try {
                 $pm->deleteByUser($this->request->uid);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error('failed to delete message ' . $mid . ' as user ' . $this->request->uid);
                 $error[] = 'failed to delete message ' . $mid;
             }
