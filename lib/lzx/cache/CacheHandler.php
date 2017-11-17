@@ -2,6 +2,7 @@
 
 namespace lzx\cache;
 
+use Exception;
 use lzx\cache\CacheHandlerInterface;
 use lzx\db\DB;
 use lzx\cache\Cache;
@@ -39,7 +40,7 @@ class CacheHandler implements CacheHandlerInterface
             if ($db) {
                 $instance = new self($db);
             } else {
-                throw new \Exception('no instance is available. a DB object is required for creating a new instance.');
+                throw new Exception('no instance is available. a DB object is required for creating a new instance.');
             }
         }
         return $instance;
@@ -85,7 +86,7 @@ class CacheHandler implements CacheHandlerInterface
         $name = trim($name);
 
         if (strlen($name) == 0 || strpos($name, ' ') !== false) {
-            throw new \Exception('cache name is empty : ' . $name);
+            throw new Exception('cache name is empty : ' . $name);
         }
 
         if ($name[0] === '/') {
@@ -103,12 +104,12 @@ class CacheHandler implements CacheHandlerInterface
                 // previously processed or pre-processed name
                 // validate '#'
                 if (substr_count($name, '#') > 1) {
-                    throw new \Exception('pre-processed cache name has multiple "#" charactor : ' . $name);
+                    throw new Exception('pre-processed cache name has multiple "#" charactor : ' . $name);
                 }
 
                 // validate '?'
                 if (strpos($name, '?')) {
-                    throw new \Exception('pre-processed cache name has "?" charactor : ' . $name);
+                    throw new Exception('pre-processed cache name has "?" charactor : ' . $name);
                 }
             }
         } else {
@@ -142,7 +143,7 @@ class CacheHandler implements CacheHandlerInterface
                 $filename = self::$path . '/segment/' . $key . '.txt';
                 break;
             default:
-                throw new \Exception('unsupport cache type: ' . get_class($cache));
+                throw new Exception('unsupport cache type: ' . get_class($cache));
         }
 
         $dir = dirname($filename);
@@ -175,7 +176,7 @@ class CacheHandler implements CacheHandlerInterface
                 $id = (int) array_pop($res[0]);
                 break;
             default:
-                throw new \Exception('multiple ID found for name: ' . $name);
+                throw new Exception('multiple ID found for name: ' . $name);
         }
         // save to cache
         $ids[$name] = $id;

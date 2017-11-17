@@ -2,6 +2,7 @@
 
 namespace lzx\core;
 
+use Exception;
 use lzx\html\Template;
 use lzx\cache\PageCache;
 
@@ -53,7 +54,7 @@ class Response
         if ($this->status < 300 && $this->data instanceof Template) {
             $cache->store($this->data);
         } else {
-            throw new \Exception('Cache content failed: status=' . $this->status . ' response content type=' . gettype($this->data));
+            throw new Exception('Cache content failed: status=' . $this->status . ' response content type=' . gettype($this->data));
         }
     }
 

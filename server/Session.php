@@ -2,6 +2,7 @@
 
 namespace site;
 
+use Exception;
 use lzx\db\DB;
 
 /**
@@ -110,7 +111,7 @@ class Session
         if (!isset($instance)) {
             $instance = new self($db);
         } else {
-            throw new \Exception('Session instance already exists, cannot create a new instance');
+            throw new Exception('Session instance already exists, cannot create a new instance');
         }
 
         return $instance;

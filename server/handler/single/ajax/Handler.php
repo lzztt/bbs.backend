@@ -2,6 +2,7 @@
 
 namespace site\handler\single\ajax;
 
+use Exception;
 use site\handler\single\Single;
 use site\dbobject\FFAttendee;
 use site\dbobject\FFComment;
@@ -125,6 +126,6 @@ class Handler extends Single
     protected function error($msg)
     {
         $this->ajax(['error' => $msg]);
-        throw new \Exception();
+        throw new Exception();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace site\handler\node\edit;
 
+use Exception;
 use site\handler\node\Node;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
@@ -41,7 +42,7 @@ class Handler extends Node
 
         try {
             $node->update();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage());
             $this->error($e->getMessage());
         }

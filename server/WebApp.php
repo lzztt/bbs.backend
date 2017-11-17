@@ -2,6 +2,7 @@
 
 namespace site;
 
+use Exception;
 use lzx\App;
 use lzx\core\Handler;
 use lzx\db\DB;
@@ -105,7 +106,7 @@ class WebApp extends App
         try {
             $ctrler = ControllerFactory::create($request, $response, $this->config, $this->logger, $session);
             $ctrler->run();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($e->getMessage()) {
                 $this->logger->error($e->getMessage(), $e->getTrace());
                 $this->logger->flush();
@@ -146,7 +147,7 @@ class WebApp extends App
                     }
                     $db->flush();
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error($e->getMessage());
             }
         }

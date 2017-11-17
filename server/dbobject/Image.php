@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
+use Exception;
+use Imagick;
 use lzx\db\DBObject;
 use lzx\db\DB;
 use lzx\core\Logger;
@@ -43,7 +41,7 @@ class Image extends DBObject
     {
         try {
             unlink($file);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $logger = Logger::getInstance();
             $logger->error($e->getMessage() . ' : ' . $file);
         }
@@ -119,9 +117,9 @@ class Image extends DBObject
                 try {
                     if ($width > $config['width'] || $height > $config['height']) {
                         // resize image
-                        $im = new \Imagick($tmpFile);
+                        $im = new Imagick($tmpFile);
                         $this->autoRotateImage($im);
-                        $im->resizeImage($config['width'], $config['height'], \Imagick::FILTER_LANCZOS, 1, true);
+                        $im->resizeImage($config['width'], $config['height'], Imagick::FILTER_LANCZOS, 1, true);
                         $im->writeImage($savePath);
                         $im->clear();
                         if ($tmpFile) {
@@ -131,7 +129,7 @@ class Image extends DBObject
                         // copy image
                         move_uploaded_file($tmpFile, $savePath);
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     if (isset($im)) {
                         $im->clear();
                         unset($im);
@@ -162,22 +160,22 @@ class Image extends DBObject
         return ['error' => $errorFile, 'saved' => $savedFile];
     }
 
-    private function autoRotateImage(\Imagick $img)
+    private function autoRotateImage(Imagick $img)
     {
         $orientation = $img->getImageOrientation();
 
         switch ($orientation) {
-            case \Imagick::ORIENTATION_BOTTOMRIGHT:
+            case Imagick::ORIENTATION_BOTTOMRIGHT:
                 $img->rotateimage("#000", 180); // rotate 180 degrees
-                $img->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT); // update the EXIF data
+                $img->setImageOrientation(Imagick::ORIENTATION_TOPLEFT); // update the EXIF data
                 break;
-            case \Imagick::ORIENTATION_RIGHTTOP:
+            case Imagick::ORIENTATION_RIGHTTOP:
                 $img->rotateimage("#000", 90); // rotate 90 degrees CW
-                $img->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT); // update the EXIF data
+                $img->setImageOrientation(Imagick::ORIENTATION_TOPLEFT); // update the EXIF data
                 break;
-            case \Imagick::ORIENTATION_LEFTBOTTOM:
+            case Imagick::ORIENTATION_LEFTBOTTOM:
                 $img->rotateimage("#000", -90); // rotate 90 degrees CCW
-                $img->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT); // update the EXIF data
+                $img->setImageOrientation(Imagick::ORIENTATION_TOPLEFT); // update the EXIF data
                 break;
         }
     }
@@ -280,7 +278,7 @@ class Image extends DBObject
                         ':height'  => $height,
                         ':width'    => $width,
                         ':city_id' => $this->cityId]);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $logger = Logger::getInstance();
                     $logger->error($e->getMessage());
                     continue;
