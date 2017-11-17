@@ -145,6 +145,6 @@ abstract class Single extends Controller
 
     protected function getCode($uid)
     {
-        return \crc32(substr(\md5('alexmika' . $uid), 5, 10));
+        return crc32(substr(md5('alexmika' . $uid), 5, 10));
     }
 }

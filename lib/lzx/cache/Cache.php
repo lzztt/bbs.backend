@@ -89,7 +89,7 @@ abstract class Cache
 
     protected function writeDataFile($data)
     {
-        file_put_contents(self::$handler->getFileName($this), $data, \LOCK_EX);
+        file_put_contents(self::$handler->getFileName($this), $data, LOCK_EX);
     }
 
     protected function deleteChildren()

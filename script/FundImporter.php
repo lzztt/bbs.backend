@@ -35,11 +35,11 @@ class FundImporter extends App
     {
         // check filename argument
         if ($argc < 2) {
-            exit('ERROR: no input file!' . \PHP_EOL);
+            exit('ERROR: no input file!' . PHP_EOL);
         }
         $filename = $argv[1];
         if (!is_file($filename)) {
-            exit('ERROR: input file does not exist!' . \PHP_EOL);
+            exit('ERROR: input file does not exist!' . PHP_EOL);
         }
 
         $data = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -100,7 +100,7 @@ class FundImporter extends App
 
                 $fund->load('id');
                 if ($fund->exists()) {
-                    print 'ERROR: trying to add duplicate fund: ' . $fund . \PHP_EOL;
+                    print 'ERROR: trying to add duplicate fund: ' . $fund . PHP_EOL;
                 } else {
                     $fund->add();
                 }

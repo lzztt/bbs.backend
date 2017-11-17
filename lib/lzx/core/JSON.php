@@ -32,7 +32,7 @@ class JSON
     {
         // string cache
         if (!$this->string) {
-            $this->string = json_encode($this->data, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+            $this->string = json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             if ($this->string === false) {
                 $this->string = '{"error":"json encode error"}';
             }

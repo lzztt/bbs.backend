@@ -30,12 +30,12 @@ class Handler extends Forum
     {
         $breadcrumb = [];
         foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->ForumRootID ? '/forum' : ('/forum/' . $i));
+            $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
         }
 
         $nodeInfo = [];
         $groupTrees = [];
-        if ($tid == self::$city->ForumRootID) {
+        if ($tid == self::$city->tidForum) {
             foreach ($tagTree[$tid]['children'] as $group_id) {
                 $groupTrees[$group_id] = [];
                 $group = $tagTree[$group_id];
@@ -70,7 +70,7 @@ class Handler extends Forum
 
         $breadcrumb = [];
         foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->ForumRootID ? '/forum' : ('/forum/' . $i));
+            $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
         }
 
         $node = new Node();

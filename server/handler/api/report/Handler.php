@@ -27,7 +27,7 @@ class Handler extends Service
 
         $complain = new NodeComplain();
         $complain->nid = $nid;
-        $complain->reporterUID = $this->request->uid;
+        $complain->reporterUid = $this->request->uid;
 
         $complain->load();
         if ($complain->exists()) {
@@ -86,9 +86,9 @@ class Handler extends Service
                             'id'         => 'https://' . $this->request->domain . '/app/user/' . $uid,
                             'username' => $spammer->username,
                             'email'     => $spammer->email,
-                            'city'      => $this->request->getLocationFromIP($spammer->lastAccessIP),
+                            'city'      => $this->request->getLocationFromIP($spammer->lastAccessIp),
                             'points'    => $spammer->points,
-                            'register' => date(DateTime::COOKIE, $spammer->createTime)
+                            'register' => date(DATE_COOKIE, $spammer->createTime)
                         ],
                         'node'      => [
                             'id'     => 'https://' . $this->request->domain . '/node/' . $nid,
@@ -101,7 +101,7 @@ class Handler extends Service
                             'email'     => $reporter->email,
                             'city'      => $this->request->getLocationFromIP($this->request->ip),
                             'points'    => $reporter->points,
-                            'register' => date(DateTime::COOKIE, $reporter->createTime)
+                            'register' => date(DATE_COOKIE, $reporter->createTime)
                         ]
                     ], true);
                     $mailer->send();

@@ -12,9 +12,9 @@ use lzx\db\DB;
 /**
  *
  * @property $id
- * @property $fromUID
- * @property $toUID
- * @property $msgID
+ * @property $fromUid
+ * @property $toUid
+ * @property $msgId
  * @property $time
  * @property $body
  */
@@ -26,9 +26,9 @@ class PrivMsg extends DBObject
          $table = 'priv_msgs';
          $fields = [
                'id' => 'id',
-               'msgID' => 'msg_id',
-               'fromUID' => 'from_uid',
-               'toUID' => 'to_uid',
+               'msgId' => 'msg_id',
+               'fromUid' => 'from_uid',
+               'toUid' => 'to_uid',
                'time' => 'time',
                'body' => 'body',
          ];

@@ -29,7 +29,7 @@ class Handler extends Controller
         }
 
         // need to search
-        $dirs = glob($this->config->path['file'] . '/app/' . $app . '.*', \GLOB_ONLYDIR);
+        $dirs = glob($this->config->path['file'] . '/app/' . $app . '.*', GLOB_ONLYDIR);
         // not found
         if (!$dirs) {
             $this->pageNotFound();

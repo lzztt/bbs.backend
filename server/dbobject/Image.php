@@ -18,7 +18,7 @@ use lzx\core\Logger;
  * @property $path
  * @property $height
  * @property $width
- * @property $cityID
+ * @property $cityId
  */
 class Image extends DBObject
 {
@@ -34,7 +34,7 @@ class Image extends DBObject
             'path'    => 'path',
             'height' => 'height',
             'width'  => 'width',
-            'cityID' => 'city_id'
+            'cityId' => 'city_id'
         ];
         parent::__construct($db, $table, $fields, $id, $properties);
     }
@@ -53,12 +53,12 @@ class Image extends DBObject
     public function saveFile(array $files, array $config)
     {
         $errmsg = [
-            \UPLOAD_ERR_INI_SIZE    => 'upload_err_ini_size',
-            \UPLOAD_ERR_FORM_SIZE  => 'upload_err_form_size',
-            \UPLOAD_ERR_PARTIAL     => 'upload_err_partial',
-            \UPLOAD_ERR_NO_FILE     => 'upload_err_no_file',
-            \UPLOAD_ERR_NO_TMP_DIR => 'upload_err_no_tmp_dir',
-            \UPLOAD_ERR_CANT_WRITE => 'upload_err_cant_write',
+            UPLOAD_ERR_INI_SIZE    => 'upload_err_ini_size',
+            UPLOAD_ERR_FORM_SIZE  => 'upload_err_form_size',
+            UPLOAD_ERR_PARTIAL     => 'upload_err_partial',
+            UPLOAD_ERR_NO_FILE     => 'upload_err_no_file',
+            UPLOAD_ERR_NO_TMP_DIR => 'upload_err_no_tmp_dir',
+            UPLOAD_ERR_CANT_WRITE => 'upload_err_cant_write',
             102                          => 'upload_err_invalid_type',
             103                          => 'upload_err_cant_save',
         ];
@@ -74,7 +74,7 @@ class Image extends DBObject
                 $tmpFile = $f['tmp_name'];
 
                 // check upload error
-                if ($f['error'] !== \UPLOAD_ERR_OK) { // upload error
+                if ($f['error'] !== UPLOAD_ERR_OK) { // upload error
                     $errorFile[] = [
                         'name'  => $fileName,
                         'error' => $errmsg[$f['error']],
@@ -89,7 +89,7 @@ class Image extends DBObject
                 if ($f['size'] > $config['size']) { // File Size
                     $errorFile[] = [
                         'name'  => $fileName,
-                        'error' => $errmsg[\UPLOAD_ERR_INI_SIZE],
+                        'error' => $errmsg[UPLOAD_ERR_INI_SIZE],
                     ];
                     if ($tmpFile) {
                         $this->rmTmpFile($tmpFile);
@@ -196,7 +196,7 @@ class Image extends DBObject
                     ':path'     => $file['path'],
                     ':height'  => $height,
                     ':width'    => $width,
-                    ':city_id' => $this->cityID]);
+                    ':city_id' => $this->cityId]);
             }
         }
     }
@@ -219,7 +219,7 @@ class Image extends DBObject
                             ':path'     => $file['path'],
                             ':height'  => $height,
                             ':width'    => $width,
-                            ':city_id' => $this->cityID]);
+                            ':city_id' => $this->cityId]);
                         break;
                     case 'update':
                         $this->call('image_update(:fid, :name)', [':fid' => $file['id'], ':name' => $file['name']]);
@@ -279,7 +279,7 @@ class Image extends DBObject
                         ':path'     => $file['path'],
                         ':height'  => $height,
                         ':width'    => $width,
-                        ':city_id' => $this->cityID]);
+                        ':city_id' => $this->cityId]);
                 } catch (\Exception $e) {
                     $logger = Logger::getInstance();
                     $logger->error($e->getMessage());
