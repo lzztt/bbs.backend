@@ -52,6 +52,7 @@ class Handler extends Controller
 
             $nodeYP = new NodeYellowPage();
             $nodeYP->nid = $node->id;
+            $nodeYP->adId = $this->request->post['aid'];
             foreach (array_diff($nodeYP->getProperties(), ['nid']) as $key) {
                 $nodeYP->$key = $this->request->post[$key];
             }
@@ -59,7 +60,7 @@ class Handler extends Controller
 
             if (isset($this->request->post['files'])) {
                 $file = new Image();
-                $file->cityID = self::$city->id;
+                $file->cityId = self::$city->id;
                 $file->updateFileList($this->request->post['files'], $this->config->path['file'], $node->id, $comment->id);
             }
 

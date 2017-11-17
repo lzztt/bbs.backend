@@ -59,7 +59,7 @@ class Handler extends Node
 
         $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
         $file = new Image();
-        $file->cityID = self::$city->id;
+        $file->cityId = self::$city->id;
         $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
 
         $this->getCacheEvent('ImageUpdate')->trigger();
@@ -126,7 +126,7 @@ class Handler extends Node
 
             $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
             $file = new Image();
-            $file->cityID = self::$city->id;
+            $file->cityId = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
 
             $this->getCacheEvent('NodeUpdate', $nid)->trigger();

@@ -254,7 +254,7 @@ abstract class Service extends LzxService
         $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
         $user->delete();
         $u = new User();
-        $u->lastAccessIP = inet_pton($this->request->ip);
+        $u->lastAccessIp = inet_pton($this->request->ip);
         $users = $u->getList('createTime');
         $deleteAll = true;
         if (sizeof($users) > 1) {

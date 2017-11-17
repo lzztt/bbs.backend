@@ -131,15 +131,15 @@ abstract class Controller extends LzxCtrler
         $navbarCache = $this->getIndependentCache('page_navbar');
         $navbar = $navbarCache->fetch();
         if (!$navbar) {
-            if (self::$city->YPRootID) {
+            if (self::$city->tidYp) {
                 $vars = [
-                    'forumMenu' => $this->createMenu(self::$city->ForumRootID),
-                    'ypMenu' => $this->createMenu(self::$city->YPRootID),
+                    'forumMenu' => $this->createMenu(self::$city->tidForum),
+                    'ypMenu' => $this->createMenu(self::$city->tidYp),
                     'uid' => $this->request->uid
                 ];
             } else {
                 $vars = [
-                    'forumMenu' => $this->createMenu(self::$city->ForumRootID),
+                    'forumMenu' => $this->createMenu(self::$city->tidForum),
                     'uid' => $this->request->uid
                 ];
             }
@@ -176,7 +176,7 @@ abstract class Controller extends LzxCtrler
 
     protected function ajax($return)
     {
-        $json = json_encode($return, \JSON_NUMERIC_CHECK | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+        $json = json_encode($return, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if ($json === false) {
             $json = '{"error":"ajax json encode error"}';
         }
@@ -286,9 +286,9 @@ abstract class Controller extends LzxCtrler
         $tree = $tag->getTagTree();
         $type = 'tag';
         $root_id = array_shift(array_keys($tag->getTagRoot()));
-        if (self::$city->ForumRootID == $root_id) {
+        if (self::$city->tidForum == $root_id) {
             $type = 'forum';
-        } elseif (self::$city->YPRootID == $root_id) {
+        } elseif (self::$city->tidYp == $root_id) {
             $type = 'yp';
         }
         $liMenu = '';

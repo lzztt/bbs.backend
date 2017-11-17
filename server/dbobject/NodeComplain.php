@@ -12,7 +12,7 @@ use lzx\db\DBObject;
 /**
  * @property $uid
  * @property $nid
- * @property $reporterUID
+ * @property $reporterUid
  * @property $weight
  * @property $time
  * @property $reason
@@ -27,7 +27,7 @@ class NodeComplain extends DBObject
             'id'             => 'id',
             'uid'            => 'uid',
             'nid'            => 'nid',
-            'reporterUID' => 'reporter_uid',
+            'reporterUid' => 'reporter_uid',
             'weight'        => 'weight',
             'time'          => 'time',
             'reason'        => 'reason',

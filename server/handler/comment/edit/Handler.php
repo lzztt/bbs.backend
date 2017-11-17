@@ -36,7 +36,7 @@ class Handler extends Comment
         if ($this->request->post['update_file']) {
             $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
             $file = new Image();
-            $file->cityID = self::$city->id;
+            $file->cityId = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $comment->nid, $cid);
             $this->getIndependentCache('imageSlider')->delete();
         }

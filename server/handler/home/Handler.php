@@ -43,7 +43,7 @@ class Handler extends Controller
     // BEGIN DALLAS HOME
     private function dallasHome()
     {
-        $tag = new Tag(self::$city->ForumRootID, null);
+        $tag = new Tag(self::$city->tidForum, null);
         $tagTree = $tag->getTagTree();
 
         $nodeInfo = [];
@@ -73,7 +73,7 @@ class Handler extends Controller
 
     protected function austinHome()
     {
-        $tag = new Tag(self::$city->ForumRootID, null);
+        $tag = new Tag(self::$city->tidForum, null);
         $tagTree = $tag->getTagTree();
 
         $nodeInfo = [];
@@ -148,7 +148,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node())->getLatestForumTopics(self::$city->ForumRootID, $count) as $n) {
+            foreach ((new Node())->getLatestForumTopics(self::$city->tidForum, $count) as $n) {
                 $arr[] = ['after' => date('H:i', (int) $n['create_time']),
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
@@ -169,7 +169,7 @@ class Handler extends Controller
             // 1 week for houstonbbs, 2 weeks for other cities
             $start = (self::$city->id == 1 ? $this->request->timestamp - 604800 : $this->request->timestamp - 604800 * 2);
 
-            foreach ((new Node())->getHotForumTopics(self::$city->ForumRootID, $count, $start) as $i => $n) {
+            foreach ((new Node())->getHotForumTopics(self::$city->tidForum, $count, $start) as $i => $n) {
                 $arr[] = ['after' => $i + 1,
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']];
@@ -188,7 +188,7 @@ class Handler extends Controller
         $ul = $cache ? unserialize($cache) : null;
         if (!$ul) {
             $ul = [];
-            $ypGroups = array_chunk((new Node())->getLatestYellowPages(self::$city->YPRootID, $count * 2), $count);
+            $ypGroups = array_chunk((new Node())->getLatestYellowPages(self::$city->tidYp, $count * 2), $count);
 
             foreach ($ypGroups as $yps) {
                 $arr = [];
@@ -233,7 +233,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node())->getLatestForumTopicReplies(self::$city->ForumRootID, $count) as $n) {
+            foreach ((new Node())->getLatestForumTopicReplies(self::$city->tidForum, $count) as $n) {
                 $arr[] = ['after' => $n['comment_count'],
                     'uri' => '/node/' . $n['nid'] . '?p=l#comment' . $n['last_cid'],
                     'text' => $n['title']];
@@ -252,7 +252,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node())->getLatestYellowPageReplies(self::$city->YPRootID, $count) as $n) {
+            foreach ((new Node())->getLatestYellowPageReplies(self::$city->tidYp, $count) as $n) {
                 $arr[] = ['after' => $n['comment_count'],
                     'uri' => '/node/' . $n['nid'] . '?p=l#comment' . $n['last_cid'],
                     'text' => $n['title']];

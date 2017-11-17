@@ -29,7 +29,7 @@ use lzx\db\DB;
  * @property $signature
  * @property $createTime
  * @property $lastAccessTime
- * @property $lastAccessIP
+ * @property $lastAccessIp
  * @property $status
  * @property $timezone
  * @property $avatar
@@ -67,7 +67,7 @@ class User extends DBObject
             'signature' => 'signature',
             'createTime' => 'create_time',
             'lastAccessTime' => 'last_access_time',
-            'lastAccessIP' => 'last_access_ip',
+            'lastAccessIp' => 'last_access_ip',
             'status' => 'status',
             'timezone' => 'timezone',
             'avatar' => 'avatar',
@@ -82,7 +82,7 @@ class User extends DBObject
 
     public function hashPW($password)
     {
-        return \md5('Alex' . $password . 'Tian');
+        return md5('Alex' . $password . 'Tian');
     }
 
     public function randomPW()
@@ -246,7 +246,7 @@ class User extends DBObject
 
             // check post counts
             if ($days < 10) {
-                $geo = geoip_record_by_name(is_numeric($ip) ? \long2ip($ip) : $ip);
+                $geo = geoip_record_by_name(is_numeric($ip) ? long2ip($ip) : $ip);
                 // from Nanning
                 if ($geo && $geo['city'] === 'Nanning') {
                     $this->isSpammer = true;

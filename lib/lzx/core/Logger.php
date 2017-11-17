@@ -85,7 +85,7 @@ class Logger
 
     public function setEmail($email)
     {
-        if (filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->mailer = new Mailer('logger');
             $this->mailer->to = $email;
         } else {
@@ -128,7 +128,7 @@ class Logger
         if ($this->dir) {
             foreach ($this->logCache as $type => $log) {
                 if ($log) {
-                    file_put_contents($this->file[$type], $log, \FILE_APPEND | \LOCK_EX);
+                    file_put_contents($this->file[$type], $log, FILE_APPEND | LOCK_EX);
                 }
             }
         } else {
@@ -160,12 +160,12 @@ class Logger
 
         if ($type == self::ERROR && isset($this->mailer)) {
             $this->mailer->subject = 'web error: ' . $_SERVER['REQUEST_URI'];
-            $this->mailer->body = json_encode($log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+            $this->mailer->body = json_encode($log, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             $this->mailer->send();
             $log['_SERVER'] = $_SERVER;
         }
 
-        $this->logCache[$type] .= json_encode($log, \JSON_NUMERIC_CHECK | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE) . \PHP_EOL;
+        $this->logCache[$type] .= json_encode($log, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . PHP_EOL;
     }
 
     private function getBacktrace(array $traces)

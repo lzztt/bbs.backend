@@ -26,7 +26,10 @@ class Handler extends Forum
 
     public function createTopic($tid)
     {
-        if (strlen($this->request->post['body']) < 5 || strlen($this->request->post['title']) < 5) {
+        if (!$this->request->post['body']
+                || !$this->request->post['title']
+                || strlen($this->request->post['body']) < 5
+                || strlen($this->request->post['title']) < 5) {
             $this->error('Topic title or body is too short.');
         }
 
@@ -56,7 +59,7 @@ class Handler extends Forum
                 $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
                 $user->delete();
                 $u = new User();
-                $u->lastAccessIP = inet_pton($this->request->ip);
+                $u->lastAccessIp = inet_pton($this->request->ip);
                 $users = $u->getList('createTime');
                 $deleteAll = true;
                 if (sizeof($users) > 1) {
@@ -88,14 +91,14 @@ class Handler extends Forum
                 }
             }
 
-            $this->logger->error($e->getMessage() . \PHP_EOL . ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
+            $this->logger->error($e->getMessage() . PHP_EOL . ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
             $this->error($e->getMessage());
         }
 
 
         if ($this->request->post['files']) {
             $file = new Image();
-            $file->cityID = self::$city->id;
+            $file->cityId = self::$city->id;
             $file->updateFileList($this->request->post['files'], $this->config->path['file'], $node->id, $comment->id);
             $this->getCacheEvent('ImageUpdate')->trigger();
         }

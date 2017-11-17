@@ -13,8 +13,8 @@ use lzx\db\DB;
  * @property $id
  * @property $name
  * @property $uriName
- * @property $ForumRootID
- * @property $YPRootID
+ * @property $tidForum
+ * @property $tidYp
  */
 class City extends DBObject
 {
@@ -26,8 +26,8 @@ class City extends DBObject
             'id' => 'id',
             'name' => 'name',
             'uriName' => 'uri_name',
-            'ForumRootID' => 'tid_forum',
-            'YPRootID' => 'tid_yp'
+            'tidForum' => 'tid_forum',
+            'tidYp' => 'tid_yp'
         ];
         parent::__construct($db, $table, $fields, $id, $properties);
     }

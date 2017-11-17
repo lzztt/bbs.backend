@@ -31,7 +31,8 @@ class Handler extends Node
             $this->error('node does not exist.');
         }
 
-        if (strlen($this->request->post['body']) < 5) {
+        if (!$this->request->post['body']
+                || strlen($this->request->post['body']) < 5) {
             $this->error('错误：评论正文字数太少。');
         }
 
@@ -55,7 +56,7 @@ class Handler extends Node
                 $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
                 $user->delete();
                 $u = new User();
-                $u->lastAccessIP = inet_pton($this->request->ip);
+                $u->lastAccessIp = inet_pton($this->request->ip);
                 $users = $u->getList('createTime');
                 $deleteAll = true;
                 if (sizeof($users) > 0) {
@@ -80,19 +81,19 @@ class Handler extends Node
                 if (false && $this->config->webmaster) { // turn off spammer email
                     $mailer = new Mailer();
                     $mailer->subject = 'SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
-                    $mailer->body = ' --node-- ' . $this->request->post['title'] . \PHP_EOL . $this->request->post['body'];
+                    $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
                     $mailer->to = $this->config->webmaster;
                     $mailer->send();
                 }
             }
 
-            $this->logger->warn($e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->post['body']);
+            $this->logger->warn($e->getMessage() . PHP_EOL . ' --comment-- ' . $this->request->post['body']);
             $this->error($e->getMessage());
         }
 
         if ($this->request->post['files']) {
             $file = new Image();
-            $file->cityID = self::$city->id;
+            $file->cityId = self::$city->id;
             $file->updateFileList($this->request->post['files'], $this->config->path['file'], $nid, $comment->id);
             $this->getCacheEvent('ImageUpdate')->trigger();
         }
@@ -106,7 +107,7 @@ class Handler extends Node
         $this->getCacheEvent('ForumComment')->trigger();
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
 
-        if (in_array($nid, $node->getHotForumTopicNIDs(self::$city->ForumRootID, 15, $this->request->timestamp - 604800))) {
+        if (in_array($nid, $node->getHotForumTopicNIDs(self::$city->tidForum, 15, $this->request->timestamp - 604800))) {
             $this->getIndependentCache('hotForumTopics')->delete();
         }
 
@@ -145,7 +146,7 @@ class Handler extends Node
                 $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
                 $user->delete();
                 $u = new User();
-                $u->lastAccessIP = inet_pton($this->request->ip);
+                $u->lastAccessIp = inet_pton($this->request->ip);
                 $users = $u->getList('createTime');
                 $deleteAll = true;
                 if (sizeof($users) > 0) {
@@ -170,13 +171,13 @@ class Handler extends Node
                 if ($this->config->webmaster) {
                     $mailer = new Mailer();
                     $mailer->subject = 'SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
-                    $mailer->body = ' --node-- ' . $this->request->post['title'] . \PHP_EOL . $this->request->post['body'];
+                    $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
                     $mailer->to = $this->config->webmaster;
                     $mailer->send();
                 }
             }
 
-            $this->logger->warn($e->getMessage() . \PHP_EOL . ' --comment-- ' . $this->request->post['body']);
+            $this->logger->warn($e->getMessage() . PHP_EOL . ' --comment-- ' . $this->request->post['body']);
             $this->error($e->getMessage());
         }
 

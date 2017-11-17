@@ -6,7 +6,7 @@
           <div class="atd_name"><span class="atd_no"><?= $i + 1 ?></span><?= $a['name'] ?></div>
           <div class="atd_email"><?= $a['email'] ?></div>
           <?php if ($a['info']): ?>
-            <div class="atd_info"><?= \nl2br($a['info']) ?></div>
+            <div class="atd_info"><?= nl2br($a['info']) ?></div>
           <?php endif ?>
           <?php if ($a['questions']): ?>
             <div class="atd_questions"><?= implode('<br />', $a['questions']) ?></div>

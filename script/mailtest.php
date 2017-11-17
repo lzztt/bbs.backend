@@ -134,7 +134,7 @@ function do_activity($path, $logger, $config)
 
             $db->query('UPDATE activities SET status = 1 WHERE nid = ' . $a['nid']);
 
-            $newActivities[] = '[TITLE] ' . $a['title'] . \PHP_EOL . ' [URL] http://www.houstonbbs.com/node/' . $a['nid'];
+            $newActivities[] = '[TITLE] ' . $a['title'] . PHP_EOL . ' [URL] http://www.houstonbbs.com/node/' . $a['nid'];
         }
 
         // delete cache and reschedule next refresh time
