@@ -2,6 +2,7 @@
 
 namespace site;
 
+use Exception;
 use \lzx\App;
 use \lzx\db\DB;
 use \lzx\core\Mailer;
@@ -34,7 +35,7 @@ class MailApp extends App
     public function run($argc, array $argv)
     {
         if ($argc != 1 || empty($argv)) {
-            throw new \Exception('need the starting user id');
+            throw new Exception('need the starting user id');
         }
 
         $uid = $argv[0];
@@ -107,7 +108,7 @@ class MailApp extends App
 
     private function time($timestamp)
     {
-        $intv = (new \DateTime())->diff(new \DateTime(date('Y-m-d H:i:s', $timestamp)));
+        $intv = (new DateTime())->diff(new DateTime(date('Y-m-d H:i:s', $timestamp)));
         $days = $intv->days;
         if ($days / 365 > 6) {
             return '六年多以来';

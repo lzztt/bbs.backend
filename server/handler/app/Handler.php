@@ -2,6 +2,7 @@
 
 namespace site\handler\app;
 
+use Exception;
 use site\Controller;
 
 class Handler extends Controller
@@ -17,7 +18,7 @@ class Handler extends Controller
         $current = null;
         try {
             $current = file_get_contents($this->config->path['file'] . '/app/' . $app . '.current');
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             // ignore and continue
         }
 
@@ -41,7 +42,7 @@ class Handler extends Controller
         // cache the latest version
         try {
             file_put_contents($this->config->path['file'] . '/app/' . $app . '.current', basename($dir));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             // ignore and continue
         }
 

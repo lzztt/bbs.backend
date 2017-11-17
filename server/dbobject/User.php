@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
+use Exception;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
@@ -173,7 +170,7 @@ class User extends DBObject
         } elseif ($mailbox == 'sent') {
             return intval(array_pop(array_pop($this->call('get_pm_count_sent(' . $this->id . ')'))));
         } else {
-            throw new \Exception('mailbox not found: ' . $mailbox);
+            throw new Exception('mailbox not found: ' . $mailbox);
         }
     }
 
@@ -199,7 +196,7 @@ class User extends DBObject
     {
         // CHECK USER
         if ($this->status != 1) {
-            throw new \Exception('This user account cannot post message.');
+            throw new Exception('This user account cannot post message.');
         }
 
         $days = (int) (($timestamp - $this->createTime) / 86400);
@@ -217,7 +214,7 @@ class User extends DBObject
                         if (mb_strpos($cleanTitle, $w['word']) !== false) {
                             // delete user
                             $this->isSpammer = true;
-                            throw new \Exception('User is blocked! You cannot post any message!');
+                            throw new Exception('User is blocked! You cannot post any message!');
                         }
                     }
                 }
@@ -229,19 +226,19 @@ class User extends DBObject
                 if (mb_strpos($cleanBody, $w['word']) !== false) {
                     // delete user
                     $this->isSpammer = true;
-                    throw new \Exception('User is blocked! You cannot post any message!');
+                    throw new Exception('User is blocked! You cannot post any message!');
                 }
             }
 
             // still good?
             // not mark as spammer, but notify admin as a non-valid post, if there are too many noice charactors
             if ($title && mb_strlen($title) - mb_strlen($cleanTitle) > 4) {
-                throw new \Exception('Title is not valid!');
+                throw new Exception('Title is not valid!');
             }
 
             $textLen = mb_strlen($text);
             if ($textLen > 35 && ($textLen - mb_strlen($cleanBody)) / $textLen > 0.4) {
-                throw new \Exception('Body text is not valid!');
+                throw new Exception('Body text is not valid!');
             }
 
             // check post counts
@@ -250,14 +247,14 @@ class User extends DBObject
                 // from Nanning
                 if ($geo && $geo['city'] === 'Nanning') {
                     $this->isSpammer = true;
-                    throw new \Exception('User is blocked! You cannot post any message!');
+                    throw new Exception('User is blocked! You cannot post any message!');
                 }
                 // not from Texas
                 if (!$geo || $geo['region'] != 'TX') {
                     $oneday = (int) ($timestamp - 86400);
                     $count = array_pop(array_pop($this->call('get_user_post_count(' . $this->id . ',' . $oneday . ')')));
                     if ($count >= $days) {
-                        throw new \Exception('Quota limitation reached for non-Texas user!<br>Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours.<br>You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.');
+                        throw new Exception('Quota limitation reached for non-Texas user!<br>Your account is ' . $days . ' days old, so you can only post ' . $days . ' messages within 24 hours.<br>You already have ' . $count . ' message posted in last 24 hours. Please wait for several hours to get more quota.');
                     }
                 }
             }

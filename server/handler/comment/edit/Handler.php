@@ -2,6 +2,7 @@
 
 namespace site\handler\comment\edit;
 
+use Exception;
 use site\handler\comment\Comment;
 use site\dbobject\Comment as CommentObject;
 use site\dbobject\Node;
@@ -27,7 +28,7 @@ class Handler extends Comment
         $comment->lastModifiedTime = $this->request->timestamp;
         try {
             $comment->update('body,lastModifiedTime');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage());
             $this->error($e->getMessage());
         }

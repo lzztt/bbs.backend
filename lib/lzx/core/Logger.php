@@ -2,6 +2,8 @@
 
 namespace lzx\core;
 
+use Exception;
+use InvalidArgumentException;
 use lzx\core\Mailer;
 
 /**
@@ -53,7 +55,7 @@ class Logger
      * @param array $logFiles
      * @param type $setAsDefault
      * @return Logger
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function getInstance()
     {
@@ -76,10 +78,10 @@ class Logger
                 }
                 $this->dir = $dir;
             } else {
-                throw new \InvalidArgumentException('Log dir is not an readable directory : ' . $dir);
+                throw new InvalidArgumentException('Log dir is not an readable directory : ' . $dir);
             }
         } else {
-            throw new \Exception('Logger dir has already been set, and could only be set once');
+            throw new Exception('Logger dir has already been set, and could only be set once');
         }
     }
 
@@ -89,7 +91,7 @@ class Logger
             $this->mailer = new Mailer('logger');
             $this->mailer->to = $email;
         } else {
-            throw new \Exception('Invalid email address: ' . $email);
+            throw new Exception('Invalid email address: ' . $email);
         }
     }
 

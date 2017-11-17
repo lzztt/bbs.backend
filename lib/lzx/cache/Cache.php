@@ -2,6 +2,7 @@
 
 namespace lzx\cache;
 
+use Exception;
 use lzx\cache\CacheHandlerInterface;
 use lzx\core\Logger;
 
@@ -78,7 +79,7 @@ abstract class Cache
     {
         try {
             unlink(self::$handler->getFileName($this));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (self::$logger) {
                 self::$logger->warn($e->getMessage());
             } else {

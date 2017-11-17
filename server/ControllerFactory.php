@@ -2,6 +2,7 @@
 
 namespace site;
 
+use Exception;
 use lzx\core\Request;
 use lzx\core\Response;
 use site\Config;
@@ -39,7 +40,7 @@ class ControllerFactory
         } else {
             // cannot find a controller
             $response->pageNotFound();
-            throw new \Exception();
+            throw new Exception();
         }
     }
     

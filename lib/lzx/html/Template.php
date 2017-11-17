@@ -2,6 +2,8 @@
 
 namespace lzx\html;
 
+use Exception;
+use SplObjectStorage;
 use lzx\core\Logger;
 use lzx\html\HTMLElement;
 use lzx\core\Controller;
@@ -54,7 +56,7 @@ class Template
      */
     public function __construct($tpl, array $var = [])
     {
-        $this->observers = new \SplObjectStorage();
+        $this->observers = new SplObjectStorage();
 
         $this->tpl = $tpl;
         if ($var) {
@@ -109,7 +111,7 @@ class Template
                 $output = ob_get_contents();     // Get the contents of the buffer
                 ob_end_clean();                      // End buffering and discard
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             ob_end_clean();
             self::$hasError = true;
             if (isset(self::$logger)) {
@@ -233,9 +235,9 @@ class Template
                 $list[] = new HTMLElement('li', $li);
             } elseif (is_array($li)) {
                 if (!array_key_exists('text', $li)) {
-                    throw new \Exception('list data is not found (missing "text" value in array)');
+                    throw new Exception('list data is not found (missing "text" value in array)');
                 } elseif (!array_key_exists('attributes', $li)) {
-                    throw new \Exception('list attributes is not found (missing "attributes" value in array)');
+                    throw new Exception('list attributes is not found (missing "attributes" value in array)');
                 } else {
                     $list[] = new HTMLElement('li', $li['text'], $li['attributes']);
                 }
@@ -249,7 +251,7 @@ class Template
         $dl = new HTMLElement('dl', null, $attributes);
         foreach ($list as $li) {
             if (!is_array($li) || sizeof($li) < 2) {
-                throw new \Exception('$list need to be an array with dt and dd data');
+                throw new Exception('$list need to be an array with dt and dd data');
             }
             $dl->addElements([new HTMLElement('dt', $li['dt']), new HTMLElement('dd', (string) $li['dd'])]);
         }
@@ -262,7 +264,7 @@ class Template
      * @param array $attributes
      * @param type $even_odd
      * @return \lzx\core\HTMLElement
-     * @throws \Exception
+     * @throws Exception
      *
      * $data = [
      *     'caption' => string / HTMLElement('*'),
@@ -293,7 +295,7 @@ class Template
             $table->addElement(new HTMLElement('tfoot', self::tableRow($data['tfoot'])));
         }
         if (!array_key_exists('tbody', $data)) {
-            throw new \Exception('table body (tbody) data is not found');
+            throw new Exception('table body (tbody) data is not found');
         }
 
         $tbody_attr = $even_odd ? ['class' => self::EVEN_ODD_CLASS] : [];
@@ -312,7 +314,7 @@ class Template
     private static function tableRow($row, $isHeader = false)
     {
         if (!array_key_exists('cells', $row)) {
-            throw new \Exception('row cells (tr) data is not found');
+            throw new Exception('row cells (tr) data is not found');
         }
         if (array_key_exists('attributes', $row)) {
             $tr = new HTMLElement('tr', null, $row['attributes']);
@@ -326,7 +328,7 @@ class Template
                 $tr->addElement(new HTMLElement($tag, $td));
             } elseif (is_array($td)) {
                 if (!array_key_exists('text', $td)) {
-                    throw new \Exception('cell data is not found (missing "text" value in array)');
+                    throw new Exception('cell data is not found (missing "text" value in array)');
                 }
 
                 if (array_key_exists('attributes', $td)) {
