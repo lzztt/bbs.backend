@@ -2,6 +2,8 @@
 
 namespace lzx\core;
 
+use Exception;
+
 class Request
 {
     public $domain;
@@ -149,7 +151,7 @@ class Request
             if ($geo['city']) {
                 $city = $geo['city'];
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return 'UNKNOWN';
         }
 
@@ -192,7 +194,7 @@ class Request
             }
 
             $location = $city . ', ' . $region . ', ' . $country;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return 'UNKNOWN';
         }
 
@@ -210,7 +212,7 @@ class Request
         }
 
         if (is_string($in) && !mb_check_encoding($in, "UTF-8")) { // user input data is trimed and cleaned here, escapte html tags
-            return \utf8_encode($in);
+            return utf8_encode($in);
             //return utf8_encode(trim(preg_replace('/<[^>]*>/', '', $in)));
             //to trim all tags: preg_replace('/<[^>]*>/', '',  trim($in))
             //to escape tags: str_replace(['<', '>'), ['&lt;', '&gt;'), trim($in))

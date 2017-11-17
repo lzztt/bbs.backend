@@ -2,6 +2,7 @@
 
 namespace site\handler\node\comment;
 
+use Exception;
 use site\handler\node\Node;
 use site\dbobject\Node as NodeObject;
 use site\dbobject\Comment;
@@ -50,7 +51,7 @@ class Handler extends Node
             $comment->body = $this->request->post['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // spammer found
             if ($user->isSpammer()) {
                 $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
@@ -140,7 +141,7 @@ class Handler extends Node
             $comment->body = $this->request->post['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // spammer found
             if ($user->isSpammer()) {
                 $this->logger->info('SPAMMER FOUND: uid=' . $user->id);

@@ -2,6 +2,7 @@
 
 namespace site\handler\forum\node;
 
+use Exception;
 use site\handler\forum\Forum;
 use site\dbobject\Node;
 use site\dbobject\Image;
@@ -53,7 +54,7 @@ class Handler extends Forum
             $comment->body = $this->request->post['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // spammer found
             if ($user->isSpammer()) {
                 $this->logger->info('SPAMMER FOUND: uid=' . $user->id);

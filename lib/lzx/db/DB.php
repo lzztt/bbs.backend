@@ -2,6 +2,8 @@
 
 namespace lzx\db;
 
+use Exception;
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 
@@ -35,7 +37,7 @@ class DB
 
         foreach (['dsn', 'user', 'password'] as $key) {
             if (!array_key_exists($key, $config)) {
-                throw new \InvalidArgumentException('missing database parameters : ' . $key);
+                throw new InvalidArgumentException('missing database parameters : ' . $key);
             }
         }
 

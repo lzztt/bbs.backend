@@ -2,6 +2,7 @@
 
 namespace lzx\core;
 
+use Exception;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\Logger;
@@ -39,7 +40,7 @@ abstract class Service
     protected function error($msg)
     {
         $this->json(['error' => $msg]);
-        throw new \Exception();
+        throw new Exception();
     }
 
     protected function forbidden()

@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
+use Exception;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
@@ -81,7 +78,7 @@ class Tag extends DBObject
             }
             return $root[$this->id];
         } else {
-            throw new \Exception('no tag id set');
+            throw new Exception('no tag id set');
         }
     }
 
@@ -119,7 +116,7 @@ class Tag extends DBObject
 
             return $tree[$this->id];
         } else {
-            throw new \Exception('no tag id set');
+            throw new Exception('no tag id set');
         }
     }
 

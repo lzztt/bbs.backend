@@ -2,6 +2,8 @@
 
 namespace site;
 
+use Exception;
+
 // only controller will handle all exceptions and local languages
 // other classes will report status to controller
 // controller set status back the WebApp object
@@ -315,7 +317,7 @@ abstract class Controller extends LzxCtrler
     protected function getPagerInfo($nTotal, $nPerPage)
     {
         if ($nPerPage <= 0) {
-            throw new \Exception('invalid value for number of items per page: ' . $nPerPage);
+            throw new Exception('invalid value for number of items per page: ' . $nPerPage);
         }
 
         $pageCount = $nTotal > 0 ? ceil($nTotal / $nPerPage) : 1;

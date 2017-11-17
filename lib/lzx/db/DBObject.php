@@ -2,6 +2,8 @@
 
 namespace lzx\db;
 
+use Exception;
+
 /*
  * support tables with one primary key
  */
@@ -44,7 +46,7 @@ abstract class DBObject
 
         if ($id) { // not empty
             if (!in_array(gettype($id), ['integer', 'string'])) {
-                throw new \Exception('Invalid ID type: ' . gettype($id));
+                throw new Exception('Invalid ID type: ' . gettype($id));
             }
 
             if ($this->pkey_property) {
@@ -53,7 +55,7 @@ abstract class DBObject
                     $this->load($properties);
                 }
             } else {
-                throw new \Exception('Table does not have primary key. Cannot load id=' . $id);
+                throw new Exception('Table does not have primary key. Cannot load id=' . $id);
             }
         }
     }
@@ -70,7 +72,7 @@ abstract class DBObject
                 $this->properties_dirty[] = $prop;
             }
         } else {
-            throw new \Exception('ERROR set property : ' . $prop);
+            throw new Exception('ERROR set property : ' . $prop);
         }
     }
 
@@ -79,7 +81,7 @@ abstract class DBObject
         if (in_array($prop, $this->properties)) {
             return $this->values[$prop];
         } else {
-            throw new \Exception('ERROR get property : ' . $prop);
+            throw new Exception('ERROR get property : ' . $prop);
         }
     }
 
@@ -126,7 +128,7 @@ abstract class DBObject
         if (array_key_exists($prop, $this->values)) {
             $this->bind_values[':' . $this->fields[$prop]] = $this->values[$prop];
         } else {
-            throw new \Exception('could not find binding value for property: ' . $prop);
+            throw new Exception('could not find binding value for property: ' . $prop);
         }
     }
 
@@ -148,7 +150,7 @@ abstract class DBObject
             $this->values[$prop] = null;
         } else {
             if (!in_array(gettype($value), ['integer', 'string', 'double', 'boolean'])) {
-                throw new \Exception('Invalid value type: ' . $this->fields[$prop] . '(' . gettype($value) . ')');
+                throw new Exception('Invalid value type: ' . $this->fields[$prop] . '(' . gettype($value) . ')');
             }
 
             switch ($this->fields_type[$this->fields[$prop]]) {
@@ -162,7 +164,7 @@ abstract class DBObject
                     $this->values[$prop] = strval($value);
                     break;
                 default:
-                    throw new \Exception('non-supported field data type: ' . $this->fields[$prop] . '(' . $this->fields_type[$this->fields[$prop]] . ')');
+                    throw new Exception('non-supported field data type: ' . $this->fields[$prop] . '(' . $this->fields_type[$this->fields[$prop]] . ')');
             }
         }
     }
@@ -203,7 +205,7 @@ abstract class DBObject
                             unset($arr[$i][$column]);
                         }
                     } else {
-                        throw new \Exception('cannot convert non-exist column: ' . $column);
+                        throw new Exception('cannot convert non-exist column: ' . $column);
                     }
                 }
             }
@@ -255,7 +257,7 @@ abstract class DBObject
     public function delete()
     {
         if (!$this->pkey_property) {
-            throw new \Exception('Table does not have primary key. Deletion without primary key is not supported yet');
+            throw new Exception('Table does not have primary key. Deletion without primary key is not supported yet');
         }
 
         if (array_key_exists($this->pkey_property, $this->values)) {
@@ -265,7 +267,7 @@ abstract class DBObject
             $this->clear(true);
             return ($status !== false);
         } else {
-            throw new \Exception('ERROR delete: invalid primary key value: [' . $this->fields[$this->pkey_property] . ' : ' . $this->values[$this->pkey_property] . ']');
+            throw new Exception('ERROR delete: invalid primary key value: [' . $this->fields[$this->pkey_property] . ' : ' . $this->values[$this->pkey_property] . ']');
         }
     }
 
@@ -277,7 +279,7 @@ abstract class DBObject
     public function add()
     {
         if (sizeof($this->properties_dirty) == 0) {
-            throw new \Exception('adding an object with no dirty properties to database');
+            throw new Exception('adding an object with no dirty properties to database');
         }
 
         $fields = '';
@@ -320,7 +322,7 @@ abstract class DBObject
         }
 
         if (sizeof($this->properties_dirty) == 0) {
-            throw new \Exception('updating an object with no dirty properties to database');
+            throw new Exception('updating an object with no dirty properties to database');
         }
 
         if (empty($properties)) {
@@ -328,19 +330,19 @@ abstract class DBObject
         } else {
             $properties = array_unique(explode(',', $properties));
             if (sizeof($properties) != sizeof(array_intersect($properties, $this->properties_dirty))) {
-                throw new \Exception('updating non-dirty property! updating: ' . implode(',', $properties) . ' - current dirty properties: ' . implode(',', $this->properties_dirty));
+                throw new Exception('updating non-dirty property! updating: ' . implode(',', $properties) . ' - current dirty properties: ' . implode(',', $this->properties_dirty));
             }
         }
 
         if (empty($properties)) {
-            throw new \Exception('updating property set is empty');
+            throw new Exception('updating property set is empty');
         }
 
         if (empty($this->where)) {
             if ($this->pkey_property && array_key_exists($this->pkey_property, $this->values)) {
                 $this->where($this->pkey_property, $this->values[$this->pkey_property], '=');
             } else {
-                throw new \Exception('no where condition set. will not update the whole table');
+                throw new Exception('no where condition set. will not update the whole table');
             }
         }
 
@@ -381,7 +383,7 @@ abstract class DBObject
     public function getIndexedList($properties = '', $limit = false, $offset = false)
     {
         if (!$this->pkey_property) {
-            throw new \Exception('Table does not have primary key. getIndexedList without primary key is not supported yet');
+            throw new Exception('Table does not have primary key. getIndexedList without primary key is not supported yet');
         }
 
         $list = [];
@@ -438,7 +440,7 @@ abstract class DBObject
 
             foreach ($properties_array as $p) {
                 if (!in_array($p, $this->properties)) {
-                    throw new \Exception('ERROR non-existing property : ' . $p);
+                    throw new Exception('ERROR non-existing property : ' . $p);
                 }
                 if ($p === $this->fields[$p]) {
                     $fields = $fields . $p . ', ';
@@ -459,7 +461,7 @@ abstract class DBObject
     public function where($prop, $value, $condition)
     {
         if (!in_array($prop, $this->properties)) {
-            throw new \Exception('ERROR non-existing propperty : ' . $prop);
+            throw new Exception('ERROR non-existing propperty : ' . $prop);
         }
         // NULL value
         if ($value === null) {
@@ -469,11 +471,11 @@ abstract class DBObject
             if (is_array($value)) {
                 // a list of values
                 if (sizeof($value) == 0) {
-                    throw new \Exception('empty value set provided in where condition');
+                    throw new Exception('empty value set provided in where condition');
                 }
 
                 if (in_array(null, $value)) {
-                    throw new \Exception('NULL provided in the value set. but NULL is not a value');
+                    throw new Exception('NULL provided in the value set. but NULL is not a value');
                 }
 
                 $value_clean = [];
@@ -524,13 +526,13 @@ abstract class DBObject
     {
         $order = strtoupper($order);
         if (!in_array($order, ['ASC', 'DESC'])) {
-            throw new \Exception('wrong order : ' . $order);
+            throw new Exception('wrong order : ' . $order);
         }
 
         if (in_array($prop, $this->properties)) {
             $this->order[$prop] = $this->fields[$prop] . ' ' . $order;
         } else {
-            throw new \Exception('ERROR non-existing property : ' . $prop);
+            throw new Exception('ERROR non-existing property : ' . $prop);
         }
     }
 
@@ -593,10 +595,10 @@ abstract class DBObject
                         if ($prop !== false) {
                             $this->pkey_property = $prop;
                         } else {
-                            throw new \Exception('non-property primary key found : ' . $r['Field']);
+                            throw new Exception('non-property primary key found : ' . $r['Field']);
                         }
                     } else {
-                        throw new \Exception('found multiple primary keys in db table : ' . $this->fields[$this->pkey_property] . ', ' . $r['Field']);
+                        throw new Exception('found multiple primary keys in db table : ' . $this->fields[$this->pkey_property] . ', ' . $r['Field']);
                     }
                 }
 
@@ -636,18 +638,18 @@ abstract class DBObject
                 }
 
                 if (!$found) {
-                    throw new \Exception('could not determine key type : ' . $r['Field'] . ' -> ' . $r['Type']);
+                    throw new Exception('could not determine key type : ' . $r['Field'] . ' -> ' . $r['Type']);
                 }
             }
 
             /*
             if (is_null($this->pkey_property))
             {
-                throw new \Exception('no primary key found: ' . $this->table);
+                throw new Exception('no primary key found: ' . $this->table);
             }*/
 
             if (sizeof($this->fields_type) < sizeof($this->fields)) {
-                throw new \Exception('the following fields do not exist in db table: ' . implode(', ', array_diff(array_values($this->fields), array_keys($this->fields_type))));
+                throw new Exception('the following fields do not exist in db table: ' . implode(', ', array_diff(array_values($this->fields), array_keys($this->fields_type))));
             }
 
             $fields[$this->table] = [
