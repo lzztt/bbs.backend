@@ -54,11 +54,11 @@ class Handler
             // flush the log
             self::$logger->flush();
         } else {
-            error_log($msg . \PHP_EOL . $e->getTraceAsString());
+            error_log($msg . PHP_EOL . $e->getTraceAsString());
         }
 
         if (self::$displayError) {
-            echo $msg . \PHP_EOL;
+            echo $msg . PHP_EOL;
         }
     }
 }

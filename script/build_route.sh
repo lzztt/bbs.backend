@@ -40,7 +40,7 @@ cd $serverdir
 for i in `find handler -name 'Handler.php'`; do
     uri=$(dirname $i | cut -c 9-)
     handler=$(echo $i | sed 's/.php$//')
-    echo \'$uri\'' => '\''site\\'$(echo $handler | sed 's!/!\\\\!g')\'','
+    echo \'$uri\'' => '\''site\'$(echo $handler | sed 's!/!\\!g')\'','
 done | sort -t \' -k 2,2
 } | column -t | sed 's/^/        /' >> $tmp_file
 

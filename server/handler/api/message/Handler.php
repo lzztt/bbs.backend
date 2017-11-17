@@ -46,7 +46,7 @@ class Handler extends Service
     /**
      * send a private message to user
      * uri: /api/message[?action=post]
-     * post: toUID=<toUID>&body=<body>(&topicMID=<topicMID>)
+     * post: toUid=<toUid>&body=<body>(&topicMid=<topicMid>)
      * return: new created message
      */
     public function post()
@@ -55,31 +55,39 @@ class Handler extends Service
             $this->error('您必须先登录，才能发送站内短信');
         }
 
-        $topicMID = null;
         if (array_key_exists('topicMID', $this->request->post)) {
-            $topicMID = (int) $this->request->post['topicMID'];
-            if ($topicMID <= 0) {
-                $topicMID = null;
+            $this->request->post['topicMid'] = $this->request->post['topicMID'];
+        }
+
+        if (array_key_exists('toUID', $this->request->post)) {
+            $this->request->post['toUid'] = $this->request->post['toUID'];
+        }
+
+        $topicMid = null;
+        if (array_key_exists('topicMid', $this->request->post)) {
+            $topicMid = (int) $this->request->post['topicMid'];
+            if ($topicMid <= 0) {
+                $topicMid = null;
             }
         }
         $pm = new PrivMsg();
 
-        // validate toUID
-        $toUID = (int) $this->request->post['toUID'];
-        if ($toUID) {
-            if ($toUID == $this->request->uid) {
+        // validate toUid
+        $toUid = (int) $this->request->post['toUid'];
+        if ($toUid) {
+            if ($toUid == $this->request->uid) {
                 $this->error('不能给自己发送站内短信');
             }
 
-            if ($topicMID) {
+            if ($topicMid) {
                 // reply an existing message topic
-                $toUser = $pm->getReplyTo($topicMID, $this->request->uid);
+                $toUser = $pm->getReplyTo($topicMid, $this->request->uid);
 
                 if (!$toUser) {
                     $this->error('短信不存在，未找到短信收信人');
                 }
 
-                if ($toUser['id'] != $toUID) {
+                if ($toUser['id'] != $toUid) {
                     $this->error('收件人帐号不匹配，无法发送短信');
                 }
             }
@@ -87,7 +95,7 @@ class Handler extends Service
             $this->error('未指定短信收件人，无法发送短信');
         }
 
-        $user = new User($toUID, 'username,email');
+        $user = new User($toUid, 'username,email');
 
         if (!$user->exists()) {
             $this->error('收信人用户不存在');
@@ -98,26 +106,26 @@ class Handler extends Service
             $this->error('短信正文需最少5个字母或3个汉字');
         }
 
-        $pm->fromUID = $this->request->uid;
-        $pm->toUID = $user->id;
+        $pm->fromUid = $this->request->uid;
+        $pm->toUid = $user->id;
         $pm->body = $this->request->post['body'];
         $pm->time = $this->request->timestamp;
-        if ($topicMID) {
+        if ($topicMid) {
             // reply an existing message topic
-            $pm->msgID = $topicMID;
+            $pm->msgId = $topicMid;
             $pm->add();
         } else {
             // start a new message topic
             $pm->add();
-            $pm->msgID = $pm->id;
-            $pm->update('msgID');
+            $pm->msgId = $pm->id;
+            $pm->update('msgId');
         }
 
         if ($user->email) {
             $mailer = new Mailer('pm');
             $mailer->to = $user->email;
             $mailer->subject = $user->username . ' 您有一封新的站内短信';
-            $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'https://' . $this->request->domain . '/app/user/pm/' . $pm->msgID;
+            $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'https://' . $this->request->domain . '/app/user/pm/' . $pm->msgId;
             if (!$mailer->send()) {
                 $this->logger->error('PM EMAIL REMINDER SENDING ERROR: ' . $pm->id);
             }
@@ -126,10 +134,10 @@ class Handler extends Service
         $sender = new User($this->request->uid, 'username,avatar');
         $this->json([
             'id'         => $pm->id,
-            'mid'        => $pm->msgID,
+            'mid'        => $pm->msgId,
             'time'      => $pm->time,
             'body'      => $pm->body,
-            'uid'        => $pm->fromUID,
+            'uid'        => $pm->fromUid,
             'username' => $sender->username,
             'avatar'    => $sender->avatar
         ]);

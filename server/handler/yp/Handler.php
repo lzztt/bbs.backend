@@ -27,7 +27,7 @@ class Handler extends Controller
 // $yp, $groups, $boards are arrays of category id
     protected function ypHome()
     {
-        $tag = new Tag(self::$city->YPRootID, null);
+        $tag = new Tag(self::$city->tidYp, null);
         $yp = $tag->getTagTree();
         $this->var['content'] = new Template('yp_home', ['tid' => $tag->id, 'yp' => $yp]);
     }
@@ -40,7 +40,7 @@ class Handler extends Controller
 
         $breadcrumb = [];
         foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->YPRootID ? '/yp' : ('/yp/' . $i));
+            $breadcrumb[$t['name']] = ($i === self::$city->tidYp ? '/yp' : ('/yp/' . $i));
         }
 
         $node = new Node();

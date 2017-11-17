@@ -113,9 +113,9 @@ class Request
     {
         $c = curl_init($url);
         curl_setopt_array($c, [
-            \CURLOPT_RETURNTRANSFER => true,
-            \CURLOPT_CONNECTTIMEOUT => 2,
-            \CURLOPT_TIMEOUT          => 3
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 2,
+            CURLOPT_TIMEOUT          => 3
         ]);
         $data = curl_exec($c);
         curl_close($c);
