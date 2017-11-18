@@ -6,15 +6,6 @@ use Exception;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * two level tag system
- * @property $id
- * @property $name
- * @property $description
- * @property $parent
- * @property $root
- * @property $weight
- */
 class Tag extends DBObject
 {
     public $id;

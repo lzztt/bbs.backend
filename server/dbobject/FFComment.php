@@ -1,21 +1,10 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * @property $id
- * @property $aid
- * @property $name
- * @property $body
- * @property $time
- */
 class FFComment extends DBObject
 {
     public $id;
