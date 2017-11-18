@@ -7,11 +7,6 @@ use lzx\db\DB;
 
 require_once dirname(__DIR__) . '/lib/lzx/App.php';
 
-/**
- * Description of FundImporter
- *
- * @author ikki
- */
 class FundImporter extends App
 {
     private $fundFamilies = [];
