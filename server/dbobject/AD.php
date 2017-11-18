@@ -14,18 +14,17 @@ use lzx\db\DB;
  */
 class AD extends DBObject
 {
+    public $id;
+    public $name;
+    public $typeId;
+    public $expTime;
+    public $email;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'ads';
-        $fields = [
-            'id' => 'id',
-            'name' => 'name',
-            'typeId' => 'type_id',
-            'expTime' => 'exp_time',
-            'email' => 'email'
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 
     public function getAllAds($from_time = 0)

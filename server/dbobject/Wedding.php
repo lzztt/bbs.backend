@@ -23,25 +23,24 @@ use lzx\db\DB;
  */
 class Wedding extends DBObject
 {
+    public $id;
+    public $name;
+    public $email;
+    public $phone;
+    public $guests;
+    public $comment;
+    public $time;
+    public $checkin;
+    public $status;
+    public $tid;
+    public $gift;
+    public $value;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'wedding';
-        $fields = [
-            'id' => 'id',
-            'name' => 'name',
-            'email' => 'email',
-            'phone' => 'phone',
-            'guests' => 'guests',
-            'comment' => 'comment',
-            'time' => 'time',
-            'checkin' => 'checkin',
-            'status' => 'status',
-            'tid' => 'tid',
-            'gift' => 'gift',
-            'value' => 'value'
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 
     public function getTotal()

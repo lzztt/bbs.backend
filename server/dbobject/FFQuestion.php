@@ -12,16 +12,15 @@ use lzx\db\DB;
  */
 class FFQuestion extends DBObject
 {
+    public $id;
+    public $aid;
+    public $body;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'ff_questions';
-        $fields = [
-            'id' => 'id',
-            'aid' => 'aid',
-            'body' => 'body'
-        ];
 
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 }

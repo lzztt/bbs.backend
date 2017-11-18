@@ -20,21 +20,20 @@ use lzx\core\Logger;
  */
 class Image extends DBObject
 {
+    public $id;
+    public $nid;
+    public $cid;
+    public $name;
+    public $path;
+    public $height;
+    public $width;
+    public $cityId;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'images';
-        $fields = [
-            'id'      => 'id',
-            'nid'     => 'nid',
-            'cid'     => 'cid',
-            'name'    => 'name',
-            'path'    => 'path',
-            'height' => 'height',
-            'width'  => 'width',
-            'cityId' => 'city_id'
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 
     private function rmTmpFile($file)

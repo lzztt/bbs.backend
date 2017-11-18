@@ -38,43 +38,42 @@ use lzx\db\DB;
  */
 class User extends DBObject
 {
+    public $id;
+    public $username;
+    public $password;
+    public $email;
+    public $wechat;
+    public $qq;
+    public $website;
+    public $firstname;
+    public $lastname;
+    public $sex;
+    public $birthday;
+    public $location;
+    public $occupation;
+    public $interests;
+    public $favoriteQuotation;
+    public $relationship;
+    public $signature;
+    public $createTime;
+    public $lastAccessTime;
+    public $lastAccessIp;
+    public $status;
+    public $timezone;
+    public $avatar;
+    public $type;
+    public $role;
+    public $badge;
+    public $points;
+    public $cid;
+
     private $isSpammer = false;
 
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'users';
-        $fields = [
-            'id' => 'id',
-            'username' => 'username',
-            'password' => 'password',
-            'email' => 'email',
-            'wechat' => 'wechat',
-            'qq' => 'qq',
-            'website' => 'website',
-            'firstname' => 'firstname',
-            'lastname' => 'lastname',
-            'sex' => 'sex',
-            'birthday' => 'birthday',
-            'location' => 'location',
-            'occupation' => 'occupation',
-            'interests' => 'interests',
-            'favoriteQuotation' => 'favorite_quotation',
-            'relationship' => 'relationship',
-            'signature' => 'signature',
-            'createTime' => 'create_time',
-            'lastAccessTime' => 'last_access_time',
-            'lastAccessIp' => 'last_access_ip',
-            'status' => 'status',
-            'timezone' => 'timezone',
-            'avatar' => 'avatar',
-            'type' => 'type',
-            'role' => 'role',
-            'badge' => 'badge',
-            'points' => 'points',
-            'cid' => 'cid'
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 
     public function hashPW($password)
