@@ -45,7 +45,6 @@ Handler::setExceptionHandler();
 // load site config and class config
 $config = Config::getInstance($siteDir . '/config.php');
 
-
 $cacheKeys = array_slice($argv, 1);
 
 if (sizeof($cacheKeys) < 1) {

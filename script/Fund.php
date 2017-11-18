@@ -5,15 +5,6 @@ namespace script;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * Description of Fund
- *
- * @property $id
- * @property $name
- * @property $symbol
- * @property $fid
- * @property $cid
- */
 class Fund extends DBObject
 {
     public function __construct($id = null, $properties = '')

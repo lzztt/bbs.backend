@@ -44,7 +44,7 @@ class MailApp extends App
         //$users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email NOT LIKE "%@qq.com" LIMIT 550');
         //$users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id in (29634,29641,29644,29647,29675,29689,29701,29704,29707,29714,29726) or (id > 29726 and email like "%@qq.com") order by id');
         //$users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email LIKE "%@qq.com" LIMIT 300');
-        /*
+        /* TEST
         $users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 3');
         foreach ($users as $i => $u)
         {
