@@ -1,27 +1,11 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DB;
 use lzx\db\DBObject;
 use site\dbobject\Tag;
 
-/**
- * @property $id
- * @property $tid
- * @property $uid
- * @property $createTime
- * @property $lastModifiedTime
- * @property $title
- * @property $body
- * @property $viewCount
- * @property $weight
- * @property $status
- */
 class Node extends DBObject
 {
     public $id;

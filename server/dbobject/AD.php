@@ -5,13 +5,6 @@ namespace site\dbobject;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * @property $id
- * @property $name
- * @property $typeId
- * @property $expTime
- * @property $email
- */
 class AD extends DBObject
 {
     public $id;

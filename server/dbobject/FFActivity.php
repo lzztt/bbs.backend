@@ -5,12 +5,6 @@ namespace site\dbobject;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * @property $id
- * @property $name
- * @property $time
- * @property $nid
- */
 class FFActivity extends DBObject
 {
     public $id;

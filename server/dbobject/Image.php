@@ -8,16 +8,6 @@ use lzx\db\DBObject;
 use lzx\db\DB;
 use lzx\core\Logger;
 
-/**
- * @property $id
- * @property $nid //null for comment attachments
- * @property $cid //commentID, null for node attachments
- * @property $name
- * @property $path
- * @property $height
- * @property $width
- * @property $cityId
- */
 class Image extends DBObject
 {
     public $id;
@@ -93,7 +83,6 @@ class Image extends DBObject
                     }
                     continue;
                 }
-
 
                 $imageInfo = getimagesize($tmpFile); // not requiring GD
                 // check image type

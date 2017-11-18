@@ -1,21 +1,10 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * two level category system
- * @property $aid
- * @property $startTime
- * @property $endTime
- * @property $status
- */
 class Activity extends DBObject
 {
     public $nid;

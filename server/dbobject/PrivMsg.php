@@ -1,23 +1,10 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- *
- * @property $id
- * @property $fromUid
- * @property $toUid
- * @property $msgId
- * @property $time
- * @property $body
- */
 class PrivMsg extends DBObject
 {
     public $id;
