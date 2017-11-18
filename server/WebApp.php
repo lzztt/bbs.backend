@@ -16,9 +16,6 @@ use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 
-/**
- * @property site\Config $config
- */
 require_once dirname(__DIR__) . '/lib/lzx/App.php';
 
 class WebApp extends App

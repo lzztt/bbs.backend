@@ -10,12 +10,6 @@ use lzx\core\Logger;
 use site\Session;
 use site\HandlerRouter;
 
-/**
- * Description of ControllerFactory
- *
- * @author ikki
- * use latest static binding
- */
 class ControllerFactory
 {
     protected static $route = [];

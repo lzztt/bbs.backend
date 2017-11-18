@@ -7,10 +7,7 @@ use lzx\cache\Cache;
 
 class SegmentCache extends Cache
 {
-    /**
-     * fetch segment data from cache
-     * @return boolean
-     */
+
     public function fetch()
     {
         if ($this->data) {

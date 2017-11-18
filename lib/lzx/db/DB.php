@@ -2,14 +2,10 @@
 
 namespace lzx\db;
 
-use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
 
-/**
- * @param PDO $db
- */
 class DB
 {
     public static $debug = false;
@@ -17,10 +13,6 @@ class DB
     public $queries = [];
     protected $db;
     protected $statements = [];
-
-    /*
-     * @return lzx\db\DB
-     */
 
     // Singleton methord for each database
     public static function getInstance(array $config = [])
@@ -83,9 +75,6 @@ class DB
 
     /**
      * Returns result resource from given query
-     *
-     * @param string $sql
-     * @return MySQLi_Result
      */
     public function query($sql, array $params = [])
     {

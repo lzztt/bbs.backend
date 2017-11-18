@@ -7,11 +7,6 @@ use lzx\core\ClassLoader;
 use lzx\core\Handler;
 use lzx\core\Logger;
 
-/**
- *
- * @property Logger $logger
- * @property ClassLoader $loader
- */
 abstract class App
 {
     public $domain;
