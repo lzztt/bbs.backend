@@ -18,17 +18,16 @@ use lzx\db\DB;
  */
 class Activity extends DBObject
 {
+    public $nid;
+    public $startTime;
+    public $endTime;
+    public $status;
+
     public function __construct($id = null, $properties = '')
     {
          $db = DB::getInstance();
          $table = 'activities';
-         $fields = [
-               'nid' => 'nid',
-               'startTime' => 'start_time',
-               'endTime' => 'end_time',
-               'status' => 'status'
-         ];
-         parent::__construct($db, $table, $fields, $id, $properties);
+         parent::__construct($db, $table, $id, $properties);
     }
 
     public function getRecentActivities($count, $now)

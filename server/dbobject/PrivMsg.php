@@ -20,19 +20,18 @@ use lzx\db\DB;
  */
 class PrivMsg extends DBObject
 {
+    public $id;
+    public $msgId;
+    public $fromUid;
+    public $toUid;
+    public $time;
+    public $body;
+
     public function __construct($id = null, $properties = '')
     {
          $db = DB::getInstance();
          $table = 'priv_msgs';
-         $fields = [
-               'id' => 'id',
-               'msgId' => 'msg_id',
-               'fromUid' => 'from_uid',
-               'toUid' => 'to_uid',
-               'time' => 'time',
-               'body' => 'body',
-         ];
-         parent::__construct($db, $table, $fields, $id, $properties);
+         parent::__construct($db, $table, $id, $properties);
     }
 
     public function getPMConversation($id, $uid = 0, $markRead = true)
