@@ -24,22 +24,21 @@ use site\dbobject\Tag;
  */
 class Node extends DBObject
 {
+    public $id;
+    public $uid;
+    public $tid;
+    public $createTime;
+    public $lastModifiedTime;
+    public $title;
+    public $viewCount;
+    public $weight;
+    public $status;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'nodes';
-        $fields = [
-            'id'                    => 'id',
-            'uid'                  => 'uid',
-            'tid'                  => 'tid',
-            'createTime'         => 'create_time',
-            'lastModifiedTime' => 'last_modified_time',
-            'title'                => 'title',
-            'viewCount'          => 'view_count',
-            'weight'              => 'weight',
-            'status'              => 'status'
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 
     public function getForumNodeList($cid, $tid, $limit = 25, $offset = 0)
