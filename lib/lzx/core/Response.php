@@ -24,11 +24,6 @@ class Response
         $this->sent = false;
     }
 
-    /**
-     *
-     * @staticvar self $instance
-     * @return \lzx\core\Response
-     */
     public static function getInstance()
     {
         static $instance;

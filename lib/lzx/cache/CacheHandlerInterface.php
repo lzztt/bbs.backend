@@ -6,10 +6,7 @@ use lzx\cache\Cache;
 
 interface CacheHandlerInterface
 {
-    /**
-     * Factory design patern
-     * @return \lzx\cache\Cache
-     */
+    // Factory design patern interface
     public function createCache($name);
 
     public function getCleanName($name);
