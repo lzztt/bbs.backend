@@ -9,9 +9,6 @@ use site\dbobject\FFComment;
 use lzx\html\Template;
 use lzx\core\Mailer;
 
-/**
- * @property \lzx\db\DB $db database object
- */
 class Handler extends Single
 {
     // attend activity

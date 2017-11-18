@@ -24,7 +24,6 @@ class Handler extends Controller
         }
     }
 
-// $yp, $groups, $boards are arrays of category id
     protected function ypHome()
     {
         $tag = new Tag(self::$city->tidYp, null);

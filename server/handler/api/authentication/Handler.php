@@ -7,11 +7,6 @@ use site\dbobject\User;
 
 class Handler extends Service
 {
-    /**
-     * Description of AuthenticationAPI
-     *
-     * @author ikki
-     */
     // check if a user is logged in
     // uri: /api/authentication/<session_id>
     // return: uid

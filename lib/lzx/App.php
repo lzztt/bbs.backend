@@ -2,7 +2,6 @@
 
 namespace lzx;
 
-use ErrorException;
 use Exception;
 use lzx\core\ClassLoader;
 use lzx\core\Handler;
