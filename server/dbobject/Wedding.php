@@ -1,26 +1,10 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * two level category system
- * @property $id
- * @property $name
- * @property $email
- * @property $phone
- * @property $guests
- * @property $time
- * @property $checkin
- * @property $status
- * @property $table
- */
 class Wedding extends DBObject
 {
     public $id;

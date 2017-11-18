@@ -6,36 +6,6 @@ use Exception;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * @property $id
- * @property $username
- * @property $password
- * @property $email
- * @property $wechat
- * @property $qq
- * @property $website
- * @property $firstname
- * @property $lastname
- * @property $sex
- * @property $birthday
- * @property $location
- * @property $occupation
- * @property $interests
- * @property $favoriteQuotation
- * @property $relationship
- * @property $signature
- * @property $createTime
- * @property $lastAccessTime
- * @property $lastAccessIp
- * @property $status
- * @property $timezone
- * @property $avatar
- * @property $type
- * @property $role
- * @property $badge
- * @property $points
- * @property $cid
- */
 class User extends DBObject
 {
     public $id;
