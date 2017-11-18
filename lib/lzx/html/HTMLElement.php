@@ -1,21 +1,11 @@
 <?php declare(strict_types=1);
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace lzx\html;
 
 use ErrorException;
 use Exception;
 
-/**
- * Description of HTML
- *
- * @author ikki
- * $data could be NULL, a string, or Element object, or an array of strings or Element objects
- */
+// $data could be NULL, a string, or Element object, or an array of strings or Element objects
 class HTMLElement
 {
     protected $tag;
@@ -48,10 +38,6 @@ class HTMLElement
          return $this->data;
     }
 
-     /**
-      *
-      * @param NULL,string,HTMLElement,array $data
-      */
     public function setData($data)
     {
          $this->data = null;
@@ -64,11 +50,6 @@ class HTMLElement
         }
     }
 
-     /**
-      *
-      * @param int $index
-      * @return null
-      */
     public function getDataByIndex($index)
     {
          // passed an index
@@ -79,13 +60,7 @@ class HTMLElement
         }
     }
 
-     // set a single data element to an index
-     /**
-      *
-      * @param int $index
-      * @param NULL/string/HTMLElement $data
-      * @throws Exception
-      */
+    // set a single data element to an index
     public function setDataByIndex($index, $data)
     {
         if (!($data instanceof self || is_string($data) || is_null($data))) { // not string or Element object or NULL
@@ -122,10 +97,6 @@ class HTMLElement
          return $this->attributes;
     }
 
-     /**
-      *
-      * @param array $attributes
-      */
     public function setAttributes($attributes)
     {
          $this->attributes = [];
@@ -134,11 +105,6 @@ class HTMLElement
         }
     }
 
-     /**
-      *
-      * @param string $key
-      * @return null
-      */
     public function getAttributeKeyOf($key)
     {
         if (array_key_exists($key, $this->attributes)) {
@@ -148,12 +114,6 @@ class HTMLElement
         }
     }
 
-     /**
-      *
-      * @param string $key
-      * @param string $value
-      * @throws Exception
-      */
     public function setAttributeKeyOf($key, $value)
     {
         if (strlen($key) > 0 && (is_string($value) || is_null($value))) {
@@ -170,11 +130,6 @@ class HTMLElement
         }
     }
 
-     /**
-      *
-      * @param HTMLElement $e
-      * @throws ErrorException
-      */
     public function addElement(HTMLElement $e)
     {
         if ($e instanceof HTMLElement) {

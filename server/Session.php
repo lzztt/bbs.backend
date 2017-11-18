@@ -5,11 +5,6 @@ namespace site;
 use Exception;
 use lzx\db\DB;
 
-/**
- * Description of SessionDB
- *
- * @author ikki
- */
 class Session
 {
     private static $cookieName = 'LZXSID';

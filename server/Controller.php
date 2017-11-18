@@ -23,18 +23,6 @@ use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use site\dbobject\City;
 
-/**
- *
- * @property \lzx\core\Logger $logger
- * @property \lzx\core\Request $request
- * @property \site\Session $session
- * @property \site\Config $config
- * @property \lzx\cache\PageCache $cache
- * @property \lzx\cache\Cache[]  $independentCacheList
- * @property \lzx\cache\CacheEvent[] $cacheEvents
- * @property \site\dbobject\City $city
- *
- */
 abstract class Controller extends LzxCtrler
 {
     const UID_GUEST = 0;

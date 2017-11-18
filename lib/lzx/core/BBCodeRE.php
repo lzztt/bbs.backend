@@ -44,13 +44,6 @@ class BBCodeRE
             $text = $text . str_repeat('[/quote]', $unclosed);
         }
 
-        /*
-          for ($i = 0; $i < (substr_count($text, '[list') - substr_count($text, '[/list]')); $i++)
-          {
-          $text .= '[/list]';
-          }
-         */
-
         $text = str_replace(['[quote]', '[/quote]'], ['<blockquote>', '</blockquote>'], $text);
 
         // BBCode to find...
@@ -95,7 +88,6 @@ class BBCodeRE
         //$text = str_replace("\r", "", $text);
         //$text = "<p>" . preg_replace("/(\n){2,}/", "</p><p>", $text) . "</p>";
         $text = nl2br($text);
-
 
         $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [self, 'removeBr'], $text);
         //$text = preg_replace('/<p><pre>(.*?)<\/pre><\/p>/ms', "<pre>\\1</pre>", $text);

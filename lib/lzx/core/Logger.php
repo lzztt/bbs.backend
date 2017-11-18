@@ -6,9 +6,6 @@ use Exception;
 use InvalidArgumentException;
 use lzx\core\Mailer;
 
-/**
- * @param Mailer $mailer
- */
 class Logger
 {
 // static class instead of singleton
@@ -48,15 +45,6 @@ class Logger
         $this->flush();
     }
 
-    /**
-     *
-     * @staticvar array $instances
-     * @param type $logDir
-     * @param array $logFiles
-     * @param type $setAsDefault
-     * @return Logger
-     * @throws InvalidArgumentException
-     */
     public static function getInstance()
     {
         static $instance;

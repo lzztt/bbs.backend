@@ -5,17 +5,10 @@ namespace lzx\cache;
 use lzx\cache\Cache;
 use lzx\cache\SegmentCache;
 
-/**
- * @property \site\SegmentCache[] $segments segments for page cache
- */
 class PageCache extends Cache
 {
     protected $segments = [];
 
-    /**
-     *
-     * @return SegmentCache
-     */
     public function getSegment($key)
     {
         $cleanKey = self::$handler->getCleanName($key);

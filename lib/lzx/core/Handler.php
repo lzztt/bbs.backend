@@ -6,10 +6,6 @@ use ErrorException;
 use Exception;
 use lzx\core\Logger;
 
-/*
- *
- */
-
 class Handler
 {
     private static $errorHandler;

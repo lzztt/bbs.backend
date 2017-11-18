@@ -19,10 +19,6 @@ use site\dbobject\User;
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
 
-/**
- * @property \site\Session $session
- * @property \site\dbobject\City $city
- */
 abstract class Service extends LzxService
 {
     const UID_GUEST = 0;
