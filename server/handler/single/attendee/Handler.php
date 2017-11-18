@@ -7,9 +7,6 @@ use lzx\html\Template;
 use site\dbobject\FFAttendee;
 use site\dbobject\FFQuestion;
 
-/**
- * @property \lzx\db\DB $db database object
- */
 class Handler extends Single
 {
     // private attendee info

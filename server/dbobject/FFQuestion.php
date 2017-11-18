@@ -15,7 +15,6 @@ class FFQuestion extends DBObject
     {
         $db = DB::getInstance();
         $table = 'ff_questions';
-
         parent::__construct($db, $table, $id, $properties);
     }
 }

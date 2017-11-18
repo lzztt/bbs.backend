@@ -8,9 +8,6 @@ use site\dbobject\FFAttendee;
 use site\dbobject\FFQuestion;
 use lzx\core\Mailer;
 
-/**
- * @property \lzx\db\DB $db database object
- */
 class Handler extends Single
 {
     // private attendee info
