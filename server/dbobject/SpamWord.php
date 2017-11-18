@@ -17,15 +17,14 @@ use lzx\db\DB;
  */
 class SpamWord extends DBObject
 {
+    public $id;
+    public $word;
+    public $title;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'spam_words';
-        $fields = [
-            'id' => 'id',
-            'word' => 'word',
-            'title' => 'title',
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 }

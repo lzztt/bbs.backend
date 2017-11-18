@@ -3,6 +3,8 @@
 namespace lzx\db;
 
 use Exception;
+use ReflectionObject;
+use ReflectionProperty;
 
 /*
  * support tables with one primary key
@@ -34,13 +36,18 @@ abstract class DBObject
      * user input keys will not have alias
      */
 
-    public function __construct(DB $db, $table, array $fields, $id = null, $properties = '')
+    public function __construct(DB $db, $table, $id = null, $properties = '')
     {
-        $this->properties = array_keys($fields);
+        $this->properties = array_map(function (ReflectionProperty $prop) {
+            return $prop->getName();
+        }, (new ReflectionObject($this))->getProperties(ReflectionProperty::IS_PUBLIC));
 
         $this->db = $db;
         $this->table = $table;
-        $this->fields = $fields;
+        $this->fields = [];
+        foreach ($this->properties as $p) {
+            $this->fields[$p] = self::camelToUnderscore($p);
+        }
 
         $this->getFieldsTypeAndPKey();
 
@@ -60,67 +67,43 @@ abstract class DBObject
         }
     }
 
+    private static function camelToUnderscore($name)
+    {
+        return strtolower(preg_replace('/([A-Z])/', '_$0', $name));
+    }
+
     /**
      * This prevents trying to set keys which don't exist
      */
     public function __set($prop, $val)
     {
-        if (in_array($prop, $this->properties)) {
-            $this->setValue($prop, $val);
-            // mark property as dirty
-            if (!in_array($prop, $this->properties_dirty)) {
-                $this->properties_dirty[] = $prop;
-            }
-        } else {
-            throw new Exception('ERROR set property : ' . $prop);
-        }
+        throw new Exception('unknown property: ' . $prop);
     }
 
     public function __get($prop)
     {
-        if (in_array($prop, $this->properties)) {
-            return $this->values[$prop];
-        } else {
-            throw new Exception('ERROR get property : ' . $prop);
-        }
+        throw new Exception('unknown property: ' . $prop);
     }
 
     public function __isset($prop)
     {
-        return array_key_exists($prop, $this->values);
+        throw new Exception('unknown property: ' . $prop);
     }
 
     public function __unset($prop)
     {
-        if (array_key_exists($prop, $this->values)) {
-            unset($this->values[$prop]);
-
-            $this->unDirty($prop);
-        }
-    }
-
-    public function __toString()
-    {
-        $str = '';
-        foreach ($this->values as $k => $v) {
-            $str = $str . $k . ' -> ' . $v . PHP_EOL;
-        }
-        return $str;
+        throw new Exception('unknown property: ' . $prop);
     }
 
     public function toArray()
     {
+        $this->sync();
         return $this->values;
     }
 
     public function getProperties()
     {
         return $this->properties;
-    }
-
-    public function getDirtyProperties()
-    {
-        return $this->properties_dirty;
     }
 
     private function bind($prop)
@@ -167,14 +150,24 @@ abstract class DBObject
                     throw new Exception('non-supported field data type: ' . $this->fields[$prop] . '(' . $this->fields_type[$this->fields[$prop]] . ')');
             }
         }
+
+        $this->$prop = $this->values[$prop];
     }
 
-    private function isDirty($prop)
+    private function sync()
     {
-        return in_array($prop, $this->properties_dirty);
+        foreach ($this->properties as $p) {
+            if ($this->$p !== $this->values[$p]) {
+                $this->setValue($p, $this->$p);
+                // mark property as dirty
+                if (!in_array($p, $this->properties_dirty)) {
+                    $this->properties_dirty[] = $p;
+                }
+            }
+        }
     }
 
-    private function unDirty($prop)
+    private function clean($prop)
     {
         $dirty = array_search($prop, $this->properties_dirty);
         if ($dirty !== false) {
@@ -260,6 +253,8 @@ abstract class DBObject
             throw new Exception('Table does not have primary key. Deletion without primary key is not supported yet');
         }
 
+        $this->sync();
+
         if (array_key_exists($this->pkey_property, $this->values)) {
             $this->bind($this->pkey_property);
             $status = $this->db->query('DELETE FROM ' . $this->table . ' WHERE ' . $this->fields[$this->pkey_property] . ' = :' . $this->fields[$this->pkey_property], $this->bind_values);
@@ -278,6 +273,8 @@ abstract class DBObject
      */
     public function add()
     {
+        $this->sync();
+
         if (sizeof($this->properties_dirty) == 0) {
             throw new Exception('adding an object with no dirty properties to database');
         }
@@ -299,7 +296,7 @@ abstract class DBObject
         $this->db->query($sql, $this->bind_values);
 
         if ($this->pkey_property && !array_key_exists($this->pkey_property, $this->values)) {
-            $this->values[$this->pkey_property] = $this->db->insertId();
+            $this->setValue($this->pkey_property, $this->db->insertId());
         }
 
         $this->clear();
@@ -316,9 +313,11 @@ abstract class DBObject
      */
     public function update($properties = '')
     {
+        $this->sync();
+
         // do not update pkey
         if ($this->pkey_property) {
-            $this->unDirty($this->pkey_property);
+            $this->clean($this->pkey_property);
         }
 
         if (sizeof($this->properties_dirty) == 0) {
@@ -406,6 +405,7 @@ abstract class DBObject
      */
     public function getList($properties = '', $limit = false, $offset = false)
     {
+        $this->sync();
         $this->setWhere(); // automatically add a filter for values we already have
 
         $fields = $this->selectFields($properties);
@@ -641,12 +641,6 @@ abstract class DBObject
                     throw new Exception('could not determine key type : ' . $r['Field'] . ' -> ' . $r['Type']);
                 }
             }
-
-            /*
-            if (is_null($this->pkey_property))
-            {
-                throw new Exception('no primary key found: ' . $this->table);
-            }*/
 
             if (sizeof($this->fields_type) < sizeof($this->fields)) {
                 throw new Exception('the following fields do not exist in db table: ' . implode(', ', array_diff(array_values($this->fields), array_keys($this->fields_type))));

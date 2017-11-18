@@ -13,16 +13,15 @@ use lzx\db\DB;
  */
 class FFActivity extends DBObject
 {
+    public $id;
+    public $name;
+    public $time;
+    public $nid;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'ff_activities';
-        $fields = [
-            'id' => 'id',
-            'name' => 'name',
-            'time' => 'time',
-            'nid' => 'nid'
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 }

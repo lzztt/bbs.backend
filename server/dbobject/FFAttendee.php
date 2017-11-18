@@ -22,25 +22,24 @@ use lzx\db\DB;
  */
 class FFAttendee extends DBObject
 {
+    public $id;
+    public $aid;
+    public $name;
+    public $sex;
+    public $age;
+    public $email;
+    public $phone;
+    public $guests;
+    public $time;
+    public $info;
+    public $cid;
+    public $checkin;
+    public $status;
+
     public function __construct($id = null, $properties = '')
     {
         $db = DB::getInstance();
         $table = 'ff_attendees';
-        $fields = [
-            'id' => 'id',
-            'aid' => 'aid',
-            'name' => 'name',
-            'sex' => 'sex',
-            'age' => 'age',
-            'email' => 'email',
-            'phone' => 'phone',
-            'guests' => 'guests',
-            'time' => 'time',
-            'info'=> 'info',
-            'cid' => 'cid',
-            'checkin' => 'checkin',
-            'status' => 'status'
-        ];
-        parent::__construct($db, $table, $fields, $id, $properties);
+        parent::__construct($db, $table, $id, $properties);
     }
 }
