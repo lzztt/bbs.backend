@@ -36,9 +36,6 @@ class Handler extends Service
         return new ImagickPixel($hex_dark);
     }
 
-    /**
-     * Base public function for generating a image CAPTCHA.
-     */
     private function generateImage($code, $format)
     {
         // Get font.

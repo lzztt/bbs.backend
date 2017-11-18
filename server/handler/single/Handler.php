@@ -6,9 +6,6 @@ use site\handler\single\Single;
 use lzx\html\Template;
 use lzx\cache\PageCache;
 
-/**
- * @property \lzx\db\DB $db database object
- */
 class Handler extends Single
 {
     // show activity details

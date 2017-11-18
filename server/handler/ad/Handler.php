@@ -5,16 +5,6 @@ namespace site\handler\ad;
 use site\Controller;
 use lzx\html\HTMLElement;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of ad
- *
- * @author ikki
- */
 class Handler extends Controller
 {
     public function run()
@@ -72,12 +62,7 @@ YP;
 HEAD;
 
         $content = new HTMLElement('div', null);
-        /*
-          $form = new HTMLElement('div', NULL);
-          $form->setDataByIndex(NULL, new HTMLElement('h3', 'Yellow Page Web Advertisement (SH Home Remodeling)'));
-          $form->setDataByIndex(NULL, $form_yp_sp);
-          $content->setDataByIndex(NULL, $form);
-         */
+
         $form = new HTMLElement('div', null, ['style' => 'padding:1em;']);
         $form->setDataByIndex(null, new HTMLElement('h3', '商家黄页广告'));
         $form->setDataByIndex(null, $form_yp);

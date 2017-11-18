@@ -8,7 +8,6 @@ use site\dbobject\Node;
 
 class Handler extends Service
 {
-    private $alexaCache = null;
 
     public function get()
     {
