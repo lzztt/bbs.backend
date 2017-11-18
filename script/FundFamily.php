@@ -5,12 +5,6 @@ namespace script;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * Description of FundFamily
- *
- * @property $id
- * @property $name
- */
 class FundFamily extends DBObject
 {
     public function __construct($id = null, $properties = '')
