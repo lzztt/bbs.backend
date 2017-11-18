@@ -6,12 +6,6 @@ use Exception;
 use lzx\cache\CacheHandlerInterface;
 use lzx\core\Logger;
 
-/**
- * Description of Cache
- *
- * @author ikki
- * @property CacheHandlerInterface $handler
- */
 abstract class Cache
 {
     static protected $handler;

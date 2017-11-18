@@ -5,10 +5,6 @@ namespace lzx\cache;
 use lzx\cache\Cache;
 use lzx\cache\CacheHandlerInterface;
 
-/**
- * @property Cache[] $listeners
- * @property CacheHandler $handler
- */
 class CacheEvent
 {
     static protected $handler;
@@ -39,10 +35,6 @@ class CacheEvent
         return $this->objID ? $this->name . '<' . $this->objID . '>' : $this->name;
     }
 
-    /**
-     *
-     * add a listener to an event
-     */
     public function addListener(Cache $c)
     {
         if ($c) {
@@ -53,10 +45,6 @@ class CacheEvent
         }
     }
 
-    /**
-     * trigger an event.
-     * This will delete and unlink all its listeners
-     */
     public function trigger()
     {
         $this->triggered = true;

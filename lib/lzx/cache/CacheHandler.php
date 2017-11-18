@@ -28,9 +28,6 @@ class CacheHandler implements CacheHandlerInterface
 
     /**
      * singleton design pattern
-     *
-     * @staticvar self $instance
-     * @return \lzx\cache\CacheHandler
      */
     public static function getInstance(DB $db = null)
     {
@@ -68,7 +65,6 @@ class CacheHandler implements CacheHandlerInterface
 
     /**
      * Factory design patern
-     * @return \lzx\cache\Cache
      */
     public function createCache($key)
     {

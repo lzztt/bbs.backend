@@ -35,11 +35,6 @@ class Request
         $this->referer = sizeof($arr) > 1 ? $arr[1] : null;
     }
 
-    /**
-     *
-     * @staticvar self $instance
-     * @return \lzx\core\Request
-     */
     public static function getInstance()
     {
         static $instance;
@@ -49,10 +44,6 @@ class Request
         }
         return $instance;
     }
-
-    /*
-     * build a list of uploaded files
-     */
 
     public function getUploadFiles()
     {
@@ -89,11 +80,6 @@ class Request
         return $json;
     }
 
-    /**
-     *
-     * @param string $uri test
-     * @return NULL
-     */
     public function getURIargs($uri)
     {
         $parts = explode('?', $uri);

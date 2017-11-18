@@ -11,13 +11,6 @@ use lzx\core\JSON;
 // service will populate response with JSON data
 // handle all exceptions and local languages
 
-/**
- *
- * @property \lzx\core\Logger $logger
- * @property \lzx\core\Response $response
- * @property \lzx\core\Request $request
- *
- */
 abstract class Service
 {
     public $logger;

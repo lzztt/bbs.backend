@@ -13,13 +13,6 @@ use lzx\core\Logger;
 // controller set status back the WebApp object
 // WebApp object will call Theme to display the content
 
-/**
- *
- * @property \lzx\core\Logger $logger
- * @property \lzx\core\Response $response
- * @property \lzx\core\Request $request
- *
- */
 abstract class Controller
 {
     public $logger;

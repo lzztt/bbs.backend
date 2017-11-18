@@ -9,10 +9,6 @@ use ReflectionProperty;
 /*
  * support tables with one primary key
  */
-
-/**
- * @property \lzx\db\DB $db
- */
 abstract class DBObject
 {
     const T_INT = 1;
@@ -31,10 +27,6 @@ abstract class DBObject
     private $where = [];
     private $bind_values = [];
     private $order = [];
-
-    /*
-     * user input keys will not have alias
-     */
 
     public function __construct(DB $db, $table, $id = null, $properties = '')
     {
@@ -72,9 +64,6 @@ abstract class DBObject
         return strtolower(preg_replace('/([A-Z])/', '_$0', $name));
     }
 
-    /**
-     * This prevents trying to set keys which don't exist
-     */
     public function __set($prop, $val)
     {
         throw new Exception('unknown property: ' . $prop);
@@ -177,9 +166,6 @@ abstract class DBObject
 
     /**
      * Call a database procedure
-     *
-     * @param type $proc
-     * @param array $args
      */
     public function call($proc, $params = [])
     {
@@ -208,10 +194,6 @@ abstract class DBObject
 
     /**
      * Loads values to instance from DB
-     *
-     * user input keys will not have alias
-     *
-     * @param string $keys
      */
     public function load($properties = '')
     {
@@ -243,10 +225,6 @@ abstract class DBObject
         return $this->exists;
     }
 
-    /*
-     * YES, DataObject will have an int primery key
-     */
-
     public function delete()
     {
         if (!$this->pkey_property) {
@@ -268,8 +246,6 @@ abstract class DBObject
 
     /**
      * Insert a record
-     *
-     * @return bool
      */
     public function add()
     {
@@ -308,8 +284,6 @@ abstract class DBObject
 
     /**
      * Update a record / records
-     *
-     * @return bool
      */
     public function update($properties = '')
     {
@@ -398,10 +372,6 @@ abstract class DBObject
      *
      * user input keys may have alias
      * will always get primary key values
-     *
-     * @param integer $limit
-     * @param integer $offset
-     * @return array
      */
     public function getList($properties = '', $limit = false, $offset = false)
     {
@@ -416,7 +386,6 @@ abstract class DBObject
     /*
      * select query
      */
-
     private function selectFields($properties)
     {
         if (empty($properties)) {
@@ -455,8 +424,6 @@ abstract class DBObject
 
     /**
      * Adds a condition for SQL query
-     *
-     * @param string $sql
      */
     public function where($prop, $value, $condition)
     {
@@ -519,8 +486,6 @@ abstract class DBObject
      *
      * only order by current table's keys
      * user input keys will not have alias
-     *
-     * @param $key name of key with optional desc\asc seperated by one space
      */
     public function order($prop, $order = 'ASC')  //ASC or DESC
     {

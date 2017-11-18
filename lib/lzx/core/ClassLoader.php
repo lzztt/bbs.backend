@@ -18,9 +18,7 @@ class ClassLoader
     }
 
     // Singleton methord for each database
-    /**
-     * @return ClassLoader
-     */
+
     public static function getInstance()
     {
         static $instance;
@@ -32,23 +30,11 @@ class ClassLoader
         return $instance;
     }
 
-    /**
-     * Gets the configured namespaces.
-     *
-     * @return array A hash with namespaces as keys and directories as values
-     */
     public function getNamespaces()
     {
         return $this->namespaces;
     }
 
-    /**
-     * Registers an array of namespaces
-     *
-     * @param array $namespaces An array of namespaces (namespaces as keys and locations as values)
-     *
-     * @api
-     */
     public function registerNamespaces(array $namespaces)
     {
         foreach ($namespaces as $namespace => $path) {
@@ -56,14 +42,6 @@ class ClassLoader
         }
     }
 
-    /**
-     * Registers a namespace.
-     *
-     * @param string         $namespace The namespace
-     * @param array|string $paths      The location(s) of the namespace
-     *
-     * @api
-     */
     public function registerNamespace($namespace, $path)
     {
         if (!is_string($namespace)) {
@@ -73,11 +51,6 @@ class ClassLoader
         $this->namespaces[trim($namespace, '\\')] = DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
     }
 
-    /**
-     * Loads the given class or interface.
-     *
-     * @param string $class The name of the class
-     */
     public function loadClass($class)
     {
         $pos = strpos($class, '\\');
