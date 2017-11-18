@@ -5,11 +5,6 @@ namespace site\dbobject;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * @property $id
- * @property $aid
- * @property $body
- */
 class FFQuestion extends DBObject
 {
     public $id;

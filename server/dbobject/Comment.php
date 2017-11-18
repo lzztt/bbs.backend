@@ -1,24 +1,10 @@
 <?php declare(strict_types=1);
 
-/**
- * @package lzx\core\DataObject
- */
-
 namespace site\dbobject;
 
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-/**
- * @property $id
- * @property $nid
- * @property $uid
- * @property $tid
- * @property $body
- * @property $hash
- * @property $createTime
- * @property $lastModifiedTime
- */
 class Comment extends DBObject
 {
     public $id;
