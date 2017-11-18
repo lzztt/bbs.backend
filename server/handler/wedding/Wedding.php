@@ -1,11 +1,5 @@
 <?php declare(strict_types=1);
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace site\handler\wedding;
 
 use site\Controller;
@@ -16,11 +10,6 @@ use site\Config;
 use lzx\core\Logger;
 use site\Session;
 
-/**
- * Description of Wedding
- *
- * @author ikki
- */
 abstract class Wedding extends Controller
 {
     private $register_end = false;

@@ -6,9 +6,6 @@ use site\handler\single\Single;
 use site\dbobject\FFActivity;
 use lzx\html\Template;
 
-/**
- * @property \lzx\db\DB $db database object
- */
 class Handler extends Single
 {
     public function run()

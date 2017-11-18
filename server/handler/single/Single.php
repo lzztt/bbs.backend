@@ -12,9 +12,6 @@ use site\Session;
 use site\dbobject\FFComment;
 use lzx\db\DB;
 
-/**
- * @property \lzx\db\DB $db database object
- */
 abstract class Single extends Controller
 {
     protected $db;
