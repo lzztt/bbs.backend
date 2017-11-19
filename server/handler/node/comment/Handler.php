@@ -99,11 +99,6 @@ class Handler extends Node
             $this->getCacheEvent('ImageUpdate')->trigger();
         }
 
-        /*
-        $user->points += 1;
-        $user->update('points');
-         */
-
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('ForumComment')->trigger();
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
@@ -188,11 +183,6 @@ class Handler extends Node
                 $node->updateRating($nid, $this->request->uid, $rating, $this->request->timestamp);
             }
         }
-
-        /*
-        $user->points += 1;
-        $user->update('points');
-         */
 
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('YellowPageComment')->trigger();
