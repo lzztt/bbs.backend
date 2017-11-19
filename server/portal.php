@@ -10,6 +10,7 @@ if (PHP_SAPI === 'cli') {
      $_SERVER['REQUEST_URI'] = $opts['l'] ? $opts['l'] : '/';
 }
 
-require_once __DIR__ . '/WebApp.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
 $app = new WebApp();
 $app->run();
