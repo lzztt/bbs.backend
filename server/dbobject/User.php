@@ -110,24 +110,12 @@ class User extends DBObject
 
     public function getRecentNodes($forumRootID, $limit)
     {
-        $fields = [
-            'nid' => 'nid',
-            'title' => 'title',
-            'createTime' => 'create_time'
-        ];
-
-        return $this->convertFields($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'), $fields);
+        return $this->convertColumnNames($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'));
     }
 
     public function getRecentComments($forumRootID, $limit)
     {
-        $fields = [
-            'nid' => 'nid',
-            'title' => 'title',
-            'createTime' => 'create_time'
-        ];
-
-        return $this->convertFields($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'), $fields);
+        return $this->convertColumnNames($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'));
     }
 
     public function getPrivMsgsCount($mailbox = 'inbox')
@@ -145,20 +133,8 @@ class User extends DBObject
 
     public function getPrivMsgs($type, $limit, $offset = 0)
     {
-        $fields = [
-            'mid' => 'msg_id',
-            'body' => 'body',
-            'uid' => 'uid',
-            'user' => 'user',
-            'time' => 'time'
-        ];
-
-        if ($type == 'sent') {
-            return $this->convertFields($this->call('get_pm_list_sent_2(' . $this->id . ',' . $limit . ',' . $offset . ')'), $fields);
-        } else {
-            $fields['isNew'] = 'is_new';
-            return $this->convertFields($this->call('get_pm_list_inbox_2(' . $this->id . ',' . $limit . ',' . $offset . ')'), $fields);
-        }
+        $proc = $type !== 'sent' ? 'get_pm_list_inbox_2' : 'get_pm_list_sent_2';
+        return $this->convertColumnNames($this->call($proc . '(' . $this->id . ',' . $limit . ',' . $offset . ')'));
     }
 
     public function validatePost($ip, $timestamp, $text, $title = null)
