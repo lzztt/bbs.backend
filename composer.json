@@ -1,0 +1,19 @@
+{
+    "name": "bbs/backend",
+    "description": "web backend",
+    "type": "project",
+    "authors": [
+        {
+            "name": "longztian",
+            "email": "ikki3355@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "lzx\\": "lib/lzx/",
+            "site\\": "server/",
+            "script\\": "script/"
+        }
+    },
+    "require": {}
+}

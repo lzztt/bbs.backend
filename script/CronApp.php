@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace site;
+namespace script;
 
 use lzx\App;
 use lzx\db\DB;
@@ -15,8 +15,6 @@ $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
 // $config->domain need http_host
 $_SERVER['HTTP_HOST'] = 'www.houstonbbs.com';
 
-require_once dirname(__DIR__) . '/lib/lzx/App.php';
-
 class CronApp extends App
 {
     protected $timestamp;
@@ -26,8 +24,6 @@ class CronApp extends App
     public function __construct()
     {
         parent::__construct();
-        // register current namespaces
-        $this->loader->registerNamespace(__NAMESPACE__, dirname(__DIR__) . '/server');
 
         $this->timestamp = intval($_SERVER['REQUEST_TIME']);
         $this->config = Config::getInstance();
