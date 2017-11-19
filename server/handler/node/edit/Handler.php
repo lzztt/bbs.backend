@@ -28,7 +28,10 @@ class Handler extends Node
             $this->error('node does not exist.');
         }
 
-        if (strlen($this->request->post['body']) < 5 || strlen($this->request->post['title']) < 5) {
+        if (!$this->request->post['body']
+                || !$this->request->post['title']
+                || strlen($this->request->post['body']) < 5
+                || strlen($this->request->post['title']) < 5) {
             $this->error('Topic title or body is too short.');
         }
 
