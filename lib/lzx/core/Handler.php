@@ -4,6 +4,7 @@ namespace lzx\core;
 
 use ErrorException;
 use Exception;
+use Throwable;
 use lzx\core\Logger;
 
 class Handler

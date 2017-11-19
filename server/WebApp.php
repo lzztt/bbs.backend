@@ -16,8 +16,6 @@ use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 
-require_once dirname(__DIR__) . '/lib/lzx/App.php';
-
 class WebApp extends App
 {
     protected $config;
@@ -25,8 +23,6 @@ class WebApp extends App
     public function __construct()
     {
         parent::__construct();
-        // register current namespaces
-        $this->loader->registerNamespace(__NAMESPACE__, __DIR__);
 
         // load configuration
         $this->config = Config::getInstance();
