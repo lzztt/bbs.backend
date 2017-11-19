@@ -41,9 +41,6 @@ abstract class Controller extends LzxCtrler
     protected $independentCacheList = [];
     protected $cacheEvents = [];
 
-    /**
-     * public methods
-     */
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
         parent::__construct($req, $response, $logger);
@@ -112,9 +109,7 @@ abstract class Controller extends LzxCtrler
         }
     }
 
-    /**
-     * Observer design pattern interface
-     */
+    // interface for Observer design pattern
     public function update(Template $html)
     {
         // set navbar
@@ -174,10 +169,6 @@ abstract class Controller extends LzxCtrler
         $this->response->setContent($json);
     }
 
-    /**
-     *
-     * @return \lzx\cache\Cache
-     */
     protected function getIndependentCache($key)
     {
         $key = self::$cacheHandler->getCleanName($key);
@@ -190,10 +181,6 @@ abstract class Controller extends LzxCtrler
         }
     }
 
-    /**
-     *
-     * @return \lzx\cache\CacheEvent
-     */
     protected function getCacheEvent($name, $objectID = 0)
     {
         $name = self::$cacheHandler->getCleanName($name);
@@ -237,11 +224,6 @@ abstract class Controller extends LzxCtrler
         return $slink;
     }
 
-    /**
-     *
-     * @param type $uri
-     * @return \site\dbobject\SecureLink|null
-     */
     protected function getSecureLink($uri)
     {
         $arr = explode('?', $uri);
@@ -265,10 +247,6 @@ abstract class Controller extends LzxCtrler
 
         return null;
     }
-
-    /*
-     * create menu tree for root tags
-     */
 
     protected function createMenu($tid)
     {

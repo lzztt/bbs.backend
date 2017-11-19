@@ -29,10 +29,7 @@ abstract class Single extends Controller
         $this->db = DB::getInstance();
     }
 
-    /**
-     *
-     * observer interface
-     */
+    // interface for observer design pattern
     public function update(Template $html)
     {
         // populate template variables and remove self as an observer

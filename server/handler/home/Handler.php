@@ -177,7 +177,6 @@ class Handler extends Controller
             $ul = $this->linkNodeList($arr, $ulCache);
         }
 
-
         return $ul;
     }
 

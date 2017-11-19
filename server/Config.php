@@ -73,11 +73,6 @@ class Config
         }
     }
 
-    /**
-     *
-     * @staticvar self $instance
-     * @return \site\Config
-     */
     public static function getInstance()
     {
         static $instance;

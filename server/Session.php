@@ -94,11 +94,6 @@ class Session
         }
     }
 
-    /**
-     * Return the Session object
-     *
-     * @return Session
-     */
     public static function getInstance(DB $db = null)
     {
         static $instance;

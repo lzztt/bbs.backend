@@ -51,11 +51,6 @@ class WebApp extends App
     // other classes will report status to controller
     // controller set status back the WebApp object
     // WebApp object will call Theme to display the content
-    /**
-     *
-     * @param type $argc
-     * @param array $argv
-     */
     public function run($argc = 0, array $argv = [])
     {
         $request = Request::getInstance();

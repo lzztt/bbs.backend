@@ -96,18 +96,12 @@ class Handler extends Forum
             $this->error($e->getMessage());
         }
 
-
         if ($this->request->post['files']) {
             $file = new Image();
             $file->cityId = self::$city->id;
             $file->updateFileList($this->request->post['files'], $this->config->path['file'], $node->id, $comment->id);
             $this->getCacheEvent('ImageUpdate')->trigger();
         }
-
-        /*
-        $user->points += 3;
-        $user->update('points');
-         */
 
         $this->getCacheEvent('ForumNode')->trigger();
         $this->getCacheEvent('ForumUpdate', $tid)->trigger();

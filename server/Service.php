@@ -126,10 +126,6 @@ abstract class Service extends LzxService
         }
     }
 
-    /**
-     *
-     * @return \lzx\cache\Cache
-     */
     protected function getIndependentCache($key)
     {
         $key = self::$cacheHandler->getCleanName($key);
@@ -142,10 +138,6 @@ abstract class Service extends LzxService
         }
     }
 
-    /**
-     *
-     * @return \lzx\cache\CacheEvent
-     */
     protected function getCacheEvent($name, $objectID = 0)
     {
         $name = self::$cacheHandler->getCleanName($name);

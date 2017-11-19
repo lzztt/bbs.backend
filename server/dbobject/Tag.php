@@ -22,10 +22,6 @@ class Tag extends DBObject
         parent::__construct($db, $table, $id, $properties);
     }
 
-    /*
-     * rarely used, only get leaves for a root id (forum / yellow page)
-     */
-
     public function getLeafTIDs()
     {
         if ($this->id) {
@@ -40,10 +36,6 @@ class Tag extends DBObject
         }
         return [];
     }
-
-    /*
-     * get the tag tree, upto 2 levels
-     */
 
     public function getTagRoot()
     {
@@ -110,10 +102,6 @@ class Tag extends DBObject
         }
     }
 
-    /*
-     * get parent tag
-     */
-
     public function getParent($properties = '')
     {
         $this->load('parent');
@@ -126,10 +114,6 @@ class Tag extends DBObject
             return array_pop($parent);
         }
     }
-
-    /*
-     * get children tags
-     */
 
     public function getChildren($properties = '')
     {
