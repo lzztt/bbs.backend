@@ -208,7 +208,11 @@ class Handler extends Service
 
         list($pageNo, $pageCount) = $this->getPagerInfo($pmCount, self::TOPICS_PER_PAGE);
         $msgs = $pmCount > 0 ? $user->getPrivMsgs($mailbox, self::TOPICS_PER_PAGE, ($pageNo - 1) * self::TOPICS_PER_PAGE) : [];
-
+        // convert 'msgId' => 'mid',
+        foreach ($msgs as $i => $m) {
+            $msgs[$i]['mid'] = $m['msgId'];
+            unset($msgs[$i]['msgId']);
+        }
         return ['msgs' => $msgs, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount]];
     }
 
