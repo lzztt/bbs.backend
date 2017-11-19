@@ -61,7 +61,20 @@ abstract class DBObject
 
     private static function camelToUnderscore($name)
     {
-        return strtolower(preg_replace('/([A-Z])/', '_$0', $name));
+        static $cache = [];
+        if (!array_key_exists($name, $cache)) {
+            $cache[$name] = strtolower(preg_replace('/([A-Z])/', '_$0', $name));
+        }
+        return $cache[$name];
+    }
+
+    private static function underscoreToCamel($name)
+    {
+        static $cache = [];
+        if (!array_key_exists($name, $cache)) {
+            $cache[$name] = str_replace('_', '', lcfirst(ucwords($name, '_')));
+        }
+        return $cache[$name];
     }
 
     public function __set($prop, $val)
@@ -173,19 +186,14 @@ abstract class DBObject
     }
 
     // convert array keys from column names to field names
-    protected function convertFields(array $arr, array $fields)
+    protected function convertColumnNames(array $arr)
     {
-        if ($arr) {
-            foreach ($fields as $name => $column) {
-                if ($name != $column) {
-                    if (array_key_exists($column, $arr[0])) {
-                        foreach ($arr as $i => $r) {
-                            $arr[$i][$name] = $r[$column];
-                            unset($arr[$i][$column]);
-                        }
-                    } else {
-                        throw new Exception('cannot convert non-exist column: ' . $column);
-                    }
+        foreach ($arr as $i => $row) {
+            foreach ($row as $col => $val) {
+                $newCol = self::underscoreToCamel($col);
+                if ($newCol !== $col) {
+                    $arr[$i][$newCol] = $val;
+                    unset($arr[$i][$col]);
                 }
             }
         }
