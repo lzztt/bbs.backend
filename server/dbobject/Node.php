@@ -98,12 +98,6 @@ class Node extends DBObject
         return $this->call('get_node_view_count("' . implode(',', $nids) . '")');
     }
 
-    /**
-     * get tag tree for a node
-     * @staticvar array $tags
-     * @param type $id
-     * @return type
-     */
     public function getTags($nid)
     {
         static $tags = [];
