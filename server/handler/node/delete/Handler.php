@@ -42,12 +42,6 @@ class Handler extends Node
             $activity->delete();
         }
 
-        /*
-        $user = new User($node->uid, 'points');
-        $user->points -= 3;
-        $user->update('points');
-         */
-
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
 

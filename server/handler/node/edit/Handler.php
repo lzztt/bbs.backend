@@ -57,7 +57,6 @@ class Handler extends Node
         $comment->lastModifiedTime = $this->request->timestamp;
         $comment->update();
 
-
         $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
         $file = new Image();
         $file->cityId = self::$city->id;

@@ -92,10 +92,6 @@ class User extends DBObject
         }
     }
 
-    /*
-     * delete nodes and return the node ids whose cache need to be deleted
-     */
-
     public function delete()
     {
         if ($this->id > 1) {

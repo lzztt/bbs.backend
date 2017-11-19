@@ -14,15 +14,6 @@ class ControllerFactory
 {
     protected static $route = [];
 
-    /**
-     *
-     * @param \lzx\core\Request $req
-     * @param \lzx\core\Response $response
-     * @param \site\Config $config
-     * @param \lzx\core\Logger $logger
-     * @param \site\Session $session
-     * @return \site\Controller
-     */
     public static function create(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
         list($cls, $args) = self::getHandlerClassAndArgs($req);
