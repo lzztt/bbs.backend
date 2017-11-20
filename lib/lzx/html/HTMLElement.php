@@ -2,7 +2,6 @@
 
 namespace lzx\html;
 
-use ErrorException;
 use Exception;
 
 // $data could be NULL, a string, or Element object, or an array of strings or Element objects
@@ -28,16 +27,6 @@ class HTMLElement
             $this->attributes = $attributes;
     }
 
-    public function getTag()
-    {
-         return $this->tag;
-    }
-
-    public function getData()
-    {
-         return $this->data;
-    }
-
     public function setData($data)
     {
          $this->data = null;
@@ -47,16 +36,6 @@ class HTMLElement
             }
         } else {
             $this->setDataByIndex(null, $data);
-        }
-    }
-
-    public function getDataByIndex($index)
-    {
-         // passed an index
-        if (array_key_exists($index, $this->data)) {
-              return $this->data[$index];
-        } else {
-            return null;
         }
     }
 
@@ -89,60 +68,6 @@ class HTMLElement
                     $this->data = [$this->data, $data];
                 }
             }
-        }
-    }
-
-    public function getAttributes()
-    {
-         return $this->attributes;
-    }
-
-    public function setAttributes($attributes)
-    {
-         $this->attributes = [];
-        foreach ($attributes as $k => $v) {
-              $this->setAttributeKeyOf($k, $v);
-        }
-    }
-
-    public function getAttributeKeyOf($key)
-    {
-        if (array_key_exists($key, $this->attributes)) {
-              return $this->attributes[$key];
-        } else {
-            return null;
-        }
-    }
-
-    public function setAttributeKeyOf($key, $value)
-    {
-        if (strlen($key) > 0 && (is_string($value) || is_null($value))) {
-            if (is_null($value)) { // NULL value
-                if (array_key_exists($key, $this->attributes)) { // unset if key exist
-                    unset($this->attributes[$key]);
-                }
-            } else // set/reset value if NOT NULL
-                {
-                 $this->attributes[$key] = $value;
-            }
-        } else {
-            throw new Exception('wrong attribute type or value (string => string) : ' . $this->tag . '.' . $key . ' => ' . gettype($value));
-        }
-    }
-
-    public function addElement(HTMLElement $e)
-    {
-        if ($e instanceof HTMLElement) {
-              $this->setDataByIndex(null, $e);
-        } else {
-            throw new ErrorException('wrong html element type (HTMLElement) : ' . gettype($e));
-        }
-    }
-
-    public function addElements(array $elements)
-    {
-        foreach ($elements as $e) {
-              $this->addElement($e);
         }
     }
 
