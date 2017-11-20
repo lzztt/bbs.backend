@@ -126,53 +126,6 @@ class Template
         return self::$hasError;
     }
 
-    public static function formatTime($timestamp)
-    {
-        return date('m/d/Y H:i', $timestamp);
-    }
-
-    public static function truncate($str, $len = 45)
-    {
-        if (strlen($str) < $len / 2) {
-            return $str;
-        }
-        $mb_len = mb_strlen($str);
-        $rate = sqrt($mb_len / strlen($str)); // sqrt(0.7) = 0.837
-        $s_len = ($rate > 0.837 ? ceil($len * $rate) : floor(($len - 2) * $rate));
-        // the cut_off length is depend on the rate of non-single characters
-        //var_dump(implode(' - ', [strlen($str), $mb_len, $s_len, $rate, $str,  mb_substr($str, 0, $s_len))));
-        return ($mb_len > $s_len) ? mb_substr($str, 0, $s_len) : $str;
-    }
-
-// local time function. do not touch them
-// the following two functions convert between standard TIMESTAMP and local time
-// we only store timestamp in database, for query and comparation
-// we only display local time based on timezones
-// do not use T in format, timezone info is not correct
-    public static function localDate($format, $timestamp)
-    {
-        return date($format, TIMESTAMP + ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
-    }
-
-    // get chinese date and time
-    public static function getWeekday($timestamp)
-    {
-        static $weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-
-        return $weekdays[date('w', $timestamp)];
-    }
-
-    public static function getDateTime($timestamp)
-    {
-        return date('Y年m月d日 H:i', $timestamp);
-    }
-
-// do not use timezone info in the $time string
-    public static function localStrToTime($time)
-    {
-        return (strtotime($time) - ($_COOKIE['timezone'] - SYSTIMEZONE) * 3600);
-    }
-
     public static function link($name, $url, array $attributes = [])
     {
         $attributes['href'] = $url;

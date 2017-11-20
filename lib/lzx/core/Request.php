@@ -87,16 +87,6 @@ class Request
         return array_values(array_filter(explode('/', $arg), 'strlen'));
     }
 
-    public function buildURI(array $args = [], array $get = [])
-    {
-        $query = [];
-        foreach ($get as $k => $v) {
-            $query[] = $k . '=' . $v;
-        }
-
-        return '/' . implode('/', $args) . ($query ? '?' . implode('&', $query) : '');
-    }
-
     public function curlGetData($url)
     {
         $c = curl_init($url);
@@ -195,13 +185,6 @@ class Request
                 $out[$this->toUTF8($key)] = $this->toUTF8($value);
             }
             return $out;
-        }
-
-        if (is_string($in) && !mb_check_encoding($in, "UTF-8")) { // user input data is trimed and cleaned here, escapte html tags
-            return utf8_encode($in);
-            //return utf8_encode(trim(preg_replace('/<[^>]*>/', '', $in)));
-            //to trim all tags: preg_replace('/<[^>]*>/', '',  trim($in))
-            //to escape tags: str_replace(['<', '>'), ['&lt;', '&gt;'), trim($in))
         }
 
         return trim(preg_replace('/<[^>]*>/', '', $in));
