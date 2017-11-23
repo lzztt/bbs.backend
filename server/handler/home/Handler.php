@@ -206,25 +206,6 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestImmigrationPosts($count)
-    {
-        $ulCache = $this->cache->getSegment('latestImmigrationPosts');
-        $ul = $ulCache->fetch();
-        if (!$ul) {
-            $arr = [];
-
-            foreach ((new Node())->getLatestImmigrationPosts($count) as $n) {
-                $arr[] = ['after' => date('m/d', (int) $n['create_time']),
-                    'uri' => '/node/' . $n['nid'],
-                    'text' => $n['title']];
-            }
-            $ul = $this->linkNodeList($arr, $ulCache);
-        }
-        $this->getCacheEvent('ImmigrationNode')->addListener($ulCache);
-
-        return $ul;
-    }
-
     private function getLatestForumTopicReplies($count)
     {
         $ulCache = $this->cache->getSegment('latestForumTopicReplies');

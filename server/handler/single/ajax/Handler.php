@@ -26,6 +26,16 @@ class Handler extends Single
         }
     }
 
+    protected function ajax($return)
+    {
+        $json = json_encode($return, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            $json = '{"error":"ajax json encode error"}';
+        }
+        $this->response->type = Response::JSON;
+        $this->response->setContent($json);
+    }
+
     protected function attend()
     {
         if (file_exists($this->config->path['file'] . '/single.msg') && !$this->session->loginStatus) {

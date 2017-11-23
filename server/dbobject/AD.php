@@ -29,9 +29,4 @@ class AD extends DBObject
     {
          return $this->convertColumnNames($this->call('get_ad_payments(' . $from_time . ')'));
     }
-
-    public function getAllAdTypes()
-    {
-        return $this->call('get_ad_types()');
-    }
 }
