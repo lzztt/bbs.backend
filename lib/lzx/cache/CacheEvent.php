@@ -30,11 +30,6 @@ class CacheEvent
         }
     }
 
-    public function getName()
-    {
-        return $this->objID ? $this->name . '<' . $this->objID . '>' : $this->name;
-    }
-
     public function addListener(Cache $c)
     {
         if ($c) {

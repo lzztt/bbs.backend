@@ -11,10 +11,8 @@ use lzx\core\Mailer;
 use lzx\html\Template;
 use site\Session;
 use lzx\cache\CacheHandler;
-use lzx\cache\CacheEvent;
 use site\Config;
 use site\dbobject\City;
-use site\dbobject\User;
 
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
@@ -79,26 +77,8 @@ abstract class Service extends LzxService
         $this->$action();
     }
 
-    // RESTful get
-    public function get()
-    {
-        $this->forbidden();
-    }
-
-    // RESTful post
-    public function post()
-    {
-        $this->forbidden();
-    }
-
-    // RESTful put
-    public function put()
-    {
-        $this->forbidden();
-    }
-
-    // RESTful delete
-    public function delete()
+    // default RESTful get/post/put/delete
+    public function __call($name, $args)
     {
         $this->forbidden();
     }
@@ -135,24 +115,6 @@ abstract class Service extends LzxService
             $cache = self::$cacheHandler->createCache($key);
             $this->independentCacheList[$key] = $cache;
             return $cache;
-        }
-    }
-
-    protected function getCacheEvent($name, $objectID = 0)
-    {
-        $name = self::$cacheHandler->getCleanName($name);
-        $objID = (int) $objectID;
-        if ($objID < 0) {
-            $objID = 0;
-        }
-
-        $key = $name . $objID;
-        if (array_key_exists($key, $this->cacheEvents)) {
-            return $this->cacheEvents[$key];
-        } else {
-            $event = new CacheEvent($name, $objID);
-            $this->cacheEvents[$key] = $event;
-            return $event;
         }
     }
 
@@ -236,42 +198,5 @@ abstract class Service extends LzxService
         $mailer->body = new Template('mail/ident_code', $contents);
 
         return $mailer->send();
-    }
-
-    protected function handleSpammer(User $user)
-    {
-        $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
-        $user->delete();
-        $u = new User();
-        $u->lastAccessIp = inet_pton($this->request->ip);
-        $users = $u->getList('createTime');
-        $deleteAll = true;
-        if (sizeof($users) > 1) {
-            // check if we have old users that from this ip
-            foreach ($users as $u) {
-                if ($this->request->timestamp - $u['createTime'] > 2592000) {
-                    $deleteAll = false;
-                    break;
-                }
-            }
-
-            if ($deleteAll) {
-                $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
-                foreach ($users as $u) {
-                    $spammer = new User($u['id'], null);
-                    $spammer->delete();
-                    $log = $log . $spammer->id . ' ';
-                }
-                $this->logger->info($log);
-            }
-        }
-
-        if (false && $this->config->webmaster) { // turn off spammer email
-            $mailer = new Mailer();
-            $mailer->subject = 'SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
-            $mailer->body = ' --node-- ' . $this->request->json['title'] . PHP_EOL . $this->request->json['body'];
-            $mailer->to = $this->config->webmaster;
-            $mailer->send();
-        }
     }
 }

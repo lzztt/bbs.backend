@@ -51,29 +51,6 @@ class User extends DBObject
         return md5('Alex' . $password . 'Tian');
     }
 
-    public function randomPW()
-    {
-        $chars = 'aABCdEeFfGHiKLMmNPRrSTWXY23456789@#$=';
-        $salt = substr(str_shuffle($chars), 0, 3);
-        return $salt . substr(str_shuffle($chars), 0, 7); // will send generated password to email
-    }
-
-    public function isSuperUser($uid, $cid)
-    {
-        return in_array($uid, [1]);
-    }
-
-    public function login($username, $password)
-    {
-        $this->username = $username;
-        $this->load('id,status,password');
-        if ($this->exists() && $this->status == 1) {
-            return ($this->password === $this->hashPW($password));
-        }
-
-        return false;
-    }
-
     public function loginWithEmail($email, $password)
     {
         $this->email = $email;

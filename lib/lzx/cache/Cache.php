@@ -39,11 +39,6 @@ abstract class Cache
         return $this->key;
     }
 
-    public function fetch()
-    {
-        return $this->data;
-    }
-
     public function store($data)
     {
         $this->data = (string) $data;

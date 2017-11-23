@@ -102,27 +102,6 @@ class Tag extends DBObject
         }
     }
 
-    public function getParent($properties = '')
-    {
-        $this->load('parent');
-        if (is_null($this->parent)) {
-            return null;
-        } else {
-            $tag = new Tag();
-            $tag->id = $this->parent;
-            $parent = $tag->getList($properties, 1);
-            return array_pop($parent);
-        }
-    }
-
-    public function getChildren($properties = '')
-    {
-        $tag = new Tag();
-        $tag->parent = $this->id;
-        $tag->order('weight');
-        return $tag->getList($properties);
-    }
-
     // get the information for the latest updated node
     public function getNodeInfo()
     {
