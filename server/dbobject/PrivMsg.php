@@ -26,11 +26,6 @@ class PrivMsg extends DBObject
          return $this->call('get_pm(' . $id . ',' . $uid . ')');
     }
 
-    public function getNewPMCount($uid)
-    {
-         return $this->call('get_pm_count_new(' . $uid . ')');
-    }
-
     public function getReplyTo($msg_id, $uid)
     {
          return array_pop($this->call('get_pm_replyto(' . $msg_id . ',' . $uid . ')'));

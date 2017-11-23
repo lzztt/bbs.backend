@@ -15,10 +15,8 @@ use lzx\html\Template;
 use site\Config;
 use lzx\core\Logger;
 use site\Session;
-use site\ControllerFactory;
 use site\dbobject\User;
 use site\dbobject\Tag;
-use site\dbobject\SecureLink;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use site\dbobject\City;
@@ -159,16 +157,6 @@ abstract class Controller extends LzxCtrler
         $html->detach($this);
     }
 
-    protected function ajax($return)
-    {
-        $json = json_encode($return, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        if ($json === false) {
-            $json = '{"error":"ajax json encode error"}';
-        }
-        $this->response->type = Response::JSON;
-        $this->response->setContent($json);
-    }
-
     protected function getIndependentCache($key)
     {
         $key = self::$cacheHandler->getCleanName($key);
@@ -197,55 +185,6 @@ abstract class Controller extends LzxCtrler
             $this->cacheEvents[$key] = $event;
             return $event;
         }
-    }
-
-    protected function forward($uri)
-    {
-        $newReq = clone $this->request;
-        $newReq->uri = $uri;
-        $ctrler = ControllerFactory::create($newReq, $this->response, $this->config, $this->logger, $this->session);
-        $ctrler->request = $this->request;
-        $ctrler->run();
-    }
-
-    protected function displayLogin()
-    {
-        $this->response->pageRedirect('/app/user/login');
-    }
-
-    protected function createSecureLink($uid, $uri)
-    {
-        $slink = new SecureLink();
-        $slink->uid = $uid;
-        $slink->time = $this->request->timestamp;
-        $slink->code = rand();
-        $slink->uri = $uri;
-        $slink->add();
-        return $slink;
-    }
-
-    protected function getSecureLink($uri)
-    {
-        $arr = explode('?', $uri);
-        if (sizeof($arr) == 2) {
-            $l = new SecureLink();
-
-            $l->uri = $arr[0];
-            parse_str($arr[1], $get);
-
-            if (isset($get['r']) && isset($get['u']) && isset($get['c']) && isset($get['t'])) {
-                $l->id = $get['r'];
-                $l->uid = $get['u'];
-                $l->code = $get['c'];
-                $l->time = $get['t'];
-                $l->load('id');
-                if ($l->exists()) {
-                    return $l;
-                }
-            }
-        }
-
-        return null;
     }
 
     protected function createMenu($tid)

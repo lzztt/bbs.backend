@@ -168,69 +168,6 @@ class Image extends DBObject
         }
     }
 
-    public function addImages(array $files, $filePath, $nid, $cid = null)
-    {
-        foreach ($files as $file) {
-            if ($file['action'] == 'add') {
-                $info = getimagesize($filePath . $file['path']);
-                $width = $info[0];
-                $height = $info[1];
-                $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
-                    ':nid'      => $nid,
-                    ':cid'      => $cid,
-                    ':name'     => $file['name'],
-                    ':path'     => $file['path'],
-                    ':height'  => $height,
-                    ':width'    => $width,
-                    ':city_id' => $this->cityId]);
-            }
-        }
-    }
-
-    public function updateImages(array $files, $filePath, $nid, $cid = null)
-    {
-        if (sizeof($files) > 0) {
-            $deletedIDs = [];
-
-            foreach ($files as $file) {
-                switch ($file["action"]) {
-                    case 'add':
-                        $info = getimagesize($filePath . $file['path']);
-                        $width = $info[0];
-                        $height = $info[1];
-                        $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
-                            ':nid'      => $nid,
-                            ':cid'      => $cid,
-                            ':name'     => $file['name'],
-                            ':path'     => $file['path'],
-                            ':height'  => $height,
-                            ':width'    => $width,
-                            ':city_id' => $this->cityId]);
-                        break;
-                    case 'update':
-                        $this->call('image_update(:fid, :name)', [':fid' => $file['id'], ':name' => $file['name']]);
-                        break;
-                    case 'delete':
-                        if ($file['id'] > 0) {
-                            $deletedIDs[] = $file['id'];
-                        }
-                        break;
-                    default:
-                        continue;
-                }
-            }
-
-            if (sizeof($deletedIDs) > 0) {
-                $this->call('image_delete("' . implode(',', $deletedIDs) . '")');
-            }
-        }
-
-        $image = new Image();
-        $image->nid = $nid;
-        $image->cid = $cid;
-        return $image->getList('id,name,path');
-    }
-
     public function updateFileList(array $files, $filePath, $nid, $cid = null)
     {
         $nid = (int) $nid;

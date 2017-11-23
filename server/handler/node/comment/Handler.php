@@ -177,13 +177,6 @@ class Handler extends Node
             $this->error($e->getMessage());
         }
 
-        if (isset($this->request->post['star']) && is_numeric($this->request->post['star'])) {
-            $rating = (int) $this->request->post['star'];
-            if ($rating > 0) {
-                $node->updateRating($nid, $this->request->uid, $rating, $this->request->timestamp);
-            }
-        }
-
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('YellowPageComment')->trigger();
 
