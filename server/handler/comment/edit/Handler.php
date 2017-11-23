@@ -42,15 +42,6 @@ class Handler extends Comment
             $this->getIndependentCache('imageSlider')->delete();
         }
 
-        // YP comments
-        if (isset($this->request->post['star']) && is_numeric($this->request->post['star'])) {
-            $rating = (int) $this->request->post['star'];
-            if ($rating > 0) {
-                $node = new Node();
-                $node->updateRating($comment->nid, $comment->uid, $rating, $this->request->timestamp);
-            }
-        }
-
         $this->getCacheEvent('NodeUpdate', $comment->nid)->trigger();
 
         $this->pageRedirect($this->request->referer);

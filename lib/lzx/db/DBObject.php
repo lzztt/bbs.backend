@@ -355,26 +355,6 @@ abstract class DBObject
         return intval(array_pop(array_pop($this->select('COUNT(*)'))));
     }
 
-    /*
-     * user input keys may have alias 'AS'
-     *
-     * return array with the primary key as index
-     */
-
-    public function getIndexedList($properties = '', $limit = false, $offset = false)
-    {
-        if (!$this->pkey_property) {
-            throw new Exception('Table does not have primary key. getIndexedList without primary key is not supported yet');
-        }
-
-        $list = [];
-
-        foreach ($this->getList($keys, $limit, $offset) as $i) {
-            $list[$i[$this->pkey_property]] = $i;
-        }
-        return $list;
-    }
-
     /**
      * Selects from DB, returns array
      *

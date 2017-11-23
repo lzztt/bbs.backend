@@ -56,17 +56,6 @@ class Node extends DBObject
         return $arr;
     }
 
-    public function getForumNodeCommentsAfter($id, $limit, $cid)
-    {
-        $arr = $this->call('get_forum_node_comments_after(' . $id . ', ' . $limit . ', ' . $cid . ')');
-
-        foreach ($arr as $i => $r) {
-            $arr[$i]['files'] = $this->call('get_comment_images(' . $r['id'] . ')');
-        }
-
-        return $arr;
-    }
-
     public function getYellowPageNodeList($tids, $limit = false, $offset = false)
     {
         return $this->call('get_tag_nodes_yp("' . $tids . '",' . $limit . ',' . $offset . ')');
@@ -134,11 +123,6 @@ class Node extends DBObject
         return $this->call('get_tag_recent_nodes_yp("' . implode(',', (new Tag($ypRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
-    public function getLatestImmigrationPosts($count)
-    {
-        return $this->call('get_tag_recent_nodes("15", ' . $count . ')');
-    }
-
     public function getLatestForumTopicReplies($forumRootID, $count)
     {
         return $this->call('get_tag_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
@@ -164,15 +148,5 @@ class Node extends DBObject
             'commentTodayCount' => $stats['comment_count_recent'],
             'postCount'            => $stats['node_count_total'] + $stats['comment_count_total']
         ];
-    }
-
-    public function updateRating($nid, $uid, $rating, $time)
-    {
-        $this->call('update_node_rating(' . $nid . ',' . $uid . ',' . $rating . ',' . $time . ')');
-    }
-
-    public function deleteRating($nid, $uid)
-    {
-        $this->call('delete_node_rating(' . $nid . ',' . $uid . ')');
     }
 }

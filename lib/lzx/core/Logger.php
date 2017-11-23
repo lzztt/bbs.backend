@@ -148,14 +148,17 @@ class Logger
             $log['trace'] = $this->getBacktrace($traces);
         }
 
+        $msg = str_replace('\n', "\n", json_encode($log, JSON_NUMERIC_CHECK
+                | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
         if ($type == self::ERROR && isset($this->mailer)) {
             $this->mailer->subject = 'web error: ' . $_SERVER['REQUEST_URI'];
-            $this->mailer->body = json_encode($log, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $this->mailer->body = $msg;
             $this->mailer->send();
             $log['_SERVER'] = $_SERVER;
         }
 
-        $this->logCache[$type] .= json_encode($log, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . PHP_EOL;
+        $this->logCache[$type] .=  $msg . PHP_EOL;
     }
 
     private function getBacktrace(array $traces)

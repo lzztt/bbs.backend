@@ -23,11 +23,6 @@ class JSON
         }
     }
 
-    public function hasError()
-    {
-        return array_key_exists('error', $this->data) ? (bool) $this->data['error'] : false;
-    }
-
     public function __toString()
     {
         // string cache

@@ -26,10 +26,4 @@ class Wedding extends DBObject
         $table = 'wedding';
         parent::__construct($db, $table, $id, $properties);
     }
-
-    public function getTotal()
-    {
-        $arr = $this->db->query('SELECT SUM(guests) FROM wedding');
-        return array_pop($arr[0]);
-    }
 }
