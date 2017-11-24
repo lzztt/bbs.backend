@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace lzx\core;
+
 use Zend\Diactoros\ServerRequestFactory;
 
 class Request

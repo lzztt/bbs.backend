@@ -3,6 +3,7 @@
 namespace site;
 
 use Exception;
+use lzx\core\ResponseException;
 use lzx\App;
 use lzx\core\Handler;
 use lzx\db\DB;
@@ -19,6 +20,7 @@ use lzx\cache\CacheHandler;
 class WebApp extends App
 {
     protected $config;
+    private $debug;
 
     public function __construct()
     {
@@ -27,7 +29,8 @@ class WebApp extends App
         // load configuration
         $this->config = Config::getInstance();
         // display errors on page, turn on debug for DEV stage
-        if ($this->config->stage === Config::STAGE_DEVELOPMENT) {
+        $this->debug = $this->config->stage === Config::STAGE_DEVELOPMENT;
+        if ($this->debug) {
             Handler::$displayError = true;
             DB::$debug = true;
             Template::$debug = true;
@@ -87,53 +90,44 @@ class WebApp extends App
         $this->logger->setUserInfo($userinfo);
 
         $response = Response::getInstance();
+        $commit = true;
 
         try {
             $ctrler = ControllerFactory::create($request, $response, $this->config, $this->logger, $session);
             $ctrler->run();
-        } catch (Exception $e) {
-            if ($e->getMessage()) {
-                $this->logger->error($e->getMessage(), $e->getTrace());
-                $this->logger->flush();
-            }
+        } catch (ResponseException $e) {
+            $commit = false;
         }
 
         // send out response
         $response->send();
 
         // do extra clean up and heavy stuff here
-        if ($response->getStatus() < 400) {
-            try {
-                // flush session
-                $session->close();
+        if ($commit && $response->getStatus() < 400) {
+            // flush session
+            $session->close();
 
-                // output debug message?
-                $debug = ($this->config->stage == Config::STAGE_DEVELOPMENT);
+            if ($this->debug) {
+                $this->logger->info($db->queries);
+            }
 
-                if ($debug) {
-                    $this->logger->info($db->queries);
+            // flush database
+            $db->flush();
+
+            // controller flush cache
+            if ($this->debug) {
+                $timer = microtime(true);
+                if ($ctrler) {
+                    $ctrler->flushCache();
                 }
-
-                // flush database
                 $db->flush();
-
-                // controller flush cache
-                if ($debug) {
-                    $timer = microtime(true);
-                    if ($ctrler) {
-                        $ctrler->flushCache();
-                    }
-                    $db->flush();
-                    $timer = microtime(true) - $timer;
-                    $this->logger->info(sprintf('cache flush time: %8.6f', $timer));
-                } else {
-                    if ($ctrler) {
-                        $ctrler->flushCache();
-                    }
-                    $db->flush();
+                $timer = microtime(true) - $timer;
+                $this->logger->info(sprintf('cache flush time: %8.6f', $timer));
+            } else {
+                if ($ctrler) {
+                    $ctrler->flushCache();
                 }
-            } catch (Exception $e) {
-                $this->logger->error($e->getMessage());
+                $db->flush();
             }
         }
 
