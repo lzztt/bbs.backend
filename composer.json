@@ -15,5 +15,7 @@
             "script\\": "script/"
         }
     },
-    "require": {}
+    "require": {
+        "zendframework/zend-diactoros": "^1.6"
+    }
 }

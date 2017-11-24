@@ -28,9 +28,8 @@ class Handler extends Service
             $res = ['error' => $res];
         }
 
-        $this->json($res);
-
         // use iframe and html to return the JSON result
         $this->response->type = Response::HTML;
+        $this->response->setContent(json_encode($res, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 }

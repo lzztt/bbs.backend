@@ -22,7 +22,7 @@ class Handler extends Forum
         $tag = $this->getTagObj();
         $tagTree = $tag->getTagTree();
 
-        sizeof($tagTree[$tag->id]['children']) ? $this->error('Could not post topic in this forum') : $this->createTopic($tag->id);
+        $tagTree[$tag->id]['children'] ? $this->error('Could not post topic in this forum') : $this->createTopic($tag->id);
     }
 
     public function createTopic($tid)
