@@ -2,10 +2,11 @@
 
 namespace lzx\core;
 
-use Exception;
+use lzx\core\ResponseException;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\Logger;
+use lzx\core\UtilTrait;
 
 // service will populate response with JSON data
 // handle all exceptions and local languages
@@ -34,7 +35,7 @@ abstract class Service
     protected function error($msg)
     {
         $this->json(['error' => $msg]);
-        throw new Exception();
+        throw new ResponseException();
     }
 
     protected function forbidden()
