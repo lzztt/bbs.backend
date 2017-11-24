@@ -54,9 +54,6 @@ class WebApp extends App
     public function run($argc = 0, array $argv = [])
     {
         $request = Request::getInstance();
-        if (!isset($request->language)) {
-            $request->language = $this->config->language;
-        }
 
         $getCount = count($request->get);
         if ($getCount) {

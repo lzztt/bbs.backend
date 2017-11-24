@@ -15,6 +15,8 @@ use lzx\core\Logger;
 
 abstract class Controller
 {
+    use UtilTrait;
+
     public $logger;
     public $request;
     public $response;

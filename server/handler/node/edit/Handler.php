@@ -95,7 +95,7 @@ class Handler extends Node
 
             $comment = new Comment($arr[0]['id'], 'body');
             $contents['body'] = $comment->body;
-            
+
             $image = new Image();
             $image->nid = $nid;
             $image->cid = $comment->id;

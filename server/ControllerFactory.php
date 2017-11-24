@@ -28,10 +28,10 @@ class ControllerFactory
             throw new Exception();
         }
     }
-    
+
     private static function getHandlerClassAndArgs(Request $req)
     {
-        $args = $req->getURIargs($req->uri);
+        $args = self::getURIargs($req->uri);
 
         $keys = array_filter($args, function ($value) {
             return !is_numeric($value);
@@ -45,14 +45,21 @@ class ControllerFactory
         while ($keys) {
             $key = implode('/', $keys);
             $cls = HandlerRouter::$route[$key];
-            
+
             if ($cls) {
                 break;
             } else {
                 array_pop($keys);
             }
         }
-        
+
         return [$cls, array_values(array_diff($args, $keys))];
+    }
+
+    private static function getURIargs($uri)
+    {
+        $parts = explode('?', $uri);
+        $arg = trim($parts[0], '/');
+        return array_values(array_filter(explode('/', $arg), 'strlen'));
     }
 }
