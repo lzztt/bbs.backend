@@ -40,7 +40,7 @@ class Handler extends Service
     private function getAlexa($city)
     {
         $this->logger->info('getting alexa');
-        $data = $this->request->curlGetData('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
+        $data = self::curlGetData('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
 
         if ($data) {
             preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $data, $p);

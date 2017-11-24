@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace lzx\core;
-
-use Exception;
+use Zend\Diactoros\ServerRequestFactory;
 
 class Request
 {
@@ -15,23 +14,26 @@ class Request
     public $files;
     public $json;
     public $uid;
-    public $language;
     public $timestamp;
+    private $req;
 
     private function __construct()
     {
-        $this->domain = $_SERVER['HTTP_HOST'];
-        $this->ip = $_SERVER['REMOTE_ADDR'];
-        $this->uri = strtolower($_SERVER['REQUEST_URI']);
+        $this->req = ServerRequestFactory::fromGlobals();
 
-        $this->timestamp = intval($_SERVER['REQUEST_TIME']);
+        $params = $this->req->getServerParams();
+        $this->domain = $params['HTTP_HOST'];
+        $this->ip = $params['REMOTE_ADDR'];
+        $this->uri = strtolower($params['REQUEST_URI']);
 
-        $this->post = $this->toUTF8($_POST);
-        $this->get = $this->toUTF8($_GET);
+        $this->timestamp = (int) $params['REQUEST_TIME'];
+
+        $this->post = self::escape($this->req->getParsedBody());
+        $this->get = self::escape($this->req->getQueryParams());
         $this->files = $this->getUploadFiles();
-        $this->json = $this->decodeJsonPost();
+        $this->json = json_decode($this->req->getBody()->getContents(), true);
 
-        $arr = explode($this->domain, $_SERVER['HTTP_REFERER']);
+        $arr = explode($this->domain, $params['HTTP_REFERER']);
         $this->referer = sizeof($arr) > 1 ? $arr[1] : null;
     }
 
@@ -69,120 +71,12 @@ class Request
         return $files;
     }
 
-    private function decodeJsonPost()
-    {
-        $json = null;
-        $data = file_get_contents('php://input');
-        if (!empty($data)) {
-            $json = json_decode($data, true);
-        }
-
-        return $json;
-    }
-
-    public function getURIargs($uri)
-    {
-        $parts = explode('?', $uri);
-        $arg = trim($parts[0], '/');
-        return array_values(array_filter(explode('/', $arg), 'strlen'));
-    }
-
-    public function curlGetData($url)
-    {
-        $c = curl_init($url);
-        curl_setopt_array($c, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 2,
-            CURLOPT_TIMEOUT          => 3
-        ]);
-        $data = curl_exec($c);
-        curl_close($c);
-
-        return $data; // will return FALSE on failure
-    }
-
-    public function getCityFromIP($ip)
-    {
-        static $cities = [];
-
-        // return from cache;
-        if (array_key_exists($ip, $cities)) {
-            return $cities[$ip];
-        }
-
-        // get city from geoip database
-        $city = 'N/A';
-        try {
-            if (is_null($ip)) {
-                return $city;
-            }
-
-            $ip = inet_ntop($ip);
-            if ($ip === false) {
-                return $city;
-            }
-
-            $geo = geoip_record_by_name($ip);
-
-            if ($geo['city']) {
-                $city = $geo['city'];
-            }
-        } catch (Exception $e) {
-            return 'UNKNOWN';
-        }
-
-        // save city to cache
-        $cities[$ip] = $city;
-
-        return $city;
-    }
-
-    public function getLocationFromIP($ip)
-    {
-        $location = 'N/A';
-
-        try {
-            if (is_null($ip)) {
-                return $location;
-            }
-
-            $ip = inet_ntop($ip);
-            if ($ip === false) {
-                return $location;
-            }
-
-            $city = 'N/A';
-            $region = 'N/A';
-            $country = 'N/A';
-
-            $geo = geoip_record_by_name($ip);
-
-            if ($geo['city']) {
-                $city = $geo['city'];
-            }
-
-            if ($geo['country_name']) {
-                $country = $geo['country_name'];
-            }
-
-            if ($geo['region'] && $geo['country_code']) {
-                $region = geoip_region_name_by_code($geo['country_code'], $geo['region']);
-            }
-
-            $location = $city . ', ' . $region . ', ' . $country;
-        } catch (Exception $e) {
-            return 'UNKNOWN';
-        }
-
-        return $location;
-    }
-
-    private function toUTF8($in)
+    private static function escape($in)
     {
         if (is_array($in)) {
             $out = [];
             foreach ($in as $key => $value) {
-                $out[$this->toUTF8($key)] = $this->toUTF8($value);
+                $out[self::escape($key)] = self::escape($value);
             }
             return $out;
         }
