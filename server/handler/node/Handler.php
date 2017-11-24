@@ -90,7 +90,7 @@ class Handler extends Node
                 }
                 // $c['signature'] = nl2br($c['signature']);
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
-                $c['city'] = $this->request->getCityFromIP($c['access_ip']);
+                $c['city'] = self::getCityFromIP($c['access_ip']);
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
                 $c['filesJSON'] = json_encode($c['files']);
                 if ($nodeComment) {
@@ -136,7 +136,7 @@ class Handler extends Node
                 if (empty($info['avatar'])) {
                     $info['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
-                $info['city'] = $this->request->getCityFromIP($info['access_ip']);
+                $info['city'] = self::getCityFromIP($info['access_ip']);
                 $authorPanel = new Template('author_panel_forum', $info);
                 $authorPanelCache->store($authorPanel);
             }

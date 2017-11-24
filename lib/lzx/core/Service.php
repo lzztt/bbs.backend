@@ -6,13 +6,14 @@ use Exception;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\Logger;
-use lzx\core\JSON;
 
 // service will populate response with JSON data
 // handle all exceptions and local languages
 
 abstract class Service
 {
+    use UtilTrait;
+
     public $logger;
     public $request;
     public $response;
@@ -27,7 +28,7 @@ abstract class Service
     protected function json(array $return = null)
     {
         $this->response->type = Response::JSON;
-        $this->response->setContent(new JSON($return));
+        $this->response->setContent($return);
     }
 
     protected function error($msg)

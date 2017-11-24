@@ -3,6 +3,12 @@
 namespace lzx\core;
 
 use Exception;
+use Zend\Diactoros\Response\SapiEmitter;
+use Zend\Diactoros\Response\EmptyResponse;
+use Zend\Diactoros\Response\RedirectResponse;
+use Zend\Diactoros\Response\HtmlResponse;
+use Zend\Diactoros\Response\JsonResponse;
+use lzx\core\JpegResponse;
 use lzx\html\Template;
 use lzx\cache\PageCache;
 
@@ -16,12 +22,14 @@ class Response
     private $status;
     private $data;
     private $sent;
+    private $resp;
 
     private function __construct()
     {
         $this->type = self::HTML;
         $this->status = 200;
         $this->sent = false;
+        $this->resp = null;
     }
 
     public static function getInstance()
@@ -55,47 +63,40 @@ class Response
 
     public function pageNotFound()
     {
-        $this->data = null;
-        $this->status = 404;
-        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+        $this->resp = new EmptyResponse(404);
     }
 
     public function pageForbidden()
     {
-        $this->data = null;
-        $this->status = 403;
-        header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
+        $this->resp = new EmptyResponse(403);
     }
 
     public function pageRedirect($uri)
     {
-        $this->data = null;
-        $this->status = 302;
-        header('Location: ' . $uri);
+        $this->resp = new RedirectResponse($uri);
     }
 
     public function send()
     {
-        if (!$this->sent) {
-            // set output header
+        if (!$this->resp) {
             switch ($this->type) {
                 case self::JSON:
-                    header('Content-Type: application/json');
+                    $this->resp = (new JsonResponse($this->data))->withEncodingOptions(JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                     break;
                 case self::JPEG:
-                    header('Content-type: image/jpeg');
+                    $this->resp = new JpegResponse((string) $this->data);
                     break;
                 default:
-                    header('Content-Type: text/html; charset=UTF-8');
+                    $this->resp = new HtmlResponse((string) $this->data);
             }
+        }
 
-            // send page content
-            if ($this->data) {
-                echo $this->data;
-            }
-
+        if (!$this->sent) {
+            $emiter = new SapiEmitter();
+            $emiter->emit($this->resp);
             fastcgi_finish_request();
 
+            $this->status = $this->resp->getStatusCode();
             $this->sent = true;
         }
     }
