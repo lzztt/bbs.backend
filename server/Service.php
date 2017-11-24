@@ -2,7 +2,6 @@
 
 namespace site;
 
-use Exception;
 use lzx\core\Service as LzxService;
 use lzx\core\Request;
 use lzx\core\Response;
@@ -10,60 +9,30 @@ use lzx\core\Logger;
 use lzx\core\Mailer;
 use lzx\html\Template;
 use site\Session;
-use lzx\cache\CacheHandler;
 use site\Config;
-use site\dbobject\City;
+use site\HandlerTrait;
 
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
 
 abstract class Service extends LzxService
 {
+    use HandlerTrait;
+
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
 
-    protected static $city;
     private static $actions = ['get', 'post', 'put', 'delete'];
-    private static $staticInitialized = false;
-    private static $cacheHandler;
     public $action;
     public $args;
     public $session;
-    private $independentCacheList = [];
-    private $cacheEvents = [];
 
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
         parent::__construct($req, $response, $logger);
         $this->session = $session;
         $this->config = $config;
-
-        if (!self::$staticInitialized) {
-            $this->staticInit();
-            self::$staticInitialized = true;
-        }
-    }
-
-    private function staticInit()
-    {
-        // set site info
-        $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
-
-        self::$cacheHandler = CacheHandler::getInstance();
-        self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
-        self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
-
-        // validate site for session
-        self::$city = new City();
-        self::$city->uriName = $site;
-        self::$city->load();
-        if (self::$city->exists()) {
-            if (self::$city->id != $this->session->getCityID()) {
-                $this->session->setCityID(self::$city->id);
-            }
-        } else {
-            $this->error('unsupported website: ' . $this->request->domain);
-        }
+        $this->staticInit();
     }
 
     public function run()
@@ -90,58 +59,6 @@ abstract class Service extends LzxService
             $this->error('图形验证码错误');
         }
         unset($this->session->captcha);
-    }
-
-    public function flushCache()
-    {
-        $config = Config::getInstance();
-        if ($config->cache) {
-            foreach ($this->independentCacheList as $c) {
-                $c->flush();
-            }
-
-            foreach ($this->cacheEvents as $e) {
-                $e->flush();
-            }
-        }
-    }
-
-    protected function getIndependentCache($key)
-    {
-        $key = self::$cacheHandler->getCleanName($key);
-        if (array_key_exists($key, $this->independentCacheList)) {
-            return $this->independentCacheList[$key];
-        } else {
-            $cache = self::$cacheHandler->createCache($key);
-            $this->independentCacheList[$key] = $cache;
-            return $cache;
-        }
-    }
-
-    protected function getPagerInfo($nTotal, $nPerPage)
-    {
-        if ($nPerPage <= 0) {
-            throw new Exception('invalid value for number of items per page: ' . $nPerPage);
-        }
-
-        $pageCount = $nTotal > 0 ? ceil($nTotal / $nPerPage) : 1;
-        if ($this->request->get['p']) {
-            if ($this->request->get['p'] === 'l') {
-                $pageNo = $pageCount;
-            } elseif (is_numeric($this->request->get['p'])) {
-                $pageNo = (int) $this->request->get['p'];
-
-                if ($pageNo < 1 || $pageNo > $pageCount) {
-                    $this->pageNotFound();
-                }
-            } else {
-                $this->pageNotFound();
-            }
-        } else {
-            $pageNo = 1;
-        }
-
-        return [$pageNo, $pageCount];
     }
 
     protected function createIdentCode($uid)

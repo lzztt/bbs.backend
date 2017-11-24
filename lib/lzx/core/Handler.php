@@ -47,17 +47,15 @@ class Handler
 
     public static function exceptionHandler(Throwable $e)
     {
-        $msg = 'Uncaught exception: [' . get_class($e) . '] ' . $e->getMessage();
         if (self::$logger instanceof Logger) {
-            self::$logger->error($msg, $e->getTrace());
-            // flush the log
+            self::$logger->error($e->getMessage(), $e->getTrace());
             self::$logger->flush();
         } else {
-            error_log($msg . PHP_EOL . $e->getTraceAsString());
+            error_log($e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
 
         if (self::$displayError) {
-            echo $msg . PHP_EOL;
+            echo $e->getMessage() . PHP_EOL . $e->getTraceAsString() . PHP_EOL;
         }
     }
 }

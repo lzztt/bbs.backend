@@ -2,11 +2,12 @@
 
 namespace lzx\core;
 
-use Exception;
+use lzx\core\ResponseException;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\html\Template;
 use lzx\core\Logger;
+use lzx\core\UtilTrait;
 
 // only controller will handle all exceptions and local languages
 // other classes will report status to controller
@@ -38,24 +39,24 @@ abstract class Controller
     protected function error($msg)
     {
         $this->response->setContent($msg);
-        throw new Exception();
+        throw new ResponseException();
     }
 
     protected function pageNotFound()
     {
         $this->response->pageNotFound();
-        throw new Exception();
+        throw new ResponseException();
     }
 
     protected function pageForbidden()
     {
         $this->response->pageForbidden();
-        throw new Exception();
+        throw new ResponseException();
     }
 
     protected function pageRedirect($uri)
     {
         $this->response->pageRedirect($uri);
-        throw new Exception();
+        throw new ResponseException();
     }
 }
