@@ -1,1 +1,0 @@
-<link href="/themes/wedding/css/wedding2.01.css" rel="stylesheet" type="text/css" />
