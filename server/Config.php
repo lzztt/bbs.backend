@@ -31,13 +31,12 @@ class Config
 
         $this->path = [
             'server' => __DIR__,
-            'language' => __DIR__ . '/language',
             'theme' => __DIR__ . '/theme',
             'site' => dirname(__DIR__),
             'log' => dirname(__DIR__) . '/log',
             'file' => dirname(__DIR__) . '/client',
             'backup' => dirname(__DIR__) . '/backup',
-            'cache' => '/tmp/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
+            'cache' => '/cache/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
         ];
         $this->cache = false;
         $this->db = [
@@ -48,15 +47,10 @@ class Config
         $this->getkeys = ['p', 'r', 'u', 'c', 't', 'action'];
         $this->language = 'zh-cn';
         $this->theme = [
-            'default' => 'default',
-            'wedding' => 'wedding',
-            'wedding2' => 'wedding2',
-            'adm' => 'adm',
-            'single' => 'single',
-            'roselife' => 'roselife'
+            'roselife' => 'roselife',
         ];
         $this->domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
-        $this->webmaster = 'ikki3355@gmail.com';
+        $this->webmaster = 'mikalotus3355@gmail.com';
 
         $this->image = [
             'types' => [IMAGETYPE_GIF, IMAGETYPE_PNG, IMAGETYPE_JPEG],
@@ -68,7 +62,7 @@ class Config
         // make this file immutable
         // root# chattr +i config.php
         // just in case we rsync the dev/testing configuration file to production
-        if ($this->domain === 'houstonbbs.com') {
+        if (in_array($this->domain, ['houstonbbs.com', 'dallasbbs.com', 'austinbbs.com'])) {
             $this->stage = self::STAGE_PRODUCTION;
         }
     }
