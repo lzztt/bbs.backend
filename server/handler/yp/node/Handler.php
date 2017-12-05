@@ -8,7 +8,7 @@ use site\dbobject\Tag;
 use site\dbobject\Node;
 use site\dbobject\NodeYellowPage;
 use site\dbobject\Image;
-use site\dbobject\AD;
+use site\dbobject\Ad;
 use site\dbobject\Comment;
 
 class Handler extends Controller
@@ -31,7 +31,7 @@ class Handler extends Controller
         }
 
         if (empty($this->request->post)) {
-            $ad = new AD();
+            $ad = new Ad();
             $this->var['content'] = new Template('editor_bbcode_yp', ['ads' => $ad->getList('name')]);
         } else {
             $node = new Node();
