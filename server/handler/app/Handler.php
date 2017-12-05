@@ -15,12 +15,8 @@ class Handler extends Controller
 
     protected function getLatestVersion($app)
     {
-        $current = null;
-        try {
-            $current = file_get_contents($this->config->path['file'] . '/app/' . $app . '.current');
-        } catch (Exception $ex) {
-            // ignore and continue
-        }
+        $versionFile = $this->config->path['file'] . '/app/' . $app . '.current';
+        $current = is_file($versionFile) ? file_get_contents($versionFile) : null;
 
         if ($current) {
             $dir = $this->config->path['file'] . '/app/' . $current;
@@ -41,8 +37,8 @@ class Handler extends Controller
 
         // cache the latest version
         try {
-            file_put_contents($this->config->path['file'] . '/app/' . $app . '.current', basename($dir));
-        } catch (Exception $ex) {
+            file_put_contents($versionFile, basename($dir));
+        } catch (Exception $e) {
             // ignore and continue
         }
 
