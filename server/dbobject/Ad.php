@@ -5,7 +5,7 @@ namespace site\dbobject;
 use lzx\db\DBObject;
 use lzx\db\DB;
 
-class AD extends DBObject
+class Ad extends DBObject
 {
     public $id;
     public $name;

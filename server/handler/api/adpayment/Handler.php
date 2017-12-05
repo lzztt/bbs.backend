@@ -3,8 +3,8 @@
 namespace site\handler\api\adpayment;
 
 use site\Service;
-use site\dbobject\AD;
-use site\dbobject\ADPayment;
+use site\dbobject\Ad;
+use site\dbobject\AdPayment;
 
 class Handler extends Service
 {
@@ -18,7 +18,7 @@ class Handler extends Service
             $this->forbidden();
         }
 
-        $ad = new AD();
+        $ad = new Ad();
         $a_month_ago = $this->request->timestamp - 2592000;
         $this->json($ad->getAllAdPayments($a_month_ago));
     }
@@ -34,15 +34,15 @@ class Handler extends Service
             $this->forbidden();
         }
 
-        $ad = new AD();
-        $ap = new ADPayment();
-        $ap->adID = $this->request->post['ad_id'];
+        $ad = new Ad();
+        $ap = new AdPayment();
+        $ap->adId = $this->request->post['ad_id'];
         $ap->amount = $this->request->post['amount'];
         $ap->time = strtotime($this->request->post['time']);
         $ap->comment = $this->request->post['comment'];
         $ap->add();
 
-        $ad->id = $ap->adID;
+        $ad->id = $ap->adId;
         $ad->load('name,expTime');
         if ($ad->expTime < $this->request->timestamp) {
             $exp_time = $this->request->post['time'];
