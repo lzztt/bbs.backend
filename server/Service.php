@@ -55,7 +55,7 @@ abstract class Service extends LzxService
     protected function validateCaptcha()
     {
         if (!$this->request->json['captcha'] || !$this->session->captcha
-                || strtolower($this->request->json['captcha']) !== strtolower($this->session->captcha)) {
+                || strtolower((string) $this->request->json['captcha']) !== strtolower($this->session->captcha)) {
             $this->error('图形验证码错误');
         }
         unset($this->session->captcha);
