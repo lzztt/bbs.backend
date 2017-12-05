@@ -112,7 +112,7 @@ class Handler extends Node
             $node_yp = new NodeYellowPage($nid, 'nid');
             $keys = ['address', 'phone', 'email', 'website', 'fax'];
             foreach ($keys as $k) {
-                $node_yp->$k = strlen($this->request->post[$k]) ? $this->request->post[$k] : null;
+                $node_yp->$k = $this->request->post[$k] ? $this->request->post[$k] : null;
             }
 
             $node_yp->update();

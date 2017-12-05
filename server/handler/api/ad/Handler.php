@@ -3,7 +3,7 @@
 namespace site\handler\api\ad;
 
 use site\Service;
-use site\dbobject\AD;
+use site\dbobject\Ad;
 
 class Handler extends Service
 {
@@ -18,7 +18,7 @@ class Handler extends Service
             $this->forbidden();
         }
 
-        $ad = new AD();
+        $ad = new Ad();
 
         if ($this->args) {
             if ($this->args[0] == 'name') {
@@ -41,7 +41,7 @@ class Handler extends Service
             $this->forbidden();
         }
 
-        $ad = new AD();
+        $ad = new Ad();
 
         $ad->name = $this->request->post['name'];
         $ad->email = $this->request->post['email'];

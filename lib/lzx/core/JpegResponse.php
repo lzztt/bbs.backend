@@ -4,11 +4,11 @@ namespace lzx\core;
 
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
-use Zend\Diactoros\Response;
+use Zend\Diactoros\Response as ToRemoveResponse;
 use Zend\Diactoros\Response\InjectContentTypeTrait;
 use Zend\Diactoros\Stream;
 
-class JpegResponse extends Response
+class JpegResponse extends ToRemoveResponse
 {
     use InjectContentTypeTrait;
 
