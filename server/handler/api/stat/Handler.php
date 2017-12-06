@@ -39,7 +39,6 @@ class Handler extends Service
 
     private function getAlexa($city)
     {
-        $this->logger->info('getting alexa');
         $data = self::curlGetData('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
 
         if ($data) {
