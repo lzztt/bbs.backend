@@ -17,7 +17,7 @@ trait UtilTrait
         $data = curl_exec($c);
         curl_close($c);
 
-        return $data; // will return FALSE on failure
+        return $data ? $data : '';
     }
 
     protected static function getCityFromIP($ip)
