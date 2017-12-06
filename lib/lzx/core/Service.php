@@ -29,7 +29,7 @@ abstract class Service
     protected function json(array $return = null)
     {
         $this->response->type = Response::JSON;
-        $this->response->setContent($return);
+        $this->response->setContent($return ? $return : (object) null);
     }
 
     protected function error($msg)
