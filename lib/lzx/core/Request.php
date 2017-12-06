@@ -32,7 +32,7 @@ class Request
         $this->post = self::escape($this->req->getParsedBody());
         $this->get = self::escape($this->req->getQueryParams());
         $this->files = $this->getUploadFiles();
-        $this->json = json_decode($this->req->getBody()->getContents(), true);
+        $this->json = json_decode((string) $this->req->getBody(), true);
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
         $this->referer = sizeof($arr) > 1 ? $arr[1] : null;

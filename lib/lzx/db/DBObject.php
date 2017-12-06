@@ -303,7 +303,7 @@ abstract class DBObject
         }
 
         if (sizeof($this->properties_dirty) == 0) {
-            throw new Exception('updating an object with no dirty properties to database');
+            return true;
         }
 
         if (empty($properties)) {
