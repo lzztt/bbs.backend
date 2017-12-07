@@ -350,6 +350,7 @@ abstract class DBObject
 
     public function getCount()
     {
+        $this->sync();
         $this->setWhere(); // automatically add a filter for values we already have
 
         return intval(array_pop(array_pop($this->select('COUNT(*)'))));
