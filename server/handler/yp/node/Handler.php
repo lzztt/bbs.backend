@@ -53,8 +53,8 @@ class Handler extends Controller
             $nodeYP = new NodeYellowPage();
             $nodeYP->nid = $node->id;
             $nodeYP->adId = $this->request->post['aid'];
-            foreach (array_diff($nodeYP->getProperties(), ['nid']) as $key) {
-                $nodeYP->$key = $this->request->post[$key];
+            foreach (array_diff($nodeYP->getProperties(), ['nid']) as $k) {
+                $nodeYP->$k = $this->request->post[$k] ? $this->request->post[$k] : null;
             }
             $nodeYP->add();
 
