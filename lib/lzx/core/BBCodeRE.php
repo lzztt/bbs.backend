@@ -30,7 +30,7 @@ class BBCodeRE
         }
 
         // BBCode [code]
-        $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [self, 'escape'], $text);
+        $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [__CLASS__, 'escape'], $text);
 
         // Smileys to find...
         // Add closing tags to prevent users from disruping your site's HTML
@@ -89,10 +89,10 @@ class BBCodeRE
         //$text = "<p>" . preg_replace("/(\n){2,}/", "</p><p>", $text) . "</p>";
         $text = nl2br($text);
 
-        $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [self, 'removeBr'], $text);
+        $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [__CLASS__, 'removeBr'], $text);
         //$text = preg_replace('/<p><pre>(.*?)<\/pre><\/p>/ms', "<pre>\\1</pre>", $text);
 
-        $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [self, 'removeBr'], $text);
+        $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [__CLASS__, 'removeBr'], $text);
         //$text = preg_replace('/<p><ul>(.*?)<\/ul><\/p>/ms', "<ul>\\1</ul>", $text);
         // matches an "xxxx://yyyy" URL at the start of a line, or after a space.
         // xxxx can only be alpha characters.
