@@ -106,10 +106,6 @@ class Handler extends Forum
         $this->getCacheEvent('ForumNode')->trigger();
         $this->getCacheEvent('ForumUpdate', $tid)->trigger();
 
-        if ($node->tid == 15) {
-            $this->getCacheEvent('ImmigrationNode')->trigger();
-        }
-
         $this->pageRedirect('/node/' . $node->id);
     }
 }

@@ -11,18 +11,19 @@ use site\dbobject\City;
 trait HandlerTrait
 {
     protected static $city;
-    private static $staticInitialized = false;
     private static $cacheHandler;
     private $independentCacheList = [];
     private $cacheEvents = [];
 
     private function staticInit()
     {
-        if (self::$staticInitialized) {
+        static $initialized = false;
+
+        if ($initialized) {
             return;
         }
 
-        self::$staticInitialized = true;
+        $initialized = true;
 
         // set site info
         $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
