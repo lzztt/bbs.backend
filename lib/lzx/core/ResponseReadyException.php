@@ -4,6 +4,6 @@ namespace lzx\core;
 
 use Exception;
 
-class ResponseException extends Exception
+class ResponseReadyException extends Exception
 {
 }
