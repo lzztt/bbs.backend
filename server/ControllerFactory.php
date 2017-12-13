@@ -2,7 +2,7 @@
 
 namespace site;
 
-use lzx\core\ResponseException;
+use lzx\core\ResponseReadyException;
 use lzx\core\Request;
 use lzx\core\Response;
 use site\Config;
@@ -25,7 +25,7 @@ class ControllerFactory
         } else {
             // cannot find a controller
             $response->pageNotFound();
-            throw new ResponseException();
+            throw new ResponseReadyException();
         }
     }
 
