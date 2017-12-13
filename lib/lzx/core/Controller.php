@@ -2,7 +2,7 @@
 
 namespace lzx\core;
 
-use lzx\core\ResponseException;
+use lzx\core\ResponseReadyException;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\html\Template;
@@ -39,24 +39,24 @@ abstract class Controller
     protected function error($msg)
     {
         $this->response->setContent($msg);
-        throw new ResponseException();
+        throw new ResponseReadyException();
     }
 
     protected function pageNotFound()
     {
         $this->response->pageNotFound();
-        throw new ResponseException();
+        throw new ResponseReadyException();
     }
 
     protected function pageForbidden()
     {
         $this->response->pageForbidden();
-        throw new ResponseException();
+        throw new ResponseReadyException();
     }
 
     protected function pageRedirect($uri)
     {
         $this->response->pageRedirect($uri);
-        throw new ResponseException();
+        throw new ResponseReadyException();
     }
 }

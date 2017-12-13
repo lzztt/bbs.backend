@@ -3,7 +3,7 @@
 namespace site;
 
 use Exception;
-use lzx\core\ResponseException;
+use lzx\core\ResponseReadyException;
 use lzx\App;
 use lzx\core\Handler;
 use lzx\db\DB;
@@ -90,20 +90,18 @@ class WebApp extends App
         $this->logger->setUserInfo($userinfo);
 
         $response = Response::getInstance();
-        $commit = true;
 
         try {
             $ctrler = ControllerFactory::create($request, $response, $this->config, $this->logger, $session);
             $ctrler->run();
-        } catch (ResponseException $e) {
-            $commit = false;
+        } catch (ResponseReadyException $e) {
         }
 
         // send out response
         $response->send();
 
         // do extra clean up and heavy stuff here
-        if ($commit && $response->getStatus() < 400) {
+        if ($response->getStatus() < 400) {
             // flush session
             $session->close();
 
