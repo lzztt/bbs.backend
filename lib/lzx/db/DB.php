@@ -93,10 +93,7 @@ class DB
                     $this->statements[$sql] = $this->db->prepare($sql);
                 }
                 $statement = $this->statements[$sql];
-                foreach ($params as $k => $v) {
-                    $statement->bindValue($k, $v);
-                }
-                $statement->execute();
+                $statement->execute($params);
             } else {
                 // query debug timer and info
                 if (!array_key_exists($sql, $this->statements)) {
@@ -106,10 +103,7 @@ class DB
                 }
                 $statement = $this->statements[$sql];
                 $timer = microtime(true);
-                foreach ($params as $k => $v) {
-                    $statement->bindValue($k, $v);
-                }
-                $statement->execute();
+                $statement->execute($params);
                 $sql .= ' [';
                 foreach ($params as $k => $v) {
                     $sql = $sql . $k . '=' . $v . ', ';
