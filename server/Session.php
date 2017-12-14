@@ -35,7 +35,7 @@ class Session
 
             if (!$this->isNew) {
                 // load session from database
-                $arr = $db->query('SELECT * FROM sessions WHERE id = "' . $this->sid . '"');
+                $arr = $db->query('SELECT * FROM sessions WHERE id = :id', [':id' => $this->sid]);
                 if ($arr) {
                     // validate session's user agent crc checksum
                     if ($this->crc32() === (int) $arr[0]['crc']) {
