@@ -2,9 +2,9 @@
 
 namespace site\handler\api\file;
 
-use site\Service;
-use site\Config;
 use lzx\core\Response;
+use site\Config;
+use site\Service;
 use site\dbobject\Image;
 
 class Handler extends Service

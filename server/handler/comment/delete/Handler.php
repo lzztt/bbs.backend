@@ -2,10 +2,10 @@
 
 namespace site\handler\comment\delete;
 
-use site\handler\comment\Comment;
-use site\dbobject\Tag;
 use site\dbobject\Comment as CommentObject;
 use site\dbobject\Node;
+use site\dbobject\Tag;
+use site\handler\comment\Comment;
 
 class Handler extends Comment
 {

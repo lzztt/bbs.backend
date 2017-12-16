@@ -4,9 +4,9 @@ namespace site\dbobject;
 
 use Exception;
 use Imagick;
-use lzx\db\DBObject;
-use lzx\db\DB;
 use lzx\core\Logger;
+use lzx\db\DB;
+use lzx\db\DBObject;
 
 class Image extends DBObject
 {

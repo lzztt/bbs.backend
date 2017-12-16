@@ -3,8 +3,8 @@
 namespace site\dbobject;
 
 use Exception;
-use lzx\db\DBObject;
 use lzx\db\DB;
+use lzx\db\DBObject;
 
 class User extends DBObject
 {

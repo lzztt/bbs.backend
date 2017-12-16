@@ -2,8 +2,8 @@
 
 namespace site\dbobject;
 
-use lzx\db\DBObject;
 use lzx\db\DB;
+use lzx\db\DBObject;
 
 class City extends DBObject
 {

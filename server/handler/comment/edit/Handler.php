@@ -3,10 +3,9 @@
 namespace site\handler\comment\edit;
 
 use Exception;
-use site\handler\comment\Comment;
 use site\dbobject\Comment as CommentObject;
-use site\dbobject\Node;
 use site\dbobject\Image;
+use site\handler\comment\Comment;
 
 class Handler extends Comment
 {

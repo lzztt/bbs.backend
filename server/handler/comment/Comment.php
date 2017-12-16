@@ -2,11 +2,11 @@
 
 namespace site\handler\comment;
 
-use site\Controller;
+use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
 use site\Config;
-use lzx\core\Logger;
+use site\Controller;
 use site\Session;
 
 abstract class Comment extends Controller

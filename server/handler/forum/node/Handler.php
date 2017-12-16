@@ -3,12 +3,12 @@
 namespace site\handler\forum\node;
 
 use Exception;
-use site\handler\forum\Forum;
-use site\dbobject\Node;
-use site\dbobject\Image;
-use site\dbobject\User;
 use lzx\core\Mailer;
 use site\dbobject\Comment;
+use site\dbobject\Image;
+use site\dbobject\Node;
+use site\dbobject\User;
+use site\handler\forum\Forum;
 
 class Handler extends Forum
 {

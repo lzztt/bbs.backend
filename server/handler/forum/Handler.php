@@ -2,11 +2,11 @@
 
 namespace site\handler\forum;
 
-use site\handler\forum\Forum;
-use lzx\html\Template;
-use site\dbobject\Tag;
-use site\dbobject\Node;
 use lzx\cache\PageCache;
+use lzx\html\Template;
+use site\dbobject\Node;
+use site\dbobject\Tag;
+use site\handler\forum\Forum;
 
 class Handler extends Forum
 {
