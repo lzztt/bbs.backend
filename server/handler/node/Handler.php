@@ -3,12 +3,12 @@
 namespace site\handler\node;
 
 use Exception;
-use site\handler\node\Node;
+use lzx\cache\PageCache;
 use lzx\core\BBCodeRE as BBCode;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
-use lzx\cache\PageCache;
+use site\handler\node\Node;
 
 class Handler extends Node
 {

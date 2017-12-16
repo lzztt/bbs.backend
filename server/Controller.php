@@ -2,21 +2,17 @@
 
 namespace site;
 
-// only controller will handle all exceptions and local languages
-// other classes will report status to controller
-// controller set status back the WebApp object
-// WebApp object will call Theme to display the content
-use lzx\core\Controller as LzxCtrler;
+use lzx\core\Controller as BaseCtrler;
+use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
-use lzx\core\Logger;
+use site\HandlerTrait;
 use site\Session;
 use site\dbobject\Tag;
-use site\HandlerTrait;
 
-abstract class Controller extends LzxCtrler
+abstract class Controller extends BaseCtrler
 {
     use HandlerTrait;
 

@@ -4,9 +4,9 @@ namespace lzx\html;
 
 use Exception;
 use SplObjectStorage;
+use lzx\core\Controller;
 use lzx\core\Logger;
 use lzx\html\HTMLElement;
-use lzx\core\Controller;
 
 class Template
 {

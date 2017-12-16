@@ -2,20 +2,20 @@
 
 namespace site;
 
-use lzx\core\Service as LzxService;
-use lzx\core\Request;
-use lzx\core\Response;
 use lzx\core\Logger;
 use lzx\core\Mailer;
+use lzx\core\Request;
+use lzx\core\Response;
+use lzx\core\Service as BaseService;
 use lzx\html\Template;
-use site\Session;
 use site\Config;
 use site\HandlerTrait;
+use site\Session;
 
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
 
-abstract class Service extends LzxService
+abstract class Service extends BaseService
 {
     use HandlerTrait;
 

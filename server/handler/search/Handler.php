@@ -2,8 +2,8 @@
 
 namespace site\handler\search;
 
-use site\Controller;
 use lzx\cache\PageCache;
+use site\Controller;
 
 class Handler extends Controller
 {

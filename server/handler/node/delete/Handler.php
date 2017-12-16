@@ -2,10 +2,9 @@
 
 namespace site\handler\node\delete;
 
-use site\handler\node\Node;
-use site\dbobject\Node as NodeObject;
-use site\dbobject\User;
 use site\dbobject\Activity;
+use site\dbobject\Node as NodeObject;
+use site\handler\node\Node;
 
 class Handler extends Node
 {
