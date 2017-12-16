@@ -2,8 +2,8 @@
 
 namespace site\handler\activity;
 
-use site\Controller;
 use lzx\html\Template;
+use site\Controller;
 use site\dbobject\Activity as ActivityObject;
 
 class Handler extends Controller

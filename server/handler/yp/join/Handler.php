@@ -2,9 +2,9 @@
 
 namespace site\handler\yp\join;
 
-use site\Controller;
-use lzx\html\Template;
 use lzx\cache\PageCache;
+use lzx\html\Template;
+use site\Controller;
 
 class Handler extends Controller
 {

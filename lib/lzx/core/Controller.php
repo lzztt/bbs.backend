@@ -2,12 +2,12 @@
 
 namespace lzx\core;
 
-use lzx\core\ResponseReadyException;
+use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\html\Template;
-use lzx\core\Logger;
+use lzx\core\ResponseReadyException;
 use lzx\core\UtilTrait;
+use lzx\html\Template;
 
 // only controller will handle all exceptions and local languages
 // other classes will report status to controller

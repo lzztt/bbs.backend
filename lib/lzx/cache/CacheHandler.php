@@ -3,11 +3,11 @@
 namespace lzx\cache;
 
 use Exception;
-use lzx\cache\CacheHandlerInterface;
-use lzx\db\DB;
 use lzx\cache\Cache;
+use lzx\cache\CacheHandlerInterface;
 use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
+use lzx\db\DB;
 
 class CacheHandler implements CacheHandlerInterface
 {

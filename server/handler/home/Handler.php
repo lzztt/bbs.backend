@@ -2,13 +2,13 @@
 
 namespace site\handler\home;
 
-use site\Controller;
-use lzx\html\Template;
-use site\dbobject\Node;
-use site\dbobject\Activity;
-use site\dbobject\Image;
 use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
+use lzx\html\Template;
+use site\Controller;
+use site\dbobject\Activity;
+use site\dbobject\Image;
+use site\dbobject\Node;
 use site\dbobject\Tag;
 
 class Handler extends Controller

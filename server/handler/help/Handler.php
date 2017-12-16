@@ -2,8 +2,8 @@
 
 namespace site\handler\help;
 
-use site\Controller;
 use lzx\html\Template;
+use site\Controller;
 
 class Handler extends Controller
 {

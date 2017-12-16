@@ -2,20 +2,19 @@
 
 namespace site;
 
-use Exception;
-use lzx\core\ResponseReadyException;
 use lzx\App;
-use lzx\core\Handler;
-use lzx\db\DB;
-use lzx\core\Request;
-use lzx\core\Response;
-use site\Session;
-use lzx\html\Template;
-use site\Config;
-use site\ControllerFactory;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
+use lzx\core\Handler;
+use lzx\core\Request;
+use lzx\core\Response;
+use lzx\core\ResponseReadyException;
+use lzx\db\DB;
+use lzx\html\Template;
+use site\Config;
+use site\ControllerFactory;
+use site\Session;
 
 class WebApp extends App
 {

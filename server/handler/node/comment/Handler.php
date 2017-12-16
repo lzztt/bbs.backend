@@ -3,12 +3,12 @@
 namespace site\handler\node\comment;
 
 use Exception;
-use site\handler\node\Node;
-use site\dbobject\Node as NodeObject;
+use lzx\core\Mailer;
 use site\dbobject\Comment;
 use site\dbobject\Image;
+use site\dbobject\Node as NodeObject;
 use site\dbobject\User;
-use lzx\core\Mailer;
+use site\handler\node\Node;
 
 class Handler extends Node
 {

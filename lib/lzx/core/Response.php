@@ -3,14 +3,14 @@
 namespace lzx\core;
 
 use Exception;
-use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\Response\EmptyResponse;
-use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\JsonResponse;
+use Zend\Diactoros\Response\RedirectResponse;
+use Zend\Diactoros\Response\SapiEmitter;
+use lzx\cache\PageCache;
 use lzx\core\JpegResponse;
 use lzx\html\Template;
-use lzx\cache\PageCache;
 
 class Response
 {

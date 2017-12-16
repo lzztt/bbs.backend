@@ -6,9 +6,9 @@ use Exception;
 use Imagick;
 use ImagickDraw;
 use ImagickPixel;
-use site\Service;
-use site\Config;
 use lzx\core\Response;
+use site\Config;
+use site\Service;
 
 class Handler extends Service
 {

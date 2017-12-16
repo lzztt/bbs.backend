@@ -2,11 +2,11 @@
 
 namespace site\handler\yp;
 
-use site\Controller;
-use lzx\html\Template;
-use site\dbobject\Tag;
-use site\dbobject\Node;
 use lzx\cache\PageCache;
+use lzx\html\Template;
+use site\Controller;
+use site\dbobject\Node;
+use site\dbobject\Tag;
 
 class Handler extends Controller
 {
