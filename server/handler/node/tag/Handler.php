@@ -2,8 +2,8 @@
 
 namespace site\handler\node\tag;
 
-use site\handler\node\Node;
 use site\dbobject\Node as NodeObject;
+use site\handler\node\Node;
 
 class Handler extends Node
 {

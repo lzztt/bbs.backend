@@ -2,9 +2,9 @@
 
 namespace site\handler\api\user;
 
+use site\Config;
 use site\Service;
 use site\dbobject\User;
-use site\Config;
 
 class Handler extends Service
 {

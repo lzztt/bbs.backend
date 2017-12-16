@@ -2,11 +2,11 @@
 
 namespace site\handler\node\activity;
 
-use site\handler\node\Node;
-use lzx\html\Template;
 use lzx\core\Mailer;
-use site\dbobject\Node as NodeObject;
+use lzx\html\Template;
 use site\dbobject\Activity;
+use site\dbobject\Node as NodeObject;
+use site\handler\node\Node;
 
 class Handler extends Node
 {

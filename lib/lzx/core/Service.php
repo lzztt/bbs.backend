@@ -2,10 +2,10 @@
 
 namespace lzx\core;
 
-use lzx\core\ResponseReadyException;
+use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\core\Logger;
+use lzx\core\ResponseReadyException;
 use lzx\core\UtilTrait;
 
 // service will populate response with JSON data

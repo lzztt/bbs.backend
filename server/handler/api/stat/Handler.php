@@ -3,8 +3,8 @@
 namespace site\handler\api\stat;
 
 use site\Service;
-use site\dbobject\User;
 use site\dbobject\Node;
+use site\dbobject\User;
 
 class Handler extends Service
 {

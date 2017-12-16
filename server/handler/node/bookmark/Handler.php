@@ -2,8 +2,8 @@
 
 namespace site\handler\node\bookmark;
 
-use site\handler\node\Node;
 use site\dbobject\User;
+use site\handler\node\Node;
 
 class Handler extends Node
 {
