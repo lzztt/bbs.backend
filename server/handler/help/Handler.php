@@ -7,7 +7,7 @@ use site\Controller;
 
 class Handler extends Controller
 {
-    public function run()
+    public function run(): void
     {
          $this->var['content'] = new Template('help');
     }

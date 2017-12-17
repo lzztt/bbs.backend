@@ -25,7 +25,7 @@ class Handler extends Service
      * get new message count
      * uri: /api/message/new
      */
-    public function get()
+    public function get(): void
     {
         if (!$this->request->uid || empty($this->args)) {
             $this->forbidden();
@@ -50,7 +50,7 @@ class Handler extends Service
      * post: toUid=<toUid>&body=<body>(&topicMid=<topicMid>)
      * return: new created message
      */
-    public function post()
+    public function post(): void
     {
         if (!$this->request->uid) {
             $this->error('您必须先登录，才能发送站内短信');
@@ -148,7 +148,7 @@ class Handler extends Service
      * delete a private message from user's message box
      * uri: /api/message/<mid>(,<mid>,...)?action=delete
      */
-    public function delete()
+    public function delete(): void
     {
         if (!$this->request->uid || empty($this->args)) {
             $this->forbidden();
@@ -176,7 +176,7 @@ class Handler extends Service
         $this->json($error ? ['error' => $error] : null);
     }
 
-    private function getMessage($mid)
+    private function getMessage($mid): array
     {
         if ($mid > 0) {
             $pm = new PrivMsg();
@@ -197,7 +197,7 @@ class Handler extends Service
         }
     }
 
-    private function getMessageList($mailbox)
+    private function getMessageList($mailbox): array
     {
         $user = new User($this->request->uid, null);
         if (!in_array($mailbox, self::$mailbox)) {
@@ -216,7 +216,7 @@ class Handler extends Service
         return ['msgs' => $msgs, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount]];
     }
 
-    private function getNewMessageCount()
+    private function getNewMessageCount(): array
     {
         $user = new User($this->request->uid, null);
         return ['count' => $user->getPrivMsgsCount('new')];

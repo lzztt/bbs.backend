@@ -9,7 +9,7 @@ abstract class Forum extends Controller
 {
     const NODES_PER_PAGE = 30;
 
-    protected function getTagObj()
+    protected function getTagObj(): Tag
     {
         if ($this->args) {
             $tid = (int) $this->args[0];

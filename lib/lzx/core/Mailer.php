@@ -24,7 +24,7 @@ class Mailer
         $this->from = $from;
     }
 
-    public function send()
+    public function send(): bool
     {
         $headers = 'From: ' . $this->from . '@' . $this->domain . PHP_EOL .
             'Reply-To: ' . $this->from . '@' . $this->domain . PHP_EOL .

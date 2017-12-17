@@ -39,7 +39,7 @@ class CronApp extends App
         }
     }
 
-    public function run($argc, array $argv = [])
+    public function run($argc, array $argv = []): void
     {
         $task = strtolower($argv[1]);
         $func = $this->actions[$task];
@@ -55,7 +55,7 @@ class CronApp extends App
         }
     }
 
-    protected function doActivity()
+    protected function doActivity(): void
     {
         // config cache
         $db = DB::getInstance($this->config->db);
@@ -124,7 +124,7 @@ class CronApp extends App
         }
     }
 
-    protected function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime)
+    protected function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime): void
     {
         $nextRefreshTime = $currentTime + 604800;
         $sql = 'SELECT start_time, end_time FROM activities WHERE status = 1 AND (start_time > ' . $currentTime . ' OR end_time > ' . $currentTime . ')';
@@ -145,7 +145,7 @@ class CronApp extends App
     }
 
 // daily at 23:55 CDT
-    protected function doSession()
+    protected function doSession(): void
     {
         $db = DB::getInstance($this->config->db);
         $currentTime = (int) $_SERVER['REQUEST_TIME'];
@@ -154,7 +154,7 @@ class CronApp extends App
     }
 
 // daily
-    protected function doBackup()
+    protected function doBackup(): void
     {
         // clean database before backup
         $db = DB::getInstance($this->config->db);
@@ -177,7 +177,7 @@ class CronApp extends App
         echo shell_exec($cmd);
     }
 
-    protected function doAd()
+    protected function doAd(): void
     {
         $db = DB::getInstance($this->config->db);
 
@@ -199,7 +199,7 @@ class CronApp extends App
         }
     }
 
-    private function notifyAdUser($mailer, $ad, $time)
+    private function notifyAdUser($mailer, $ad, $time): void
     {
         $mailer->subject = $ad['name'] . '在HoustonBBS的' . ($ad['type_id'] == 1 ? '电子黄页' : '页顶广告') . $time . '到期';
         $mailer->to = $ad['email'];

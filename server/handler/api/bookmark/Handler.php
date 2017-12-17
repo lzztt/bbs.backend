@@ -13,7 +13,7 @@ class Handler extends Service
      * uri: /api/bookmark/<uid>
      *        /api/bookmark/<uid>?p=<pageNo>
      */
-    public function get()
+    public function get(): void
     {
         if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
@@ -40,7 +40,7 @@ class Handler extends Service
      * uri: /api/bookmark[?action=post]
      * post: nid=<nid>
      */
-    public function post()
+    public function post(): void
     {
         if (!$this->request->uid || empty($this->request->post)) {
             $this->forbidden();
@@ -62,7 +62,7 @@ class Handler extends Service
      * remove one node or multiple modes from user's bookmark list
      * uri: /api/bookmark/<nid>(,<nid>,...)?action=delete
      */
-    public function delete()
+    public function delete(): void
     {
         if (!$this->request->uid || empty($this->args)) {
             $this->forbidden();

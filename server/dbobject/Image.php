@@ -26,7 +26,7 @@ class Image extends DBObject
         parent::__construct($db, $table, $id, $properties);
     }
 
-    private function rmTmpFile($file)
+    private function rmTmpFile($file): void
     {
         try {
             unlink($file);
@@ -36,8 +36,7 @@ class Image extends DBObject
         }
     }
 
-    // will always assuming multiple file array
-    public function saveFile(array $files, array $config)
+    public function saveFile(array $files, array $config): array
     {
         $errmsg = [
             UPLOAD_ERR_INI_SIZE    => 'upload_err_ini_size',
@@ -148,7 +147,7 @@ class Image extends DBObject
         return ['error' => $errorFile, 'saved' => $savedFile];
     }
 
-    private function autoRotateImage(Imagick $img)
+    private function autoRotateImage(Imagick $img): void
     {
         $orientation = $img->getImageOrientation();
 
@@ -168,7 +167,7 @@ class Image extends DBObject
         }
     }
 
-    public function updateFileList(array $files, $filePath, $nid, $cid = null)
+    public function updateFileList(array $files, $filePath, $nid, $cid = null): void
     {
         $nid = (int) $nid;
         if ($cid) { // comment
@@ -216,7 +215,7 @@ class Image extends DBObject
         }
     }
 
-    public function getRecentImages($city_id)
+    public function getRecentImages($city_id): array
     {
         return $this->call('get_recent_images(' . $city_id . ')');
     }

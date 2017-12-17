@@ -14,7 +14,7 @@ class Handler
     public static $logger;
     public static $displayError = true;
 
-    public static function setErrorHandler()
+    public static function setErrorHandler(): void
     {
         if (!isset(self::$errorHandler)) {
             $handler = [__CLASS__, 'errorHandler'];
@@ -27,12 +27,12 @@ class Handler
         }
     }
 
-    public static function errorHandler($errno, $errstr, $errfile, $errline)
+    public static function errorHandler($errno, $errstr, $errfile, $errline): void
     {
         throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
     }
 
-    public static function setExceptionHandler()
+    public static function setExceptionHandler(): void
     {
         if (!isset(self::$exceptionHandler)) {
             $handler = [__CLASS__, 'exceptionHandler'];
@@ -45,7 +45,7 @@ class Handler
         }
     }
 
-    public static function exceptionHandler(Throwable $e)
+    public static function exceptionHandler(Throwable $e): void
     {
         if (self::$logger instanceof Logger) {
             self::$logger->error($e->getMessage(), $e->getTrace());

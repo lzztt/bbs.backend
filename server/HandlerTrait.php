@@ -2,6 +2,7 @@
 
 namespace site;
 
+use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\html\Template;
@@ -15,7 +16,7 @@ trait HandlerTrait
     private $independentCacheList = [];
     private $cacheEvents = [];
 
-    private function staticInit()
+    private function staticInit(): void
     {
         static $initialized = false;
 
@@ -54,7 +55,7 @@ trait HandlerTrait
         }
     }
 
-    public function flushCache()
+    public function flushCache(): void
     {
         if ($this->config->cache) {
             if ($this->cache && $this->response->getStatus() < 300 && Template::hasError() === false) {
@@ -73,7 +74,7 @@ trait HandlerTrait
         }
     }
 
-    protected function getIndependentCache($key)
+    protected function getIndependentCache($key): Cache
     {
         $key = self::$cacheHandler->getCleanName($key);
         if (array_key_exists($key, $this->independentCacheList)) {
@@ -85,7 +86,7 @@ trait HandlerTrait
         }
     }
 
-    protected function getCacheEvent($name, $objectID = 0)
+    protected function getCacheEvent($name, $objectID = 0): CacheEvent
     {
         $name = self::$cacheHandler->getCleanName($name);
         $objID = (int) $objectID;

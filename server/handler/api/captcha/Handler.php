@@ -12,7 +12,7 @@ use site\Service;
 
 class Handler extends Service
 {
-    public function get()
+    public function get(): void
     {
         if (!($this->request->referer && $this->args)) {
             $this->response->pageForbidden();
@@ -30,13 +30,13 @@ class Handler extends Service
         $this->response->setContent($this->generateImage(str_split($code), 'jpeg'));
     }
 
-    private function getRandomColor()
+    private function getRandomColor(): ImagickPixel
     {
         $hex_dark = '#' . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9) . rand(0, 9);
         return new ImagickPixel($hex_dark);
     }
 
-    private function generateImage($code, $format)
+    private function generateImage($code, $format): Imagick
     {
         // Get font.
         $config = Config::getInstance();

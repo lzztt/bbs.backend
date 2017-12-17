@@ -26,19 +26,19 @@ abstract class Service
         $this->logger = $logger;
     }
 
-    protected function json(array $return = null)
+    protected function json(array $return = null): void
     {
         $this->response->type = Response::JSON;
         $this->response->setContent($return ? $return : (object) null);
     }
 
-    protected function error($msg)
+    protected function error($msg): void
     {
         $this->json(['error' => $msg]);
         throw new ResponseReadyException();
     }
 
-    protected function forbidden()
+    protected function forbidden(): void
     {
         $this->error('forbidden');
     }

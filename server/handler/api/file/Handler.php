@@ -9,7 +9,7 @@ use site\dbobject\Image;
 
 class Handler extends Service
 {
-    public function post()
+    public function post(): void
     {
         if ($this->request->uid == 0) { // we simply don't allow guest to post this form
             $this->error('upload_err_permission_denied');

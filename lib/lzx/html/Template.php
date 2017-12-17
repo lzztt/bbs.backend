@@ -28,17 +28,17 @@ class Template
     /**
      * Observer design pattern interfaces
      */
-    public function attach(Controller $observer)
+    public function attach(Controller $observer): void
     {
         $this->observers->attach($observer);
     }
 
-    public function detach(Controller $observer)
+    public function detach(Controller $observer): void
     {
         $this->observers->detach($observer);
     }
 
-    public function notify()
+    public function notify(): void
     {
         foreach ($this->observers as $observer) {
             $observer->update($this);
@@ -55,12 +55,12 @@ class Template
         }
     }
 
-    public function setVar(array $var)
+    public function setVar(array $var): void
     {
         $this->var = array_merge($this->var, $var);
     }
 
-    public static function setSite($site)
+    public static function setSite($site): void
     {
         self::$site = $site;
     }
@@ -116,23 +116,23 @@ class Template
         return $output;
     }
 
-    public static function setLogger(Logger $logger)
+    public static function setLogger(Logger $logger): void
     {
         self::$logger = $logger;
     }
 
-    public static function hasError()
+    public static function hasError(): bool
     {
         return self::$hasError;
     }
 
-    public static function link($name, $url, array $attributes = [])
+    public static function link($name, $url, array $attributes = []): HTMLElement
     {
         $attributes['href'] = $url;
         return new HTMLElement('a', $name, $attributes);
     }
 
-    public static function breadcrumb(array $links)
+    public static function breadcrumb(array $links): HTMLElement
     {
         $list = [];
         $count = count($links) - 1;
@@ -143,10 +143,10 @@ class Template
         return new HTMLElement('nav', $list, ['class' => 'breadcrumb']);
     }
 
-    public static function pager($pageNo, $pageCount, $uri)
+    public static function pager($pageNo, $pageCount, $uri): string
     {
         if ($pageCount < 2) {
-            return null;
+            return '';
         }
 
         if ($pageCount <= 7) {
@@ -179,6 +179,6 @@ class Template
             $pager[] = self::link('>', $uri . '?p=' . ($pageNo + 1));
             $pager[] = self::link('>>', $uri . '?p=' . $pageCount);
         }
-        return new HTMLElement('nav', $pager, ['class' => 'pager']);
+        return (string) new HTMLElement('nav', $pager, ['class' => 'pager']);
     }
 }

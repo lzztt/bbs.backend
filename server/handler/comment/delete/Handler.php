@@ -9,7 +9,7 @@ use site\handler\comment\Comment;
 
 class Handler extends Comment
 {
-    public function run()
+    public function run(): void
     {
         $comment = new CommentObject();
         $comment->id = (int) $this->args[0];
