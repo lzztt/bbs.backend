@@ -29,7 +29,7 @@ class ControllerFactory
         }
     }
 
-    private static function getHandlerClassAndArgs(Request $req)
+    private static function getHandlerClassAndArgs(Request $req): array
     {
         $args = self::getURIargs($req->uri);
 
@@ -56,7 +56,7 @@ class ControllerFactory
         return [$cls, array_values(array_diff($args, $keys))];
     }
 
-    private static function getURIargs($uri)
+    private static function getURIargs($uri): array
     {
         $parts = explode('?', $uri);
         $arg = trim($parts[0], '/');

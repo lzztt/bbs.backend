@@ -20,12 +20,12 @@ class Ad extends DBObject
         parent::__construct($db, $table, $id, $properties);
     }
 
-    public function getAllAds($from_time = 0)
+    public function getAllAds($from_time = 0): array
     {
         return $this->convertColumnNames($this->call('get_ads(' . $from_time . ')'));
     }
 
-    public function getAllAdPayments($from_time = 0)
+    public function getAllAdPayments($from_time = 0): array
     {
          return $this->convertColumnNames($this->call('get_ad_payments(' . $from_time . ')'));
     }

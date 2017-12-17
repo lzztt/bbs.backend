@@ -19,17 +19,17 @@ class Activity extends DBObject
          parent::__construct($db, $table, $id, $properties);
     }
 
-    public function getRecentActivities($count, $now)
+    public function getRecentActivities($count, $now): array
     {
          return $this->call('get_recent_activities(' . $now . ',' . $count . ')');
     }
 
-    public function getActivityList($limit = 25, $offset = 0)
+    public function getActivityList($limit = 25, $offset = 0): array
     {
          return $this->call('get_activities(' . $limit . ',' . $offset . ')');
     }
 
-    public function addActivity($nid, $beginTime, $endTime)
+    public function addActivity($nid, $beginTime, $endTime): void
     {
          $this->call('add_activity(' . $nid . ',' . $beginTime . ',' . $endTime . ')');
     }

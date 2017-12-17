@@ -21,7 +21,7 @@ class JpegResponse extends Response
         );
     }
 
-    private function createBody($image)
+    private function createBody($image): StreamInterface
     {
         if ($image instanceof StreamInterface) {
             return $image;

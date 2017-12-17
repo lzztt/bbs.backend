@@ -11,7 +11,7 @@ class Handler extends Service
      * uri: /api/identificationcode[?action=post]
      * post: username=<username>&email=<email>&&captcha=<captcha>
      */
-    public function post()
+    public function post(): void
     {
         $this->validateCaptcha();
 

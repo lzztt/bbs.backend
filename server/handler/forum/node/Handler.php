@@ -12,7 +12,7 @@ use site\handler\forum\Forum;
 
 class Handler extends Forum
 {
-    public function run()
+    public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
             $this->response->pageRedirect('/app/user/login');
@@ -25,7 +25,7 @@ class Handler extends Forum
         $tagTree[$tag->id]['children'] ? $this->error('Could not post topic in this forum') : $this->createTopic($tag->id);
     }
 
-    public function createTopic($tid)
+    public function createTopic($tid): void
     {
         if (!$this->request->post['body']
                 || !$this->request->post['title']

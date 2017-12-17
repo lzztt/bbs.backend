@@ -9,7 +9,7 @@ use site\dbobject\Activity as ActivityObject;
 class Handler extends Controller
 {
     const NODES_PER_PAGE = 25;
-    public function run()
+    public function run(): void
     {
         $act = new ActivityObject();
         $act->status = 1;

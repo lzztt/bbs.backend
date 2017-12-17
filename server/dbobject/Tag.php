@@ -22,7 +22,7 @@ class Tag extends DBObject
         parent::__construct($db, $table, $id, $properties);
     }
 
-    public function getLeafTIDs()
+    public function getLeafTIDs(): array
     {
         if ($this->id) {
             $ids = [];
@@ -37,7 +37,7 @@ class Tag extends DBObject
         return [];
     }
 
-    public function getTagRoot()
+    public function getTagRoot(): array
     {
         static $root = [];
 
@@ -64,7 +64,7 @@ class Tag extends DBObject
         }
     }
 
-    public function getTagTree()
+    public function getTagTree(): array
     {
         static $tree = [];
 
@@ -103,7 +103,7 @@ class Tag extends DBObject
     }
 
     // get the information for the latest updated node
-    public function getNodeInfo()
+    public function getNodeInfo(): array
     {
         return $this->call('get_tag_node_info_1(' . $this->id . ')');
     }

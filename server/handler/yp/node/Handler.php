@@ -13,7 +13,7 @@ use site\dbobject\Tag;
 
 class Handler extends Controller
 {
-    public function run()
+    public function run(): void
     {
         if ($this->request->uid != 1 && $this->request->uid != 8831 && $this->request->uid != 3) {
             $this->pageForbidden();

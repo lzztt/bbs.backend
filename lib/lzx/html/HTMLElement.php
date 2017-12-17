@@ -27,7 +27,7 @@ class HTMLElement
             $this->attributes = $attributes;
     }
 
-    public function setData($data)
+    public function setData($data): void
     {
          $this->data = null;
         if (is_array($data)) {
@@ -40,7 +40,7 @@ class HTMLElement
     }
 
     // set a single data element to an index
-    public function setDataByIndex($index, $data)
+    public function setDataByIndex($index, $data): void
     {
         if (!($data instanceof self || is_string($data) || is_null($data))) { // not string or Element object or NULL
             throw new Exception('wrong data type (NULL, string, ' . __CLASS__ . ') : ' . gettype($data));
@@ -84,14 +84,14 @@ class HTMLElement
         }
     }
 
-    protected function attr()
+    protected function attr(): string
     {
-         $attr = '';
+        $attr = '';
 
         foreach ($this->attributes as $k => $v) {
-              $attr .= ' ' . htmlspecialchars($k) . '="' . htmlspecialchars($v) . '"';
+            $attr .= ' ' . htmlspecialchars($k) . '="' . htmlspecialchars($v) . '"';
         }
 
-            return $attr;
+        return $attr;
     }
 }

@@ -10,7 +10,7 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
-    public function run()
+    public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
             $this->pageForbidden();
@@ -21,7 +21,7 @@ class Handler extends Node
         $this->$method($nid);
     }
 
-    private function activityForumTopic($nid)
+    private function activityForumTopic($nid): void
     {
         $node = new NodeObject($nid, 'tid,uid,title');
 

@@ -21,18 +21,18 @@ class PrivMsg extends DBObject
          parent::__construct($db, $table, $id, $properties);
     }
 
-    public function getPMConversation($id, $uid = 0, $markRead = true)
+    public function getPMConversation($id, $uid = 0, $markRead = true): array
     {
          return $this->call('get_pm(' . $id . ',' . $uid . ')');
     }
 
-    public function getReplyTo($msg_id, $uid)
+    public function getReplyTo($msg_id, $uid): array
     {
          return array_pop($this->call('get_pm_replyto(' . $msg_id . ',' . $uid . ')'));
     }
 
-    public function deleteByUser($uid)
+    public function deleteByUser($uid): void
     {
-         return $this->call('delete_pm(' . $this->id . ',' . $uid . ')');
+         $this->call('delete_pm(' . $this->id . ',' . $uid . ')');
     }
 }

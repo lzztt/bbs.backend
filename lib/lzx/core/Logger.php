@@ -45,7 +45,7 @@ class Logger
         $this->flush();
     }
 
-    public static function getInstance()
+    public static function getInstance(): Logger
     {
         static $instance;
 
@@ -57,7 +57,7 @@ class Logger
     }
 
     // only set Dir once
-    public function setDir($dir)
+    public function setDir($dir): void
     {
         if (!isset($this->dir)) {
             if (is_dir($dir) && is_writable($dir)) {
@@ -73,7 +73,7 @@ class Logger
         }
     }
 
-    public function setEmail($email)
+    public function setEmail($email): void
     {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->mailer = new Mailer('logger');
@@ -83,17 +83,17 @@ class Logger
         }
     }
 
-    public function setUserInfo(array $userinfo)
+    public function setUserInfo(array $userinfo): void
     {
         $this->userinfo = $userinfo;
     }
 
-    public function info($str)
+    public function info($str): void
     {
         $this->log($str, self::INFO);
     }
 
-    public function debug($var)
+    public function debug($var): void
     {
         ob_start();
         var_dump($var);
@@ -103,17 +103,17 @@ class Logger
         $this->log(trim($str), self::DEBUG);
     }
 
-    public function warn($str)
+    public function warn($str): void
     {
         $this->log($str, self::WARNING);
     }
 
-    public function error($str, array $traces = [])
+    public function error($str, array $traces = []): void
     {
         $this->log($str, self::ERROR, $traces);
     }
 
-    public function flush()
+    public function flush(): void
     {
         if ($this->dir) {
             foreach ($this->logCache as $type => $log) {
@@ -134,7 +134,7 @@ class Logger
         ];
     }
 
-    private function log($str, $type, array $traces = null)
+    private function log($str, $type, array $traces = null): void
     {
         $log = ['time' => $this->time, 'type' => $type];
         foreach ($this->userinfo as $k => $v) {
@@ -161,7 +161,7 @@ class Logger
         $this->logCache[$type] .=  $msg . PHP_EOL;
     }
 
-    private function getBacktrace(array $traces)
+    private function getBacktrace(array $traces): array
     {
         if (empty($traces)) {
             $traces = array_slice(debug_backtrace(), 2);

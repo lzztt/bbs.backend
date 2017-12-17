@@ -12,7 +12,7 @@ class Handler extends Controller
 {
     const NODES_PER_PAGE = 25;
 
-    public function run()
+    public function run(): void
     {
         $this->cache = new PageCache($this->request->uri);
 
@@ -24,14 +24,14 @@ class Handler extends Controller
         }
     }
 
-    protected function ypHome()
+    protected function ypHome(): void
     {
         $tag = new Tag(self::$city->tidYp, null);
         $yp = $tag->getTagTree();
         $this->var['content'] = new Template('yp_home', ['tid' => $tag->id, 'yp' => $yp]);
     }
 
-    protected function nodeList($tid)
+    protected function nodeList($tid): void
     {
         $tag = new Tag($tid, null);
         $tagRoot = $tag->getTagRoot();

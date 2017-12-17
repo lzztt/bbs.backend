@@ -7,7 +7,7 @@ use site\dbobject\Node;
 
 class Handler extends Service
 {
-    public function get()
+    public function get(): void
     {
         if (!$this->args) {
             $this->forbidden();
