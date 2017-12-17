@@ -15,7 +15,7 @@ class CacheEvent
     protected $dirty = false;
     protected $triggered = false;
 
-    public static function setHandler(CacheHandlerInterface $handler)
+    public static function setHandler(CacheHandlerInterface $handler): void
     {
         self::$handler = $handler;
     }
@@ -30,7 +30,7 @@ class CacheEvent
         }
     }
 
-    public function addListener(Cache $c)
+    public function addListener(Cache $c): void
     {
         if ($c) {
             if (!in_array($c->getKey(), $this->listeners)) {
@@ -40,13 +40,13 @@ class CacheEvent
         }
     }
 
-    public function trigger()
+    public function trigger(): void
     {
         $this->triggered = true;
         $this->dirty = true;
     }
 
-    public function flush()
+    public function flush(): void
     {
         if ($this->dirty) {
             $this->id = self::$handler->getID($this->name);

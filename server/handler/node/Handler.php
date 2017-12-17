@@ -12,7 +12,7 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
-    public function run()
+    public function run(): void
     {
         $this->cache = new PageCache($this->request->uri);
 
@@ -23,7 +23,7 @@ class Handler extends Node
         $this->getCacheEvent('NodeUpdate', $nid)->addListener($this->cache);
     }
 
-    private function displayForumTopic($nid)
+    private function displayForumTopic($nid): void
     {
         $nodeObj = new NodeObject();
         $node = $nodeObj->getForumNode($nid);
@@ -119,7 +119,7 @@ class Handler extends Node
         $this->var['content'] = new Template('node_forum_topic', $contents);
     }
 
-    private function authorPanel($info)
+    private function authorPanel($info): string
     {
         static $authorPanels = [];
 
@@ -137,7 +137,7 @@ class Handler extends Node
                     $info['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
                 $info['city'] = self::getCityFromIP($info['access_ip']);
-                $authorPanel = new Template('author_panel_forum', $info);
+                $authorPanel = (string) new Template('author_panel_forum', $info);
                 $authorPanelCache->store($authorPanel);
             }
             $authorPanels[$info['uid']] = $authorPanel;
@@ -146,7 +146,7 @@ class Handler extends Node
         return $authorPanels[$info['uid']];
     }
 
-    private function attachments(array $files, string $body)
+    private function attachments(array $files, string $body): string
     {
         $fileElements = [];
         $imageElements = [];
@@ -180,7 +180,7 @@ class Handler extends Node
             }
         }
 
-        $attachments = null;
+        $attachments = '';
         if (sizeof($imageElements) > 0) {
             $attachments .= new HTMLElement('div', $imageElements, ['class' => 'attach_images']);
         }
@@ -191,7 +191,7 @@ class Handler extends Node
         return $attachments;
     }
 
-    private function displayYellowPage($nid)
+    private function displayYellowPage($nid): void
     {
         $nodeObj = new NodeObject();
         $node = $nodeObj->getYellowPageNode($nid);
@@ -200,7 +200,7 @@ class Handler extends Node
         $this->var['head_title'] = $node['title'];
         $this->var['head_description'] = $node['title'];
 
-        if (is_null($node)) {
+        if (!$node) {
             $this->pageNotFound();
         }
 

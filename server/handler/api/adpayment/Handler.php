@@ -12,7 +12,7 @@ class Handler extends Service
      * get payments
      * uri: /api/adpayment
      */
-    public function get()
+    public function get(): void
     {
         if ($this->request->uid != 1) {
             $this->forbidden();
@@ -28,7 +28,7 @@ class Handler extends Service
      * uri: /api/adpayment[?action=post]
      * post: ad_id=<ad_id>&amount=<amount>&time=<time>&ad_time=<ad_time>&comment<comment>
      */
-    public function post()
+    public function post(): void
     {
         if ($this->request->uid != 1) {
             $this->forbidden();

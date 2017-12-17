@@ -59,7 +59,7 @@ abstract class DBObject
         }
     }
 
-    private static function camelToUnderscore($name)
+    private static function camelToUnderscore($name): string
     {
         static $cache = [];
         if (!array_key_exists($name, $cache)) {
@@ -68,7 +68,7 @@ abstract class DBObject
         return $cache[$name];
     }
 
-    private static function underscoreToCamel($name)
+    private static function underscoreToCamel($name): string
     {
         static $cache = [];
         if (!array_key_exists($name, $cache)) {
@@ -97,18 +97,18 @@ abstract class DBObject
         throw new Exception('unknown property: ' . $prop);
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         $this->sync();
         return $this->values;
     }
 
-    public function getProperties()
+    public function getProperties(): array
     {
         return $this->properties;
     }
 
-    private function bind($prop)
+    private function bind($prop): void
     {
         if (array_key_exists($prop, $this->values)) {
             $this->bind_values[':' . $this->fields[$prop]] = $this->values[$prop];
@@ -117,7 +117,7 @@ abstract class DBObject
         }
     }
 
-    private function clear($clearData = false)
+    private function clear($clearData = false): void
     {
         $this->where = [];
         $this->bind_values = [];
@@ -129,7 +129,7 @@ abstract class DBObject
         }
     }
 
-    private function setValue($prop, $value)
+    private function setValue($prop, $value): void
     {
         if (is_null($value)) {
             $this->values[$prop] = null;
@@ -156,7 +156,7 @@ abstract class DBObject
         $this->$prop = $this->values[$prop];
     }
 
-    private function sync()
+    private function sync(): void
     {
         foreach ($this->properties as $p) {
             if ($this->$p !== $this->values[$p]) {
@@ -169,7 +169,7 @@ abstract class DBObject
         }
     }
 
-    private function clean($prop)
+    private function clean($prop): void
     {
         $dirty = array_search($prop, $this->properties_dirty);
         if ($dirty !== false) {
@@ -180,13 +180,13 @@ abstract class DBObject
     /**
      * Call a database procedure
      */
-    public function call($proc, $params = [])
+    public function call($proc, $params = []): array
     {
         return $this->db->query('CALL ' . $proc, $params);
     }
 
     // convert array keys from column names to field names
-    protected function convertColumnNames(array $arr)
+    protected function convertColumnNames(array $arr): array
     {
         foreach ($arr as $i => $row) {
             foreach ($row as $col => $val) {
@@ -203,7 +203,7 @@ abstract class DBObject
     /**
      * Loads values to instance from DB
      */
-    public function load($properties = '')
+    public function load($properties = ''): void
     {
         $this->exists = false;
         $this->where = [];
@@ -224,16 +224,15 @@ abstract class DBObject
             $this->exists = true;
         } else {
             $this->exists = false;
-            return false;
         }
     }
 
-    public function exists()
+    public function exists(): bool
     {
         return $this->exists;
     }
 
-    public function delete()
+    public function delete(): void
     {
         if (!$this->pkey_property) {
             throw new Exception('Table does not have primary key. Deletion without primary key is not supported yet');
@@ -243,10 +242,8 @@ abstract class DBObject
 
         if (array_key_exists($this->pkey_property, $this->values)) {
             $this->bind($this->pkey_property);
-            $status = $this->db->query('DELETE FROM ' . $this->table . ' WHERE ' . $this->fields[$this->pkey_property] . ' = :' . $this->fields[$this->pkey_property], $this->bind_values);
-
+            $this->db->query('DELETE FROM ' . $this->table . ' WHERE ' . $this->fields[$this->pkey_property] . ' = :' . $this->fields[$this->pkey_property], $this->bind_values);
             $this->clear(true);
-            return ($status !== false);
         } else {
             throw new Exception('ERROR delete: invalid primary key value: [' . $this->fields[$this->pkey_property] . ' : ' . $this->values[$this->pkey_property] . ']');
         }
@@ -255,7 +252,7 @@ abstract class DBObject
     /**
      * Insert a record
      */
-    public function add()
+    public function add(): void
     {
         $this->sync();
 
@@ -287,13 +284,12 @@ abstract class DBObject
         // undirty all properties
         $this->properties_dirty = [];
         $this->exists = true;
-        return true;
     }
 
     /**
      * Update a record / records
      */
-    public function update($properties = '')
+    public function update($properties = ''): void
     {
         $this->sync();
 
@@ -303,7 +299,7 @@ abstract class DBObject
         }
 
         if (sizeof($this->properties_dirty) == 0) {
-            return true;
+            return;
         }
 
         if (empty($properties)) {
@@ -339,16 +335,14 @@ abstract class DBObject
         $sql = 'UPDATE ' . $this->table . ' '
             . 'SET ' . $values . ' '
             . 'WHERE ' . implode(' AND ', $this->where);
-        $status = $this->db->query($sql, $this->bind_values);
+        $this->db->query($sql, $this->bind_values);
 
         $this->clear();
         // undirty properties
         $this->properties_dirty = array_diff($this->properties_dirty, $properties);
-
-        return $status;
     }
 
-    public function getCount()
+    public function getCount(): int
     {
         $this->sync();
         $this->setWhere(); // automatically add a filter for values we already have
@@ -362,7 +356,7 @@ abstract class DBObject
      * user input keys may have alias
      * will always get primary key values
      */
-    public function getList($properties = '', $limit = false, $offset = false)
+    public function getList($properties = '', $limit = false, $offset = false): array
     {
         $this->sync();
         $this->setWhere(); // automatically add a filter for values we already have
@@ -375,7 +369,7 @@ abstract class DBObject
     /*
      * select query
      */
-    private function selectFields($properties)
+    private function selectFields($properties): string
     {
         if (empty($properties)) {
             $properties_array = $this->properties;
@@ -414,7 +408,7 @@ abstract class DBObject
     /**
      * Adds a condition for SQL query
      */
-    public function where($prop, $value, $condition)
+    public function where($prop, $value, $condition): void
     {
         if (!in_array($prop, $this->properties)) {
             throw new Exception('ERROR non-existing propperty : ' . $prop);
@@ -476,7 +470,7 @@ abstract class DBObject
      * only order by current table's keys
      * user input keys will not have alias
      */
-    public function order($prop, $order = 'ASC')  //ASC or DESC
+    public function order($prop, $order = 'ASC'): void
     {
         $order = strtoupper($order);
         if (!in_array($order, ['ASC', 'DESC'])) {
@@ -490,7 +484,7 @@ abstract class DBObject
         }
     }
 
-    private function setWhere()
+    private function setWhere(): void
     {
         // automatically add a filter for values we already have
         foreach (array_keys($this->values) as $prop) {
@@ -498,7 +492,7 @@ abstract class DBObject
         }
     }
 
-    private function select($properties = '', $limit = false, $offset = false)
+    private function select($properties = '', $limit = false, $offset = false): array
     {
         $where = '';
         $order = '';
@@ -527,7 +521,7 @@ abstract class DBObject
         return $arr;
     }
 
-    private function getFieldsTypeAndPKey()
+    private function getFieldsTypeAndPKey(): void
     {
         static $fields = [];
         static $int_type = ['int', 'bool'];

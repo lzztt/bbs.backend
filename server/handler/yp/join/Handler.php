@@ -8,7 +8,7 @@ use site\Controller;
 
 class Handler extends Controller
 {
-    public function run()
+    public function run(): void
     {
         $this->cache = new PageCache($this->request->uri);
 

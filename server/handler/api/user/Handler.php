@@ -12,7 +12,7 @@ class Handler extends Service
      * get user info
      * uri: /api/user/<uid>
      */
-    public function get()
+    public function get(): void
     {
         if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
@@ -44,7 +44,7 @@ class Handler extends Service
      * uri: /api/user/<identCode>?action=put
      * post: password=<password>
      */
-    public function put()
+    public function put(): void
     {
         if (empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
@@ -153,7 +153,7 @@ class Handler extends Service
      * uri: /api/user[?action=post]
      * post: username=<username>&email=<email>&captcha=<captcha>
      */
-    public function post()
+    public function post(): void
     {
         $this->validateCaptcha();
 
@@ -215,7 +215,7 @@ class Handler extends Service
     /**
      * uri: /api/user/<uid>?action=delete
      */
-    public function delete()
+    public function delete(): void
     {
         if ($this->request->uid != 1 || empty($this->args) || !is_numeric($this->args[0])) {
             $this->forbidden();
@@ -238,7 +238,7 @@ class Handler extends Service
         $this->json(null);
     }
 
-    private function isBot($m)
+    private function isBot($m): bool
     {
         $try1 = unserialize(self::curlGetData('http://www.stopforumspam.com/api?f=serial&email=' . $m));
         if ($try1['email']['appears'] == 1) {

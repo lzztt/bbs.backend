@@ -29,32 +29,32 @@ abstract class Controller
         $this->logger = $logger;
     }
 
-    abstract public function run();
+    abstract public function run(): void;
 
     /**
      * Observer design pattern interfaces
      */
-    abstract public function update(Template $html);
+    abstract public function update(Template $html): void;
 
-    protected function error($msg)
+    protected function error($msg): void
     {
         $this->response->setContent($msg);
         throw new ResponseReadyException();
     }
 
-    protected function pageNotFound()
+    protected function pageNotFound(): void
     {
         $this->response->pageNotFound();
         throw new ResponseReadyException();
     }
 
-    protected function pageForbidden()
+    protected function pageForbidden(): void
     {
         $this->response->pageForbidden();
         throw new ResponseReadyException();
     }
 
-    protected function pageRedirect($uri)
+    protected function pageRedirect($uri): void
     {
         $this->response->pageRedirect($uri);
         throw new ResponseReadyException();

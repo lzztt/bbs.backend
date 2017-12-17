@@ -7,13 +7,13 @@ use site\Controller;
 
 class Handler extends Controller
 {
-    public function run()
+    public function run(): void
     {
         $app = $this->args[0];
         $this->response->setContent(file_get_contents($this->getLatestVersion($app) . '/index.html'));
     }
 
-    protected function getLatestVersion($app)
+    protected function getLatestVersion($app): string
     {
         $versionFile = $this->config->path['file'] . '/app/' . $app . '.current';
         $current = is_file($versionFile) ? file_get_contents($versionFile) : null;

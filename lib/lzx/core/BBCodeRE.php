@@ -7,7 +7,7 @@ namespace lzx\core;
 
 class BBCodeRE
 {
-    private static function escape($s)
+    private static function escape($s): string
     {
  // all input should has already been processed by htmlentity() function before stored, to prevent html injunction
         $code = $s[1];
@@ -17,12 +17,12 @@ class BBCodeRE
 
     // clean some tags to remain strict
     // not very elegant, but it works. No time to do better ;)
-    private static function removeBr($s)
+    private static function removeBr($s): string
     {
         return str_replace('<br />', '', $s[0]);
     }
 
-    public static function parse($text)
+    public static function parse($text): string
     {
         if (strpos($text, '[/') === false) {// if no colse tag, don't borther
             $text = preg_replace('#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text);

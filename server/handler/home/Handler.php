@@ -13,7 +13,7 @@ use site\dbobject\Tag;
 
 class Handler extends Controller
 {
-    public function run()
+    public function run(): void
     {
         $this->cache = new PageCache($this->request->uri);
 
@@ -25,14 +25,13 @@ class Handler extends Controller
         }
     }
 
-    private function houstonHome()
+    private function houstonHome(): void
     {
         $content = [
             'recentActivities' => $this->getRecentActivities(),
             'latestForumTopics' => $this->getLatestForumTopics(15),
             'hotForumTopics' => $this->getHotForumTopics(15),
             'latestYellowPages' => $this->getLatestYellowPages(15),
-            //'latestImmigrationPosts' => $this->getLatestImmigrationPosts(15),
             'latestForumTopicReplies' => $this->getLatestForumTopicReplies(15),
             'latestYellowPageReplies' => $this->getLatestYellowPageReplies(15),
             'imageSlider' => $this->getImageSlider(),
@@ -41,7 +40,7 @@ class Handler extends Controller
     }
 
     // BEGIN DALLAS HOME
-    private function dallasHome()
+    private function dallasHome(): void
     {
         $tag = new Tag(self::$city->tidForum, null);
         $tagTree = $tag->getTagTree();
@@ -71,7 +70,7 @@ class Handler extends Controller
         $this->var['content'] = new Template('home', $content);
     }
 
-    protected function austinHome()
+    private function austinHome(): void
     {
         $tag = new Tag(self::$city->tidForum, null);
         $tagTree = $tag->getTagTree();
@@ -101,7 +100,7 @@ class Handler extends Controller
         $this->var['content'] = new Template('home', $content);
     }
 
-    protected function nodeInfo($tid)
+    protected function nodeInfo($tid): array
     {
         $tag = new Tag($tid, null);
 
@@ -118,7 +117,7 @@ class Handler extends Controller
 
     // END DALLAS HOME
 
-    private function getImageSlider()
+    private function getImageSlider(): string
     {
         $ulCache = $this->cache->getSegment('imageSlider');
         $ul = $ulCache->fetch();
@@ -128,7 +127,7 @@ class Handler extends Controller
             shuffle($images);
 
             $content['images'] = $images;
-            $ul = new Template('image_slider', $content);
+            $ul = (string) new Template('image_slider', $content);
 
             $ulCache->store($ul);
 
@@ -141,7 +140,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestForumTopics($count)
+    private function getLatestForumTopics($count): string
     {
         $ulCache = $this->cache->getSegment('latestForumTopics');
         $ul = $ulCache->fetch();
@@ -160,7 +159,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getHotForumTopics($count)
+    private function getHotForumTopics($count): string
     {
         $ulCache = $this->cache->getSegment('hotForumTopics');
         $ul = $ulCache->fetch();
@@ -180,11 +179,11 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestYellowPages($count)
+    private function getLatestYellowPages($count): array
     {
         $ulCache = $this->cache->getSegment('latestYellowPages');
         $cache = $ulCache->fetch();
-        $ul = $cache ? unserialize($cache) : null;
+        $ul = $cache ? unserialize($cache) : [];
         if (!$ul) {
             $ul = [];
             $ypGroups = array_chunk((new Node())->getLatestYellowPages(self::$city->tidYp, $count * 2), $count);
@@ -206,7 +205,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestForumTopicReplies($count)
+    private function getLatestForumTopicReplies($count): string
     {
         $ulCache = $this->cache->getSegment('latestForumTopicReplies');
         $ul = $ulCache->fetch();
@@ -225,7 +224,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestYellowPageReplies($count)
+    private function getLatestYellowPageReplies($count): string
     {
         $ulCache = $this->cache->getSegment('latestYellowPageReplies');
         $ul = $ulCache->fetch();
@@ -244,7 +243,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getRecentActivities()
+    private function getRecentActivities(): string
     {
         $ulCache = $this->cache->getSegment('recentActivities');
         $ul = $ulCache->fetch();
@@ -263,7 +262,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function linkNodeList(array $arr, SegmentCache $ulCache)
+    private function linkNodeList(array $arr, SegmentCache $ulCache): string
     {
         $ul = (string) new Template('home_itemlist', ['data' => $arr]);
 

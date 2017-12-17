@@ -7,23 +7,23 @@ use lzx\cache\Cache;
 interface CacheHandlerInterface
 {
     // Factory design patern interface
-    public function createCache($name);
+    public function createCache($name): Cache;
 
-    public function getCleanName($name);
+    public function getCleanName($name): string;
 
-    public function getFileName(Cache $cache);
+    public function getFileName(Cache $cache): string;
 
-    public function getID($name);
+    public function getID($name): int;
 
-    public function unlinkParents($id);
+    public function unlinkParents($id): void;
 
-    public function linkParents($id, array $parents);
+    public function linkParents($id, array $parents): void;
 
-    public function getChildren($id);
+    public function getChildren($id): array;
 
-    public function unlinkEvents($id);
+    public function unlinkEvents($id): void;
 
-    public function getEventListeners($eid, $oid);
+    public function getEventListeners($eid, $oid): array;
 
-    public function addEventListeners($eid, $oid, array $listeners);
+    public function addEventListeners($eid, $oid, array $listeners): void;
 }
