@@ -14,8 +14,28 @@ class DB
     protected $db;
     protected $statements = [];
 
-    // Singleton methord for each database
-    public static function getInstance(array $config = [])
+    private function __construct(array $config = [])
+    {
+        $this->db = new PDO($config['dsn'], $config['user'], $config['password'], [
+            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_AUTOCOMMIT => false,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+        // this is NEEDED, even AUTOCOMMIT = FALSE :(
+        $this->db->beginTransaction();
+    }
+
+    public function __destruct()
+    {
+        try {
+            $this->db->commit();
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
+    public static function getInstance(array $config = []): DB
     {
         // no config
         if (count($config) == 0 && count(self::$instances) > 0) {
@@ -40,28 +60,7 @@ class DB
         return $instance;
     }
 
-    private function __construct(array $config = [])
-    {
-        $this->db = new PDO($config['dsn'], $config['user'], $config['password'], [
-            PDO::ATTR_PERSISTENT => true,
-            PDO::ATTR_AUTOCOMMIT => false,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-            ]);
-        // this is NEEDED, even AUTOCOMMIT = FALSE :(
-        $this->db->beginTransaction();
-    }
-
-    public function __destruct()
-    {
-        try {
-            $this->db->commit();
-        } catch (PDOException $e) {
-            $this->db->rollBack();
-            throw $e;
-        }
-    }
-
-    public function flush()
+    public function flush(): void
     {
         try {
             $this->db->commit();
@@ -76,7 +75,7 @@ class DB
     /**
      * Returns result resource from given query
      */
-    public function query($sql, array $params = [])
+    public function query($sql, array $params = []): array
     {
         if (empty($params)) {
             if (!self::$debug) {
@@ -113,18 +112,18 @@ class DB
             }
         }
 
-        $res = $statement->columnCount() > 0 ? $statement->fetchAll(PDO::FETCH_ASSOC) : true;
+        $res = $statement->columnCount() > 0 ? $statement->fetchAll(PDO::FETCH_ASSOC) : [];
         $statement->closeCursor();
 
         return $res;
     }
 
-    public function insertId()
+    public function insertId(): string
     {
         return $this->db->lastInsertId();
     }
 
-    public function str($str)
+    public function str($str): string
     {
         if (!self::$debug) {
             return $this->db->quote($str);

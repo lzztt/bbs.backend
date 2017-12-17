@@ -9,7 +9,7 @@ use site\dbobject\User;
 class Handler extends Service
 {
 
-    public function get()
+    public function get(): void
     {
         $node = new Node();
         $r = $node->getNodeStat(self::$city->tidForum);
@@ -37,7 +37,7 @@ class Handler extends Service
         $this->json(array_merge($r, $u));
     }
 
-    private function getAlexa($city)
+    private function getAlexa($city): string
     {
         $data = self::curlGetData('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
 

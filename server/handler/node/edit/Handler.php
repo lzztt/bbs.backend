@@ -12,14 +12,14 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
-    public function run()
+    public function run(): void
     {
         list($nid, $type) = $this->getNodeType();
         $method = 'edit' . $type;
         $this->$method($nid);
     }
 
-    private function editForumTopic($nid)
+    private function editForumTopic($nid): void
     {
         // edit existing comment
         $node = new NodeObject($nid, 'uid,status');
@@ -71,7 +71,7 @@ class Handler extends Node
         $this->pageRedirect($this->request->referer);
     }
 
-    private function editYellowPage($nid)
+    private function editYellowPage($nid): void
     {
         $node = new NodeObject($nid, 'uid,status');
 

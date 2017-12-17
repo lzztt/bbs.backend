@@ -12,7 +12,7 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
-    public function run()
+    public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
             $this->pageForbidden();
@@ -23,7 +23,7 @@ class Handler extends Node
         $this->$method($nid);
     }
 
-    private function commentForumTopic($nid)
+    private function commentForumTopic($nid): void
     {
         // create new comment
         $node = new NodeObject($nid, 'tid,status');
@@ -110,7 +110,7 @@ class Handler extends Node
         $this->pageRedirect('/node/' . $nid . '?p=l#comment' . $comment->id);
     }
 
-    private function commentYellowPage($nid)
+    private function commentYellowPage($nid): void
     {
         // create new comment
         $node = new NodeObject($nid, 'status');

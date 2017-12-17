@@ -7,7 +7,7 @@ use site\Controller;
 
 class Handler extends Controller
 {
-    public function run()
+    public function run(): void
     {
         $form_yp_sp = <<<'YP_SP'
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">

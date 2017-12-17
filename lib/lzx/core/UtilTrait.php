@@ -6,7 +6,7 @@ use Exception;
 
 trait UtilTrait
 {
-    protected static function curlGetData($url)
+    protected static function curlGetData($url): string
     {
         $c = curl_init($url);
         curl_setopt_array($c, [
@@ -20,7 +20,7 @@ trait UtilTrait
         return $data ? $data : '';
     }
 
-    protected static function getCityFromIP($ip)
+    protected static function getCityFromIP($ip): string
     {
         static $cities = [];
 
@@ -56,7 +56,7 @@ trait UtilTrait
         return $city;
     }
 
-    protected static function getLocationFromIP($ip)
+    protected static function getLocationFromIP($ip): string
     {
         $location = 'N/A';
 
@@ -96,7 +96,7 @@ trait UtilTrait
         return $location;
     }
 
-    protected function getPagerInfo($nTotal, $nPerPage)
+    protected function getPagerInfo($nTotal, $nPerPage): array
     {
         if ($nPerPage <= 0) {
             throw new Exception('invalid value for number of items per page: ' . $nPerPage);

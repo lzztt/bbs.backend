@@ -94,7 +94,7 @@ class Session
         }
     }
 
-    public static function getInstance(DB $db = null)
+    public static function getInstance(DB $db = null): Session
     {
         static $instance;
 
@@ -107,38 +107,38 @@ class Session
         return $instance;
     }
 
-    public function getSessionID()
+    public function getSessionID(): string
     {
         return $this->sid;
     }
 
-    public function getCityID()
+    public function getCityID(): int
     {
         return $this->cid;
     }
 
-    public function setCityID($cid)
+    public function setCityID($cid): void
     {
         $this->cid = (int) $cid;
     }
 
-    public function getUserID()
+    public function getUserID(): int
     {
         return $this->uid;
     }
 
-    public function setUserID($uid)
+    public function setUserID($uid): void
     {
         $this->uid = (int) $uid;
     }
 
-    public function clear()
+    public function clear(): void
     {
         $this->uid = 0;
         $this->data = [];
     }
 
-    public function close()
+    public function close(): void
     {
         if ($this->db) {
             if ($this->isNew) {
@@ -186,14 +186,14 @@ class Session
         }
     }
 
-    private function startNewSession()
+    private function startNewSession(): void
     {
         $this->sid = sprintf("%02x", rand(0, 255)) . uniqid();
         setcookie(self::$cookieName, $this->sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2)));
         $this->isNew = true;
     }
 
-    private function crc32()
+    private function crc32(): int
     {
         return crc32($_SERVER['HTTP_USER_AGENT'] . $this->sid);
     }

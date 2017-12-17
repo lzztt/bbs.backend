@@ -32,7 +32,7 @@ class Response
         $this->resp = null;
     }
 
-    public static function getInstance()
+    public static function getInstance(): Response
     {
         static $instance;
 
@@ -42,17 +42,17 @@ class Response
         return $instance;
     }
 
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
 
-    public function setContent($data)
+    public function setContent($data): void
     {
         $this->data = $data;
     }
 
-    public function cacheContent(PageCache $cache)
+    public function cacheContent(PageCache $cache): void
     {
         if ($this->status < 300 && $this->data instanceof Template) {
             $cache->store($this->data);
@@ -61,22 +61,22 @@ class Response
         }
     }
 
-    public function pageNotFound()
+    public function pageNotFound(): void
     {
         $this->resp = new EmptyResponse(404);
     }
 
-    public function pageForbidden()
+    public function pageForbidden(): void
     {
         $this->resp = new EmptyResponse(403);
     }
 
-    public function pageRedirect($uri)
+    public function pageRedirect($uri): void
     {
         $this->resp = new RedirectResponse($uri);
     }
 
-    public function send()
+    public function send(): void
     {
         if (!$this->resp) {
             switch ($this->type) {

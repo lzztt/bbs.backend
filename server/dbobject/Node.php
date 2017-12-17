@@ -25,12 +25,12 @@ class Node extends DBObject
         parent::__construct($db, $table, $id, $properties);
     }
 
-    public function getForumNodeList($cid, $tid, $limit = 25, $offset = 0)
+    public function getForumNodeList($cid, $tid, $limit = 25, $offset = 0): array
     {
         return $this->call('get_tag_nodes_forum(' . $cid . ', ' . $tid . ', ' . $limit . ', ' . $offset . ')');
     }
 
-    public function getForumNode($id, $useNewVersion = false)
+    public function getForumNode($id, $useNewVersion = false): array
     {
         $sp = $useNewVersion ? 'get_forum_node_2' : 'get_forum_node';
         $arr = $this->call($sp . '(' . $id . ')');
@@ -40,11 +40,11 @@ class Node extends DBObject
             $node['files'] = $this->call('get_node_images(' . $id . ')');
             return $node;
         } else {
-            return null;
+            return [];
         }
     }
 
-    public function getForumNodeComments($id, $limit, $offset, $useNewVersion = false)
+    public function getForumNodeComments($id, $limit, $offset, $useNewVersion = false): array
     {
         $sp = $useNewVersion ? 'get_forum_node_comments_2' : 'get_forum_node_comments';
         $arr = $this->call($sp . '(' . $id . ', ' . $limit . ', ' . $offset . ')');
@@ -56,22 +56,22 @@ class Node extends DBObject
         return $arr;
     }
 
-    public function getYellowPageNodeList($tids, $limit = false, $offset = false)
+    public function getYellowPageNodeList($tids, $limit = false, $offset = false): array
     {
         return $this->call('get_tag_nodes_yp("' . $tids . '",' . $limit . ',' . $offset . ')');
     }
 
-    public function getYellowPageNode($id)
+    public function getYellowPageNode($id): array
     {
         $arr = $this->call('get_yp_node(' . $id . ')');
         if (sizeof($arr) > 0) {
             return $arr[0];
         } else {
-            return null;
+            return [];
         }
     }
 
-    public function getYellowPageNodeComments($id, $limit = false, $offset = false)
+    public function getYellowPageNodeComments($id, $limit = false, $offset = false): array
     {
         $arr = $this->call('get_yp_node_comments(' . $id . ', ' . $limit . ', ' . $offset . ')');
 
@@ -82,12 +82,12 @@ class Node extends DBObject
         return $arr;
     }
 
-    public function getViewCounts($nids)
+    public function getViewCounts($nids): array
     {
         return $this->call('get_node_view_count("' . implode(',', $nids) . '")');
     }
 
-    public function getTags($nid)
+    public function getTags($nid): array
     {
         static $tags = [];
 
@@ -103,42 +103,42 @@ class Node extends DBObject
         return $tags[$nid];
     }
 
-    public function getLatestForumTopics($forumRootID, $count)
+    public function getLatestForumTopics($forumRootID, $count): array
     {
         return $this->call('get_tag_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
-    public function getHotForumTopics($forumRootID, $count, $timestamp)
+    public function getHotForumTopics($forumRootID, $count, $timestamp): array
     {
         return $this->call('get_tag_hot_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $timestamp . ', ' . $count . ')');
     }
 
-    public function getHotForumTopicNIDs($forumRootID, $count, $timestamp)
+    public function getHotForumTopicNIDs($forumRootID, $count, $timestamp): array
     {
         return array_column($this->getHotForumTopics($forumRootID, $count, $timestamp), 'nid');
     }
 
-    public function getLatestYellowPages($ypRootID, $count)
+    public function getLatestYellowPages($ypRootID, $count): array
     {
         return $this->call('get_tag_recent_nodes_yp("' . implode(',', (new Tag($ypRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
-    public function getLatestForumTopicReplies($forumRootID, $count)
+    public function getLatestForumTopicReplies($forumRootID, $count): array
     {
         return $this->call('get_tag_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
-    public function getLatestYellowPageReplies($ypRootID, $count)
+    public function getLatestYellowPageReplies($ypRootID, $count): array
     {
         return $this->call('get_tag_recent_comments_yp("' . implode(',', (new Tag($ypRootID, null))->getLeafTIDs()) . '", ' . $count . ')');
     }
 
-    public function getNodeCount($tids)
+    public function getNodeCount($tids): int
     {
         return intval(array_pop(array_pop($this->call('get_tag_node_count("' . $tids . '")'))));
     }
 
-    public function getNodeStat($forumRootID)
+    public function getNodeStat($forumRootID): array
     {
         $today = strtotime(date("m/d/Y"));
         $stats = array_pop($this->call('get_node_stat("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $today . ')'));

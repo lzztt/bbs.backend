@@ -29,8 +29,8 @@ class Request
 
         $this->timestamp = (int) $params['REQUEST_TIME'];
 
-        $this->post = self::escape($this->req->getParsedBody());
-        $this->get = self::escape($this->req->getQueryParams());
+        $this->post = self::escapeArray($this->req->getParsedBody());
+        $this->get = self::escapeArray($this->req->getQueryParams());
         $this->files = $this->getUploadFiles();
         $this->json = json_decode((string) $this->req->getBody(), true);
 
@@ -38,7 +38,7 @@ class Request
         $this->referer = sizeof($arr) > 1 ? $arr[1] : null;
     }
 
-    public static function getInstance()
+    public static function getInstance(): Request
     {
         static $instance;
 
@@ -48,7 +48,7 @@ class Request
         return $instance;
     }
 
-    public function getUploadFiles()
+    public function getUploadFiles(): array
     {
         static $files;
 
@@ -72,16 +72,17 @@ class Request
         return $files;
     }
 
-    private static function escape($in)
+    private static function escapeArray(array $in): array
     {
-        if (is_array($in)) {
-            $out = [];
-            foreach ($in as $key => $value) {
-                $out[self::escape($key)] = self::escape($value);
-            }
-            return $out;
+        $out = [];
+        foreach ($in as $key => $value) {
+            $out[self::escapeString($key)] = is_array($value) ? self::escapeArray($value) : self::escapeString($value);
         }
+        return $out;
+    }
 
+    private static function escapeString(string $in): string
+    {
         return trim(preg_replace('/<[^>]*>/', '', $in));
     }
 }

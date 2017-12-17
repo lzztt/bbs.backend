@@ -11,7 +11,7 @@ use site\dbobject\User;
 
 class Handler extends Service
 {
-    public function post()
+    public function post(): void
     {
         if (!$this->request->uid) {
             $this->forbidden();

@@ -8,7 +8,7 @@ use lzx\cache\Cache;
 class SegmentCache extends Cache
 {
 
-    public function fetch()
+    public function fetch(): string
     {
         if ($this->data) {
             return $this->data;
@@ -17,7 +17,7 @@ class SegmentCache extends Cache
         return $this->fetchFromFile();
     }
 
-    public function flush()
+    public function flush(): void
     {
         if ($this->dirty) {
             $this->id = self::$handler->getID($this->key);
@@ -47,19 +47,19 @@ class SegmentCache extends Cache
         }
     }
 
-    public function fetchFromFile()
+    public function fetchFromFile(): string
     {
         $file = self::$handler->getFileName($this);
         try {
             // read only if exist!!
-            return is_file($file) ? file_get_contents($file) : null;
+            return is_file($file) ? file_get_contents($file) : '';
         } catch (Exception $e) {
             if (self::$logger) {
                 self::$logger->warn('Could not read from file [' . $file . ']: ' . $e->getMessage());
             } else {
                 error_log('Could not read from file [' . $file . ']: ' . $e->getMessage());
             }
-            return null;
+            return '';
         }
     }
 }

@@ -12,7 +12,7 @@ class Handler extends Service
      * uri: /api/ad/name
      *        /api/ad
      */
-    public function get()
+    public function get(): void
     {
         if ($this->request->uid != 1) {
             $this->forbidden();
@@ -35,7 +35,7 @@ class Handler extends Service
      * uri: /api/ad[?action=post]
      * post: name=<name>&email=<email>&type_id=<type_id>
      */
-    public function post()
+    public function post(): void
     {
         if ($this->request->uid != 1) {
             $this->forbidden();

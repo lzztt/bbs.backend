@@ -10,7 +10,7 @@ use site\handler\forum\Forum;
 
 class Handler extends Forum
 {
-    public function run()
+    public function run(): void
     {
         $this->cache = new PageCache($this->request->uri);
 
@@ -26,7 +26,7 @@ class Handler extends Forum
     }
 
     // $forum, $groups, $boards are arrays of category id
-    public function showForumList($tid, $tagRoot, $tagTree)
+    public function showForumList($tid, $tagRoot, $tagTree): void
     {
         $breadcrumb = [];
         foreach ($tagRoot as $i => $t) {
@@ -64,7 +64,7 @@ class Handler extends Forum
         $this->var['content'] = new Template('forum_list', $contents);
     }
 
-    public function showTopicList($tid, $tagRoot)
+    public function showTopicList($tid, $tagRoot): void
     {
         $this->getCacheEvent('ForumUpdate', $tid)->addListener($this->cache);
 
@@ -105,7 +105,7 @@ class Handler extends Forum
         $this->var['content'] = new Template('topic_list', $contents);
     }
 
-    protected function nodeInfo($tid)
+    protected function nodeInfo($tid): array
     {
         $tag = new Tag($tid, null);
 

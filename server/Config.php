@@ -67,7 +67,7 @@ class Config
         }
     }
 
-    public static function getInstance()
+    public static function getInstance(): Config
     {
         static $instance;
 

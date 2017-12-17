@@ -35,7 +35,7 @@ abstract class Service extends BaseService
         $this->staticInit();
     }
 
-    public function run()
+    public function run(): void
     {
         if (array_key_exists('action', $this->request->get)
                 && in_array($this->request->get['action'], self::$actions)) {
@@ -52,7 +52,7 @@ abstract class Service extends BaseService
         $this->forbidden();
     }
 
-    protected function validateCaptcha()
+    protected function validateCaptcha(): void
     {
         $captcha = $this->request->post['captcha']
                 ? $this->request->post['captcha']
@@ -64,7 +64,7 @@ abstract class Service extends BaseService
         unset($this->session->captcha);
     }
 
-    protected function createIdentCode($uid)
+    protected function createIdentCode($uid): int
     {
         $code = rand(100000, 999999);
 
@@ -79,17 +79,17 @@ abstract class Service extends BaseService
         return $code;
     }
 
-    protected function parseIdentCode($code)
+    protected function parseIdentCode($code): int
     {
         if (!$this->session->identCode) {
-            return null;
+            return 0;
         }
 
         $idCode = $this->session->identCode;
         if ($idCode['attempts'] > 5 || $idCode['expTime'] < $this->request->timestamp) {
             // too many attempts, clear code
             $this->session->identCode = null;
-            return null;
+            return 0;
         }
 
         if ($code == $idCode['code']) {
@@ -99,11 +99,11 @@ abstract class Service extends BaseService
         } else {
             // attempts + 1
             $this->session->identCode['attempts'] = $idCode['attempts'] + 1;
-            return null;
+            return 0;
         }
     }
 
-    protected function sendIdentCode($user)
+    protected function sendIdentCode($user): bool
     {
         // create user action and send out email
         $mailer = new Mailer('system');

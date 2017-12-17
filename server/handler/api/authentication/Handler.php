@@ -10,7 +10,7 @@ class Handler extends Service
     // check if a user is logged in
     // uri: /api/authentication/<session_id>
     // return: uid
-    public function get()
+    public function get(): void
     {
         if (empty($this->args) || $this->args[0] != $this->session->getSessionID()) {
             $this->json(['sessionID' => $this->session->getSessionID(), 'uid' => 0]);
@@ -30,7 +30,7 @@ class Handler extends Service
     // post: username=<username>&password=<password>
     // post: email=<email>&password=<password>
     // return: session id and uid
-    public function post()
+    public function post(): void
     {
         if (isset($this->request->post['password']) && isset($this->request->post['email'])) {
             // todo: login times control
@@ -64,7 +64,7 @@ class Handler extends Service
 
     // logout a user
     // uri: /api/authentication/<session_id>?action=delete
-    public function delete()
+    public function delete(): void
     {
         if (empty($this->args) || $this->args[0] != $this->session->getSessionID()) {
             $this->forbidden();

@@ -46,12 +46,12 @@ class User extends DBObject
         parent::__construct($db, $table, $id, $properties);
     }
 
-    public function hashPW($password)
+    public function hashPW($password): string
     {
         return md5('Alex' . $password . 'Tian');
     }
 
-    public function loginWithEmail($email, $password)
+    public function loginWithEmail($email, $password): bool
     {
         $this->email = $email;
         $this->load('id,username,status,password');
@@ -62,36 +62,36 @@ class User extends DBObject
         return false;
     }
 
-    public function getUserGroup()
+    public function getUserGroup(): array
     {
         if ($this->id) {
             return array_column($this->call('get_user_group(' . $this->id . ')'), 'name');
         }
     }
 
-    public function delete()
+    public function delete(): void
     {
         if ($this->id > 1) {
             $this->call('delete_user(' . $this->id . ')');
         }
     }
 
-    public function getAllNodeIDs()
+    public function getAllNodeIDs(): array
     {
         return $this->id > 1 ? array_column($this->call('get_user_node_ids(' . $this->id . ')'), 'nid') : [];
     }
 
-    public function getRecentNodes($forumRootID, $limit)
+    public function getRecentNodes($forumRootID, $limit): array
     {
-        return $this->convertColumnNames($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'));
+        return $this->convertColumnNames($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', ' . $limit . ')'));
     }
 
-    public function getRecentComments($forumRootID, $limit)
+    public function getRecentComments($forumRootID, $limit): array
     {
-        return $this->convertColumnNames($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', 10)'));
+        return $this->convertColumnNames($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', ' . $limit . ')'));
     }
 
-    public function getPrivMsgsCount($mailbox = 'inbox')
+    public function getPrivMsgsCount($mailbox = 'inbox'): int
     {
         if ($mailbox == 'new') {
             return intval(array_pop(array_pop($this->call('get_pm_count_new(' . $this->id . ')'))));
@@ -104,13 +104,13 @@ class User extends DBObject
         }
     }
 
-    public function getPrivMsgs($type, $limit, $offset = 0)
+    public function getPrivMsgs($type, $limit, $offset = 0): array
     {
         $proc = $type !== 'sent' ? 'get_pm_list_inbox_2' : 'get_pm_list_sent_2';
         return $this->convertColumnNames($this->call($proc . '(' . $this->id . ',' . $limit . ',' . $offset . ')'));
     }
 
-    public function validatePost($ip, $timestamp, $text, $title = null)
+    public function validatePost($ip, $timestamp, $text, $title = null): void
     {
         // CHECK USER
         if ($this->status != 1) {
@@ -179,12 +179,12 @@ class User extends DBObject
         }
     }
 
-    public function isSpammer()
+    public function isSpammer(): bool
     {
         return $this->isSpammer;
     }
 
-    public function getUserStat($timestamp, $cid)
+    public function getUserStat($timestamp, $cid): array
     {
         $stats = array_pop($this->call('get_user_stat(' . strtotime(date("m/d/Y")) . ',' . $cid . ')'));
 
@@ -213,23 +213,23 @@ class User extends DBObject
         ];
     }
 
-    public function addBookmark($nid)
+    public function addBookmark($nid): void
     {
         $this->call('bookmark_add(' . $this->id . ',' . $nid . ')');
     }
 
-    public function deleteBookmark($nid)
+    public function deleteBookmark($nid): void
     {
         $this->call('bookmark_delete(' . $this->id . ',' . $nid . ')');
     }
 
-    public function listBookmark($limit, $offset)
+    public function listBookmark($limit, $offset): array
     {
         return $this->call('bookmark_list(' . $this->id . ',' . $limit . ',' . $offset . ')');
     }
 
-    public function countBookmark()
+    public function countBookmark(): int
     {
-        return array_pop(array_pop($this->call('bookmark_count(' . $this->id . ')')));
+        return (int) array_pop(array_pop($this->call('bookmark_count(' . $this->id . ')')));
     }
 }

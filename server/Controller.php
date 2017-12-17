@@ -41,7 +41,7 @@ abstract class Controller extends BaseCtrler
     }
 
     // interface for Observer design pattern
-    public function update(Template $html)
+    public function update(Template $html): void
     {
         // set navbar
         $navbarCache = $this->getIndependentCache('page_navbar');
@@ -90,7 +90,7 @@ abstract class Controller extends BaseCtrler
         $html->detach($this);
     }
 
-    protected function createMenu($tid)
+    protected function createMenu($tid): string
     {
         $tag = new Tag($tid, null);
         $tree = $tag->getTagTree();

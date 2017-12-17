@@ -7,7 +7,7 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
-    public function run()
+    public function run(): void
     {
         list($nid, $type) = $this->getNodeType();
         $uri = $type === 'ForumTopic' ? '/forum/' : '/yp/';

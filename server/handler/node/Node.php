@@ -9,7 +9,7 @@ abstract class Node extends Controller
 {
     const COMMENTS_PER_PAGE = 10;
 
-    protected function getNodeType()
+    protected function getNodeType(): array
     {
         $types = [
             self::$city->tidForum => 'ForumTopic',

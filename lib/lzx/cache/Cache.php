@@ -19,12 +19,12 @@ abstract class Cache
     protected $id;
     protected $dirty = false;
 
-    public static function setHandler(CacheHandlerInterface $handler)
+    public static function setHandler(CacheHandlerInterface $handler): void
     {
         self::$handler = $handler;
     }
 
-    public static function setLogger(Logger $logger)
+    public static function setLogger(Logger $logger): void
     {
         self::$logger = $logger;
     }
@@ -34,18 +34,18 @@ abstract class Cache
         $this->key = self::$handler->getCleanName($key);
     }
 
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
 
-    public function store($data)
+    public function store($data): void
     {
         $this->data = (string) $data;
         $this->dirty = true;
     }
 
-    public function delete()
+    public function delete(): void
     {
         // clear data
         $this->data = null;
@@ -53,7 +53,7 @@ abstract class Cache
         $this->deleted = true;
     }
 
-    public function addParent($key)
+    public function addParent($key): void
     {
         $cleanKey = self::$handler->getCleanName($key);
         if ($cleanKey && !in_array($cleanKey, $this->parents)) {
@@ -62,9 +62,9 @@ abstract class Cache
         $this->dirty = true;
     }
 
-    abstract public function flush();
+    abstract public function flush(): void;
 
-    protected function deleteDataFile()
+    protected function deleteDataFile(): void
     {
         try {
             unlink(self::$handler->getFileName($this));
@@ -77,12 +77,12 @@ abstract class Cache
         }
     }
 
-    protected function writeDataFile($data)
+    protected function writeDataFile($data): void
     {
         file_put_contents(self::$handler->getFileName($this), $data, LOCK_EX);
     }
 
-    protected function deleteChildren()
+    protected function deleteChildren(): void
     {
         foreach (self::$handler->getChildren($this->id) as $key) {
             $cache = self::$handler->createCache($key);

@@ -8,7 +8,7 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
-    public function run()
+    public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
             $this->pageForbidden();
@@ -19,7 +19,7 @@ class Handler extends Node
         $this->$method($nid);
     }
 
-    private function deleteForumTopic($nid)
+    private function deleteForumTopic($nid): void
     {
         $node = new NodeObject($nid, 'uid,tid,status');
         $tags = $node->getTags($nid);
@@ -47,7 +47,7 @@ class Handler extends Node
         $this->pageRedirect('/forum/' . $node->tid);
     }
 
-    private function deleteYellowPage($nid)
+    private function deleteYellowPage($nid): void
     {
         if ($this->request->uid != 1) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
