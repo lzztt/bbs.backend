@@ -75,8 +75,14 @@ class Request
     private static function escapeArray(array $in): array
     {
         $out = [];
-        foreach ($in as $key => $value) {
-            $out[self::escapeString($key)] = is_array($value) ? self::escapeArray($value) : self::escapeString($value);
+        foreach ($in as $key => $val) {
+            $key = is_string($key)
+                    ? self::escapeString($key)
+                    : $key;
+            $val = is_string($val)
+                    ? self::escapeString($val)
+                    : self::escapeArray($val);
+            $out[$key] = $val;
         }
         return $out;
     }
