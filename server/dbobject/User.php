@@ -39,19 +39,19 @@ class User extends DBObject
 
     private $isSpammer = false;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
         $db = DB::getInstance();
         $table = 'users';
         parent::__construct($db, $table, $id, $properties);
     }
 
-    public function hashPW($password): string
+    public function hashPW(string $password): string
     {
         return md5('Alex' . $password . 'Tian');
     }
 
-    public function loginWithEmail($email, $password): bool
+    public function loginWithEmail(string $email, string $password): bool
     {
         $this->email = $email;
         $this->load('id,username,status,password');
@@ -81,17 +81,17 @@ class User extends DBObject
         return $this->id > 1 ? array_column($this->call('get_user_node_ids(' . $this->id . ')'), 'nid') : [];
     }
 
-    public function getRecentNodes($forumRootID, $limit): array
+    public function getRecentNodes(int $forumRootID, int $limit): array
     {
-        return $this->convertColumnNames($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', ' . $limit . ')'));
+        return $this->convertColumnNames($this->call('get_user_recent_nodes("' . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) . '", ' . $this->id . ', ' . $limit . ')'));
     }
 
-    public function getRecentComments($forumRootID, $limit): array
+    public function getRecentComments(int $forumRootID, int $limit): array
     {
-        return $this->convertColumnNames($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, null))->getLeafTIDs()) . '", ' . $this->id . ', ' . $limit . ')'));
+        return $this->convertColumnNames($this->call('get_user_recent_comments("' . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) . '", ' . $this->id . ', ' . $limit . ')'));
     }
 
-    public function getPrivMsgsCount($mailbox = 'inbox'): int
+    public function getPrivMsgsCount(string $mailbox = 'inbox'): int
     {
         if ($mailbox == 'new') {
             return intval(array_pop(array_pop($this->call('get_pm_count_new(' . $this->id . ')'))));
@@ -104,13 +104,13 @@ class User extends DBObject
         }
     }
 
-    public function getPrivMsgs($type, $limit, $offset = 0): array
+    public function getPrivMsgs(string $type, int $limit, int $offset = 0): array
     {
         $proc = $type !== 'sent' ? 'get_pm_list_inbox_2' : 'get_pm_list_sent_2';
         return $this->convertColumnNames($this->call($proc . '(' . $this->id . ',' . $limit . ',' . $offset . ')'));
     }
 
-    public function validatePost($ip, $timestamp, $text, $title = null): void
+    public function validatePost(string $ip, int $timestamp, string $text, string $title = null): void
     {
         // CHECK USER
         if ($this->status != 1) {
@@ -184,7 +184,7 @@ class User extends DBObject
         return $this->isSpammer;
     }
 
-    public function getUserStat($timestamp, $cid): array
+    public function getUserStat(int $timestamp, int $cid): array
     {
         $stats = array_pop($this->call('get_user_stat(' . strtotime(date("m/d/Y")) . ',' . $cid . ')'));
 
@@ -213,17 +213,17 @@ class User extends DBObject
         ];
     }
 
-    public function addBookmark($nid): void
+    public function addBookmark(int $nid): void
     {
         $this->call('bookmark_add(' . $this->id . ',' . $nid . ')');
     }
 
-    public function deleteBookmark($nid): void
+    public function deleteBookmark(int $nid): void
     {
         $this->call('bookmark_delete(' . $this->id . ',' . $nid . ')');
     }
 
-    public function listBookmark($limit, $offset): array
+    public function listBookmark(int $limit, int $offset): array
     {
         return $this->call('bookmark_list(' . $this->id . ',' . $limit . ',' . $offset . ')');
     }

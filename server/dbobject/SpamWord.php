@@ -11,7 +11,7 @@ class SpamWord extends DBObject
     public $word;
     public $title;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
         $db = DB::getInstance();
         $table = 'spam_words';

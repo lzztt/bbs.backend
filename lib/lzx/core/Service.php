@@ -32,7 +32,7 @@ abstract class Service
         $this->response->setContent($return ? $return : (object) null);
     }
 
-    protected function error($msg): void
+    protected function error(string $msg): void
     {
         $this->json(['error' => $msg]);
         throw new ResponseReadyException();

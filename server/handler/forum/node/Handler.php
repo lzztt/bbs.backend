@@ -25,7 +25,7 @@ class Handler extends Forum
         $tagTree[$tag->id]['children'] ? $this->error('Could not post topic in this forum') : $this->createTopic($tag->id);
     }
 
-    public function createTopic($tid): void
+    public function createTopic(int $tid): void
     {
         if (!$this->request->post['body']
                 || !$this->request->post['title']
@@ -75,7 +75,7 @@ class Handler extends Forum
                     if ($deleteAll) {
                         $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
                         foreach ($users as $u) {
-                            $spammer = new User($u['id'], null);
+                            $spammer = new User((int) $u['id'], 'id');
                             $spammer->delete();
                             $log = $log . $spammer->id . ' ';
                         }

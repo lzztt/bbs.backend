@@ -13,7 +13,7 @@ class City extends DBObject
     public $tidForum;
     public $tidYp;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
         $db = DB::getInstance();
         $table = 'cities';

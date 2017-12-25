@@ -19,14 +19,14 @@ class Image extends DBObject
     public $width;
     public $cityId;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
         $db = DB::getInstance();
         $table = 'images';
         parent::__construct($db, $table, $id, $properties);
     }
 
-    private function rmTmpFile($file): void
+    private function rmTmpFile(string $file): void
     {
         try {
             unlink($file);
@@ -167,7 +167,7 @@ class Image extends DBObject
         }
     }
 
-    public function updateFileList(array $files, $filePath, $nid, $cid = null): void
+    public function updateFileList(array $files, string $filePath, int $nid, int $cid = null): void
     {
         $nid = (int) $nid;
         if ($cid) { // comment
@@ -215,7 +215,7 @@ class Image extends DBObject
         }
     }
 
-    public function getRecentImages($city_id): array
+    public function getRecentImages(int $city_id): array
     {
         return $this->call('get_recent_images(' . $city_id . ')');
     }

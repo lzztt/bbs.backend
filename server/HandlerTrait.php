@@ -49,7 +49,7 @@ trait HandlerTrait
 
         // update user info
         if ($this->request->uid > 0) {
-            $user = new User($this->request->uid, null);
+            $user = new User();
             // update access info
             $user->call('update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',"' . $this->request->ip . '")');
         }
@@ -74,7 +74,7 @@ trait HandlerTrait
         }
     }
 
-    protected function getIndependentCache($key): Cache
+    protected function getIndependentCache(string $key): Cache
     {
         $key = self::$cacheHandler->getCleanName($key);
         if (array_key_exists($key, $this->independentCacheList)) {
@@ -86,7 +86,7 @@ trait HandlerTrait
         }
     }
 
-    protected function getCacheEvent($name, $objectID = 0): CacheEvent
+    protected function getCacheEvent(string $name, int $objectID = 0): CacheEvent
     {
         $name = self::$cacheHandler->getCleanName($name);
         $objID = (int) $objectID;

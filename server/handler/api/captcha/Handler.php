@@ -36,7 +36,7 @@ class Handler extends Service
         return new ImagickPixel($hex_dark);
     }
 
-    private function generateImage($code, $format): Imagick
+    private function generateImage(array $code, string $format): Imagick
     {
         // Get font.
         $config = Config::getInstance();

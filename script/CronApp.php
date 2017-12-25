@@ -39,7 +39,7 @@ class CronApp extends App
         }
     }
 
-    public function run($argc, array $argv = []): void
+    public function run(int $argc, array $argv = []): void
     {
         $task = strtolower($argv[1]);
         $func = $this->actions[$task];

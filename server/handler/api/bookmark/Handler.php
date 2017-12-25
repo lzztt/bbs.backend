@@ -25,7 +25,7 @@ class Handler extends Service
             $this->forbidden();
         }
 
-        $u = new User($this->request->uid, null);
+        $u = new User($this->request->uid, 'id');
 
         $nodeCount = $u->countBookmark();
         list($pageNo, $pageCount) = $this->getPagerInfo($nodeCount, self::NODES_PER_PAGE);
@@ -51,7 +51,7 @@ class Handler extends Service
             $this->error('node does not exist');
         }
 
-        $u = new User($this->request->uid, null);
+        $u = new User($this->request->uid, 'id');
 
         $u->addBookmark($nid);
 
@@ -76,7 +76,7 @@ class Handler extends Service
             }
         }
 
-        $u = new User($this->request->uid, null);
+        $u = new User($this->request->uid, 'id');
         foreach ($nids as $nid) {
             $u->deleteBookmark($nid);
         }

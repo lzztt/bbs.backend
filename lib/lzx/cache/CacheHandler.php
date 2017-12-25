@@ -53,12 +53,12 @@ class CacheHandler implements CacheHandlerInterface
         return $this->eventTable;
     }
 
-    public function setCacheTreeTable($treeTable): void
+    public function setCacheTreeTable(string $treeTable): void
     {
         $this->treeTable = $treeTable;
     }
 
-    public function setCacheEventTable($eventTable): void
+    public function setCacheEventTable(string $eventTable): void
     {
         $this->eventTable = $eventTable;
     }
@@ -66,12 +66,12 @@ class CacheHandler implements CacheHandlerInterface
     /**
      * Factory design patern
      */
-    public function createCache($key): Cache
+    public function createCache(string $key): Cache
     {
         return $key[0] === '/' ? new PageCache($key) : new SegmentCache($key);
     }
 
-    public function getCleanName($name): string
+    public function getCleanName(string $name): string
     {
         static $names = [];
 
@@ -150,7 +150,7 @@ class CacheHandler implements CacheHandlerInterface
         return $filename;
     }
 
-    public function getID($name): int
+    public function getID(string $name): int
     {
         static $ids = [];
         // found from cached id
@@ -180,12 +180,12 @@ class CacheHandler implements CacheHandlerInterface
         return $id;
     }
 
-    public function unlinkParents($id): void
+    public function unlinkParents(int $id): void
     {
         $this->db->query('DELETE FROM ' . $this->treeTable . ' WHERE cid = :cid', [':cid' => $id]);
     }
 
-    public function linkParents($id, array $parents): void
+    public function linkParents(int $id, array $parents): void
     {
         if ($parents) {
             array_unique($parents);
@@ -205,7 +205,7 @@ class CacheHandler implements CacheHandlerInterface
         }
     }
 
-    public function getChildren($id): array
+    public function getChildren(int $id): array
     {
         $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->treeTable . ' AS t ON c.id = t.cid WHERE t.pid = :pid', [':pid' => $id]);
         foreach ($children as $c) {
@@ -215,12 +215,12 @@ class CacheHandler implements CacheHandlerInterface
         return array_column($children, 'name');
     }
 
-    public function unlinkEvents($id): void
+    public function unlinkEvents(int $id): void
     {
         $this->db->query('DELETE FROM ' . $this->eventTable . ' WHERE lid = :lid', [':lid' => $id]);
     }
 
-    public function getEventListeners($eid, $oid): array
+    public function getEventListeners(int $eid, int $oid): array
     {
         $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->eventTable . ' AS e ON c.id = e.lid WHERE e.eid = :eid AND e.oid = :oid', [':eid' => $eid, ':oid' => $oid]);
         foreach ($children as $c) {
@@ -230,7 +230,7 @@ class CacheHandler implements CacheHandlerInterface
         return array_column($children, 'name');
     }
 
-    public function addEventListeners($eid, $oid, array $listeners): void
+    public function addEventListeners(int $eid, int $oid, array $listeners): void
     {
         if ($listeners) {
             array_unique($listeners);

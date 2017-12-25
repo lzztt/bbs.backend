@@ -15,7 +15,7 @@ class Comment extends DBObject
     public $createTime;
     public $lastModifiedTime;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
         $db = DB::getInstance();
         $table = 'comments';
