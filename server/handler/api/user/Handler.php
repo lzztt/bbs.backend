@@ -66,7 +66,7 @@ class Handler extends Service
             }
         }
 
-        $u = new User($uid, null);
+        $u = new User($uid, 'id');
 
         if (array_key_exists('password', $this->request->post)) {
             if (array_key_exists('password_old', $this->request->post)) {
@@ -97,7 +97,7 @@ class Handler extends Service
                             if ($user['username'] == strstr($user['email'], '@', true) && substr($u->username, 0, 4) == substr($user['username'], 0, 4)) {
                                 // found username has the same prefix
                                 // check location
-                                $geo = geoip_record_by_name($ip);
+                                $geo = geoip_record_by_name($this->request->ip);
 
                                 if ((!$geo || $geo['region'] != 'TX') || strpos($this->request->post['password'], $u->username) !== false) {
                                     // non texas user, or username = password
@@ -238,7 +238,7 @@ class Handler extends Service
         $this->json(null);
     }
 
-    private function isBot($m): bool
+    private function isBot(string $m): bool
     {
         $try1 = unserialize(self::curlGetData('http://www.stopforumspam.com/api?f=serial&email=' . $m));
         if ($try1['email']['appears'] == 1) {

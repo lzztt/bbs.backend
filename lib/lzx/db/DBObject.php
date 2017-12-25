@@ -23,12 +23,12 @@ abstract class DBObject
     protected $table;
     private $fields;
     private $fields_type = [];
-    private $exists = false;
+    private $exists = null;
     private $where = [];
     private $bind_values = [];
     private $order = [];
 
-    public function __construct(DB $db, $table, $id = null, $properties = '')
+    public function __construct(DB $db, string $table, int $id = 0, string $properties = '')
     {
         $this->properties = array_map(function (ReflectionProperty $prop) {
             return $prop->getName();
@@ -43,23 +43,19 @@ abstract class DBObject
 
         $this->getFieldsTypeAndPKey();
 
-        if ($id) { // not empty
-            if (!in_array(gettype($id), ['integer', 'string'])) {
-                throw new Exception('Invalid ID type: ' . gettype($id));
+        if ($id > 0) {
+            if (!$this->pkey_property) {
+                throw new Exception('Table does not have primary key. Cannot assign id=' . $id);
             }
-
-            if ($this->pkey_property) {
-                $this->setValue($this->pkey_property, $id);
-                if (!is_null($properties)) {
-                    $this->load($properties);
-                }
-            } else {
-                throw new Exception('Table does not have primary key. Cannot load id=' . $id);
+            $this->setValue($this->pkey_property, $id);
+            $props = $this->parseProperties($properties, $this->properties);
+            if (!in_array($this->pkey_property, $props) || sizeof($props) > 1) {
+                $this->load($properties);
             }
         }
     }
 
-    private static function camelToUnderscore($name): string
+    private static function camelToUnderscore(string $name): string
     {
         static $cache = [];
         if (!array_key_exists($name, $cache)) {
@@ -68,7 +64,7 @@ abstract class DBObject
         return $cache[$name];
     }
 
-    private static function underscoreToCamel($name): string
+    private static function underscoreToCamel(string $name): string
     {
         static $cache = [];
         if (!array_key_exists($name, $cache)) {
@@ -77,22 +73,22 @@ abstract class DBObject
         return $cache[$name];
     }
 
-    public function __set($prop, $val)
+    public function __set(string $prop, $val)
     {
         throw new Exception('unknown property: ' . $prop);
     }
 
-    public function __get($prop)
+    public function __get(string $prop)
     {
         throw new Exception('unknown property: ' . $prop);
     }
 
-    public function __isset($prop)
+    public function __isset(string $prop)
     {
         throw new Exception('unknown property: ' . $prop);
     }
 
-    public function __unset($prop)
+    public function __unset(string $prop)
     {
         throw new Exception('unknown property: ' . $prop);
     }
@@ -108,7 +104,7 @@ abstract class DBObject
         return $this->properties;
     }
 
-    private function bind($prop): void
+    private function bind(string $prop): void
     {
         if (array_key_exists($prop, $this->values)) {
             $this->bind_values[':' . $this->fields[$prop]] = $this->values[$prop];
@@ -117,7 +113,7 @@ abstract class DBObject
         }
     }
 
-    private function clear($clearData = false): void
+    private function clear(bool $clearData = false): void
     {
         $this->where = [];
         $this->bind_values = [];
@@ -125,11 +121,11 @@ abstract class DBObject
         if ($clearData) {
             $this->values = [];
             $this->properties_dirty = [];
-            $this->exists = false;
+            $this->exists = null;
         }
     }
 
-    private function setValue($prop, $value): void
+    private function setValue(string $prop, $value): void
     {
         if (is_null($value)) {
             $this->values[$prop] = null;
@@ -159,17 +155,18 @@ abstract class DBObject
     private function sync(): void
     {
         foreach ($this->properties as $p) {
-            if ($this->$p !== $this->values[$p]) {
-                $this->setValue($p, $this->$p);
-                // mark property as dirty
-                if (!in_array($p, $this->properties_dirty)) {
-                    $this->properties_dirty[] = $p;
-                }
+            if ($this->$p === $this->values[$p]) {
+                continue;
+            }
+            $this->setValue($p, $this->$p);
+            // mark property as dirty
+            if (!in_array($p, $this->properties_dirty)) {
+                $this->properties_dirty[] = $p;
             }
         }
     }
 
-    private function clean($prop): void
+    private function clean(string $prop): void
     {
         $dirty = array_search($prop, $this->properties_dirty);
         if ($dirty !== false) {
@@ -180,7 +177,7 @@ abstract class DBObject
     /**
      * Call a database procedure
      */
-    public function call($proc, $params = []): array
+    public function call(string $proc, array $params = []): array
     {
         return $this->db->query('CALL ' . $proc, $params);
     }
@@ -203,12 +200,9 @@ abstract class DBObject
     /**
      * Loads values to instance from DB
      */
-    public function load($properties = ''): void
+    public function load(string $properties = ''): void
     {
-        $this->exists = false;
-        $this->where = [];
-        $this->bind_values = [];
-        $this->order = [];
+        $this->clear();
 
         $arr = $this->getList($properties, 1);
 
@@ -229,6 +223,12 @@ abstract class DBObject
 
     public function exists(): bool
     {
+        if (is_null($this->exists)) {
+            if (!isset($this->{$this->pkey_property})) {
+                return false;
+            }
+            $this->load($this->pkey_property);
+        }
         return $this->exists;
     }
 
@@ -289,7 +289,7 @@ abstract class DBObject
     /**
      * Update a record / records
      */
-    public function update($properties = ''): void
+    public function update(string $properties = ''): void
     {
         $this->sync();
 
@@ -302,16 +302,9 @@ abstract class DBObject
             return;
         }
 
-        if (empty($properties)) {
-            $properties = $this->properties_dirty;
-        } else {
-            $properties = array_unique(explode(',', $properties));
-            if (sizeof($properties) != sizeof(array_intersect($properties, $this->properties_dirty))) {
-                throw new Exception('updating non-dirty property! updating: ' . implode(',', $properties) . ' - current dirty properties: ' . implode(',', $this->properties_dirty));
-            }
-        }
+        $props = $this->parseProperties($properties, $this->properties_dirty);
 
-        if (empty($properties)) {
+        if (empty($props)) {
             throw new Exception('updating property set is empty');
         }
 
@@ -325,7 +318,7 @@ abstract class DBObject
 
         $values = '';
 
-        foreach ($properties as $p) {
+        foreach ($props as $p) {
             $values = $values . $this->fields[$p] . '=:' . $this->fields[$p] . ', ';
             $this->bind($p);
         }
@@ -339,7 +332,7 @@ abstract class DBObject
 
         $this->clear();
         // undirty properties
-        $this->properties_dirty = array_diff($this->properties_dirty, $properties);
+        $this->properties_dirty = array_diff($this->properties_dirty, $props);
     }
 
     public function getCount(): int
@@ -356,49 +349,42 @@ abstract class DBObject
      * user input keys may have alias
      * will always get primary key values
      */
-    public function getList($properties = '', $limit = false, $offset = false): array
+    public function getList(string $properties = '', int $limit = 0, int $offset = 0): array
     {
         $this->sync();
         $this->setWhere(); // automatically add a filter for values we already have
 
-        $fields = $this->selectFields($properties);
+        $props = $this->parseProperties($properties, $this->properties);
+        if (!in_array($this->pkey_property, $props)) {
+            $props[] = $this->pkey_property;
+        }
+        $fields = $this->selectFields($props);
 
         return $this->select($fields, $limit, $offset);
     }
 
-    /*
-     * select query
-     */
-    private function selectFields($properties): string
+    private function parseProperties(string $properties, array $property_pool): array
     {
-        if (empty($properties)) {
-            $properties_array = $this->properties;
-            $fields = '';
-            foreach ($properties_array as $p) {
-                if ($p === $this->fields[$p]) {
-                    $fields = $fields . $p . ', ';
-                } else {
-                    $fields = $fields . $this->fields[$p] . ' AS ' . $p . ', ';
-                }
-            }
-        } else {
-            $properties_tmp = explode(',', $properties);
-            // add primary key property
-            if ($this->pkey_property) {
-                $properties_tmp[] = $this->pkey_property;
-            }
-            $properties_array = array_unique($properties_tmp);
-            $fields = '';
+        if (!$properties) {
+            return $property_pool;
+        }
 
-            foreach ($properties_array as $p) {
-                if (!in_array($p, $this->properties)) {
-                    throw new Exception('ERROR non-existing property : ' . $p);
-                }
-                if ($p === $this->fields[$p]) {
-                    $fields = $fields . $p . ', ';
-                } else {
-                    $fields = $fields . $this->fields[$p] . ' AS ' . $p . ', ';
-                }
+        $props = array_unique(explode(',', $properties));
+        $props_exist = array_intersect($props, $property_pool);
+        if (sizeof($props_exist) != sizeof($props)) {
+            throw new Exception('ERROR disallowed properties: ' . implode(',', array_diff($props, $props_exist)));
+        }
+        return $props_exist;
+    }
+
+    private function selectFields(array $properties): string
+    {
+        $fields = '';
+        foreach ($properties as $p) {
+            if ($p === $this->fields[$p]) {
+                $fields = $fields . $p . ', ';
+            } else {
+                $fields = $fields . $this->fields[$p] . ' AS ' . $p . ', ';
             }
         }
 
@@ -408,7 +394,7 @@ abstract class DBObject
     /**
      * Adds a condition for SQL query
      */
-    public function where($prop, $value, $condition): void
+    public function where(string $prop, $value, string $condition): void
     {
         if (!in_array($prop, $this->properties)) {
             throw new Exception('ERROR non-existing propperty : ' . $prop);
@@ -470,7 +456,7 @@ abstract class DBObject
      * only order by current table's keys
      * user input keys will not have alias
      */
-    public function order($prop, $order = 'ASC'): void
+    public function order(string $prop, string $order = 'ASC'): void
     {
         $order = strtoupper($order);
         if (!in_array($order, ['ASC', 'DESC'])) {
@@ -492,7 +478,7 @@ abstract class DBObject
         }
     }
 
-    private function select($properties = '', $limit = false, $offset = false): array
+    private function select(string $properties = '', int $limit = 0, int $offset = 0): array
     {
         $where = '';
         $order = '';

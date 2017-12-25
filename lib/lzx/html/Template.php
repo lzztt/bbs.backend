@@ -45,7 +45,7 @@ class Template
         }
     }
 
-    public function __construct($tpl, array $var = [])
+    public function __construct(string $tpl, array $var = [])
     {
         $this->observers = new SplObjectStorage();
 
@@ -60,7 +60,7 @@ class Template
         $this->var = array_merge($this->var, $var);
     }
 
-    public static function setSite($site): void
+    public static function setSite(string $site): void
     {
         self::$site = $site;
     }
@@ -126,7 +126,7 @@ class Template
         return self::$hasError;
     }
 
-    public static function link($name, $url, array $attributes = []): HTMLElement
+    public static function link(string $name, string $url, array $attributes = []): HTMLElement
     {
         $attributes['href'] = $url;
         return new HTMLElement('a', $name, $attributes);
@@ -143,7 +143,7 @@ class Template
         return new HTMLElement('nav', $list, ['class' => 'breadcrumb']);
     }
 
-    public static function pager($pageNo, $pageCount, $uri): string
+    public static function pager(int $pageNo, int $pageCount, string $uri): string
     {
         if ($pageCount < 2) {
             return '';

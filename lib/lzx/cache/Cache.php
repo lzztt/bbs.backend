@@ -29,7 +29,7 @@ abstract class Cache
         self::$logger = $logger;
     }
 
-    public function __construct($key)
+    public function __construct(string $key)
     {
         $this->key = self::$handler->getCleanName($key);
     }
@@ -39,9 +39,9 @@ abstract class Cache
         return $this->key;
     }
 
-    public function store($data): void
+    public function store(string $data): void
     {
-        $this->data = (string) $data;
+        $this->data = $data;
         $this->dirty = true;
     }
 
@@ -53,7 +53,7 @@ abstract class Cache
         $this->deleted = true;
     }
 
-    public function addParent($key): void
+    public function addParent(string $key): void
     {
         $cleanKey = self::$handler->getCleanName($key);
         if ($cleanKey && !in_array($cleanKey, $this->parents)) {
@@ -77,7 +77,7 @@ abstract class Cache
         }
     }
 
-    protected function writeDataFile($data): void
+    protected function writeDataFile(string $data): void
     {
         file_put_contents(self::$handler->getFileName($this), $data, LOCK_EX);
     }

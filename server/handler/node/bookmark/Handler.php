@@ -15,7 +15,7 @@ class Handler extends Node
 
         $nid = (int) $this->args[0];
 
-        $u = new User($this->request->uid, null);
+        $u = new User($this->request->uid, 'id');
 
         $u->addBookmark($nid);
         $this->html = null;

@@ -23,7 +23,7 @@ class Handler extends Node
         $this->$method($nid);
     }
 
-    private function commentForumTopic($nid): void
+    private function commentForumTopic(int $nid): void
     {
         // create new comment
         $node = new NodeObject($nid, 'tid,status');
@@ -72,7 +72,7 @@ class Handler extends Node
                     if ($deleteAll) {
                         $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
                         foreach ($users as $u) {
-                            $spammer = new User($u['id'], null);
+                            $spammer = new User($u['id'], 'id');
                             $spammer->delete();
                             $log = $log . $spammer->id . ' ';
                         }
@@ -110,7 +110,7 @@ class Handler extends Node
         $this->pageRedirect('/node/' . $nid . '?p=l#comment' . $comment->id);
     }
 
-    private function commentYellowPage($nid): void
+    private function commentYellowPage(int $nid): void
     {
         // create new comment
         $node = new NodeObject($nid, 'status');
@@ -157,7 +157,7 @@ class Handler extends Node
                     if ($deleteAll) {
                         $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
                         foreach ($users as $u) {
-                            $spammer = new User($u['id'], null);
+                            $spammer = new User($u['id'], 'id');
                             $spammer->delete();
                             $log = $log . $spammer->id . ' ';
                         }

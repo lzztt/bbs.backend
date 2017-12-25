@@ -37,7 +37,7 @@ class Handler extends Service
         $this->json(array_merge($r, $u));
     }
 
-    private function getAlexa($city): string
+    private function getAlexa(string $city): string
     {
         $data = self::curlGetData('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
 
@@ -46,9 +46,10 @@ class Handler extends Service
             if ($p[2]) {
                 $rank = number_format(intval($p[2]));
                 return ucfirst($city) . 'BBS最近三个月平均访问量<a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">Alexa排名</a>:<br><a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
-            } else {
-                $this->logger->warn('Get Alexa Rank Error');
             }
         }
+
+        $this->logger->warn('Get Alexa Rank Error');
+        return '';
     }
 }

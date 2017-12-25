@@ -164,7 +164,7 @@ class Handler extends Service
 
         $error = [];
         foreach ($mids as $mid) {
-            $pm = new PrivMsg($mid, null);
+            $pm = new PrivMsg($mid, 'id');
             try {
                 $pm->deleteByUser($this->request->uid);
             } catch (Exception $e) {
@@ -176,7 +176,7 @@ class Handler extends Service
         $this->json($error ? ['error' => $error] : null);
     }
 
-    private function getMessage($mid): array
+    private function getMessage(int $mid): array
     {
         if ($mid > 0) {
             $pm = new PrivMsg();
@@ -197,9 +197,9 @@ class Handler extends Service
         }
     }
 
-    private function getMessageList($mailbox): array
+    private function getMessageList(string $mailbox): array
     {
-        $user = new User($this->request->uid, null);
+        $user = new User($this->request->uid, 'id');
         if (!in_array($mailbox, self::$mailbox)) {
             $this->error('mailbox does not exist: ' . $mailbox);
         }
@@ -218,7 +218,7 @@ class Handler extends Service
 
     private function getNewMessageCount(): array
     {
-        $user = new User($this->request->uid, null);
+        $user = new User($this->request->uid, 'id');
         return ['count' => $user->getPrivMsgsCount('new')];
     }
 }

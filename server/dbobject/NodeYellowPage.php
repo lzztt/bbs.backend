@@ -15,7 +15,7 @@ class NodeYellowPage extends DBObject
     public $email;
     public $website;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
         $db = DB::getInstance();
         $table = 'node_yellowpages';
