@@ -9,7 +9,7 @@ class PageCache extends Cache
 {
     protected $segments = [];
 
-    public function getSegment($key): SegmentCache
+    public function getSegment(string $key): SegmentCache
     {
         $cleanKey = self::$handler->getCleanName($key);
 

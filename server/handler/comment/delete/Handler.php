@@ -23,12 +23,12 @@ class Handler extends Comment
         $this->getCacheEvent('NodeUpdate', $comment->nid)->trigger();
 
         $node = new Node($comment->nid, 'tid');
-        if (in_array($node->tid, (new Tag(self::$city->tidForum, null))->getLeafTIDs())) { // forum tag
+        if (in_array($node->tid, (new Tag(self::$city->tidForum, 'id'))->getLeafTIDs())) { // forum tag
             $this->getCacheEvent('ForumComment')->trigger();
             $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
         }
 
-        if (in_array($node->tid, (new Tag(self::$city->tidYp, null))->getLeafTIDs())) { // yellow page tag
+        if (in_array($node->tid, (new Tag(self::$city->tidYp, 'id'))->getLeafTIDs())) { // yellow page tag
             $this->getCacheEvent('YellowPageComment', $node->tid)->trigger();
         }
 

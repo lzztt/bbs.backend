@@ -20,7 +20,7 @@ class CacheEvent
         self::$handler = $handler;
     }
 
-    public function __construct($name, $objectID = 0)
+    public function __construct(string $name, int $objectID = 0)
     {
         $this->name = self::$handler->getCleanName($name);
 

@@ -68,12 +68,12 @@ class Session
         }
     }
 
-    final public function __get($key)
+    final public function __get(string $key)
     {
         return array_key_exists($key, $this->data) ? $this->data[$key] : null;
     }
 
-    final public function __set($key, $val)
+    final public function __set(string $key, $val)
     {
         if (is_null($val)) {
             unset($this->$key);
@@ -82,12 +82,12 @@ class Session
         }
     }
 
-    final public function __isset($key)
+    final public function __isset(string $key)
     {
         return array_key_exists($key, $this->data) ? isset($this->data[$key]) : false;
     }
 
-    final public function __unset($key)
+    final public function __unset(string $key)
     {
         if (array_key_exists($key, $this->data)) {
             unset($this->data[$key]);
@@ -117,9 +117,9 @@ class Session
         return $this->cid;
     }
 
-    public function setCityID($cid): void
+    public function setCityID(int $cid): void
     {
-        $this->cid = (int) $cid;
+        $this->cid = $cid;
     }
 
     public function getUserID(): int
@@ -127,9 +127,9 @@ class Session
         return $this->uid;
     }
 
-    public function setUserID($uid): void
+    public function setUserID(int $uid): void
     {
-        $this->uid = (int) $uid;
+        $this->uid = $uid;
     }
 
     public function clear(): void

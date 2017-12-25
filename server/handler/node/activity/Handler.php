@@ -21,7 +21,7 @@ class Handler extends Node
         $this->$method($nid);
     }
 
-    private function activityForumTopic($nid): void
+    private function activityForumTopic(int $nid): void
     {
         $node = new NodeObject($nid, 'tid,uid,title');
 

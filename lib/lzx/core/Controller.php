@@ -36,7 +36,7 @@ abstract class Controller
      */
     abstract public function update(Template $html): void;
 
-    protected function error($msg): void
+    protected function error(string $msg): void
     {
         $this->response->setContent($msg);
         throw new ResponseReadyException();
@@ -54,7 +54,7 @@ abstract class Controller
         throw new ResponseReadyException();
     }
 
-    protected function pageRedirect($uri): void
+    protected function pageRedirect(string $uri): void
     {
         $this->response->pageRedirect($uri);
         throw new ResponseReadyException();

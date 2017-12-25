@@ -9,6 +9,7 @@ use lzx\core\Response;
 use lzx\core\Service as BaseService;
 use lzx\html\Template;
 use site\Config;
+use site\dbobject\User;
 use site\HandlerTrait;
 use site\Session;
 
@@ -47,7 +48,7 @@ abstract class Service extends BaseService
     }
 
     // default RESTful get/post/put/delete
-    public function __call($name, $args)
+    public function __call(string $name, array $args)
     {
         $this->forbidden();
     }
@@ -64,7 +65,7 @@ abstract class Service extends BaseService
         unset($this->session->captcha);
     }
 
-    protected function createIdentCode($uid): int
+    protected function createIdentCode(int $uid): int
     {
         $code = rand(100000, 999999);
 
@@ -79,7 +80,7 @@ abstract class Service extends BaseService
         return $code;
     }
 
-    protected function parseIdentCode($code): int
+    protected function parseIdentCode(int $code): int
     {
         if (!$this->session->identCode) {
             return 0;
@@ -92,7 +93,7 @@ abstract class Service extends BaseService
             return 0;
         }
 
-        if ($code == $idCode['code']) {
+        if ($code === $idCode['code']) {
             // valid code, clear code
             $this->session->identCode = null;
             return $idCode['uid'];
@@ -103,7 +104,7 @@ abstract class Service extends BaseService
         }
     }
 
-    protected function sendIdentCode($user): bool
+    protected function sendIdentCode(User $user): bool
     {
         // create user action and send out email
         $mailer = new Mailer('system');

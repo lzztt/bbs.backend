@@ -13,7 +13,7 @@ class Handler extends Controller
         $this->response->setContent(file_get_contents($this->getLatestVersion($app) . '/index.html'));
     }
 
-    protected function getLatestVersion($app): string
+    protected function getLatestVersion(string $app): string
     {
         $versionFile = $this->config->path['file'] . '/app/' . $app . '.current';
         $current = is_file($versionFile) ? file_get_contents($versionFile) : null;

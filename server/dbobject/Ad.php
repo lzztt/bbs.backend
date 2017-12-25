@@ -13,19 +13,19 @@ class Ad extends DBObject
     public $expTime;
     public $email;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
         $db = DB::getInstance();
         $table = 'ads';
         parent::__construct($db, $table, $id, $properties);
     }
 
-    public function getAllAds($from_time = 0): array
+    public function getAllAds(int $from_time = 0): array
     {
         return $this->convertColumnNames($this->call('get_ads(' . $from_time . ')'));
     }
 
-    public function getAllAdPayments($from_time = 0): array
+    public function getAllAdPayments(int $from_time = 0): array
     {
          return $this->convertColumnNames($this->call('get_ad_payments(' . $from_time . ')'));
     }

@@ -11,63 +11,39 @@ class HTMLElement
     protected $data;
     protected $attributes;
 
-    public function __construct($tag, $data = null, array $attributes = [])
+    public function __construct(string $tag, $data = null, array $attributes = [])
     {
-        if (!is_string($tag) || empty($tag)) {
-              throw new Exception('wrong tag name (should be a non-empty string) : ' . gettype($tag));
+        if (!$tag) {
+            throw new Exception('wrong tag name (should be a non-empty string) : ' . gettype($tag));
         }
 
-          // type hinting force attributes is always an array
-
-            $this->tag = $tag;
-          // allow to set empty string value!!!, otherwise textarea will break
-        if (isset($data)) {
-            $this->setData($data);
+        $this->tag = $tag;
+        $this->data = [];
+        if ($data) {
+            $this->addData($data);
         }
-            $this->attributes = $attributes;
+        $this->attributes = $attributes;
     }
 
-    public function setData($data): void
+    public function addData($data): void
     {
-         $this->data = null;
         if (is_array($data)) {
             foreach ($data as $element) {
-                 $this->setDataByIndex(null, $element);
+                 $this->addDataElement($element);
             }
         } else {
-            $this->setDataByIndex(null, $data);
+            $this->addDataElement($data);
         }
     }
 
     // set a single data element to an index
-    public function setDataByIndex($index, $data): void
+    protected function addDataElement($data): void
     {
-        if (!($data instanceof self || is_string($data) || is_null($data))) { // not string or Element object or NULL
-            throw new Exception('wrong data type (NULL, string, ' . __CLASS__ . ') : ' . gettype($data));
-        }
-
-          // reset only if $index is a valid index
-        if (is_int($index) && is_array($this->data)) { // set value with index
-            if (is_null($data)) {  // NULL value
-                if (array_key_exists($index, $this->data)) { // unset element if exist
-                     unset($this->data[$index]);
-                }
-            } else // set/reset value if NOT NULL
-            {
-                $this->data[$index] = $data;
+        if ($data) {
+            if (!($data instanceof self || is_string($data))) { // not string or Element object
+                throw new Exception('wrong data type (string, ' . __CLASS__ . ') : ' . gettype($data));
             }
-        } else // otherwise, append to the end of $this->data
-            {
-            if (isset($data)) { // not NULL
-                if (is_null($this->data)) { // current NULL
-                     $this->data = $data;
-                } elseif (is_array($this->data)) { // current Array
-                    $this->data[] = $data;
-                } else // current single string or Element
-                 {
-                    $this->data = [$this->data, $data];
-                }
-            }
+            $this->data[] = $data;
         }
     }
 

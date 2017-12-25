@@ -19,7 +19,7 @@ class Handler extends Node
         $this->$method($nid);
     }
 
-    private function deleteForumTopic($nid): void
+    private function deleteForumTopic(int $nid): void
     {
         $node = new NodeObject($nid, 'uid,tid,status');
         $tags = $node->getTags($nid);
@@ -47,7 +47,7 @@ class Handler extends Node
         $this->pageRedirect('/forum/' . $node->tid);
     }
 
-    private function deleteYellowPage($nid): void
+    private function deleteYellowPage(int $nid): void
     {
         if ($this->request->uid != 1) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);

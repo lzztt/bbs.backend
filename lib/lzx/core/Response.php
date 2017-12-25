@@ -55,7 +55,7 @@ class Response
     public function cacheContent(PageCache $cache): void
     {
         if ($this->status < 300 && $this->data instanceof Template) {
-            $cache->store($this->data);
+            $cache->store((string) $this->data);
         } else {
             throw new Exception('Cache content failed: status=' . $this->status . ' response content type=' . gettype($this->data));
         }
@@ -71,7 +71,7 @@ class Response
         $this->resp = new EmptyResponse(403);
     }
 
-    public function pageRedirect($uri): void
+    public function pageRedirect(string $uri): void
     {
         $this->resp = new RedirectResponse($uri);
     }

@@ -26,7 +26,7 @@ class Handler extends Forum
     }
 
     // $forum, $groups, $boards are arrays of category id
-    public function showForumList($tid, $tagRoot, $tagTree): void
+    public function showForumList(int $tid, array $tagRoot, array $tagTree): void
     {
         $breadcrumb = [];
         foreach ($tagRoot as $i => $t) {
@@ -64,7 +64,7 @@ class Handler extends Forum
         $this->var['content'] = new Template('forum_list', $contents);
     }
 
-    public function showTopicList($tid, $tagRoot): void
+    public function showTopicList(int $tid, array $tagRoot): void
     {
         $this->getCacheEvent('ForumUpdate', $tid)->addListener($this->cache);
 
@@ -74,7 +74,7 @@ class Handler extends Forum
         }
 
         $node = new Node();
-        list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount($tid), self::NODES_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount((string) $tid), self::NODES_PER_PAGE);
         $pager = Template::pager($pageNo, $pageCount, '/forum/' . $tid);
 
         $nodes = $node->getForumNodeList(self::$city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
@@ -105,11 +105,11 @@ class Handler extends Forum
         $this->var['content'] = new Template('topic_list', $contents);
     }
 
-    protected function nodeInfo($tid): array
+    protected function nodeInfo(int $tid): array
     {
-        $tag = new Tag($tid, null);
+        $tag = new Tag($tid, 'id');
 
-        foreach ($tag->getNodeInfo($tid) as $v) {
+        foreach ($tag->getNodeInfo((string) $tid) as $v) {
             $v['create_time'] = date('m/d/Y H:i', (int) $v['create_time']);
             if ($v['cid'] == 0) {
                 $node = $v;
