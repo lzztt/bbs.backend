@@ -14,7 +14,7 @@ abstract class Forum extends Controller
         if ($this->args) {
             $tid = (int) $this->args[0];
             if ($tid > 0) {
-                $tag = new Tag($tid, null);
+                $tag = new Tag($tid, 'id');
                 $tag->load('id');
 
                 if (!$tag->exists()) {
@@ -30,7 +30,7 @@ abstract class Forum extends Controller
             }
         } else {
             // main forum
-            $tag = new Tag(self::$city->tidForum, null);
+            $tag = new Tag(self::$city->tidForum, 'id');
         }
 
         return $tag;

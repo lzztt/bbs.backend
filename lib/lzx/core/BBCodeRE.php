@@ -7,22 +7,19 @@ namespace lzx\core;
 
 class BBCodeRE
 {
-    private static function escape($s): string
+    private static function escape(string $s): string
     {
- // all input should has already been processed by htmlentity() function before stored, to prevent html injunction
         $code = $s[1];
         $code = str_replace(['[', ']'], ['&#91;', '&#93;'], $code);
         return '<code class="code">' . $code . '</code>';
     }
 
-    // clean some tags to remain strict
-    // not very elegant, but it works. No time to do better ;)
-    private static function removeBr($s): string
+    private static function removeBr(string $s): string
     {
         return str_replace('<br />', '', $s[0]);
     }
 
-    public static function parse($text): string
+    public static function parse(string $text): string
     {
         if (strpos($text, '[/') === false) {// if no colse tag, don't borther
             $text = preg_replace('#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text);
@@ -32,9 +29,6 @@ class BBCodeRE
         // BBCode [code]
         $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [__CLASS__, 'escape'], $text);
 
-        // Smileys to find...
-        // Add closing tags to prevent users from disruping your site's HTML
-        // (required for nestable tags only: [list] and [quote])
         $unclosed = ((int) preg_match_all('/\[quote\="?(.*?)"?\]/ms', $text, $matches)) + substr_count($text, '[quote]') - substr_count($text, '[/quote]');
 
         if ($unclosed < 0) {

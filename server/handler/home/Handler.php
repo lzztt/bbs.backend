@@ -42,7 +42,7 @@ class Handler extends Controller
     // BEGIN DALLAS HOME
     private function dallasHome(): void
     {
-        $tag = new Tag(self::$city->tidForum, null);
+        $tag = new Tag(self::$city->tidForum, 'id');
         $tagTree = $tag->getTagTree();
 
         $nodeInfo = [];
@@ -72,7 +72,7 @@ class Handler extends Controller
 
     private function austinHome(): void
     {
-        $tag = new Tag(self::$city->tidForum, null);
+        $tag = new Tag(self::$city->tidForum, 'id');
         $tagTree = $tag->getTagTree();
 
         $nodeInfo = [];
@@ -100,9 +100,9 @@ class Handler extends Controller
         $this->var['content'] = new Template('home', $content);
     }
 
-    protected function nodeInfo($tid): array
+    protected function nodeInfo(int $tid): array
     {
-        $tag = new Tag($tid, null);
+        $tag = new Tag($tid, 'id');
 
         foreach ($tag->getNodeInfo($tid) as $v) {
             $v['create_time'] = date('m/d/Y H:i', (int) $v['create_time']);
@@ -140,7 +140,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestForumTopics($count): string
+    private function getLatestForumTopics(int $count): string
     {
         $ulCache = $this->cache->getSegment('latestForumTopics');
         $ul = $ulCache->fetch();
@@ -159,7 +159,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getHotForumTopics($count): string
+    private function getHotForumTopics(int $count): string
     {
         $ulCache = $this->cache->getSegment('hotForumTopics');
         $ul = $ulCache->fetch();
@@ -179,7 +179,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestYellowPages($count): array
+    private function getLatestYellowPages(int $count): array
     {
         $ulCache = $this->cache->getSegment('latestYellowPages');
         $cache = $ulCache->fetch();
@@ -205,7 +205,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestForumTopicReplies($count): string
+    private function getLatestForumTopicReplies(int $count): string
     {
         $ulCache = $this->cache->getSegment('latestForumTopicReplies');
         $ul = $ulCache->fetch();
@@ -224,7 +224,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestYellowPageReplies($count): string
+    private function getLatestYellowPageReplies(int $count): string
     {
         $ulCache = $this->cache->getSegment('latestYellowPageReplies');
         $ul = $ulCache->fetch();

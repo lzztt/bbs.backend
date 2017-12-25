@@ -23,7 +23,7 @@ class Handler extends Node
         $this->getCacheEvent('NodeUpdate', $nid)->addListener($this->cache);
     }
 
-    private function displayForumTopic($nid): void
+    private function displayForumTopic(int $nid): void
     {
         $nodeObj = new NodeObject();
         $node = $nodeObj->getForumNode($nid);
@@ -42,7 +42,7 @@ class Handler extends Node
         }
         $breadcrumb[$node['title']] = null;
 
-        list($pageNo, $pageCount) = $this->getPagerInfo($node['comment_count'], self::COMMENTS_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
         $pager = Template::pager($pageNo, $pageCount, '/node/' . $node['id']);
 
         $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE; // first page start from the node and followed by comments
@@ -88,9 +88,8 @@ class Handler extends Node
                     $c['HTMLbody'] = nl2br($c['body']);
                     $this->logger->error($e->getMessage(), $e->getTrace());
                 }
-                // $c['signature'] = nl2br($c['signature']);
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
-                $c['city'] = self::getCityFromIP($c['access_ip']);
+                $c['city'] = self::getCityFromIP($c['access_ip'] ? $c['access_ip'] : '');
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
                 $c['filesJSON'] = json_encode($c['files']);
                 if ($nodeComment) {
@@ -119,12 +118,12 @@ class Handler extends Node
         $this->var['content'] = new Template('node_forum_topic', $contents);
     }
 
-    private function authorPanel($info): string
+    private function authorPanel(array $info): string
     {
         static $authorPanels = [];
 
         if (!(array_key_exists('uid', $info) && $info['uid'] > 0)) {
-            return null;
+            return '';
         }
 
         if (!array_key_exists($info['uid'], $authorPanels)) {
@@ -136,7 +135,7 @@ class Handler extends Node
                 if (empty($info['avatar'])) {
                     $info['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
-                $info['city'] = self::getCityFromIP($info['access_ip']);
+                $info['city'] = self::getCityFromIP($info['access_ip'] ? $info['access_ip'] : '');
                 $authorPanel = (string) new Template('author_panel_forum', $info);
                 $authorPanelCache->store($authorPanel);
             }
@@ -191,7 +190,7 @@ class Handler extends Node
         return $attachments;
     }
 
-    private function displayYellowPage($nid): void
+    private function displayYellowPage(int $nid): void
     {
         $nodeObj = new NodeObject();
         $node = $nodeObj->getYellowPageNode($nid);
@@ -210,7 +209,7 @@ class Handler extends Node
         }
         $breadcrumb[$node['title']] = null;
 
-        list($pageNo, $pageCount) = $this->getPagerInfo($node['comment_count'], self::COMMENTS_PER_PAGE);
+        list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
         $pager = Template::pager($pageNo, $pageCount, '/node/' . $nid);
 
         $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;

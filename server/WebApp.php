@@ -53,7 +53,7 @@ class WebApp extends App
     // other classes will report status to controller
     // controller set status back the WebApp object
     // WebApp object will call Theme to display the content
-    public function run($argc = 0, array $argv = []): void
+    public function run(int $argc = 0, array $argv = []): void
     {
         $request = Request::getInstance();
 

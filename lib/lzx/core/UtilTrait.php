@@ -6,7 +6,7 @@ use Exception;
 
 trait UtilTrait
 {
-    protected static function curlGetData($url): string
+    protected static function curlGetData(string $url): string
     {
         $c = curl_init($url);
         curl_setopt_array($c, [
@@ -20,9 +20,14 @@ trait UtilTrait
         return $data ? $data : '';
     }
 
-    protected static function getCityFromIP($ip): string
+    protected static function getCityFromIP(string $ip): string
     {
         static $cities = [];
+
+        $city = 'N/A';
+        if (!$ip) {
+            return $city;
+        }
 
         // return from cache;
         if (array_key_exists($ip, $cities)) {
@@ -30,12 +35,7 @@ trait UtilTrait
         }
 
         // get city from geoip database
-        $city = 'N/A';
         try {
-            if (is_null($ip)) {
-                return $city;
-            }
-
             $ip = inet_ntop($ip);
             if ($ip === false) {
                 return $city;
@@ -56,7 +56,7 @@ trait UtilTrait
         return $city;
     }
 
-    protected static function getLocationFromIP($ip): string
+    protected static function getLocationFromIP(string $ip): string
     {
         $location = 'N/A';
 
@@ -96,13 +96,13 @@ trait UtilTrait
         return $location;
     }
 
-    protected function getPagerInfo($nTotal, $nPerPage): array
+    protected function getPagerInfo(int $nTotal, int $nPerPage): array
     {
         if ($nPerPage <= 0) {
             throw new Exception('invalid value for number of items per page: ' . $nPerPage);
         }
 
-        $pageCount = $nTotal > 0 ? ceil($nTotal / $nPerPage) : 1;
+        $pageCount = $nTotal > 0 ? (int) ceil($nTotal / $nPerPage) : 1;
         if ($this->request->get['p']) {
             if ($this->request->get['p'] === 'l') {
                 $pageNo = $pageCount;

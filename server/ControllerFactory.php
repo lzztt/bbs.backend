@@ -56,7 +56,7 @@ class ControllerFactory
         return [$cls, array_values(array_diff($args, $keys))];
     }
 
-    private static function getURIargs($uri): array
+    private static function getURIargs(string $uri): array
     {
         $parts = explode('?', $uri);
         $arg = trim($parts[0], '/');

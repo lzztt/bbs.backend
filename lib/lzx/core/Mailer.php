@@ -14,7 +14,7 @@ class Mailer
     public $body;
     public $signature;
 
-    public function __construct($from = 'noreply', $domain = null)
+    public function __construct(string $from = 'noreply', string $domain = null)
     {
         if ($domain) {
             $this->domain = $domain;

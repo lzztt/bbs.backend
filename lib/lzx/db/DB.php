@@ -75,7 +75,7 @@ class DB
     /**
      * Returns result resource from given query
      */
-    public function query($sql, array $params = []): array
+    public function query(string $sql, array $params = []): array
     {
         if (empty($params)) {
             if (!self::$debug) {
@@ -123,7 +123,7 @@ class DB
         return $this->db->lastInsertId();
     }
 
-    public function str($str): string
+    public function str(string $str): string
     {
         if (!self::$debug) {
             return $this->db->quote($str);

@@ -60,7 +60,7 @@ abstract class Controller extends BaseCtrler
                 ];
             }
 
-            $navbar = new Template('page_navbar', $vars);
+            $navbar = (string) new Template('page_navbar', $vars);
             $navbarCache->store($navbar);
         }
         $this->var['page_navbar'] = $navbar;
@@ -90,9 +90,9 @@ abstract class Controller extends BaseCtrler
         $html->detach($this);
     }
 
-    protected function createMenu($tid): string
+    protected function createMenu(int $tid): string
     {
-        $tag = new Tag($tid, null);
+        $tag = new Tag($tid, 'id');
         $tree = $tag->getTagTree();
         $type = 'tag';
         $root_id = array_shift(array_keys($tag->getTagRoot()));

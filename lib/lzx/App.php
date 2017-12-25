@@ -23,5 +23,5 @@ abstract class App
         Handler::setExceptionHandler();
     }
 
-    abstract public function run($argc, array $argv): void;
+    abstract public function run(int $argc, array $argv): void;
 }

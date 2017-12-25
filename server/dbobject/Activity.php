@@ -12,24 +12,24 @@ class Activity extends DBObject
     public $endTime;
     public $status;
 
-    public function __construct($id = null, $properties = '')
+    public function __construct(int $id = 0, string $properties = '')
     {
          $db = DB::getInstance();
          $table = 'activities';
          parent::__construct($db, $table, $id, $properties);
     }
 
-    public function getRecentActivities($count, $now): array
+    public function getRecentActivities(int $count, int $now): array
     {
          return $this->call('get_recent_activities(' . $now . ',' . $count . ')');
     }
 
-    public function getActivityList($limit = 25, $offset = 0): array
+    public function getActivityList(int $limit = 25, int $offset = 0): array
     {
          return $this->call('get_activities(' . $limit . ',' . $offset . ')');
     }
 
-    public function addActivity($nid, $beginTime, $endTime): void
+    public function addActivity(int $nid, int $beginTime, int $endTime): void
     {
          $this->call('add_activity(' . $nid . ',' . $beginTime . ',' . $endTime . ')');
     }

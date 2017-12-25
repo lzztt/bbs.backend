@@ -19,7 +19,7 @@ class Handler extends Node
         $this->$method($nid);
     }
 
-    private function editForumTopic($nid): void
+    private function editForumTopic(int $nid): void
     {
         // edit existing comment
         $node = new NodeObject($nid, 'uid,status');
@@ -71,7 +71,7 @@ class Handler extends Node
         $this->pageRedirect($this->request->referer);
     }
 
-    private function editYellowPage($nid): void
+    private function editYellowPage(int $nid): void
     {
         $node = new NodeObject($nid, 'uid,status');
 
@@ -109,7 +109,7 @@ class Handler extends Node
             $node->lastModifiedTime = $this->request->timestamp;
             $node->update();
 
-            $node_yp = new NodeYellowPage($nid, 'nid');
+            $node_yp = new NodeYellowPage($nid);
             $keys = ['address', 'phone', 'email', 'website', 'fax'];
             foreach ($keys as $k) {
                 $node_yp->$k = $this->request->post[$k] ? $this->request->post[$k] : null;

@@ -17,8 +17,8 @@ class Handler extends Service
             $this->forbidden();
         }
 
-        $uid = $this->request->post['uid'];
-        $nid = $this->request->post['nid'];
+        $uid = (int) $this->request->post['uid'];
+        $nid = (int) $this->request->post['nid'];
         $reason = $this->request->post['reason'];
 
         if ($uid == $this->request->uid) {

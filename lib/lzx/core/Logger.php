@@ -57,7 +57,7 @@ class Logger
     }
 
     // only set Dir once
-    public function setDir($dir): void
+    public function setDir(string $dir): void
     {
         if (!isset($this->dir)) {
             if (is_dir($dir) && is_writable($dir)) {
@@ -73,7 +73,7 @@ class Logger
         }
     }
 
-    public function setEmail($email): void
+    public function setEmail(string $email): void
     {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->mailer = new Mailer('logger');
@@ -88,7 +88,7 @@ class Logger
         $this->userinfo = $userinfo;
     }
 
-    public function info($str): void
+    public function info(string $str): void
     {
         $this->log($str, self::INFO);
     }
@@ -103,12 +103,12 @@ class Logger
         $this->log(trim($str), self::DEBUG);
     }
 
-    public function warn($str): void
+    public function warn(string $str): void
     {
         $this->log($str, self::WARNING);
     }
 
-    public function error($str, array $traces = []): void
+    public function error(string $str, array $traces = []): void
     {
         $this->log($str, self::ERROR, $traces);
     }
@@ -134,7 +134,7 @@ class Logger
         ];
     }
 
-    private function log($str, $type, array $traces = null): void
+    private function log(string $str, string $type, array $traces = null): void
     {
         $log = ['time' => $this->time, 'type' => $type];
         foreach ($this->userinfo as $k => $v) {
@@ -144,7 +144,7 @@ class Logger
         $log['client'] = $_SERVER['REMOTE_ADDR'] . ' : ' . $_SERVER['HTTP_USER_AGENT'];
         $log['message'] = $str;
 
-        if ($traces !== null) {
+        if ($traces) {
             $log['trace'] = $this->getBacktrace($traces);
         }
 
