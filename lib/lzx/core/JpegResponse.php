@@ -12,7 +12,7 @@ class JpegResponse extends Response
 {
     use InjectContentTypeTrait;
 
-    public function __construct($image, $status = 200, array $headers = [])
+    public function __construct(string $image, int $status = 200, array $headers = [])
     {
         parent::__construct(
             $this->createBody($image),
