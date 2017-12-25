@@ -38,7 +38,7 @@ class Config
             'backup' => dirname(__DIR__) . '/backup',
             'cache' => '/tmp/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
         ];
-        $this->cache = false;
+        $this->cache = true;
         $this->db = [
             'dsn' => 'hbbs',
             'user' => 'web',
