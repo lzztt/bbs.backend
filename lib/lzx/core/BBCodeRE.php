@@ -7,16 +7,16 @@ namespace lzx\core;
 
 class BBCodeRE
 {
-    private static function escape(string $s): string
+    private static function escape(array $matches): string
     {
-        $code = $s[1];
+        $code = $matches[1];
         $code = str_replace(['[', ']'], ['&#91;', '&#93;'], $code);
         return '<code class="code">' . $code . '</code>';
     }
 
-    private static function removeBr(string $s): string
+    private static function removeBr(array $matches): string
     {
-        return str_replace('<br />', '', $s[0]);
+        return str_replace('<br />', '', $matches[0]);
     }
 
     public static function parse(string $text): string

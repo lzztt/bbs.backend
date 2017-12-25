@@ -199,7 +199,7 @@ class CronApp extends App
         }
     }
 
-    private function notifyAdUser($mailer, $ad, $time): void
+    private function notifyAdUser(Mailer $mailer, array $ad, string $time): void
     {
         $mailer->subject = $ad['name'] . '在HoustonBBS的' . ($ad['type_id'] == 1 ? '电子黄页' : '页顶广告') . $time . '到期';
         $mailer->to = $ad['email'];
