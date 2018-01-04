@@ -27,7 +27,7 @@ class Handler
         }
     }
 
-    public static function errorHandler(int $errno , string $errstr, string $errfile, int $errline): void
+    public static function errorHandler(int $errno, string $errstr, string $errfile, int $errline): void
     {
         throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
     }
