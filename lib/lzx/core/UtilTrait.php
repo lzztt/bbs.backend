@@ -44,7 +44,7 @@ trait UtilTrait
             $geo = geoip_record_by_name($ip);
 
             if ($geo['city']) {
-                $city = $geo['city'];
+                $city = self::encode($geo['city'], mb_internal_encoding());
             }
         } catch (Exception $e) {
             return 'UNKNOWN';
@@ -88,12 +88,27 @@ trait UtilTrait
                 $region = geoip_region_name_by_code($geo['country_code'], $geo['region']);
             }
 
-            $location = $city . ', ' . $region . ', ' . $country;
+            $encoding = mb_internal_encoding();
+            $location = self::encode($city, $encoding) . ', ' .
+                    self::encode($region, $encoding) . ', ' .
+                    self::encode($country, $encoding);
         } catch (Exception $e) {
             return 'UNKNOWN';
         }
 
         return $location;
+    }
+
+    private static function encode(string $str, string $toEncoding): string
+    {
+        $fromEncode = mb_detect_encoding($str, 'UTF-8,ASCII,ISO-8859-1,UTF-7,EUC-JP,SJIS,eucJP-win,SJIS-win,JIS,ISO-2022-JP');
+        if ($fromEncode === 'UTF-8') {
+            return $str;
+        } elseif ($fromEncode === false) {
+            return 'N/A';
+        } else {
+            return mb_convert_encoding($str, $toEncoding, $fromEncode);
+        }
     }
 
     protected function getPagerInfo(int $nTotal, int $nPerPage): array

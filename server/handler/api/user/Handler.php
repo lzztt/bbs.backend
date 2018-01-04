@@ -24,7 +24,7 @@ class Handler extends Service
         if ($user->status > 0) {
             $info = $user->toArray();
             unset($info['lastAccessIp']);
-            $info['lastAccessCity'] = self::getLocationFromIP($user->lastAccessIp);
+            $info['lastAccessCity'] = self::getLocationFromIP((string) $user->lastAccessIp);
             $info['topics'] = $user->getRecentNodes(self::$city->tidForum, 10);
             $info['comments'] = $user->getRecentComments(self::$city->tidForum, 10);
 
