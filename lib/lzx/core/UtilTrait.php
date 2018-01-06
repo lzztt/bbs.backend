@@ -58,45 +58,27 @@ trait UtilTrait
 
     protected static function getLocationFromIP(string $ip): string
     {
-        $location = 'N/A';
-
-        try {
-            if (is_null($ip)) {
-                return $location;
-            }
-
-            $ip = inet_ntop($ip);
-            if ($ip === false) {
-                return $location;
-            }
-
-            $city = 'N/A';
-            $region = 'N/A';
-            $country = 'N/A';
-
-            $geo = geoip_record_by_name($ip);
-
-            if ($geo['city']) {
-                $city = $geo['city'];
-            }
-
-            if ($geo['country_name']) {
-                $country = $geo['country_name'];
-            }
-
-            if ($geo['region'] && $geo['country_code']) {
-                $region = geoip_region_name_by_code($geo['country_code'], $geo['region']);
-            }
-
-            $encoding = mb_internal_encoding();
-            $location = self::encode($city, $encoding) . ', ' .
-                    self::encode($region, $encoding) . ', ' .
-                    self::encode($country, $encoding);
-        } catch (Exception $e) {
+        $ip = inet_ntop($ip);
+        if ($ip === false) {
             return 'UNKNOWN';
         }
 
-        return $location;
+        $geo = geoip_record_by_name($ip);
+        if ($geo === false) {
+            return 'UNKNOWN';
+        }
+
+        $encoding = mb_internal_encoding();
+
+        $city = $geo['city'] ? self::encode($geo['city'], $encoding) : 'N/A';
+        $country = $geo['country_name'] ? self::encode($geo['country_name'], $encoding) : 'N/A';
+
+        if ($geo['region'] && $geo['country_code']) {
+            $region = geoip_region_name_by_code($geo['country_code'], $geo['region']);
+        }
+        $region = $region ? self::encode($region, $encoding) : 'N/A';
+
+        return $city . ', ' . $region . ', ' . $country;
     }
 
     private static function encode(string $str, string $toEncoding): string
