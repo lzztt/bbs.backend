@@ -338,21 +338,15 @@ abstract class DBObject
     public function getCount(): int
     {
         $this->sync();
-        $this->setWhere(); // automatically add a filter for values we already have
+        $this->setWhere();
 
         return intval(array_pop(array_pop($this->select('COUNT(*)'))));
     }
 
-    /**
-     * Selects from DB, returns array
-     *
-     * user input keys may have alias
-     * will always get primary key values
-     */
     public function getList(string $properties = '', int $limit = 0, int $offset = 0): array
     {
         $this->sync();
-        $this->setWhere(); // automatically add a filter for values we already have
+        $this->setWhere();
 
         $props = $this->parseProperties($properties, $this->properties);
         if (!in_array($this->pkey_property, $props)) {
@@ -450,21 +444,10 @@ abstract class DBObject
         $this->where[$prop . '_' . $condition] = $this->fields[$prop] . ' ' . $condition . ' ' . $value;
     }
 
-    /**
-     * Adds an SQL ORDER BY
-     *
-     * only order by current table's keys
-     * user input keys will not have alias
-     */
-    public function order(string $prop, string $order = 'ASC'): void
+    public function order(string $prop, bool $ascending = true): void
     {
-        $order = strtoupper($order);
-        if (!in_array($order, ['ASC', 'DESC'])) {
-            throw new Exception('wrong order : ' . $order);
-        }
-
         if (in_array($prop, $this->properties)) {
-            $this->order[$prop] = $this->fields[$prop] . ' ' . $order;
+            $this->order[$prop] = $this->fields[$prop] . ($ascending ? ' ASC' : ' DESC');
         } else {
             throw new Exception('ERROR non-existing property : ' . $prop);
         }
@@ -472,7 +455,6 @@ abstract class DBObject
 
     private function setWhere(): void
     {
-        // automatically add a filter for values we already have
         foreach (array_keys($this->values) as $prop) {
             $this->where($prop, $this->values[$prop], '=');
         }
