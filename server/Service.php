@@ -9,9 +9,9 @@ use lzx\core\Response;
 use lzx\core\Service as BaseService;
 use lzx\html\Template;
 use site\Config;
-use site\dbobject\User;
 use site\HandlerTrait;
 use site\Session;
+use site\dbobject\User;
 
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
