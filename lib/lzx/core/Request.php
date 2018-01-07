@@ -16,6 +16,7 @@ class Request
     public $json;
     public $uid;
     public $timestamp;
+    public $isRobot;
     private $req;
 
     private function __construct()
@@ -36,6 +37,7 @@ class Request
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
         $this->referer = sizeof($arr) > 1 ? $arr[1] : null;
+        $this->isRobot = (bool) preg_match('/(http|yahoo|bot|spider)/i', $params['HTTP_USER_AGENT']);
     }
 
     public static function getInstance(): Request
