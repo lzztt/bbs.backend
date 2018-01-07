@@ -4,8 +4,8 @@ namespace site;
 
 use Exception;
 use \lzx\App;
-use \lzx\db\DB;
 use \lzx\core\Mailer;
+use \lzx\db\DB;
 use \lzx\html\Template;
 
 // note: cache path in php and nginx are using server_name
