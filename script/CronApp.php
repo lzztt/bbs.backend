@@ -3,11 +3,11 @@
 namespace script;
 
 use lzx\App;
-use lzx\db\DB;
-use lzx\core\Mailer;
-use lzx\html\Template;
 use lzx\cache\Cache;
 use lzx\cache\CacheHandler;
+use lzx\core\Mailer;
+use lzx\db\DB;
+use lzx\html\Template;
 use site\Config;
 
 // note: cache path in php and nginx are using server_name
