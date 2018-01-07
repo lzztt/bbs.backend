@@ -22,6 +22,7 @@ class Handler extends Service
 
         if ($this->args) {
             if ($this->args[0] == 'name') {
+                $ad->order('expTime', false);
                 $this->json($ad->getList('name'));
             }
         } else {
