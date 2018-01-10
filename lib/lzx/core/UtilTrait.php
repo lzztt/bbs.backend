@@ -58,9 +58,11 @@ trait UtilTrait
 
     protected static function getLocationFromIP(string $ip): string
     {
-        $ip = inet_ntop($ip);
-        if ($ip === false) {
-            return 'UNKNOWN';
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6) === false) {
+            $ip = @inet_ntop($ip);
+            if ($ip === false) {
+                return 'UNKNOWN';
+            }
         }
 
         $geo = geoip_record_by_name($ip);
