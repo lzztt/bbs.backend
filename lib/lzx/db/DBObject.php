@@ -136,13 +136,13 @@ abstract class DBObject
 
             switch ($this->fields_type[$this->fields[$prop]]) {
                 case self::T_INT:
-                    $this->values[$prop] = intval($value);
+                    $this->values[$prop] = (int) $value;
                     break;
                 case self::T_FLOAT:
-                    $this->values[$prop] = floatval($value);
+                    $this->values[$prop] = (float) $value;
                     break;
                 case self::T_STRING:
-                    $this->values[$prop] = strval($value);
+                    $this->values[$prop] = (string) $value;
                     break;
                 default:
                     throw new Exception('non-supported field data type: ' . $this->fields[$prop] . '(' . $this->fields_type[$this->fields[$prop]] . ')');
