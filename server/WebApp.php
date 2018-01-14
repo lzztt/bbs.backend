@@ -9,6 +9,7 @@ use lzx\cache\CacheHandler;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\ResponseReadyException;
+use lzx\core\UtilTrait;
 use lzx\db\DB;
 use lzx\html\Template;
 use site\Config;
@@ -17,6 +18,8 @@ use site\Session;
 
 class WebApp extends App
 {
+    use UtilTrait;
+
     protected $config;
     private $debug;
 
@@ -53,7 +56,11 @@ class WebApp extends App
         $session = Session::getInstance($request->isRobot ? null : $db);
         $request->uid = $session->getUserID();
 
-        $this->logger->addExtraInfo(['user' => 'https://www.houstonbbs.com/app/user/' . $request->uid]);
+        $this->logger->addExtraInfo([
+            'user' => 'https://www.houstonbbs.com/app/user/' . $request->uid,
+            'ip' => $request->ip,
+            'city' => self::getLocationFromIP($request->ip),
+        ]);
 
         $response = Response::getInstance();
 
