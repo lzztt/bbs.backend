@@ -86,7 +86,7 @@ class Handler extends Node
                     $c['HTMLbody'] = BBCode::parse($c['body']);
                 } catch (Exception $e) {
                     $c['HTMLbody'] = nl2br($c['body']);
-                    $this->logger->error($e->getMessage(), $e->getTrace());
+                    $this->logger->logException($e);
                 }
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
                 $c['city'] = self::getCityFromIP($c['access_ip'] ? $c['access_ip'] : '');
@@ -239,7 +239,7 @@ class Handler extends Node
                         $node['HTMLbody'] = BBCode::parse($c['body']);
                     } catch (Exception $e) {
                         $node['HTMLbody'] = nl2br($c['body']);
-                        $this->logger->error($e->getMessage(), $e->getTrace());
+                        $this->logger->logException($e);
                     }
                     $node['attachments'] = $this->attachments($c['files'], $c['body']);
                     //$node['filesJSON'] = json_encode($node['files']);
@@ -257,7 +257,7 @@ class Handler extends Node
                         $c['HTMLbody'] = BBCode::parse($c['body']);
                     } catch (Exception $e) {
                         $c['HTMLbody'] = nl2br($c['body']);
-                        $this->logger->error($e->getMessage(), $e->getTrace());
+                        $this->logger->logException($e);
                     }
 
                     $cmts[] = $c;
