@@ -91,9 +91,7 @@ class Handler extends Controller
         ];
         $mailer->body = new Template('mail/adcreation', $contents);
 
-        $mailer->send();
-
-        $mailer->to = $this->config->webmaster;
+        $mailer->bcc = $this->config->webmaster;
         $mailer->send();
     }
 }
