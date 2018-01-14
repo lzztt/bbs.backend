@@ -27,10 +27,10 @@ class CronApp extends App
 
         $this->timestamp = intval($_SERVER['REQUEST_TIME']);
         $this->config = Config::getInstance();
-        $this->logger->setUserInfo(['uid' => 'cron', 'umode' => 'cli', 'urole' => 'adm']);
-        $this->logger->setDir($this->config->path['log']);
-        $this->logger->setEmail($this->config->webmaster);
-        
+        $this->logger->setFile($this->config->path['log'] . '/' . $this->config->domain . '.log');
+        $this->logger->setEmail($this->config->webmaster, 'web error: ' . $_SERVER['REQUEST_URI'], 'logger@' . $this->config->domain);
+        $this->logger->addExtraInfo(['user' => 'cron']);
+
         $this->actions = [];
         foreach (get_class_methods(__CLASS__) as $method) {
             if (substr($method, 0, 2) == 'do') {

@@ -16,6 +16,7 @@
         }
     },
     "require": {
-        "zendframework/zend-diactoros": "^1.6"
+        "zendframework/zend-diactoros": "^1.6",
+        "monolog/monolog": "^1.23"
     }
 }
