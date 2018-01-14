@@ -9,11 +9,6 @@ use lzx\core\ResponseReadyException;
 use lzx\core\UtilTrait;
 use lzx\html\Template;
 
-// only controller will handle all exceptions and local languages
-// other classes will report status to controller
-// controller set status back the WebApp object
-// WebApp object will call Theme to display the content
-
 abstract class Controller
 {
     use UtilTrait;

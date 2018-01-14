@@ -8,9 +8,6 @@ use lzx\core\Response;
 use lzx\core\ResponseReadyException;
 use lzx\core\UtilTrait;
 
-// service will populate response with JSON data
-// handle all exceptions and local languages
-
 abstract class Service
 {
     use UtilTrait;
