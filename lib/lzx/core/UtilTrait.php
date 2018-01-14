@@ -20,54 +20,31 @@ trait UtilTrait
         return $data ? $data : '';
     }
 
-    protected static function getCityFromIP(string $ip): string
+    protected static function getLocationFromIP(string $ip, bool $fullInfo = true): string
     {
-        static $cities = [];
+        static $cache = [];
 
-        $city = 'N/A';
-        if (!$ip) {
-            return $city;
+        if (array_key_exists($ip, $cache)) {
+            goto done;
         }
 
-        // return from cache;
-        if (array_key_exists($ip, $cities)) {
-            return $cities[$ip];
-        }
-
-        // get city from geoip database
-        try {
-            $ip = inet_ntop($ip);
-            if ($ip === false) {
-                return $city;
-            }
-
-            $geo = geoip_record_by_name($ip);
-
-            if ($geo['city']) {
-                $city = self::encode($geo['city'], mb_internal_encoding());
-            }
-        } catch (Exception $e) {
-            return 'UNKNOWN';
-        }
-
-        // save city to cache
-        $cities[$ip] = $city;
-
-        return $city;
-    }
-
-    protected static function getLocationFromIP(string $ip): string
-    {
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6) === false) {
-            $ip = @inet_ntop($ip);
+            try {
+                $ip = inet_ntop($ip);
+            } catch (Exception $e) {
+                $cache[$ip] = ['UNKNOWN'];
+                goto done;
+            }
             if ($ip === false) {
-                return 'UNKNOWN';
+                $cache[$ip] = ['UNKNOWN'];
+                goto done;
             }
         }
 
         $geo = geoip_record_by_name($ip);
         if ($geo === false) {
-            return 'UNKNOWN';
+            $cache[$ip] = ['UNKNOWN'];
+            goto done;
         }
 
         $encoding = mb_internal_encoding();
@@ -80,7 +57,10 @@ trait UtilTrait
         }
         $region = $region ? self::encode($region, $encoding) : 'N/A';
 
-        return $city . ', ' . $region . ', ' . $country;
+        $cache[$ip] = [$city, $region, $country];
+
+        done:
+        return $fullInfo ? $cache[$ip][0] : implode(', ', $cache[$ip]);
     }
 
     private static function encode(string $str, string $toEncoding): string
