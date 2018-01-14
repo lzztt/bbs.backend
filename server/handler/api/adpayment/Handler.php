@@ -76,9 +76,7 @@ class Handler extends Service
         ];
         $mailer->body = new Template('mail/adpayment', $contents);
 
-        $mailer->send();
-
-        $mailer->to = $this->config->webmaster;
+        $mailer->bcc = $this->config->webmaster;
         $mailer->send();
     }
 }

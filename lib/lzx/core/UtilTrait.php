@@ -60,7 +60,7 @@ trait UtilTrait
         $cache[$ip] = [$city, $region, $country];
 
         done:
-        return $fullInfo ? $cache[$ip][0] : implode(', ', $cache[$ip]);
+        return $fullInfo ? implode(', ', $cache[$ip]) : $cache[$ip][0];
     }
 
     private static function encode(string $str, string $toEncoding): string
