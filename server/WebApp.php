@@ -6,7 +6,6 @@ use lzx\App;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
-use lzx\core\Handler;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\ResponseReadyException;
@@ -28,17 +27,15 @@ class WebApp extends App
         $this->config = Config::getInstance();
         $this->debug = $this->config->stage === Config::STAGE_DEVELOPMENT;
         if ($this->debug) {
-            Handler::$displayError = true;
             DB::$debug = true;
             Template::$debug = true;
         } else {
-            Handler::$displayError = false;
             DB::$debug = false;
             Template::$debug = false;
         }
 
-        $this->logger->setDir($this->config->path['log']);
-        $this->logger->setEmail($this->config->webmaster);
+        $this->logger->setFile($this->config->path['log'] . '/' . $this->config->domain . '.log');
+        $this->logger->setEmail($this->config->webmaster, 'web error: ' . $_SERVER['REQUEST_URI'], 'logger@' . $this->config->domain);
 
         Template::setLogger($this->logger);
         Template::$path = $this->config->path['theme'];
@@ -56,10 +53,7 @@ class WebApp extends App
         $session = Session::getInstance($request->isRobot ? null : $db);
         $request->uid = $session->getUserID();
 
-        $userinfo = [
-            'uid'  => 'https://www.houstonbbs.com/app/user/' . $request->uid,
-            'role' => $request->isRobot ? 'robot' : $session->urole];
-        $this->logger->setUserInfo($userinfo);
+        $this->logger->addExtraInfo(['user' => 'https://www.houstonbbs.com/app/user/' . $request->uid]);
 
         $response = Response::getInstance();
 

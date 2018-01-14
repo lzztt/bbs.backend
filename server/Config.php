@@ -23,7 +23,7 @@ class Config
     public $webmaster;
     public $image;
 
-    private function __construct()
+    private function __construct(string $server_name)
     {
         $this->stage = self::STAGE_DEVELOPMENT;
         //$this->stage = self::STAGE_PRODUCTION;
@@ -36,7 +36,7 @@ class Config
             'log' => dirname(__DIR__) . '/log',
             'file' => dirname(__DIR__) . '/client',
             'backup' => dirname(__DIR__) . '/backup',
-            'cache' => '/tmp/' . $_SERVER['SERVER_NAME'], //note: nginx webserver also use $server_name as the cache path
+            'cache' => '/tmp/' . $server_name, //note: nginx webserver also use $server_name as the cache path
         ];
         $this->cache = true;
         $this->db = [
@@ -49,7 +49,7 @@ class Config
         $this->theme = [
             'roselife' => 'roselife',
         ];
-        $this->domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
+        $this->domain = implode('.', array_slice(explode('.', $server_name), -2));
         $this->webmaster = 'mikalotus3355@gmail.com';
 
         $this->image = [
@@ -72,7 +72,7 @@ class Config
         static $instance;
 
         if (!isset($instance)) {
-            $instance = new self();
+            $instance = new self($_SERVER['SERVER_NAME']);
         }
         return $instance;
     }

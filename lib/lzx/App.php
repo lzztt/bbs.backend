@@ -2,7 +2,8 @@
 
 namespace lzx;
 
-use lzx\core\Handler;
+use ErrorException;
+use Monolog\ErrorHandler;
 use lzx\core\Logger;
 
 abstract class App
@@ -12,16 +13,17 @@ abstract class App
 
     public function __construct()
     {
-        // set ErrorHandler, all error would be convert to ErrorException from now on
-        Handler::setErrorHandler();
-
-        // create logger
+        self::errorToException();
         $this->logger = Logger::getInstance();
-        // set logger for Handler
-        Handler::$logger = $this->logger;
-        // set ExceptionHandler
-        Handler::setExceptionHandler();
+        ErrorHandler::register($this->logger, false);
     }
 
     abstract public function run(int $argc, array $argv): void;
+
+    private static function errorToException(): void
+    {
+        set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline): bool {
+            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+        }, error_reporting());
+    }
 }

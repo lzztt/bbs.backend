@@ -6,9 +6,6 @@ use Exception;
 use ReflectionObject;
 use ReflectionProperty;
 
-/*
- * support tables with one primary key
- */
 abstract class DBObject
 {
     const T_INT = 1;
@@ -30,7 +27,7 @@ abstract class DBObject
 
     public function __construct(DB $db, string $table, int $id = 0, string $properties = '')
     {
-        $this->properties = array_map(function (ReflectionProperty $prop) {
+        $this->properties = array_map(function (ReflectionProperty $prop): string {
             return $prop->getName();
         }, (new ReflectionObject($this))->getProperties(ReflectionProperty::IS_PUBLIC));
 
