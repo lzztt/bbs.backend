@@ -2,6 +2,7 @@
 
 namespace site\handler\yp\node;
 
+use lzx\core\Mailer;
 use lzx\html\Template;
 use site\Controller;
 use site\dbobject\Ad;
@@ -32,6 +33,7 @@ class Handler extends Controller
 
         if (empty($this->request->post)) {
             $ad = new Ad();
+            $ad->order('expTime', false);
             $this->var['content'] = new Template('editor_bbcode_yp', ['ads' => $ad->getList('name')]);
         } else {
             $node = new Node();
@@ -52,8 +54,8 @@ class Handler extends Controller
 
             $nodeYP = new NodeYellowPage();
             $nodeYP->nid = $node->id;
-            $nodeYP->adId = $this->request->post['aid'];
-            foreach (array_diff($nodeYP->getProperties(), ['nid']) as $k) {
+            $nodeYP->adId = (int) $this->request->post['aid'];
+            foreach (array_diff($nodeYP->getProperties(), ['nid', 'adId']) as $k) {
                 $nodeYP->$k = $this->request->post[$k] ? $this->request->post[$k] : null;
             }
             $nodeYP->add();
@@ -70,7 +72,28 @@ class Handler extends Controller
                 $this->getIndependentCache($key)->delete();
             }
 
+            $this->sendConfirmationEmail(new Ad($nodeYP->adId), $node->id);
+
             $this->pageRedirect('/node/' . $node->id);
         }
+    }
+
+    private function sendConfirmationEmail(Ad $ad, int $nid): void
+    {
+        $mailer = new Mailer('ad');
+        $mailer->to = $ad->email;
+        $siteName = ucfirst(self::$city->uriName) . 'BBS';
+        $mailer->subject = $ad->name . '在' . $siteName . '的电子黄页创建成功';
+        $contents = [
+            'name' => $ad->name,
+            'url' => 'https://www.' . $this->config->domain . '/node/' . $nid,
+            'sitename' => $siteName,
+        ];
+        $mailer->body = new Template('mail/adcreation', $contents);
+
+        $mailer->send();
+
+        $mailer->to = $this->config->webmaster;
+        $mailer->send();
     }
 }

@@ -106,7 +106,7 @@ class Template
             ob_end_clean();
             self::$hasError = true;
             if (isset(self::$logger)) {
-                self::$logger->error($e->getMessage(), $e->getTrace());
+                self::$logger->logException($e);
             }
             $output = 'template parsing error: [' . $tpl_theme . ':' . $tpl . ']';
         }

@@ -10,6 +10,9 @@ class Handler extends Controller
     public function run(): void
     {
         $app = $this->args[0];
+        if (!$app) {
+            $this->pageNotFound();
+        }
         $this->response->setContent(file_get_contents($this->getLatestVersion($app) . '/index.html'));
     }
 

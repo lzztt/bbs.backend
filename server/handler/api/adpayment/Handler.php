@@ -2,6 +2,7 @@
 
 namespace site\handler\api\adpayment;
 
+use lzx\core\Mailer;
 use site\Service;
 use site\dbobject\Ad;
 use site\dbobject\AdPayment;
@@ -43,7 +44,7 @@ class Handler extends Service
         $ap->add();
 
         $ad->id = $ap->adId;
-        $ad->load('name,expTime');
+        $ad->load('name,email,typeId,expTime');
         if ($ad->expTime < $this->request->timestamp) {
             $exp_time = $this->request->post['time'];
         } else {
@@ -51,7 +52,33 @@ class Handler extends Service
         }
         $ad->expTime = strtotime($exp_time . ' +' . $this->request->post['ad_time'] . ' months');
         $ad->update('expTime');
+        foreach (['latestYellowPages', '/'] as $key) {
+            $this->getIndependentCache($key)->delete();
+        }
+        $this->sendConfirmationEmail($ad);
 
         $this->json(['adName' => $ad->name, 'amount' => $ap->amount, 'expTime' => $ad->expTime]);
+    }
+
+    private function sendConfirmationEmail(Ad $ad): void
+    {
+        $mailer = new Mailer('ad');
+        $mailer->to = $ad->email;
+        $siteName = ucfirst(self::$city->uriName) . 'BBS';
+        $type = $ad->typeId == 1 ? '电子黄页' : '页顶广告';
+        $date = date('m/d/Y', $ad->expTime);
+        $mailer->subject = $ad->name . '在' . $siteName . '的' . $type . '有效日期更新至' . $date;
+        $contents = [
+            'name' => $ad->name,
+            'type' => $type,
+            'date' => $date,
+            'sitename' => $siteName,
+        ];
+        $mailer->body = new Template('mail/adpayment', $contents);
+
+        $mailer->send();
+
+        $mailer->to = $this->config->webmaster;
+        $mailer->send();
     }
 }
