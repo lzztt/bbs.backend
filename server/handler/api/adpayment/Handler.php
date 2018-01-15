@@ -63,20 +63,20 @@ class Handler extends Service
     private function sendConfirmationEmail(Ad $ad): void
     {
         $mailer = new Mailer('ad');
-        $mailer->to = $ad->email;
+        $mailer->setTo($ad->email);
         $siteName = ucfirst(self::$city->uriName) . 'BBS';
         $type = $ad->typeId == 1 ? '电子黄页' : '页顶广告';
         $date = date('m/d/Y', $ad->expTime);
-        $mailer->subject = $ad->name . '在' . $siteName . '的' . $type . '有效日期更新至' . $date;
+        $mailer->setSubject($ad->name . '在' . $siteName . '的' . $type . '有效日期更新至' . $date);
         $contents = [
             'name' => $ad->name,
             'type' => $type,
             'date' => $date,
             'sitename' => $siteName,
         ];
-        $mailer->body = new Template('mail/adpayment', $contents);
+        $mailer->setBody((string) new Template('mail/adpayment', $contents));
 
-        $mailer->bcc = $this->config->webmaster;
+        $mailer->setBcc($this->config->webmaster);
         $mailer->send();
     }
 }

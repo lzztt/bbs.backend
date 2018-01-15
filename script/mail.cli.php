@@ -57,9 +57,6 @@ class MailApp extends App
         $domain = ['houston', 'dallas', 'austin'];
 
         if (sizeof($users) > 0) {
-            $mailer = new Mailer();
-            $mailer->from = 'newyear';
-
             $status = [];
             Template::setLogger($this->logger);
             Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
@@ -67,10 +64,9 @@ class MailApp extends App
             foreach ($users as $i => $u) {
                 $cid = (int) $u['cid'] - 1;
                 $city = $cities[$cid];
-                $mailer->subject = '新年快乐，鸡年吉祥';
-                $mailer->domain = $domain[$cid] . 'bbs.com';
-                $mailer->to = $u['email'];
-                $mailer->is_html = true;
+                $mailer = new Mailer('newyear@' . $domain[$cid] . 'bbs.com');
+                $mailer->setSubject('新年快乐，鸡年吉祥');
+                $mailer->setTo($u['email']);
                 $contents = [
                     'username' => $u['username'],
                     'time' => $this->time($u['create_time']),
@@ -78,7 +74,7 @@ class MailApp extends App
                     'mailid' => rand()
                 ];
 
-                $mailer->body = new Template('mail/newyear', $contents);
+                $mailer->setBody((string) new Template('mail/newyear', $contents), true);
 
                 if ($mailer->send()) {
                     $status[] = '(' . $u['id'] . ', 1)';
