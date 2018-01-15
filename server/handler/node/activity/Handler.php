@@ -73,9 +73,9 @@ class Handler extends Node
 
             if ($endTime - $startTime > 86400) { // 1 day
                 $mailer = new Mailer();
-                $mailer->to = 'admin@' . $this->config->domain;
-                $mailer->subject = '新活动 ' . $nid . ' 长于一天 (请检查)';
-                $mailer->body = $node->title . ' : ' . date('m/d/Y H:i', $startTime) . ' - ' . date('m/d/Y H:i', $endTime);
+                $mailer->setTo('admin@' . $this->config->domain);
+                $mailer->setSubject('新活动 ' . $nid . ' 长于一天 (请检查)');
+                $mailer->setBody($node->title . ' : ' . date('m/d/Y H:i', $startTime) . ' - ' . date('m/d/Y H:i', $endTime));
                 if ($mailer->send() === false) {
                     $this->logger->info('sending long activity notice email error.');
                 }

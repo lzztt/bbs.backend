@@ -38,7 +38,7 @@ class WebApp extends App
         }
 
         $this->logger->setFile($this->config->path['log'] . '/' . $this->config->domain . '.log');
-        $this->logger->setEmail($this->config->webmaster, 'web error: ' . $_SERVER['REQUEST_URI'], 'logger@' . $this->config->domain);
+        $this->logger->setEmail($this->config->webmaster, 'Error: ' . $_SERVER['REQUEST_URI'], 'logger@' . $this->config->domain);
 
         Template::setLogger($this->logger);
         Template::$path = $this->config->path['theme'];

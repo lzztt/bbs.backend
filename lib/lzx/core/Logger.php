@@ -41,8 +41,15 @@ class Logger extends MonoLogger
         $mailHandler->setContentType('text/html');
         $mailHandler->setFormatter(new HtmlFormatter());
         $this->mailHandler = new BufferHandler($mailHandler);
-        $this->mailHandler->pushProcessor(new TraceProcessor());
+        $this->mailHandler->pushProcessor(new TraceProcessor(self::getPathPrefix()));
         $this->pushHandler($this->mailHandler);
+    }
+
+    private static function getPathPrefix(): string
+    {
+        $path = explode(DIRECTORY_SEPARATOR, __FILE__);
+        $endCount = -3 - substr_count(__NAMESPACE__, '\\');
+        return implode(DIRECTORY_SEPARATOR, array_splice($path, 0, $endCount)) . DIRECTORY_SEPARATOR;
     }
 
     public function addExtraInfo(array $extra): void
