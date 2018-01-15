@@ -77,8 +77,8 @@ class CronApp extends App
             Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
 
             foreach ($activities as $a) {
-                $mailer->to = $a['email'];
-                $mailer->subject = $a['username'] . ' 的活动详情（已激活）';
+                $mailer->setTo($a['email']);
+                $mailer->setSubject($a['username'] . ' 的活动详情（已激活）');
                 $contents = [
                     'nid' => $a['id'],
                     'title' => $a['title'],
@@ -86,7 +86,7 @@ class CronApp extends App
                     'domain' => 'www.houstonbbs.com',
                     'sitename' => 'HoustonBBS'
                 ];
-                $mailer->body = new Template('mail/activity', $contents);
+                $mailer->setBody((string) new Template('mail/activity', $contents));
 
                 if ($mailer->send() === false) {
                     $this->logger->info('sending new activity activation email error.');
@@ -181,9 +181,8 @@ class CronApp extends App
     {
         $db = DB::getInstance($this->config->db);
 
-        $mailer = new Mailer();
-        $mailer->from = 'ad';
-        $mailer->bcc = 'ad@houstonbbs.com';
+        $mailer = new Mailer('ad');
+        $mailer->setBcc($this->config->webmaster);
         Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
 
         // expiring in seven days
@@ -201,9 +200,9 @@ class CronApp extends App
 
     private function notifyAdUser(Mailer $mailer, array $ad, string $time): void
     {
-        $mailer->subject = $ad['name'] . '在HoustonBBS的' . ($ad['type_id'] == 1 ? '电子黄页' : '页顶广告') . $time . '到期';
-        $mailer->to = $ad['email'];
-        $mailer->body = new Template('mail/ad', ['ad' => $ad]);
+        $mailer->setSubject($ad['name'] . '在HoustonBBS的' . ($ad['type_id'] == 1 ? '电子黄页' : '页顶广告') . $time . '到期');
+        $mailer->setTo($ad['email']);
+        $mailer->setBody((string) new Template('mail/ad', ['ad' => $ad]));
 
         if ($mailer->send() === false) {
             $this->logger->info('sending expiring ads email error.');

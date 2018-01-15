@@ -108,15 +108,15 @@ abstract class Service extends BaseService
     {
         // create user action and send out email
         $mailer = new Mailer('system');
-        $mailer->to = $user->email;
+        $mailer->setTo($user->email);
         $siteName = ucfirst(self::$city->uriName) . 'BBS';
-        $mailer->subject = $user->username . '在' . $siteName . '的用户安全验证码';
+        $mailer->setSubject($user->username . '在' . $siteName . '的用户安全验证码');
         $contents = [
             'username'    => $user->username,
             'ident_code' => $this->createIdentCode($user->id),
             'sitename'    => $siteName
         ];
-        $mailer->body = new Template('mail/ident_code', $contents);
+        $mailer->setBody((string) new Template('mail/ident_code', $contents));
 
         return $mailer->send();
     }

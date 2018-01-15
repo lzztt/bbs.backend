@@ -6,6 +6,14 @@ use Throwable;
 
 class TraceProcessor
 {
+    private $pathPrefixToTrim;
+    private $pathPrefixLength;
+
+    public function __construct(string $pathPrefixToTrim = '')
+    {
+        $this->pathPrefixToTrim = $pathPrefixToTrim;
+        $this->pathPrefixLength = strlen($pathPrefixToTrim);
+    }
 
     public function __invoke(array $record)
     {
@@ -15,7 +23,7 @@ class TraceProcessor
         } else {
             $traces = self::getCurrentTrace();
         }
-        $record['extra']['trace'] = self::formatTrace($traces);
+        $record['extra']['trace'] = $this->formatTrace($traces);
         return $record;
     }
 
@@ -35,13 +43,19 @@ class TraceProcessor
         }, ARRAY_FILTER_USE_BOTH);
     }
 
-    private static function formatTrace(array $traces): array
+    private function formatTrace(array $traces): array
     {
-        $i = 0;
-        return array_map(function (array $call) use (&$i): string {
-            return $i++ . ' '
-                    . ($call['class'] ? $call['class'] . $call['type'] . $call['function'] : $call['function'])
-                    . ' @ ' . $call['file'] . ':' . $call['line'];
+        return array_map(function (array $frame): string {
+            return ($frame['class'] ? $frame['class'] . $frame['type'] . $frame['function'] : $frame['function'])
+                    . ' @' . $this->trimPrefix($frame['file']) . ':' . $frame['line'];
         }, $traces);
+    }
+
+    private function trimPrefix(string $path): string
+    {
+        if ($this->pathPrefixLength > 0 && substr($path, 0, $this->pathPrefixLength) === $this->pathPrefixToTrim) {
+            return substr($path, $this->pathPrefixLength);
+        }
+        return $path;
     }
 }

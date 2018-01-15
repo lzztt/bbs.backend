@@ -81,17 +81,17 @@ class Handler extends Controller
     private function sendConfirmationEmail(Ad $ad, int $nid): void
     {
         $mailer = new Mailer('ad');
-        $mailer->to = $ad->email;
+        $mailer->setTo($ad->email);
         $siteName = ucfirst(self::$city->uriName) . 'BBS';
-        $mailer->subject = $ad->name . '在' . $siteName . '的电子黄页创建成功';
+        $mailer->setSubject($ad->name . '在' . $siteName . '的电子黄页创建成功');
         $contents = [
             'name' => $ad->name,
             'url' => 'https://www.' . $this->config->domain . '/node/' . $nid,
             'sitename' => $siteName,
         ];
-        $mailer->body = new Template('mail/adcreation', $contents);
+        $mailer->setBody((string) new Template('mail/adcreation', $contents));
 
-        $mailer->bcc = $this->config->webmaster;
+        $mailer->setBcc($this->config->webmaster);
         $mailer->send();
     }
 }
