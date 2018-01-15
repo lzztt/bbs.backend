@@ -108,9 +108,9 @@ class CronApp extends App
                 $this->updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime);
             }
 
-            $mailer->to = 'admin@houstonbbs.com';
-            $mailer->subject = '[活动] ' . sizeof($activities) . '个新活动已被系统自动激活';
-            $mailer->body = implode("\n\n", $newActivities);
+            $mailer->setTo('admin@houstonbbs.com');
+            $mailer->setSubject('[活动] ' . sizeof($activities) . '个新活动已被系统自动激活');
+            $mailer->setBody(implode("\n\n", $newActivities));
             $mailer->send();
         } // refresh cache based on the next refresh timestamp
         else {
