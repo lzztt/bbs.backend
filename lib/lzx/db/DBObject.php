@@ -171,7 +171,7 @@ abstract class DBObject
         }
     }
 
-    protected function call(string $proc, array $params = []): array
+    public function call(string $proc, array $params = []): array
     {
         return $this->db->query('CALL ' . $proc, $params);
     }
