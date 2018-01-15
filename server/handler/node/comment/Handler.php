@@ -81,9 +81,9 @@ class Handler extends Node
                 }
                 if (false && $this->config->webmaster) { // turn off spammer email
                     $mailer = new Mailer();
-                    $mailer->subject = 'SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
-                    $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
-                    $mailer->to = $this->config->webmaster;
+                    $mailer->setSubject('SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)'));
+                    $mailer->setBody(' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
+                    $mailer->setTo($this->config->webmaster);
                     $mailer->send();
                 }
             }
@@ -166,9 +166,9 @@ class Handler extends Node
                 }
                 if ($this->config->webmaster) {
                     $mailer = new Mailer();
-                    $mailer->subject = 'SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)');
-                    $mailer->body = ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body'];
-                    $mailer->to = $this->config->webmaster;
+                    $mailer->setSubject('SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)'));
+                    $mailer->setBody(' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
+                    $mailer->setTo($this->config->webmaster);
                     $mailer->send();
                 }
             }

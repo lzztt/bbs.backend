@@ -79,9 +79,9 @@ class Handler extends Service
 
                     // send notification
                     $mailer = new Mailer('complain');
-                    $mailer->to = 'ikki3355@gmail.com';
-                    $mailer->subject = $title . ': ' . $spammer->username . ' <' . $spammer->email . '>';
-                    $mailer->body = print_r([
+                    $mailer->setTo('ikki3355@gmail.com');
+                    $mailer->setSubject($title . ': ' . $spammer->username . ' <' . $spammer->email . '>');
+                    $mailer->setBody(print_r([
                         'spammer'  => [
                             'id'         => 'https://' . $this->request->domain . '/app/user/' . $uid,
                             'username' => $spammer->username,
@@ -103,7 +103,7 @@ class Handler extends Service
                             'points'    => $reporter->points,
                             'register' => date(DATE_COOKIE, $reporter->createTime)
                         ]
-                    ], true);
+                    ], true));
                     $mailer->send();
                 }
             }

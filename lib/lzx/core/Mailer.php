@@ -2,50 +2,94 @@
 
 namespace lzx\core;
 
+use InvalidArgumentException;
+use UnexpectedValueException;
+
 class Mailer
 {
-    public $domain;
-    public $from;
-    public $to;
-    public $cc;
-    public $bcc;
-    public $subject;
-    public $is_html = false;
-    public $body;
-    public $signature;
+    private $from;
+    private $to;
+    private $cc;
+    private $bcc;
+    private $subject;
+    private $body;
+    private $isHtml = false;
 
-    public function __construct(string $from = 'noreply', string $domain = null)
+    public function __construct(string $from = 'noreply')
     {
-        if ($domain) {
-            $this->domain = $domain;
+        if (!$from) {
+            $this->from = 'noreply@' . self::getDomain();
         } else {
-            $this->domain = implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2));
+            $this->from = strpos($from, '@') === false ? $from . '@' . self::getDomain() : $from;
+            if (filter_var($this->from, FILTER_VALIDATE_EMAIL) === false) {
+                throw new InvalidArgumentException($from);
+            }
         }
-        $this->from = $from;
+    }
+
+    private static function getDomain(): string
+    {
+        return implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2));
+    }
+
+    public function setTo(string $email): void
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new InvalidArgumentException($email);
+        }
+        $this->to = $email;
+    }
+
+    public function setCc(string $email): void
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new InvalidArgumentException($email);
+        }
+        $this->cc = $email;
+    }
+
+    public function setBcc(string $email): void
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new InvalidArgumentException($email);
+        }
+        $this->bcc = $email;
+    }
+
+    public function setSubject(string $subject): void
+    {
+        if (!$subject || strlen($subject) > 100 || strpos($subject, "\r") !== false || strpos($subject, "\n") !== false) {
+            throw new InvalidArgumentException($subject);
+        }
+        $this->subject = trim($subject);
+    }
+
+    public function setBody(string $body, bool $isHtml = false): void
+    {
+        if (!$body) {
+            throw new InvalidArgumentException($body);
+        }
+        $this->body = trim($body);
+        $this->isHtml = $isHtml;
     }
 
     public function send(): bool
     {
-        $headers = 'From: ' . $this->from . '@' . $this->domain . PHP_EOL .
-            'Reply-To: ' . $this->from . '@' . $this->domain . PHP_EOL .
-            'Sender: ' . $this->from . '@' . $this->domain . PHP_EOL .
-            ($this->cc ? 'Cc: ' . $this->cc . PHP_EOL : '') .
-            ($this->bcc ? 'Bcc: ' . $this->bcc . PHP_EOL : '') .
-            'MIME-Version: 1.0' . PHP_EOL .
-            'Content-Type: ' . ($this->is_html ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8; format=flowed; delsp=yes') . PHP_EOL .
-            'X-Mailer: WebMailer';
-
-        if (!(isset($this->to) && isset($this->subject) && isset($this->body))) {
-            return false;
+        if (!($this->to && $this->subject && $this->body)) {
+            throw new UnexpectedValueException('to, or subject, or body is empty');
         }
 
-        $subject = "=?UTF-8?B?" . \base64_encode(trim(str_replace(["\r", PHP_EOL, "\r\n"], "", $this->subject))) . "?=";
-        $body = $this->body . $this->signature;
+        $headers = 'From: ' . $this->from . PHP_EOL .
+                'Reply-To: ' . $this->from . PHP_EOL .
+                'Sender: ' . $this->from . PHP_EOL .
+                ($this->cc ? 'Cc: ' . $this->cc . PHP_EOL : '') .
+                ($this->bcc ? 'Bcc: ' . $this->bcc . PHP_EOL : '') .
+                'MIME-Version: 1.0' . PHP_EOL .
+                'Content-Type: ' . ($this->isHtml ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8; format=flowed; delsp=yes') . PHP_EOL .
+                'X-Mailer: WebMailer';
 
-        if (mail($this->to, $subject, $body, $headers, '-f ' . $this->from . '@' . $this->domain)) {
-            return true;
-        } else {
-            return false;
-        }
+        $subject = "=?UTF-8?B?" . base64_encode($this->subject) . "?=";
+
+        return mail($this->to, $subject, $this->body, $headers, '-f ' . $this->from);
     }
 }

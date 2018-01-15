@@ -124,9 +124,9 @@ class Handler extends Service
 
         if ($user->email) {
             $mailer = new Mailer('pm');
-            $mailer->to = $user->email;
-            $mailer->subject = $user->username . ' 您有一封新的站内短信';
-            $mailer->body = $user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'https://' . $this->request->domain . '/app/user/pm/' . $pm->msgId;
+            $mailer->setTo($user->email);
+            $mailer->setSubject($user->username . ' 您有一封新的站内短信');
+            $mailer->setBody($user->username . ' 您有一封新的站内短信' . "\n" . '请登录后点击下面链接阅读' . "\n" . 'https://' . $this->request->domain . '/app/user/pm/' . $pm->msgId);
             if (!$mailer->send()) {
                 $this->logger->error('PM EMAIL REMINDER SENDING ERROR: ' . $pm->id);
             }
