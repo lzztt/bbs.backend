@@ -3,7 +3,7 @@
 namespace site\handler\node\comment;
 
 use Exception;
-use lzx\core\Mailer;
+use site\SpamFilterTrait;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\Node as NodeObject;
@@ -12,6 +12,8 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
+    use SpamFilterTrait;
+
     public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
@@ -37,58 +39,21 @@ class Handler extends Node
             $this->error('错误：评论正文字数太少。');
         }
 
-        $user = new User($this->request->uid, 'createTime,points,status');
         try {
             // validate post for houston
             if (self::$city->id == 1) {
-                $user->validatePost($this->request->ip, $this->request->timestamp, $this->request->post['body']);
+                $this->validatePost();
             }
 
             $comment = new Comment();
             $comment->nid = $nid;
-            $comment->uid = $this->request->uid;
             $comment->tid = $node->tid;
+            $comment->uid = $this->request->uid;
             $comment->body = $this->request->post['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();
         } catch (Exception $e) {
-            // spammer found
-            if ($user->isSpammer()) {
-                $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
-                $user->delete();
-                $u = new User();
-                $u->lastAccessIp = inet_pton($this->request->ip);
-                $users = $u->getList('createTime');
-                $deleteAll = true;
-                if (sizeof($users) > 0) {
-                    // check if we have old users that from this ip
-                    foreach ($users as $u) {
-                        if ($this->request->timestamp - $u['createTime'] > 2592000) {
-                            $deleteAll = false;
-                            break;
-                        }
-                    }
-
-                    if ($deleteAll) {
-                        $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
-                        foreach ($users as $u) {
-                            $spammer = new User($u['id'], 'id');
-                            $spammer->delete();
-                            $log = $log . $spammer->id . ' ';
-                        }
-                        $this->logger->info($log);
-                    }
-                }
-                if (false && $this->config->webmaster) { // turn off spammer email
-                    $mailer = new Mailer();
-                    $mailer->setSubject('SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)'));
-                    $mailer->setBody(' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
-                    $mailer->setTo($this->config->webmaster);
-                    $mailer->send();
-                }
-            }
-
-            $this->logger->warn($e->getMessage() . PHP_EOL . ' --comment-- ' . $this->request->post['body']);
+            $this->logger->error($e->getMessage(), ['post' => $this->request->post]);
             $this->error($e->getMessage());
         }
 
@@ -125,10 +90,7 @@ class Handler extends Node
 
         $user = new User($this->request->uid, 'createTime,points,status');
         try {
-            // validate post for houston
-            if (self::$city->id == 1) {
-                $user->validatePost($this->request->ip, $this->request->timestamp, $this->request->post['body']);
-            }
+            $this->validatePost();
 
             $comment = new Comment();
             $comment->nid = $nid;
@@ -137,43 +99,7 @@ class Handler extends Node
             $comment->createTime = $this->request->timestamp;
             $comment->add();
         } catch (Exception $e) {
-            // spammer found
-            if ($user->isSpammer()) {
-                $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
-                $user->delete();
-                $u = new User();
-                $u->lastAccessIp = inet_pton($this->request->ip);
-                $users = $u->getList('createTime');
-                $deleteAll = true;
-                if (sizeof($users) > 0) {
-                    // check if we have old users that from this ip
-                    foreach ($users as $u) {
-                        if ($this->request->timestamp - $u['createTime'] > 2592000) {
-                            $deleteAll = false;
-                            break;
-                        }
-                    }
-
-                    if ($deleteAll) {
-                        $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
-                        foreach ($users as $u) {
-                            $spammer = new User($u['id'], 'id');
-                            $spammer->delete();
-                            $log = $log . $spammer->id . ' ';
-                        }
-                        $this->logger->info($log);
-                    }
-                }
-                if ($this->config->webmaster) {
-                    $mailer = new Mailer();
-                    $mailer->setSubject('SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)'));
-                    $mailer->setBody(' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
-                    $mailer->setTo($this->config->webmaster);
-                    $mailer->send();
-                }
-            }
-
-            $this->logger->warn($e->getMessage() . PHP_EOL . ' --comment-- ' . $this->request->post['body']);
+            $this->logger->error($e->getMessage(), ['post' => $this->request->post]);
             $this->error($e->getMessage());
         }
 
