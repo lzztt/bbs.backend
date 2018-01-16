@@ -3,7 +3,7 @@
 namespace site\handler\forum\node;
 
 use Exception;
-use lzx\core\Mailer;
+use site\SpamFilterTrait;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\Node;
@@ -12,6 +12,8 @@ use site\handler\forum\Forum;
 
 class Handler extends Forum
 {
+    use SpamFilterTrait;
+
     public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
@@ -34,10 +36,8 @@ class Handler extends Forum
             $this->error('Topic title or body is too short.');
         }
 
-        $user = new User($this->request->uid, 'createTime,points,status');
         try {
-            // validate post
-            $user->validatePost($this->request->ip, $this->request->timestamp, $this->request->post['body'], $this->request->post['title']);
+            $this->validatePost();
 
             $node = new Node();
             $node->tid = $tid;
@@ -55,44 +55,7 @@ class Handler extends Forum
             $comment->createTime = $this->request->timestamp;
             $comment->add();
         } catch (Exception $e) {
-            // spammer found
-            if ($user->isSpammer()) {
-                $this->logger->info('SPAMMER FOUND: uid=' . $user->id);
-                $user->delete();
-                $u = new User();
-                $u->lastAccessIp = inet_pton($this->request->ip);
-                $users = $u->getList('createTime');
-                $deleteAll = true;
-                if (sizeof($users) > 1) {
-                    // check if we have old users that from this ip
-                    foreach ($users as $u) {
-                        if ($this->request->timestamp - $u['createTime'] > 2592000) {
-                            $deleteAll = false;
-                            break;
-                        }
-                    }
-
-                    if ($deleteAll) {
-                        $log = 'SPAMMER FROM IP ' . $this->request->ip . ': uid=';
-                        foreach ($users as $u) {
-                            $spammer = new User((int) $u['id'], 'id');
-                            $spammer->delete();
-                            $log = $log . $spammer->id . ' ';
-                        }
-                        $this->logger->info($log);
-                    }
-                }
-
-                if (false && $this->config->webmaster) { // turn off spammer emails
-                    $mailer = new Mailer();
-                    $mailer->setSubject('SPAMMER detected and deleted (' . sizeof($users) . ($deleteAll ? ' deleted)' : ' not deleted)'));
-                    $mailer->setBody(' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
-                    $mailer->setTo($this->config->webmaster);
-                    $mailer->send();
-                }
-            }
-
-            $this->logger->error($e->getMessage() . PHP_EOL . ' --node-- ' . $this->request->post['title'] . PHP_EOL . $this->request->post['body']);
+            $this->logger->error($e->getMessage(), ['post' => $this->request->post]);
             $this->error($e->getMessage());
         }
 

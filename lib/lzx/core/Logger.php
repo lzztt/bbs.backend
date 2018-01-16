@@ -2,12 +2,12 @@
 
 namespace lzx\core;
 
-use Throwable;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Handler\BufferHandler;
 use Monolog\Handler\NativeMailerHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonoLogger;
+use Throwable;
 use lzx\core\TraceProcessor;
 
 class Logger extends MonoLogger
