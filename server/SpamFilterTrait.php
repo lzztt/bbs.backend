@@ -59,7 +59,7 @@ trait SpamFilterTrait
     
     private static function cleanText(string $text, array $spamwords): string
     {
-        $cleanText = preg_replace('/[^\p{Nd}\p{Han}\p{Latin}\s\$]+/u', '', $text);
+        $cleanText = preg_replace('#[^\p{Nd}\p{Han}\p{Latin}\s$/]+#u', '', $text);
 
         foreach ($spamwords as $w) {
             if (mb_strpos($cleanText, $w) !== false) {
