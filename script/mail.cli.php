@@ -59,7 +59,7 @@ class MailApp extends App
         if (sizeof($users) > 0) {
             $status = [];
             Template::setLogger($this->logger);
-            Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
+            Template::$path = $this->config->path['theme'] . '/' . $this->config->theme;
 
             foreach ($users as $i => $u) {
                 $cid = (int) $u['cid'] - 1;
