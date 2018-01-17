@@ -5,19 +5,13 @@ namespace site;
 class Config
 {
     const STAGE_DEVELOPMENT = 0;
-    const STAGE_TESTING = 1;
-    const STAGE_PRODUCTION = 2;
-    const MODE_OFFLINE = 0;
-    const MODE_READONLY = 1;
-    const MODE_FULL = 2;
+    const STAGE_PRODUCTION = 1;
 
     public $stage;
-    public $mode;
     public $cache;
     public $path;
     public $db;
     public $getkeys;
-    public $language;
     public $theme;
     public $domain;
     public $webmaster;
@@ -27,7 +21,6 @@ class Config
     {
         $this->stage = self::STAGE_DEVELOPMENT;
         //$this->stage = self::STAGE_PRODUCTION;
-        $this->mode = self::MODE_FULL;
 
         $this->path = [
             'server' => __DIR__,
@@ -45,10 +38,7 @@ class Config
             'password' => 'Ab663067',
         ];
         $this->getkeys = ['p', 'r', 'u', 'c', 't', 'action'];
-        $this->language = 'zh-cn';
-        $this->theme = [
-            'roselife' => 'roselife',
-        ];
+        $this->theme = 'roselife';
         $this->domain = implode('.', array_slice(explode('.', $server_name), -2));
         $this->webmaster = 'mikalotus3355@gmail.com';
 
@@ -59,9 +49,6 @@ class Config
             'size' => 5242880
         ];
 
-        // make this file immutable
-        // root# chattr +i config.php
-        // just in case we rsync the dev/testing configuration file to production
         if (in_array($this->domain, ['houstonbbs.com', 'dallasbbs.com', 'austinbbs.com'])) {
             $this->stage = self::STAGE_PRODUCTION;
         }
