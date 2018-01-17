@@ -74,7 +74,7 @@ class CronApp extends App
         $activities = $db->query('SELECT a.start_time, n.id, n.title, u.username, u.email FROM activities AS a JOIN nodes AS n ON a.nid = n.id JOIN users AS u ON n.uid = u.id WHERE a.status IS NULL');
         if (sizeof($activities) > 0) {
             $mailer = new Mailer();
-            Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
+            Template::$path = $this->config->path['theme'] . '/' . $this->config->theme;
 
             foreach ($activities as $a) {
                 $mailer->setTo($a['email']);
@@ -183,7 +183,7 @@ class CronApp extends App
 
         $mailer = new Mailer('ad');
         $mailer->setBcc($this->config->webmaster);
-        Template::$path = $this->config->path['theme'] . '/' . $this->config->theme['roselife'];
+        Template::$path = $this->config->path['theme'] . '/' . $this->config->theme;
 
         // expiring in seven days
         $ads = $db->query('SELECT * FROM ads WHERE exp_time > ' . ($this->timestamp + 518400) . ' AND exp_time < ' . ($this->timestamp + 604800));
