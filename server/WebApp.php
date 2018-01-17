@@ -42,8 +42,7 @@ class WebApp extends App
 
         Template::setLogger($this->logger);
         Template::$path = $this->config->path['theme'];
-        Template::$theme = $this->config->theme['roselife'];
-        Template::$language = $this->config->language;
+        Template::$theme = $this->config->theme;
     }
 
     public function run(int $argc = 0, array $argv = []): void
