@@ -49,7 +49,7 @@ class Logger extends MonoLogger
     {
         $path = explode(DIRECTORY_SEPARATOR, __FILE__);
         $endCount = -3 - substr_count(__NAMESPACE__, '\\');
-        return implode(DIRECTORY_SEPARATOR, array_splice($path, 0, $endCount)) . DIRECTORY_SEPARATOR;
+        return implode(DIRECTORY_SEPARATOR, array_slice($path, 0, $endCount)) . DIRECTORY_SEPARATOR;
     }
 
     public function addExtraInfo(array $extra): void
