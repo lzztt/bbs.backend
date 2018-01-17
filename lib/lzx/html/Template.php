@@ -14,7 +14,6 @@ class Template
 
     public static $path;
     public static $theme;
-    public static $language;
     public static $debug = false;
     private static $hasError = false;
     private static $site;
