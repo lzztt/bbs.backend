@@ -228,13 +228,7 @@ class Handler extends Service
             $this->forbidden();
         }
 
-        $user = new User();
-        $user->id = $uid;
-        $user->delete();
-
-        foreach ($user->getAllNodeIDs() as $nid) {
-            $this->getIndependentCache('/node/' . $nid)->delete();
-        }
+        $this->deleteUser($uid);
         $this->json(null);
     }
 

@@ -90,7 +90,7 @@ trait SpamFilterTrait
     protected function deleteSpammer(): void
     {
         $this->logger->info('SPAMMER DELETED: uid=' . $this->request->uid);
-        (new User($this->request->uid, 'id'))->delete();
+        $this->deleteUser($this->request->uid);
 
         $u = new User();
         $u->lastAccessIp = inet_pton($this->request->ip);
@@ -108,7 +108,7 @@ trait SpamFilterTrait
         if ($deleteAll) {
             $this->logger->info('SPAMMER DELETED (IP=' . $this->request->ip . '): uid=' . implode(',', array_column($users, 'id')));
             foreach ($users as $u) {
-                (new User((int) $u['id'], 'id'))->delete();
+                $this->deleteUser((int) $u['id']);
             }
         }
     }

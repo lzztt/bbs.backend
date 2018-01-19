@@ -24,7 +24,7 @@ class Request
         $this->req = ServerRequestFactory::fromGlobals();
 
         $params = $this->req->getServerParams();
-        $this->domain = $params['HTTP_HOST'];
+        $this->domain = $params['SERVER_NAME'];
         $this->ip = $params['REMOTE_ADDR'];
         $this->uri = strtolower($params['REQUEST_URI']);
 

@@ -20,6 +20,8 @@ class Handler extends Node
             $this->pageForbidden();
         }
 
+        unset($this->request->post['title']);
+
         list($nid, $type) = $this->getNodeType();
         $method = 'comment' . $type;
         $this->$method($nid);
