@@ -3,15 +3,13 @@
 namespace site;
 
 use Exception;
-use \lzx\App;
-use \lzx\core\Mailer;
-use \lzx\db\DB;
-use \lzx\html\Template;
+use lzx\App;
+use lzx\core\Mailer;
+use lzx\db\DB;
+use lzx\html\Template;
 
 // note: cache path in php and nginx are using server_name
 $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
-// $config->domain need http_host
-$_SERVER['HTTP_HOST'] = 'www.houstonbbs.com';
 
 $LZXROOT = dirname(__DIR__) . '/lib/lzx';
 

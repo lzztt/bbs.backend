@@ -2,6 +2,7 @@
 
 namespace site;
 
+use InvalidArgumentException;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
@@ -101,6 +102,21 @@ trait HandlerTrait
             $event = new CacheEvent($name, $objID);
             $this->cacheEvents[$key] = $event;
             return $event;
+        }
+    }
+
+    protected function deleteUser(int $uid): void
+    {
+        if ($uid < 2) {
+            throw new InvalidArgumentException((string) $uid);
+        }
+
+        $user = new User();
+        $user->id = $uid;
+        $user->delete();
+
+        foreach ($user->getAllNodeIDs() as $nid) {
+            $this->getIndependentCache('/node/' . $nid)->delete();
         }
     }
 }
