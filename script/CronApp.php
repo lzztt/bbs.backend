@@ -12,8 +12,6 @@ use site\Config;
 
 // note: cache path in php and nginx are using server_name
 $_SERVER['SERVER_NAME'] = 'www.houstonbbs.com';
-// $config->domain need http_host
-$_SERVER['HTTP_HOST'] = 'www.houstonbbs.com';
 
 class CronApp extends App
 {
