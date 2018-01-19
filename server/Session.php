@@ -189,7 +189,7 @@ class Session
     private function startNewSession(): void
     {
         $this->sid = sprintf("%02x", rand(0, 255)) . uniqid();
-        setcookie(self::$cookieName, $this->sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['HTTP_HOST']), -2)));
+        setcookie(self::$cookieName, $this->sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
         $this->isNew = true;
     }
 
