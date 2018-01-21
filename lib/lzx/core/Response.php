@@ -14,9 +14,9 @@ use lzx\html\Template;
 
 class Response
 {
-    const HTML = 'html';
-    const JSON = 'json';
-    const JPEG = 'jpeg';
+    const HTML = 0;
+    const JSON = 1;
+    const JPEG = 2;
 
     public $type;
     private $status;

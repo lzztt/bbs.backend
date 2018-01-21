@@ -32,7 +32,7 @@ class Request
 
         $this->post = self::escapeArray($this->req->getParsedBody());
         $this->get = self::escapeArray($this->req->getQueryParams());
-        $this->files = $this->getUploadFiles();
+        $this->files = self::getUploadFiles();
         $this->json = json_decode((string) $this->req->getBody(), true);
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
@@ -50,24 +50,19 @@ class Request
         return $instance;
     }
 
-    public function getUploadFiles(): array
+    private static function getUploadFiles(): array
     {
-        static $files;
-
-        if (!isset($files)) {
-            $files = [];
-            foreach ($_FILES as $type => $file) {
-                $files[$type] = [];
-                if (is_array($file['error'])) { // file list
-                    for ($i = 0; $i < sizeof($file['error']); $i++) {
-                        foreach (array_keys($file) as $key) {
-                            $files[$type][$i][$key] = $file[$key][$i];
-                        }
+        $files = [];
+        foreach ($_FILES as $input => $file) {
+            $files[$input] = [];
+            if (is_array($file['error'])) {
+                foreach (array_keys($file['error']) as $i) {
+                    foreach (array_keys($file) as $info) {
+                        $files[$input][$i][$info] = $file[$info][$i];
                     }
-                } else // single file
-                {
-                    $files[$type][] = $file;
                 }
+            } else {
+                $files[$input][] = $file;
             }
         }
 
