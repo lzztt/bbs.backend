@@ -12,10 +12,8 @@ class Handler extends Controller
         $code = $this->request->get['c'];
         if ($code) {
             list($email, $uid) = User::decodeEmail($code);
-            $this->var['content'] = $email . ' has been unsubscribed.' . $uid;
+            $this->var['content'] = $email . ' has been unsubscribed.';
             return;
         }
-        
-        $this->var['content'] = User::encodeEmail('ikki3355@gmail.com', 3);
     }
 }
