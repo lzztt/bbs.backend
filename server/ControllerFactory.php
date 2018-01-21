@@ -23,7 +23,6 @@ class ControllerFactory
             $handler->args = $args;
             return $handler;
         } else {
-            // cannot find a controller
             $response->pageNotFound();
             throw new ResponseReadyException();
         }
