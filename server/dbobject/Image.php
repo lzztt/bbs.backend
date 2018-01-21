@@ -28,6 +28,10 @@ class Image extends DBObject
 
     private function rmTmpFile(string $file): void
     {
+        if (!$file) {
+            return;
+        }
+
         try {
             unlink($file);
         } catch (Exception $e) {
@@ -39,19 +43,18 @@ class Image extends DBObject
     public function saveFile(array $files, array $config): array
     {
         $errmsg = [
-            UPLOAD_ERR_INI_SIZE    => 'upload_err_ini_size',
-            UPLOAD_ERR_FORM_SIZE  => 'upload_err_form_size',
-            UPLOAD_ERR_PARTIAL     => 'upload_err_partial',
-            UPLOAD_ERR_NO_FILE     => 'upload_err_no_file',
+            UPLOAD_ERR_INI_SIZE => 'upload_err_ini_size',
+            UPLOAD_ERR_FORM_SIZE => 'upload_err_form_size',
+            UPLOAD_ERR_PARTIAL => 'upload_err_partial',
+            UPLOAD_ERR_NO_FILE => 'upload_err_no_file',
             UPLOAD_ERR_NO_TMP_DIR => 'upload_err_no_tmp_dir',
             UPLOAD_ERR_CANT_WRITE => 'upload_err_cant_write',
-            102                          => 'upload_err_invalid_type',
-            103                          => 'upload_err_cant_save',
+            102 => 'upload_err_invalid_type',
+            103 => 'upload_err_cant_save',
         ];
 
         $errorFile = [];
         $savedFile = [];
-        // save files
         foreach ($files as $type => $fileList) {
             $path = $config['path'] . '/data/' . $type . '/' . $config['prefix'] . rand(0, 9);
 
@@ -60,39 +63,33 @@ class Image extends DBObject
                 $tmpFile = $f['tmp_name'];
 
                 // check upload error
-                if ($f['error'] !== UPLOAD_ERR_OK) { // upload error
+                if ($f['error'] !== UPLOAD_ERR_OK) {
                     $errorFile[] = [
                         'name'  => $fileName,
                         'error' => $errmsg[$f['error']],
                     ];
-                    if ($tmpFile) {
-                        $this->rmTmpFile($tmpFile);
-                    }
+                    $this->rmTmpFile($tmpFile);
                     continue;
                 }
 
                 // check image size
-                if ($f['size'] > $config['size']) { // File Size
+                if ($f['size'] > $config['size']) {
                     $errorFile[] = [
                         'name'  => $fileName,
                         'error' => $errmsg[UPLOAD_ERR_INI_SIZE],
                     ];
-                    if ($tmpFile) {
-                        $this->rmTmpFile($tmpFile);
-                    }
+                    $this->rmTmpFile($tmpFile);
                     continue;
                 }
 
-                $imageInfo = getimagesize($tmpFile); // not requiring GD
+                $imageInfo = getimagesize($tmpFile);
                 // check image type
                 if ($imageInfo === false || !in_array($imageInfo[2], $config['types'])) {
                     $errorFile[] = [
                         'name'  => $fileName,
                         'error' => $errmsg[102],
                     ];
-                    if ($tmpFile) {
-                        $this->rmTmpFile($tmpFile);
-                    }
+                    $this->rmTmpFile($tmpFile);
                     continue;
                 }
 
@@ -109,9 +106,7 @@ class Image extends DBObject
                         $im->resizeImage($config['width'], $config['height'], Imagick::FILTER_LANCZOS, 1, true);
                         $im->writeImage($savePath);
                         $im->clear();
-                        if ($tmpFile) {
-                            $this->rmTmpFile($tmpFile);
-                        }
+                        $this->rmTmpFile($tmpFile);
                     } else {
                         // copy image
                         move_uploaded_file($tmpFile, $savePath);
@@ -121,9 +116,9 @@ class Image extends DBObject
                         $im->clear();
                         unset($im);
                     }
-                    if ($tmpFile) {
-                        $this->rmTmpFile($tmpFile);
-                    }
+
+                    $this->rmTmpFile($tmpFile);
+
                     $logger = Logger::getInstance();
                     $logger->error($e->getMessage());
                     $errorFile[] = [
