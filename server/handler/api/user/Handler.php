@@ -71,9 +71,7 @@ class Handler extends Service
         if (array_key_exists('password', $this->request->post)) {
             if (array_key_exists('password_old', $this->request->post)) {
                 // user to change password
-                $u->load('password');
-
-                if ($u->password != $u->hashPW($this->request->post['password_old'])) {
+                if (!$u->verifyPassword($this->request->post['password_old'])) {
                     $this->error('更改密码失败：输入的旧密码与当前密码不符，请确认输入正确的旧密码');
                 }
 
@@ -123,7 +121,7 @@ class Handler extends Service
                 }
             }
 
-            $this->request->post['password'] = $u->hashPW($this->request->post['password']);
+            $this->request->post['password'] = User::hashPassword($this->request->post['password']);
         }
 
         if (array_key_exists('avatar', $this->request->post)) {
