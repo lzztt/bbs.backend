@@ -8,6 +8,8 @@ use lzx\db\DBObject;
 
 class User extends DBObject
 {
+    const HASH_ALGORITHM = PASSWORD_ARGON2I;
+
     public $id;
     public $username;
     public $password;
@@ -44,9 +46,58 @@ class User extends DBObject
         parent::__construct($db, $table, $id, $properties);
     }
 
-    public function hashPW(string $password): string
+    public static function hashPassword(string $password): string
     {
-        return md5('Alex' . $password . 'Tian');
+        return password_hash($password, self::HASH_ALGORITHM);
+    }
+
+    public function verifyPassword(string $password): bool
+    {
+        if (!$password) {
+            return false;
+        }
+
+        if (!$this->password) {
+            $this->load('password');
+        }
+
+        switch (strlen($this->password)) {
+            case 95:
+                $match = password_verify($password , $this->password);
+                $rehash = $match && password_needs_rehash($this->password, self::HASH_ALGORITHM);
+                break;
+            case 32:
+                $match = md5('Alex' . $password . 'Tian') === $this->password;
+                $rehash = $match;
+                break;
+            default:
+                return false;
+        }
+
+        if ($rehash) {
+            $this->password = self::hashPassword($password);
+            $this->update('password');
+        }
+
+        return $match;
+    }
+
+    public static function encodeEmail(string $email, int $uid): string
+    {
+        return base64_encode(implode(' ', [$email, self::hashId($uid)]));
+    }
+
+    public static function decodeEmail(string $code): array
+    {
+        $user = new User();
+        list($user->email, $hash) = explode(' ', base64_decode($code));
+        $user->load('id');
+        return $user->id && self::hashId($user->id) === $hash ? [$user->email, $user->id] : ['', 0];
+    }
+
+    private static function hashId(int $id): string
+    {
+        return strrev(substr(hash('md5', (string) $id), -8));
     }
 
     public function loginWithEmail(string $email, string $password): bool
@@ -54,7 +105,7 @@ class User extends DBObject
         $this->email = $email;
         $this->load('id,username,status,password');
         if ($this->exists() && $this->status == 1) {
-            return ($this->password === $this->hashPW($password));
+            return $this->verifyPassword($password);
         }
 
         return false;

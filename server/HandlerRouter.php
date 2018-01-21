@@ -40,6 +40,7 @@ class HandlerRouter
         'node/tag'                =>  'site\handler\node\tag\Handler',
         'search'                  =>  'site\handler\search\Handler',
         'term'                    =>  'site\handler\term\Handler',
+        'unsubscribe'             =>  'site\handler\unsubscribe\Handler',
         'yp'                      =>  'site\handler\yp\Handler',
         'yp/join'                 =>  'site\handler\yp\join\Handler',
         'yp/node'                 =>  'site\handler\yp\node\Handler',
