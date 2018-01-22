@@ -17,8 +17,14 @@ class Handler extends Node
         $this->cache = new PageCache($this->request->uri);
 
         list($nid, $type) = $this->getNodeType();
-        $method = 'display' . $type;
-        $this->$method($nid);
+        switch ($type) {
+            case self::FORUM_TOPIC:
+                $this->displayForumTopic($nid);
+                break;
+            case self::YELLOW_PAGE:
+                $this->displayYellowPage($nid);
+                break;
+        }
 
         $this->getCacheEvent('NodeUpdate', $nid)->addListener($this->cache);
     }

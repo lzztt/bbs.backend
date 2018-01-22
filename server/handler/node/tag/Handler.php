@@ -10,7 +10,7 @@ class Handler extends Node
     public function run(): void
     {
         list($nid, $type) = $this->getNodeType();
-        $uri = $type === 'ForumTopic' ? '/forum/' : '/yp/';
+        $uri = $type === self::FORUM_TOPIC ? '/forum/' : '/yp/';
 
         if (empty($this->args)) {
             $this->error('no tag id specified');

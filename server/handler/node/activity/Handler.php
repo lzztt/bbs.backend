@@ -17,8 +17,11 @@ class Handler extends Node
         }
 
         list($nid, $type) = $this->getNodeType();
-        $method = 'activity' . $type;
-        $this->$method($nid);
+        switch ($type) {
+            case self::FORUM_TOPIC:
+                $this->activityForumTopic($nid);
+                break;
+        }
     }
 
     private function activityForumTopic(int $nid): void
