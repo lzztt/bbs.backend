@@ -12,7 +12,6 @@ class Request
     public $referer;
     public $post;
     public $get;
-    public $files;
     public $json;
     public $uid;
     public $timestamp;
@@ -32,7 +31,6 @@ class Request
 
         $this->post = self::escapeArray($this->req->getParsedBody());
         $this->get = self::escapeArray($this->req->getQueryParams());
-        $this->files = self::getUploadFiles();
         $this->json = json_decode((string) $this->req->getBody(), true);
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
@@ -48,25 +46,6 @@ class Request
             $instance = new self();
         }
         return $instance;
-    }
-
-    private static function getUploadFiles(): array
-    {
-        $files = [];
-        foreach ($_FILES as $input => $file) {
-            $files[$input] = [];
-            if (is_array($file['error'])) {
-                foreach (array_keys($file['error']) as $i) {
-                    foreach (array_keys($file) as $info) {
-                        $files[$input][$i][$info] = $file[$info][$i];
-                    }
-                }
-            } else {
-                $files[$input][] = $file;
-            }
-        }
-
-        return $files;
     }
 
     private static function escapeArray(array $in): array
