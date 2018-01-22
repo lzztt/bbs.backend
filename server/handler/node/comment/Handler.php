@@ -23,8 +23,14 @@ class Handler extends Node
         unset($this->request->post['title']);
 
         list($nid, $type) = $this->getNodeType();
-        $method = 'comment' . $type;
-        $this->$method($nid);
+        switch ($type) {
+            case self::FORUM_TOPIC:
+                $this->commentForumTopic($nid);
+                break;
+            case self::YELLOW_PAGE:
+                $this->commentYellowPage($nid);
+                break;
+        }
     }
 
     private function commentForumTopic(int $nid): void
