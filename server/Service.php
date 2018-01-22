@@ -50,7 +50,7 @@ abstract class Service extends BaseService
     // default RESTful get/post/put/delete
     public function __call(string $name, array $args)
     {
-        $this->forbidden();
+        $this->error($name);
     }
 
     protected function validateCaptcha(): void
