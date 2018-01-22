@@ -27,8 +27,7 @@ class Image extends DBObject
 
     public function updateFileList(array $files, string $filePath, int $nid, int $cid = null): void
     {
-        $nid = (int) $nid;
-        if ($cid) { // comment
+        if ($cid) {
             $arr = $this->call('get_comment_images(' . $cid . ')');
         } else {
             $arr = $this->call('get_node_images(' . $nid . ')');
@@ -53,16 +52,16 @@ class Image extends DBObject
                     $info = getimagesize($filePath . $file['path']);
                     $width = $info[0];
                     $height = $info[1];
-                    $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [':nid'      => $nid,
-                        ':cid'      => $cid,
-                        ':name'     => $file['name'],
-                        ':path'     => $file['path'],
-                        ':height'  => $height,
-                        ':width'    => $width,
+                    $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
+                        ':nid' => $nid,
+                        ':cid' => $cid,
+                        ':name' => $file['name'],
+                        ':path' => $file['path'],
+                        ':height' => $height,
+                        ':width' => $width,
                         ':city_id' => $this->cityId]);
                 } catch (Exception $e) {
-                    $logger = Logger::getInstance();
-                    $logger->error($e->getMessage());
+                    Logger::getInstance()->logException($e);
                     continue;
                 }
             }
