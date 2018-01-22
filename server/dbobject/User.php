@@ -63,7 +63,7 @@ class User extends DBObject
 
         switch (strlen($this->password)) {
             case 95:
-                $match = password_verify($password , $this->password);
+                $match = password_verify($password, $this->password);
                 $rehash = $match && password_needs_rehash($this->password, self::HASH_ALGORITHM);
                 break;
             case 32:
