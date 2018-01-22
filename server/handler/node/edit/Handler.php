@@ -15,8 +15,14 @@ class Handler extends Node
     public function run(): void
     {
         list($nid, $type) = $this->getNodeType();
-        $method = 'edit' . $type;
-        $this->$method($nid);
+        switch ($type) {
+            case self::FORUM_TOPIC:
+                $this->editForumTopic($nid);
+                break;
+            case self::YELLOW_PAGE:
+                $this->editYellowPage($nid);
+                break;
+        }
     }
 
     private function editForumTopic(int $nid): void
