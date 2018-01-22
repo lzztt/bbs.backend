@@ -7,7 +7,6 @@ use site\SpamFilterTrait;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\Node;
-use site\dbobject\User;
 use site\handler\forum\Forum;
 
 class Handler extends Forum

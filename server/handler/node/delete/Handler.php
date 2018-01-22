@@ -15,8 +15,14 @@ class Handler extends Node
         }
 
         list($nid, $type) = $this->getNodeType();
-        $method = 'delete' . $type;
-        $this->$method($nid);
+        switch ($type) {
+            case self::FORUM_TOPIC:
+                $this->deleteForumTopic($nid);
+                break;
+            case self::YELLOW_PAGE:
+                $this->deleteYellowPage($nid);
+                break;
+        }
     }
 
     private function deleteForumTopic(int $nid): void
