@@ -48,11 +48,23 @@ trait HandlerTrait
             $this->error('unsupported website: ' . $this->request->domain);
         }
 
-        // update user info
-        if ($this->request->uid > 0) {
-            $user = new User();
-            // update access info
-            $user->call('update_access_info(' . $this->request->uid . ',' . $this->request->timestamp . ',"' . $this->request->ip . '")');
+        $this->updateAccessInfo();
+    }
+
+    private function updateAccessInfo(): void
+    {
+        if ($this->request->uid === self::UID_GUEST) {
+            return;
+        }
+
+        $user = new User($this->request->uid, 'lastAccessTime,lastAccessIp');
+        if ($this->request->timestamp - $user->lastAccessTime > 900) {
+            $user->lastAccessTime = $this->request->timestamp;
+            $ip = inet_pton($this->request->ip);
+            if ($user->lastAccessIp !== $ip) {
+                $user->lastAccessIp = $ip;
+            }
+            $user->update();
         }
     }
 
