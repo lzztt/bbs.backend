@@ -19,8 +19,15 @@ class Config
 
     private function __construct(string $server_name)
     {
+        $this->domain = implode('.', array_slice(explode('.', $server_name), -2));
+
         $this->stage = self::STAGE_DEVELOPMENT;
         //$this->stage = self::STAGE_PRODUCTION;
+        if (in_array($this->domain, ['houstonbbs.com', 'dallasbbs.com', 'austinbbs.com'])) {
+            $this->stage = self::STAGE_PRODUCTION;
+        }
+
+        $this->webmaster = 'mikalotus3355@gmail.com';
 
         $this->path = [
             'server' => __DIR__,
@@ -29,7 +36,7 @@ class Config
             'log' => dirname(__DIR__) . '/log',
             'file' => dirname(__DIR__) . '/client',
             'backup' => dirname(__DIR__) . '/backup',
-            'cache' => '/tmp/' . $server_name, //note: nginx webserver also use $server_name as the cache path
+            'cache' => '/tmp/' . $server_name,
         ];
         $this->cache = true;
         $this->db = [
@@ -39,19 +46,13 @@ class Config
         ];
         $this->getkeys = ['p', 'r', 'u', 'c', 't', 'action'];
         $this->theme = 'roselife';
-        $this->domain = implode('.', array_slice(explode('.', $server_name), -2));
-        $this->webmaster = 'mikalotus3355@gmail.com';
 
         $this->image = [
             'types' => [IMAGETYPE_GIF, IMAGETYPE_PNG, IMAGETYPE_JPEG],
             'height' => 9000,
             'width' => 600,
-            'size' => 5242880
+            'size' => 5242880,
         ];
-
-        if (in_array($this->domain, ['houstonbbs.com', 'dallasbbs.com', 'austinbbs.com'])) {
-            $this->stage = self::STAGE_PRODUCTION;
-        }
     }
 
     public static function getInstance(): Config
