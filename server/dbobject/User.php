@@ -59,6 +59,9 @@ class User extends DBObject
 
         if (!$this->password) {
             $this->load('password');
+            if (!$this->password) {
+                return false;
+            }
         }
 
         switch (strlen($this->password)) {
@@ -104,7 +107,7 @@ class User extends DBObject
     {
         $this->email = $email;
         $this->load('id,username,status,password');
-        if ($this->exists() && $this->status == 1) {
+        if ($this->exists() && $this->password && $this->status == 1) {
             return $this->verifyPassword($password);
         }
 
