@@ -14,13 +14,10 @@ class Handler extends Service
         }
 
         $viewCount = [];
-        $nids = [];
+        $nids = array_filter(array_map('intval', explode(',', $this->args[0])), function (int $v): bool {
+            return $v > 0;
+        });
 
-        foreach (explode(',', $this->args[0]) as $nid) {
-            if (is_numeric($nid) && intval($nid) > 0) {
-                $nids[] = (int) $nid;
-            }
-        }
         if ($nids) {
             $node = new Node();
             if (sizeof($nids) > 1) {
@@ -33,7 +30,7 @@ class Handler extends Service
                 $node->id = $nids[0];
                 $node->load('viewCount');
                 if ($node->exists()) {
-                    $node->viewCount = $node->viewCount + 1;
+                    $node->viewCount += 1;
                     $node->update('viewCount');
                     $viewCount['viewCount' . $node->id] = $node->viewCount;
                 } else {
