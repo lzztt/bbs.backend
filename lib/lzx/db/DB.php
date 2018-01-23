@@ -19,9 +19,10 @@ class DB
         $this->db = new PDO($config['dsn'], $config['user'], $config['password'], [
             PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_AUTOCOMMIT => false,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-            ]);
-        // this is NEEDED, even AUTOCOMMIT = FALSE :(
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+            PDO::MYSQL_ATTR_MULTI_STATEMENTS => false,
+        ]);
         $this->db->beginTransaction();
     }
 
