@@ -10,8 +10,6 @@ use lzx\html\HTMLElement;
 
 class Template
 {
-    const EVEN_ODD_CLASS = 'even_odd_parent';
-
     public static $path;
     public static $theme;
     public static $debug = false;
@@ -22,7 +20,7 @@ class Template
     public $tpl;
     private $var = [];
     private $observers;
-    private $string;
+    private $cache;
 
     /**
      * Observer design pattern interfaces
@@ -67,51 +65,49 @@ class Template
     public function __toString()
     {
         // return from string cache
-        if ($this->string) {
-            return $this->string;
+        if ($this->cache) {
+            return $this->cache;
         }
 
-        // build the template
-        try {
-            // notify observers
-            $this->notify();
+        // notify observers
+        $this->notify();
 
-            extract($this->var);
-            $tpl = $this->tpl;
-            $tpl_theme = self::$theme;
-            $tpl_path = self::$path . '/' . self::$theme;
-            $tpl_debug = self::$debug;
+        extract($this->var);
+        $tpl = $this->tpl;
+        $tpl_theme = self::$theme;
+        $tpl_path = self::$path . '/' . self::$theme;
+        $tpl_debug = self::$debug;
 
-            // check site files first
-            if (self::$site) {
-                $tpl_file = $tpl_path . '/' . $tpl . '.' . self::$site . '.tpl.php';
-                if (!is_file($tpl_file) || !is_readable($tpl_file)) {
-                    $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
-                }
-            } else {
+        // check site files first
+        if (self::$site) {
+            $tpl_file = $tpl_path . '/' . $tpl . '.' . self::$site . '.tpl.php';
+            if (!is_file($tpl_file) || !is_readable($tpl_file)) {
                 $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
             }
-
-            if (!is_file($tpl_file) || !is_readable($tpl_file)) {
-                self::$hasError = true;
-                $output = 'template loading error: [' . $tpl_theme . ':' . $tpl . ']';
-            } else {
-                ob_start();                            // Start output buffering
-                include $tpl_file;                    // Include the template file
-                $output = ob_get_contents();     // Get the contents of the buffer
-                ob_end_clean();                      // End buffering and discard
-            }
-        } catch (Exception $e) {
-            ob_end_clean();
-            self::$hasError = true;
-            if (isset(self::$logger)) {
-                self::$logger->logException($e);
-            }
-            $output = 'template parsing error: [' . $tpl_theme . ':' . $tpl . ']';
+        } else {
+            $tpl_file = $tpl_path . '/' . $tpl . '.tpl.php';
         }
 
-        // save to cache
-        $this->string = $output;
+        if (!is_file($tpl_file) || !is_readable($tpl_file)) {
+            self::$hasError = true;
+            $output = 'template loading error: ' . implode(DIRECTORY_SEPARATOR, [$tpl_theme, $tpl]);
+        } else {
+            try {
+                ob_start();
+                include $tpl_file;
+                $output = ob_get_contents();
+                ob_end_clean();
+            } catch (Exception $e) {
+                ob_end_clean();
+                self::$hasError = true;
+                $output = 'template parsing error: ' . implode(DIRECTORY_SEPARATOR, [$tpl_theme, $tpl]);
+                if (isset(self::$logger)) {
+                    self::$logger->logException($e);
+                }
+            }
+        }
+
+        $this->cache = $output;
         return $output;
     }
 
