@@ -86,7 +86,7 @@ class Handler extends Service
                             'id'         => 'https://' . $this->request->domain . '/app/user/' . $uid,
                             'username' => $spammer->username,
                             'email'     => $spammer->email,
-                            'city'      => self::getLocationFromIP($spammer->lastAccessIp),
+                            'city'      => self::getLocationFromIp($spammer->lastAccessIp),
                             'points'    => $spammer->points,
                             'register' => date(DATE_COOKIE, $spammer->createTime)
                         ],
@@ -99,7 +99,7 @@ class Handler extends Service
                             'id'         => 'https://' . $this->request->domain . '/app/user/' . $reporter->id,
                             'username' => $reporter->username,
                             'email'     => $reporter->email,
-                            'city'      => self::getLocationFromIP($this->request->ip),
+                            'city'      => self::getLocationFromIp($this->request->ip),
                             'points'    => $reporter->points,
                             'register' => date(DATE_COOKIE, $reporter->createTime)
                         ]
