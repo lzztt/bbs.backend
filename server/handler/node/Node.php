@@ -2,6 +2,7 @@
 
 namespace site\handler\node;
 
+use lzx\exception\NotFound;
 use site\Controller;
 use site\dbobject\Node as NodeObject;
 
@@ -20,21 +21,21 @@ abstract class Node extends Controller
 
         $nid = (int) $this->args[0];
         if ($nid <= 0) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
         array_shift($this->args);
 
         $nodeObj = new NodeObject();
         $tags = $nodeObj->getTags($nid);
         if (empty($tags)) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
 
         $rootTagID = array_shift(array_keys($tags));
 
         if (!array_key_exists($rootTagID, $types)) {
             //$this->logger->error('wrong root tag : nid = ' . $nid);
-            $this->pageNotFound();
+            throw new NotFound();
         }
 
         return [$nid, $types[$rootTagID]];

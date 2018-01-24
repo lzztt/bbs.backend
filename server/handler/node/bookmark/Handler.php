@@ -2,6 +2,7 @@
 
 namespace site\handler\node\bookmark;
 
+use lzx\exception\Forbidden;
 use site\dbobject\User;
 use site\handler\node\Node;
 
@@ -10,7 +11,7 @@ class Handler extends Node
     public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST || !$this->args) {
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         $nid = (int) $this->args[0];

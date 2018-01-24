@@ -5,6 +5,7 @@ namespace site\handler\comment;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
+use lzx\exception\Forbidden;
 use site\Config;
 use site\Controller;
 use site\Session;
@@ -17,7 +18,7 @@ abstract class Comment extends Controller
 
         if ($this->request->uid == 0) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
     }
 }

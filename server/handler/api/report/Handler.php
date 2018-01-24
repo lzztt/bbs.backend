@@ -3,6 +3,8 @@
 namespace site\handler\api\report;
 
 use lzx\core\Mailer;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\Comment;
 use site\dbobject\Node;
@@ -14,7 +16,7 @@ class Handler extends Service
     public function post(): void
     {
         if (!$this->request->uid) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $uid = (int) $this->request->post['uid'];
@@ -22,7 +24,7 @@ class Handler extends Service
         $reason = $this->request->post['reason'];
 
         if ($uid == $this->request->uid) {
-            $this->error('您不能举报自己的帖子');
+            throw new ErrorMessage('您不能举报自己的帖子');
         }
 
         $complain = new NodeComplain();
@@ -31,7 +33,7 @@ class Handler extends Service
 
         $complain->load();
         if ($complain->exists()) {
-            $this->error('您已经举报过此帖，不能重复举报');
+            throw new ErrorMessage('您已经举报过此帖，不能重复举报');
         }
 
         $node = new Node();
@@ -39,7 +41,7 @@ class Handler extends Service
         $node->uid = $uid;
         $node->load();
         if (!$node->exists()) {
-            $this->error('被举报的帖子不存在');
+            throw new ErrorMessage('被举报的帖子不存在');
         }
 
         if ($node->status > 0) {

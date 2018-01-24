@@ -5,6 +5,7 @@ namespace site\handler\node;
 use Exception;
 use lzx\cache\PageCache;
 use lzx\core\BBCodeRE as BBCode;
+use lzx\exception\NotFound;
 use lzx\html\HTMLElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
@@ -39,7 +40,7 @@ class Handler extends Node
         $this->var['head_description'] = $node['title'];
 
         if (!$node) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
 
         $breadcrumb = [];
@@ -206,7 +207,7 @@ class Handler extends Node
         $this->var['head_description'] = $node['title'];
 
         if (!$node) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
 
         $breadcrumb = [];

@@ -2,7 +2,7 @@
 
 namespace site;
 
-use lzx\core\Controller as BaseCtrler;
+use lzx\core\Handler;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
@@ -12,7 +12,7 @@ use site\HandlerTrait;
 use site\Session;
 use site\dbobject\Tag;
 
-abstract class Controller extends BaseCtrler
+abstract class Controller extends Handler
 {
     use HandlerTrait;
 
@@ -36,7 +36,7 @@ abstract class Controller extends BaseCtrler
 
         // register this controller as an observer of the HTML template
         $html = new Template('html');
-        $html->attach($this);
+        $html->onBeforeRender([$this, 'update']);
         $this->response->setContent($html);
     }
 
@@ -87,7 +87,6 @@ abstract class Controller extends BaseCtrler
 
         // populate template variables and remove self as an observer
         $html->setVar($this->var);
-        $html->detach($this);
     }
 
     protected function createMenu(int $tid): string

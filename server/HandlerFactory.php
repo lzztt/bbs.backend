@@ -5,12 +5,12 @@ namespace site;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\core\ResponseReadyException;
 use site\Config;
 use site\HandlerRouter;
 use site\Session;
+use lzx\exception\NotFound;
 
-class ControllerFactory
+class HandlerFactory
 {
     protected static $route = [];
 
@@ -23,8 +23,7 @@ class ControllerFactory
             $handler->args = $args;
             return $handler;
         } else {
-            $response->pageNotFound();
-            throw new ResponseReadyException();
+            throw new NotFound();
         }
     }
 

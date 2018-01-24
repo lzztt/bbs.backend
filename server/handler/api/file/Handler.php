@@ -4,6 +4,7 @@ namespace site\handler\api\file;
 
 use Imagick;
 use lzx\core\Response;
+use lzx\exception\Forbidden;
 use site\Config;
 use site\Service;
 
@@ -25,7 +26,7 @@ class Handler extends Service
     public function post(): void
     {
         if ($this->request->uid === 0) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $config = Config::getInstance();

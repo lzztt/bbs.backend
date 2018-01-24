@@ -3,6 +3,9 @@
 namespace site\handler\comment\edit;
 
 use Exception;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\Redirect;
 use site\dbobject\Comment as CommentObject;
 use site\dbobject\Image;
 use site\handler\comment\Comment;
@@ -15,13 +18,13 @@ class Handler extends Comment
         $cid = (int) $this->args[0];
 
         if (strlen($this->request->post['body']) < 5) {
-            $this->error('Comment body is too short.');
+            throw new ErrorMessage('Comment body is too short.');
         }
 
         $comment = new CommentObject($cid, 'nid,uid');
         if ($this->request->uid != 1 && $this->request->uid != $comment->uid) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
         $comment->body = $this->request->post['body'];
         $comment->lastModifiedTime = $this->request->timestamp;
@@ -29,7 +32,7 @@ class Handler extends Comment
             $comment->update('body,lastModifiedTime');
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
-            $this->error($e->getMessage());
+            throw new ErrorMessage($e->getMessage());
         }
 
         // FORUM comments images
@@ -43,6 +46,6 @@ class Handler extends Comment
 
         $this->getCacheEvent('NodeUpdate', $comment->nid)->trigger();
 
-        $this->pageRedirect($this->request->referer);
+        throw new Redirect($this->request->referer);
     }
 }

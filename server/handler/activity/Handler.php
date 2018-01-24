@@ -2,6 +2,7 @@
 
 namespace site\handler\activity;
 
+use lzx\exception\ErrorMessage;
 use lzx\html\Template;
 use site\Controller;
 use site\dbobject\Activity as ActivityObject;
@@ -16,7 +17,7 @@ class Handler extends Controller
         $total = $act->getCount();
 
         if ($total == 0) {
-            $this->error('目前没有活动。');
+            throw new ErrorMessage('目前没有活动。');
         }
 
         list($pageNo, $pageCount) = $this->getPagerInfo($total, self::NODES_PER_PAGE);

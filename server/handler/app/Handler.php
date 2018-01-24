@@ -3,6 +3,7 @@
 namespace site\handler\app;
 
 use Exception;
+use lzx\exception\NotFound;
 use site\Controller;
 
 class Handler extends Controller
@@ -11,7 +12,7 @@ class Handler extends Controller
     {
         $app = $this->args[0];
         if (!$app) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
         $this->response->setContent(file_get_contents($this->getLatestVersion($app) . '/index.html'));
     }
@@ -32,7 +33,7 @@ class Handler extends Controller
         $dirs = glob($this->config->path['file'] . '/app/' . $app . '.*', GLOB_ONLYDIR);
         // not found
         if (!$dirs) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
 
         $count = count($dirs);

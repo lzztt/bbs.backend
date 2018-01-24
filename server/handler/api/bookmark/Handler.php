@@ -2,6 +2,8 @@
 
 namespace site\handler\api\bookmark;
 
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\User;
 
@@ -16,13 +18,13 @@ class Handler extends Service
     public function get(): void
     {
         if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $uid = (int) $this->args[0];
 
         if ($uid != $this->request->uid) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $u = new User($this->request->uid, 'id');
@@ -43,12 +45,12 @@ class Handler extends Service
     public function post(): void
     {
         if (!$this->request->uid || empty($this->request->post)) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $nid = (int) $this->request->post['nid'];
         if ($nid <= 0) {
-            $this->error('node does not exist');
+            throw new ErrorMessage('node does not exist');
         }
 
         $u = new User($this->request->uid, 'id');
@@ -65,7 +67,7 @@ class Handler extends Service
     public function delete(): void
     {
         if (!$this->request->uid || empty($this->args)) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $nids = [];
