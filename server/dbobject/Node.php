@@ -20,9 +20,7 @@ class Node extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'nodes';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'nodes', $id, $properties);
     }
 
     public function getForumNodeList(int $cid, int $tid, int $limit = 25, int $offset = 0): array
