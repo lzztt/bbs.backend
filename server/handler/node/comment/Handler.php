@@ -3,6 +3,9 @@
 namespace site\handler\node\comment;
 
 use Exception;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\Redirect;
 use site\SpamFilterTrait;
 use site\dbobject\Comment;
 use site\dbobject\Image;
@@ -17,7 +20,7 @@ class Handler extends Node
     public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         unset($this->request->post['title']);
@@ -39,12 +42,12 @@ class Handler extends Node
         $node = new NodeObject($nid, 'tid,status');
 
         if (!$node->exists() || $node->status == 0) {
-            $this->error('node does not exist.');
+            throw new ErrorMessage('node does not exist.');
         }
 
         if (!$this->request->post['body']
                 || strlen($this->request->post['body']) < 5) {
-            $this->error('错误：评论正文字数太少。');
+            throw new ErrorMessage('错误：评论正文字数太少。');
         }
 
         try {
@@ -62,7 +65,7 @@ class Handler extends Node
             $comment->add();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['post' => $this->request->post]);
-            $this->error($e->getMessage());
+            throw new ErrorMessage($e->getMessage());
         }
 
         if ($this->request->post['files']) {
@@ -80,7 +83,7 @@ class Handler extends Node
             $this->getIndependentCache('hotForumTopics')->delete();
         }
 
-        $this->pageRedirect('/node/' . $nid . '?p=l#comment' . $comment->id);
+        throw new Redirect('/node/' . $nid . '?p=l#comment' . $comment->id);
     }
 
     private function commentYellowPage(int $nid): void
@@ -89,11 +92,11 @@ class Handler extends Node
         $node = new NodeObject($nid, 'status');
 
         if (!$node->exists() || $node->status == 0) {
-            $this->error('node does not exist.');
+            throw new ErrorMessage('node does not exist.');
         }
 
         if (strlen($this->request->post['body']) < 5) {
-            $this->error('错误：评论正文字数太少。');
+            throw new ErrorMessage('错误：评论正文字数太少。');
         }
 
         $user = new User($this->request->uid, 'createTime,points,status');
@@ -108,12 +111,12 @@ class Handler extends Node
             $comment->add();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['post' => $this->request->post]);
-            $this->error($e->getMessage());
+            throw new ErrorMessage($e->getMessage());
         }
 
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('YellowPageComment')->trigger();
 
-        $this->pageRedirect('/node/' . $nid . '?p=l#commentomment' . $comment->id);
+        throw new Redirect('/node/' . $nid . '?p=l#commentomment' . $comment->id);
     }
 }

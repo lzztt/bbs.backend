@@ -2,6 +2,8 @@
 
 namespace site\handler\api\user;
 
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Config;
 use site\Service;
 use site\dbobject\User;
@@ -15,7 +17,7 @@ class Handler extends Service
     public function get(): void
     {
         if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $uid = (int) $this->args[0];
@@ -30,7 +32,7 @@ class Handler extends Service
 
             $this->json($info);
         } else {
-            $this->error('用户不存在');
+            throw new ErrorMessage('用户不存在');
         }
     }
 
@@ -47,7 +49,7 @@ class Handler extends Service
     public function put(): void
     {
         if (empty($this->args) || !is_numeric($this->args[0])) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $uid = 0;
@@ -56,13 +58,13 @@ class Handler extends Service
             $uid = (int) $this->args[0];
 
             if ($uid != $this->request->uid) {
-                $this->forbidden();
+                throw new Forbidden();
             }
         } else {
             // guest
             $uid = $this->parseIdentCode((int) $this->args[0]);
             if (!$uid) {
-                $this->error('安全验证码错误，请检查使用邮件里的安全验证码');
+                throw new ErrorMessage('安全验证码错误，请检查使用邮件里的安全验证码');
             }
         }
 
@@ -72,11 +74,11 @@ class Handler extends Service
             if (array_key_exists('password_old', $this->request->post)) {
                 // user to change password
                 if (!$u->verifyPassword($this->request->post['password_old'])) {
-                    $this->error('更改密码失败：输入的旧密码与当前密码不符，请确认输入正确的旧密码');
+                    throw new ErrorMessage('更改密码失败：输入的旧密码与当前密码不符，请确认输入正确的旧密码');
                 }
 
                 if ($this->request->post['password'] != $this->request->post['password2']) {
-                    $this->error('更改密码失败：两次输入的新密码不一致');
+                    throw new ErrorMessage('更改密码失败：两次输入的新密码不一致');
                 }
 
                 unset($this->request->post['password_old']);
@@ -157,21 +159,21 @@ class Handler extends Service
 
         // check username and email first
         if (empty($this->request->json['username'])) {
-            $this->error('请填写用户名');
+            throw new ErrorMessage('请填写用户名');
         } else {
             $username = strtolower($this->request->json['username']);
             if (strpos($username, 'admin') !== false || strpos($username, 'bbs') !== false) {
-                $this->error('不合法的用户名，请选择其他用户名');
+                throw new ErrorMessage('不合法的用户名，请选择其他用户名');
             }
         }
 
         if (!filter_var($this->request->json['email'], \FILTER_VALIDATE_EMAIL) || substr($this->request->json['email'], -8) == 'bccto.me') {
-            $this->error('不合法的电子邮箱 : ' . $this->request->json['email']);
+            throw new ErrorMessage('不合法的电子邮箱 : ' . $this->request->json['email']);
         }
 
         if (isset($this->request->json['submit']) || $this->isBot($this->request->json['email'])) {
             $this->logger->info('STOP SPAMBOT : ' . $this->request->json['email']);
-            $this->error('系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。');
+            throw new ErrorMessage('系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。');
         }
 
         $user = new User();
@@ -198,13 +200,13 @@ class Handler extends Service
             try {
                 $user->add();
             } catch (\PDOException $e) {
-                $this->error($e->errorInfo[2]);
+                throw new ErrorMessage($e->errorInfo[2]);
             }
         }
 
         // create user action and send out email
         if ($this->sendIdentCode($user) === false) {
-            $this->error('sending email error: ' . $user->email);
+            throw new ErrorMessage('sending email error: ' . $user->email);
         } else {
             $this->json(null);
         }
@@ -216,14 +218,14 @@ class Handler extends Service
     public function delete(): void
     {
         if ($this->request->uid != 1 || empty($this->args) || !is_numeric($this->args[0])) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $uid = (int) $this->args[0];
 
         // not allowed to delete admin user
         if ($uid == 1) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $this->deleteUser($uid);

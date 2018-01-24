@@ -3,8 +3,6 @@
 namespace lzx\html;
 
 use Exception;
-use SplObjectStorage;
-use lzx\core\Controller;
 use lzx\core\Logger;
 use lzx\html\HTMLElement;
 
@@ -19,28 +17,8 @@ class Template
     private static $logger = null;
     public $tpl;
     private $var = [];
-    private $observers;
+    private $onBeforeRender;
     private $cache;
-
-    /**
-     * Observer design pattern interfaces
-     */
-    public function attach(Controller $observer): void
-    {
-        $this->observers->attach($observer);
-    }
-
-    public function detach(Controller $observer): void
-    {
-        $this->observers->detach($observer);
-    }
-
-    public function notify(): void
-    {
-        foreach ($this->observers as $observer) {
-            $observer->update($this);
-        }
-    }
 
     public function __construct(string $tpl, array $var = [])
     {
@@ -50,6 +28,11 @@ class Template
         if ($var) {
             $this->var = $var;
         }
+    }
+
+    public function onBeforeRender(callable $callback): void
+    {
+        $this->onBeforeRender[] = $callback;
     }
 
     public function setVar(array $var): void
@@ -64,13 +47,13 @@ class Template
 
     public function __toString()
     {
-        // return from string cache
         if ($this->cache) {
             return $this->cache;
         }
 
-        // notify observers
-        $this->notify();
+        foreach ($this->onBeforeRender as $callback) {
+            $callback($this);
+        }
 
         extract($this->var);
         $tpl = $this->tpl;
