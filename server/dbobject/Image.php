@@ -20,9 +20,7 @@ class Image extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'images';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'images', $id, $properties);
     }
 
     public function updateFileList(array $files, string $filePath, int $nid, int $cid = null): void

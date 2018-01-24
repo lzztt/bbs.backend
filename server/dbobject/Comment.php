@@ -17,8 +17,6 @@ class Comment extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'comments';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'comments', $id, $properties);
     }
 }
