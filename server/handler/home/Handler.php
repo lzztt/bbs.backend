@@ -4,6 +4,7 @@ namespace site\handler\home;
 
 use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
+use lzx\exception\ErrorMessage;
 use lzx\html\Template;
 use site\Controller;
 use site\dbobject\Activity;
@@ -21,7 +22,7 @@ class Handler extends Controller
         if (method_exists($this, $func)) {
             $this->$func();
         } else {
-            $this->error('unsupported site: ' . self::$city->uriName);
+            throw new ErrorMessage('unsupported site: ' . self::$city->uriName);
         }
     }
 

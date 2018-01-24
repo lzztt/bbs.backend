@@ -6,7 +6,7 @@ use lzx\core\Logger;
 use lzx\core\Mailer;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\core\Service as BaseService;
+use lzx\core\Handler;
 use lzx\html\Template;
 use site\Config;
 use site\HandlerTrait;
@@ -16,14 +16,14 @@ use site\dbobject\User;
 // handle RESTful web API
 // resource uri: /api/<resource>&action=[get,post,put,delete]
 
-abstract class Service extends BaseService
+abstract class Service extends Handler
 {
     use HandlerTrait;
 
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
+    const ACTIONS = ['get', 'post', 'put', 'delete'];
 
-    private static $actions = ['get', 'post', 'put', 'delete'];
     public $action;
     public $args;
     public $session;
@@ -31,6 +31,7 @@ abstract class Service extends BaseService
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
     {
         parent::__construct($req, $response, $logger);
+        $this->response->type = Response::JSON;
         $this->session = $session;
         $this->config = $config;
         $this->staticInit();
@@ -39,7 +40,7 @@ abstract class Service extends BaseService
     public function run(): void
     {
         if (array_key_exists('action', $this->request->get)
-                && in_array($this->request->get['action'], self::$actions)) {
+                && in_array($this->request->get['action'], self::ACTIONS)) {
             $action = $this->request->get['action'];
         } else {
             $action = ($this->request->post || $this->request->json) ? 'post' : 'get';

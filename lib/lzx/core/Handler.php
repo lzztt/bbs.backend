@@ -5,10 +5,9 @@ namespace lzx\core;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\core\ResponseReadyException;
 use lzx\core\UtilTrait;
 
-abstract class Service
+abstract class Handler
 {
     use UtilTrait;
 
@@ -23,20 +22,10 @@ abstract class Service
         $this->logger = $logger;
     }
 
+    abstract public function run(): void;
+
     protected function json(array $return = null): void
     {
-        $this->response->type = Response::JSON;
         $this->response->setContent($return ? $return : (object) null);
-    }
-
-    protected function error(string $msg): void
-    {
-        $this->json(['error' => $msg]);
-        throw new ResponseReadyException();
-    }
-
-    protected function forbidden(): void
-    {
-        $this->error('forbidden');
     }
 }

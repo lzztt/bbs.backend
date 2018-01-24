@@ -2,18 +2,18 @@
 
 namespace site;
 
+use Exception;
 use lzx\App;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\core\ResponseReadyException;
 use lzx\core\UtilTrait;
 use lzx\db\DB;
 use lzx\html\Template;
 use site\Config;
-use site\ControllerFactory;
+use site\HandlerFactory;
 use site\Session;
 
 class WebApp extends App
@@ -64,9 +64,10 @@ class WebApp extends App
         $response = Response::getInstance();
 
         try {
-            $ctrler = ControllerFactory::create($request, $response, $this->config, $this->logger, $session);
+            $ctrler = HandlerFactory::create($request, $response, $this->config, $this->logger, $session);
             $ctrler->run();
-        } catch (ResponseReadyException $e) {
+        } catch (Exception $e) {
+            $response->handleException($e);
         }
 
         $response->send();

@@ -4,6 +4,8 @@ namespace site\handler\api\message;
 
 use Exception;
 use lzx\core\Mailer;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\PrivMsg;
 use site\dbobject\User;
@@ -28,7 +30,7 @@ class Handler extends Service
     public function get(): void
     {
         if (!$this->request->uid || empty($this->args)) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         if (is_numeric($this->args[0])) {
@@ -53,7 +55,7 @@ class Handler extends Service
     public function post(): void
     {
         if (!$this->request->uid) {
-            $this->error('您必须先登录，才能发送站内短信');
+            throw new ErrorMessage('您必须先登录，才能发送站内短信');
         }
 
         if (array_key_exists('topicMID', $this->request->post)) {
@@ -77,7 +79,7 @@ class Handler extends Service
         $toUid = (int) $this->request->post['toUid'];
         if ($toUid) {
             if ($toUid == $this->request->uid) {
-                $this->error('不能给自己发送站内短信');
+                throw new ErrorMessage('不能给自己发送站内短信');
             }
 
             if ($topicMid) {
@@ -85,26 +87,26 @@ class Handler extends Service
                 $toUser = $pm->getReplyTo($topicMid, $this->request->uid);
 
                 if (!$toUser) {
-                    $this->error('短信不存在，未找到短信收信人');
+                    throw new ErrorMessage('短信不存在，未找到短信收信人');
                 }
 
                 if ($toUser['id'] != $toUid) {
-                    $this->error('收件人帐号不匹配，无法发送短信');
+                    throw new ErrorMessage('收件人帐号不匹配，无法发送短信');
                 }
             }
         } else {
-            $this->error('未指定短信收件人，无法发送短信');
+            throw new ErrorMessage('未指定短信收件人，无法发送短信');
         }
 
         $user = new User($toUid, 'username,email');
 
         if (!$user->exists()) {
-            $this->error('收信人用户不存在');
+            throw new ErrorMessage('收信人用户不存在');
         }
 
         // save pm to database
         if (strlen($this->request->post['body']) < 5) {
-            $this->error('短信正文需最少5个字母或3个汉字');
+            throw new ErrorMessage('短信正文需最少5个字母或3个汉字');
         }
 
         $pm->fromUid = $this->request->uid;
@@ -151,7 +153,7 @@ class Handler extends Service
     public function delete(): void
     {
         if (!$this->request->uid || empty($this->args)) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $mids = [];
@@ -182,7 +184,7 @@ class Handler extends Service
             $pm = new PrivMsg();
             $msgs = $pm->getPMConversation($mid, $this->request->uid);
             if (empty($msgs)) {
-                $this->error('错误：该条短信不存在。');
+                throw new ErrorMessage('错误：该条短信不存在。');
             }
 
             foreach ($msgs as $i => $m) {
@@ -193,7 +195,7 @@ class Handler extends Service
 
             return ['msgs' => $msgs, 'replyTo' => $pm->getReplyTo($mid, $this->request->uid)];
         } else {
-            $this->error('message does not exist');
+            throw new ErrorMessage('message does not exist');
         }
     }
 
@@ -201,7 +203,7 @@ class Handler extends Service
     {
         $user = new User($this->request->uid, 'id');
         if (!in_array($mailbox, self::$mailbox)) {
-            $this->error('mailbox does not exist: ' . $mailbox);
+            throw new ErrorMessage('mailbox does not exist: ' . $mailbox);
         }
 
         $pmCount = $user->getPrivMsgsCount($mailbox);

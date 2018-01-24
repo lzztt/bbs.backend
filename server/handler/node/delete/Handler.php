@@ -2,6 +2,9 @@
 
 namespace site\handler\node\delete;
 
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\Redirect;
 use site\dbobject\Activity;
 use site\dbobject\Node as NodeObject;
 use site\handler\node\Node;
@@ -11,7 +14,7 @@ class Handler extends Node
     public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         list($nid, $type) = $this->getNodeType();
@@ -31,12 +34,12 @@ class Handler extends Node
         $tags = $node->getTags($nid);
 
         if (!$node->exists() || $node->status == 0) {
-            $this->error('node does not exist.');
+            throw new ErrorMessage('node does not exist.');
         }
 
         if ($this->request->uid != 1 && $this->request->uid != $node->uid) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         $node->status = 0;
@@ -50,14 +53,14 @@ class Handler extends Node
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
 
-        $this->pageRedirect('/forum/' . $node->tid);
+        throw new Redirect('/forum/' . $node->tid);
     }
 
     private function deleteYellowPage(int $nid): void
     {
         if ($this->request->uid != 1) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
         $node = new NodeObject($nid, 'tid,status');
         if ($node->exists() && $node->status > 0) {
@@ -68,6 +71,6 @@ class Handler extends Node
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('YellowPageUpdate', $node->tid)->trigger();
 
-        $this->pageRedirect('/yp/' . $node->tid);
+        throw new Redirect('/yp/' . $node->tid);
     }
 }

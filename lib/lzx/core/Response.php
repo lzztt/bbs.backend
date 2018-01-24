@@ -3,6 +3,10 @@
 namespace lzx\core;
 
 use Exception;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\NotFound;
+use lzx\exception\Redirect;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\JsonResponse;
@@ -61,19 +65,27 @@ class Response
         }
     }
 
-    public function pageNotFound(): void
+    public function handleException(Exception $e): void
     {
-        $this->resp = new EmptyResponse(404);
-    }
-
-    public function pageForbidden(): void
-    {
-        $this->resp = new EmptyResponse(403);
-    }
-
-    public function pageRedirect(string $uri): void
-    {
-        $this->resp = new RedirectResponse($uri);
+        if ($e instanceof ErrorMessage) {
+            if ($this->type === Response::JSON) {
+                $this->setContent(['error' => $e->getMessage()]);
+            } else {
+                $this->setContent($e->getMessage());
+            }
+        } elseif ($e instanceof Forbidden) {
+            if ($this->type === Response::JSON) {
+                $this->setContent(['error' => 'Forbidden']);
+            } else {
+                $this->resp = new EmptyResponse(403);
+            }
+        } elseif ($e instanceof NotFound) {
+            $this->resp = new EmptyResponse(404);
+        } elseif ($e instanceof Redirect) {
+            $this->resp = new RedirectResponse($e->getMessage());
+        } else {
+            throw $e;
+        }
     }
 
     public function send(): void
