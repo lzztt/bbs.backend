@@ -58,7 +58,7 @@ class WebApp extends App
         $this->logger->addExtraInfo([
             'user' => 'https://www.houstonbbs.com/app/user/' . $request->uid,
             'ip' => $request->ip,
-            'city' => self::getLocationFromIP($request->ip),
+            'city' => self::getLocationFromIp($request->ip),
         ]);
 
         $response = Response::getInstance();
