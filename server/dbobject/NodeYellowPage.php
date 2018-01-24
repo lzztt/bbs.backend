@@ -17,8 +17,6 @@ class NodeYellowPage extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'node_yellowpages';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'node_yellowpages', $id, $properties);
     }
 }

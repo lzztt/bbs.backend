@@ -15,8 +15,6 @@ class AdPayment extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'ad_payments';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'ad_payments', $id, $properties);
     }
 }

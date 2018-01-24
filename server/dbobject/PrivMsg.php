@@ -16,9 +16,7 @@ class PrivMsg extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-         $db = DB::getInstance();
-         $table = 'priv_msgs';
-         parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'priv_msgs', $id, $properties);
     }
 
     public function getPMConversation(int $id, int $uid = 0, bool $markRead = true): array

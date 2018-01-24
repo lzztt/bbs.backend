@@ -14,9 +14,7 @@ class Activity extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-         $db = DB::getInstance();
-         $table = 'activities';
-         parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'activities', $id, $properties);
     }
 
     public function getRecentActivities(int $count, int $now): array
