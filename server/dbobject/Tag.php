@@ -17,9 +17,7 @@ class Tag extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'tags';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'tags', $id, $properties);
     }
 
     public function getLeafTIDs(): array

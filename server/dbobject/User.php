@@ -41,9 +41,7 @@ class User extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'users';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'users', $id, $properties);
     }
 
     public static function hashPassword(string $password): string

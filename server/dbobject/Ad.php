@@ -15,9 +15,7 @@ class Ad extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'ads';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'ads', $id, $properties);
     }
 
     public function getAllAds(int $from_time = 0): array

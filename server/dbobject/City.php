@@ -15,8 +15,6 @@ class City extends DBObject
 
     public function __construct(int $id = 0, string $properties = '')
     {
-        $db = DB::getInstance();
-        $table = 'cities';
-        parent::__construct($db, $table, $id, $properties);
+        parent::__construct(DB::getInstance(), 'cities', $id, $properties);
     }
 }
