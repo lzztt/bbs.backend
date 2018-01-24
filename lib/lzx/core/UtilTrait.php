@@ -6,7 +6,7 @@ use Exception;
 
 trait UtilTrait
 {
-    protected static function curlGetData(string $url): string
+    protected static function curlGet(string $url): string
     {
         $c = curl_init($url);
         curl_setopt_array($c, [
@@ -20,7 +20,7 @@ trait UtilTrait
         return $data ? $data : '';
     }
 
-    protected static function getLocationFromIP(string $ip, bool $fullInfo = true): string
+    protected static function getLocationFromIp(string $ip, bool $fullInfo = true): string
     {
         static $cache = [];
 

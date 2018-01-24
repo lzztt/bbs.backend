@@ -24,7 +24,7 @@ class Handler extends Service
         if ($user->status > 0) {
             $info = $user->toArray();
             unset($info['lastAccessIp']);
-            $info['lastAccessCity'] = self::getLocationFromIP((string) $user->lastAccessIp);
+            $info['lastAccessCity'] = self::getLocationFromIp((string) $user->lastAccessIp);
             $info['topics'] = $user->getRecentNodes(self::$city->tidForum, 10);
             $info['comments'] = $user->getRecentComments(self::$city->tidForum, 10);
 
@@ -232,11 +232,11 @@ class Handler extends Service
 
     private function isBot(string $m): bool
     {
-        $try1 = unserialize(self::curlGetData('http://www.stopforumspam.com/api?f=serial&email=' . $m));
+        $try1 = unserialize(self::curlGet('http://www.stopforumspam.com/api?f=serial&email=' . $m));
         if ($try1['email']['appears'] == 1) {
             return true;
         }
-        $try2 = self::curlGetData('http://botscout.com/test/?mail=' . $m);
+        $try2 = self::curlGet('http://botscout.com/test/?mail=' . $m);
         if ($try2[0] == 'Y') {
             return true;
         }
