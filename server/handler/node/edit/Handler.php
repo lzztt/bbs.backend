@@ -3,6 +3,9 @@
 namespace site\handler\node\edit;
 
 use Exception;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\Redirect;
 use lzx\html\Template;
 use site\dbobject\Comment;
 use site\dbobject\Image;
@@ -31,19 +34,19 @@ class Handler extends Node
         $node = new NodeObject($nid, 'uid,status');
 
         if (!$node->exists() || $node->status == 0) {
-            $this->error('node does not exist.');
+            throw new ErrorMessage('node does not exist.');
         }
 
         if (!$this->request->post['body']
                 || !$this->request->post['title']
                 || strlen($this->request->post['body']) < 5
                 || strlen($this->request->post['title']) < 5) {
-            $this->error('Topic title or body is too short.');
+            throw new ErrorMessage('Topic title or body is too short.');
         }
 
         if ($this->request->uid != 1 && $this->request->uid != $node->uid) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         $node->title = $this->request->post['title'];
@@ -53,7 +56,7 @@ class Handler extends Node
             $node->update();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
-            $this->error($e->getMessage());
+            throw new ErrorMessage($e->getMessage());
         }
 
         $comment = new Comment();
@@ -74,7 +77,7 @@ class Handler extends Node
         $this->getCacheEvent('ImageUpdate')->trigger();
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
 
-        $this->pageRedirect($this->request->referer);
+        throw new Redirect($this->request->referer);
     }
 
     private function editYellowPage(int $nid): void
@@ -82,12 +85,12 @@ class Handler extends Node
         $node = new NodeObject($nid, 'uid,status');
 
         if (!$node->exists() || $node->status == 0) {
-            $this->error('node does not exist.');
+            throw new ErrorMessage('node does not exist.');
         }
 
         if ($this->request->uid != 1 && $this->request->uid != $node->uid) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         if (empty($this->request->post)) {
@@ -140,7 +143,7 @@ class Handler extends Node
 
             $this->getCacheEvent('NodeUpdate', $nid)->trigger();
 
-            $this->pageRedirect('/node/' . $nid);
+            throw new Redirect('/node/' . $nid);
         }
     }
 }

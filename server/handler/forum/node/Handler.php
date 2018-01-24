@@ -3,6 +3,8 @@
 namespace site\handler\forum\node;
 
 use Exception;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Redirect;
 use site\SpamFilterTrait;
 use site\dbobject\Comment;
 use site\dbobject\Image;
@@ -16,14 +18,16 @@ class Handler extends Forum
     public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
-            $this->response->pageRedirect('/app/user/login');
-            return;
+            throw new Redirect('/app/user/login');
         }
 
         $tag = $this->getTagObj();
         $tagTree = $tag->getTagTree();
 
-        $tagTree[$tag->id]['children'] ? $this->error('Could not post topic in this forum') : $this->createTopic($tag->id);
+        if ($tagTree[$tag->id]['children']) {
+            throw new ErrorMessage('Could not post topic in this forum');
+        }
+        $this->createTopic($tag->id);
     }
 
     public function createTopic(int $tid): void
@@ -32,7 +36,7 @@ class Handler extends Forum
                 || !$this->request->post['title']
                 || strlen($this->request->post['body']) < 5
                 || strlen($this->request->post['title']) < 5) {
-            $this->error('Topic title or body is too short.');
+            throw new ErrorMessage('Topic title or body is too short.');
         }
 
         try {
@@ -55,7 +59,7 @@ class Handler extends Forum
             $comment->add();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['post' => $this->request->post]);
-            $this->error($e->getMessage());
+            throw new ErrorMessage($e->getMessage());
         }
 
         if ($this->request->post['files']) {
@@ -68,6 +72,6 @@ class Handler extends Forum
         $this->getCacheEvent('ForumNode')->trigger();
         $this->getCacheEvent('ForumUpdate', $tid)->trigger();
 
-        $this->pageRedirect('/node/' . $node->id);
+        throw new Redirect('/node/' . $node->id);
     }
 }

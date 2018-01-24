@@ -2,6 +2,9 @@
 
 namespace site\handler\node\tag;
 
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\Redirect;
 use site\dbobject\Node as NodeObject;
 use site\handler\node\Node;
 
@@ -13,7 +16,7 @@ class Handler extends Node
         $uri = $type === self::FORUM_TOPIC ? '/forum/' : '/yp/';
 
         if (empty($this->args)) {
-            $this->error('no tag id specified');
+            throw new ErrorMessage('no tag id specified');
         }
 
         $newTagID = (int) $this->args[0];
@@ -28,10 +31,10 @@ class Handler extends Node
                 $this->getIndependentCache($key)->delete();
             }
 
-            $this->pageRedirect('/node/' . $nid);
+            throw new Redirect('/node/' . $nid);
         } else {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
     }
 }

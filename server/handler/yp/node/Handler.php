@@ -3,6 +3,10 @@
 namespace site\handler\yp\node;
 
 use lzx\core\Mailer;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\NotFound;
+use lzx\exception\Redirect;
 use lzx\html\Template;
 use site\Controller;
 use site\dbobject\Ad;
@@ -17,18 +21,18 @@ class Handler extends Controller
     public function run(): void
     {
         if ($this->request->uid != 1 && $this->request->uid != 8831 && $this->request->uid != 3) {
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         $tid = $this->args ? (int) $this->args[0] : 0;
         if ($tid <= 0) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
 
         $tag = new Tag();
         $tag->parent = $tid;
         if ($tag->getCount() > 0) {
-            $this->error('错误：您不能在该类别中添加黄页，请到它的子类别中添加。');
+            throw new ErrorMessage('错误：您不能在该类别中添加黄页，请到它的子类别中添加。');
         }
 
         if (empty($this->request->post)) {
@@ -74,7 +78,7 @@ class Handler extends Controller
 
             $this->sendConfirmationEmail(new Ad($nodeYP->adId), $node->id);
 
-            $this->pageRedirect('/node/' . $node->id);
+            throw new Redirect('/node/' . $node->id);
         }
     }
 

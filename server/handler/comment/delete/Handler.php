@@ -2,6 +2,8 @@
 
 namespace site\handler\comment\delete;
 
+use lzx\exception\Forbidden;
+use lzx\exception\Redirect;
 use site\dbobject\Comment as CommentObject;
 use site\dbobject\Node;
 use site\dbobject\Tag;
@@ -17,7 +19,7 @@ class Handler extends Comment
 
         if ($this->request->uid != 1 && $this->request->uid != $comment->uid) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         $this->getCacheEvent('NodeUpdate', $comment->nid)->trigger();
@@ -34,6 +36,6 @@ class Handler extends Comment
 
         $comment->delete();
 
-        $this->pageRedirect($this->request->referer);
+        throw new Redirect($this->request->referer);
     }
 }

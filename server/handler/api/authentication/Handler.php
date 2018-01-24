@@ -2,6 +2,8 @@
 
 namespace site\handler\api\authentication;
 
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\User;
 
@@ -45,20 +47,20 @@ class Handler extends Service
                 $this->logger->info('Login Fail: ' . $user->email . ' | ' . $this->request->ip);
                 if ($user->exists()) {
                     if (empty($user->password)) {
-                        $this->error('用户帐号尚未激活，请使用注册email里的安全验证码来设置初始密码。如有问题请联络网站管理员。');
+                        throw new ErrorMessage('用户帐号尚未激活，请使用注册email里的安全验证码来设置初始密码。如有问题请联络网站管理员。');
                     }
 
                     if ($user->status == 1) {
-                        $this->error('错误的密码。');
+                        throw new ErrorMessage('错误的密码。');
                     } else {
-                        $this->error('用户帐号已被封禁，如有问题请联络网站管理员。');
+                        throw new ErrorMessage('用户帐号已被封禁，如有问题请联络网站管理员。');
                     }
                 } else {
-                    $this->error('用户不存在。');
+                    throw new ErrorMessage('用户不存在。');
                 }
             }
         } else {
-            $this->error('请填写邮箱名和密码。');
+            throw new ErrorMessage('请填写邮箱名和密码。');
         }
     }
 
@@ -67,7 +69,7 @@ class Handler extends Service
     public function delete(): void
     {
         if (empty($this->args) || $this->args[0] != $this->session->getSessionID()) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $this->session->clear(); // keep session record but clear session data

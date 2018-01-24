@@ -2,6 +2,7 @@
 
 namespace site\handler\forum;
 
+use lzx\exception\NotFound;
 use site\Controller;
 use site\dbobject\Tag;
 
@@ -18,15 +19,15 @@ abstract class Forum extends Controller
                 $tag->load('id');
 
                 if (!$tag->exists()) {
-                    $this->pageNotFound();
+                    throw new NotFound();
                 }
 
                 $tagRoot = $tag->getTagRoot();
                 if (!array_key_exists(self::$city->tidForum, $tagRoot)) {
-                    $this->pageNotFound();
+                    throw new NotFound();
                 }
             } else {
-                $this->pageNotFound();
+                throw new NotFound();
             }
         } else {
             // main forum

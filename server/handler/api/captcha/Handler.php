@@ -6,17 +6,17 @@ use Imagick;
 use ImagickDraw;
 use ImagickPixel;
 use lzx\core\Response;
-use lzx\core\ResponseReadyException;
+use lzx\exception\Forbidden;
 use site\Config;
 use site\Service;
+
 
 class Handler extends Service
 {
     public function get(): void
     {
         if (!($this->request->referer && $this->args)) {
-            $this->response->pageForbidden();
-            throw new ResponseReadyException();
+            throw new Forbidden();
         }
 
         $code = substr(str_shuffle('aABCdEeFfGHKLMmNPRSTWXY23456789'), -5);

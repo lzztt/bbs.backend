@@ -2,6 +2,8 @@
 
 namespace site\handler\api\viewcount;
 
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\Node;
 
@@ -10,7 +12,7 @@ class Handler extends Service
     public function get(): void
     {
         if (!$this->args) {
-            $this->forbidden();
+            throw new Forbidden();
         }
 
         $viewCount = [];
@@ -34,11 +36,11 @@ class Handler extends Service
                     $node->update('viewCount');
                     $viewCount['viewCount' . $node->id] = $node->viewCount;
                 } else {
-                    $this->error('node not exist: ' . $node->id);
+                    throw new ErrorMessage('node not exist: ' . $node->id);
                 }
             }
         } else {
-            $this->error('invalid node ids: ' . $this->args[0]);
+            throw new ErrorMessage('invalid node ids: ' . $this->args[0]);
         }
 
         $this->json($viewCount);

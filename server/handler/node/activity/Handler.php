@@ -3,6 +3,9 @@
 namespace site\handler\node\activity;
 
 use lzx\core\Mailer;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\NotFound;
 use lzx\html\Template;
 use site\dbobject\Activity;
 use site\dbobject\Node as NodeObject;
@@ -13,7 +16,7 @@ class Handler extends Node
     public function run(): void
     {
         if ($this->request->uid == self::UID_GUEST) {
-            $this->pageForbidden();
+            throw new Forbidden();
         }
 
         list($nid, $type) = $this->getNodeType();
@@ -29,16 +32,16 @@ class Handler extends Node
         $node = new NodeObject($nid, 'tid,uid,title');
 
         if (!$node->exists()) {
-            $this->pageNotFound();
+            throw new NotFound();
         }
 
         if ($node->tid != 16) {
-            $this->error('错误：错误的讨论区。');
+            throw new ErrorMessage('错误：错误的讨论区。');
         }
 
         if ($this->request->uid != $node->uid && $this->request->uid != 1) {
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
-            $this->error('错误：您只能将自己发表的帖子发布为活动。');
+            throw new ErrorMessage('错误：您只能将自己发表的帖子发布为活动。');
         }
 
         if (empty($this->request->post)) {
@@ -60,17 +63,17 @@ class Handler extends Node
             $endTime = strtotime($this->request->post['end_time']);
 
             if ($startTime < $this->request->timestamp || $endTime < $this->request->timestamp) {
-                $this->error('错误：活动开始时间或结束时间为过去的时间，不能发布为未来60天内的活动。');
+                throw new ErrorMessage('错误：活动开始时间或结束时间为过去的时间，不能发布为未来60天内的活动。');
                 return;
             }
 
             if ($startTime > $this->request->timestamp + 5184000 || $endTime > $this->request->timestamp + 5184000) {
-                $this->error('错误：活动开始时间或结束时间太久远，不能发布为未来60天内的活动。');
+                throw new ErrorMessage('错误：活动开始时间或结束时间太久远，不能发布为未来60天内的活动。');
                 return;
             }
 
             if ($startTime > $endTime) {
-                $this->error('错误：活动结束时间在开始时间之前，请重新填写时间。');
+                throw new ErrorMessage('错误：活动结束时间在开始时间之前，请重新填写时间。');
                 return;
             }
 
