@@ -2,6 +2,7 @@
 
 namespace site;
 
+use lzx\core\Handler;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
@@ -14,17 +15,16 @@ class HandlerFactory
 {
     protected static $route = [];
 
-    public static function create(Request $req, Response $response, Config $config, Logger $logger, Session $session)
+    public static function create(Request $req, Response $response, Config $config, Logger $logger, Session $session): Handler
     {
         list($cls, $args) = self::getHandlerClassAndArgs($req);
 
-        if ($cls) {
-            $handler = new $cls($req, $response, $config, $logger, $session);
-            $handler->args = $args;
-            return $handler;
-        } else {
+        if (!$cls) {
             throw new NotFound();
         }
+        $handler = new $cls($req, $response, $config, $logger, $session);
+        $handler->args = $args;
+        return $handler;
     }
 
     private static function getHandlerClassAndArgs(Request $req): array
