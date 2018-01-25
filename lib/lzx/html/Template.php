@@ -17,13 +17,11 @@ class Template
     private static $logger = null;
     public $tpl;
     private $var = [];
-    private $onBeforeRender;
+    private $onBeforeRender = [];
     private $cache;
 
     public function __construct(string $tpl, array $var = [])
     {
-        $this->observers = new SplObjectStorage();
-
         $this->tpl = $tpl;
         if ($var) {
             $this->var = $var;
