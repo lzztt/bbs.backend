@@ -6,6 +6,7 @@ use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\UtilTrait;
+use lzx\exception\NotFound;
 
 abstract class Handler
 {
@@ -27,5 +28,31 @@ abstract class Handler
     protected function json(array $return = null): void
     {
         $this->response->setContent($return ? $return : (object) null);
+    }
+
+    protected function getPagerInfo(int $nTotal, int $nPerPage): array
+    {
+        if ($nPerPage <= 0) {
+            throw new Exception('invalid value for number of items per page: ' . $nPerPage);
+        }
+
+        $pageCount = $nTotal > 0 ? (int) ceil($nTotal / $nPerPage) : 1;
+        if ($this->request->get['p']) {
+            if ($this->request->get['p'] === 'l') {
+                $pageNo = $pageCount;
+            } elseif (is_numeric($this->request->get['p'])) {
+                $pageNo = (int) $this->request->get['p'];
+
+                if ($pageNo < 1 || $pageNo > $pageCount) {
+                    throw new NotFound();
+                }
+            } else {
+                throw new NotFound();
+            }
+        } else {
+            $pageNo = 1;
+        }
+
+        return [$pageNo, $pageCount];
     }
 }

@@ -3,10 +3,6 @@
 namespace lzx\core;
 
 use Exception;
-use lzx\exception\ErrorMessage;
-use lzx\exception\Forbidden;
-use lzx\exception\NotFound;
-use lzx\exception\Redirect;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\JsonResponse;
@@ -14,6 +10,10 @@ use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Diactoros\Response\SapiEmitter;
 use lzx\cache\PageCache;
 use lzx\core\JpegResponse;
+use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
+use lzx\exception\NotFound;
+use lzx\exception\Redirect;
 use lzx\html\Template;
 
 class Response
