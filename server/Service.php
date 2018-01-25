@@ -2,11 +2,11 @@
 
 namespace site;
 
+use lzx\core\Handler;
 use lzx\core\Logger;
 use lzx\core\Mailer;
 use lzx\core\Request;
 use lzx\core\Response;
-use lzx\core\Handler;
 use lzx\html\Template;
 use site\Config;
 use site\HandlerTrait;

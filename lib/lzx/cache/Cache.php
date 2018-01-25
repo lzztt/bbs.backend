@@ -47,7 +47,6 @@ abstract class Cache
 
     public function delete(): void
     {
-        // clear data
         $this->data = null;
         $this->dirty = true;
         $this->deleted = true;

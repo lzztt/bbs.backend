@@ -5,10 +5,10 @@ namespace site;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
+use lzx\exception\NotFound;
 use site\Config;
 use site\HandlerRouter;
 use site\Session;
-use lzx\exception\NotFound;
 
 class HandlerFactory
 {
