@@ -74,30 +74,4 @@ trait UtilTrait
             return mb_convert_encoding($str, $toEncoding, $fromEncode);
         }
     }
-
-    protected function getPagerInfo(int $nTotal, int $nPerPage): array
-    {
-        if ($nPerPage <= 0) {
-            throw new Exception('invalid value for number of items per page: ' . $nPerPage);
-        }
-
-        $pageCount = $nTotal > 0 ? (int) ceil($nTotal / $nPerPage) : 1;
-        if ($this->request->get['p']) {
-            if ($this->request->get['p'] === 'l') {
-                $pageNo = $pageCount;
-            } elseif (is_numeric($this->request->get['p'])) {
-                $pageNo = (int) $this->request->get['p'];
-
-                if ($pageNo < 1 || $pageNo > $pageCount) {
-                    $this->pageNotFound();
-                }
-            } else {
-                $this->pageNotFound();
-            }
-        } else {
-            $pageNo = 1;
-        }
-
-        return [$pageNo, $pageCount];
-    }
 }
