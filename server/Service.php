@@ -7,14 +7,12 @@ use lzx\core\Logger;
 use lzx\core\Mailer;
 use lzx\core\Request;
 use lzx\core\Response;
+use lzx\exception\NotFound;
 use lzx\html\Template;
 use site\Config;
 use site\HandlerTrait;
 use site\Session;
 use site\dbobject\User;
-
-// handle RESTful web API
-// resource uri: /api/<resource>&action=[get,post,put,delete]
 
 abstract class Service extends Handler
 {
@@ -45,13 +43,10 @@ abstract class Service extends Handler
         } else {
             $action = ($this->request->post || $this->request->json) ? 'post' : 'get';
         }
+        if (!method_exists($this, $action)) {
+            throw new NotFound();
+        }
         $this->$action();
-    }
-
-    // default RESTful get/post/put/delete
-    public function __call(string $name, array $args)
-    {
-        $this->error($name);
     }
 
     protected function validateCaptcha(): void
@@ -69,45 +64,38 @@ abstract class Service extends Handler
     protected function createIdentCode(int $uid): int
     {
         $code = rand(100000, 999999);
-
-        // save in session
         $this->session->identCode = [
-            'code'     => $code,
-            'uid'      => $uid,
+            'code' => $code,
+            'uid' => $uid,
             'attempts' => 0,
             'expTime' => $this->request->timestamp + 600
         ];
-
         return $code;
     }
 
-    protected function parseIdentCode(int $code): int
+    protected function parseIdentCode(int $tryCode): int
     {
         if (!$this->session->identCode) {
-            return 0;
+            return self::UID_GUEST;
         }
 
-        $idCode = $this->session->identCode;
-        if ($idCode['attempts'] > 5 || $idCode['expTime'] < $this->request->timestamp) {
-            // too many attempts, clear code
+        list($code, $uid, $attempts, $expTime) = $this->session->identCode;
+        if ($attempts > 5 || $expTime < $this->request->timestamp) {
             $this->session->identCode = null;
-            return 0;
+            return self::UID_GUEST;
         }
 
-        if ($code === $idCode['code']) {
-            // valid code, clear code
+        if ($tryCode === $code) {
             $this->session->identCode = null;
-            return $idCode['uid'];
-        } else {
-            // attempts + 1
-            $this->session->identCode['attempts'] = $idCode['attempts'] + 1;
-            return 0;
+            return $uid;
         }
+
+        $this->session->identCode['attempts'] = $attempts + 1;
+        return self::UID_GUEST;
     }
 
     protected function sendIdentCode(User $user): bool
     {
-        // create user action and send out email
         $mailer = new Mailer('system');
         $mailer->setTo($user->email);
         $siteName = ucfirst(self::$city->uriName) . 'BBS';
