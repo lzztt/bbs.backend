@@ -38,7 +38,6 @@ class Handler extends Node
 
     private function commentForumTopic(int $nid): void
     {
-        // create new comment
         $node = new NodeObject($nid, 'tid,status');
 
         if (!$node->exists() || $node->status == 0) {
