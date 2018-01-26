@@ -74,24 +74,24 @@ abstract class Service extends Handler
         return $code;
     }
 
-    protected function parseIdentCode(int $tryCode): int
+    protected function parseIdentCode(int $code): int
     {
         if (!$this->session->identCode) {
             return self::UID_GUEST;
         }
 
-        list($code, $uid, $attempts, $expTime) = $this->session->identCode;
-        if ($attempts > 5 || $expTime < $this->request->timestamp) {
+        $c = $this->session->identCode;
+        if ($c['attempts'] > 5 || $c['expTime'] < $this->request->timestamp) {
             $this->session->identCode = null;
             return self::UID_GUEST;
         }
 
-        if ($tryCode === $code) {
+        if ($code === $c['code']) {
             $this->session->identCode = null;
-            return $uid;
+            return $c['uid'];
         }
 
-        $this->session->identCode['attempts'] = $attempts + 1;
+        $this->session->identCode['attempts'] = $c['attempts'] + 1;
         return self::UID_GUEST;
     }
 

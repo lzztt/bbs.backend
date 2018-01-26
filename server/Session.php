@@ -10,7 +10,7 @@ class Session
     private static $cookieName = 'LZXSID';
     private $isNew = false;
     private $db;
-    private $sid = null;
+    private $sid = '';
     private $uid = 0;
     private $cid = 0;
     private $atime = 0;
