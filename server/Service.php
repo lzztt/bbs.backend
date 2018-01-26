@@ -7,6 +7,7 @@ use lzx\core\Logger;
 use lzx\core\Mailer;
 use lzx\core\Request;
 use lzx\core\Response;
+use lzx\exception\ErrorMessage;
 use lzx\exception\NotFound;
 use lzx\html\Template;
 use site\Config;
@@ -56,7 +57,7 @@ abstract class Service extends Handler
                 : $this->request->json['captcha'];
         if (!$captcha || !$this->session->captcha
                 || strtolower($captcha) !== strtolower($this->session->captcha)) {
-            $this->error('图形验证码错误');
+            throw new ErrorMessage('图形验证码错误');
         }
         unset($this->session->captcha);
     }
