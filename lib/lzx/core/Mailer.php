@@ -58,7 +58,7 @@ class Mailer
 
     public function setSubject(string $subject): void
     {
-        if (!$subject || strlen($subject) > 100 || strpos($subject, "\r") !== false || strpos($subject, "\n") !== false) {
+        if (!$subject || strlen($subject) > 150 || strpos($subject, "\r") !== false || strpos($subject, "\n") !== false) {
             throw new InvalidArgumentException($subject);
         }
         $this->subject = trim($subject);

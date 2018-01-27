@@ -4,6 +4,7 @@ namespace site\handler\api\adpayment;
 
 use lzx\core\Mailer;
 use lzx\exception\Forbidden;
+use lzx\html\Template;
 use site\Service;
 use site\dbobject\Ad;
 use site\dbobject\AdPayment;
