@@ -12,7 +12,7 @@ class Activity extends DBObject
     public $endTime;
     public $status;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'activities', $id, $properties);
     }

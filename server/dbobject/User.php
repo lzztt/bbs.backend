@@ -39,7 +39,7 @@ class User extends DBObject
     public $points;
     public $cid;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'users', $id, $properties);
     }

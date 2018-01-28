@@ -52,7 +52,7 @@ class WebApp extends App
 
         $db = DB::getInstance($this->config->db);
         $this->setupCache($db);
-        $session = Session::getInstance($request->isRobot ? null : $db);
+        $session = Session::getInstance(!$request->isRobot);
         $request->uid = $session->getUserID();
 
         $this->logger->addExtraInfo([
