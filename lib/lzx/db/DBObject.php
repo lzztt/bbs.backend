@@ -25,7 +25,7 @@ abstract class DBObject
     private $bind_values = [];
     private $order = [];
 
-    public function __construct(DB $db, string $table, int $id = 0, string $properties = '')
+    public function __construct(DB $db, string $table, $id = null, string $properties = '')
     {
         $this->properties = array_map(function (ReflectionProperty $prop): string {
             return $prop->getName();
@@ -40,7 +40,7 @@ abstract class DBObject
 
         $this->getFieldsTypeAndPKey();
 
-        if ($id > 0) {
+        if ($id) {
             if (!$this->pkey_property) {
                 throw new Exception('Table does not have primary key. Cannot assign id=' . $id);
             }
