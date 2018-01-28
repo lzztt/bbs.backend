@@ -62,7 +62,7 @@ class Handler extends Service
             }
         } else {
             // guest
-            $uid = $this->parseIdentCode((int) $this->args[0]);
+            $uid = $this->parseIdentCode($this->args[0]);
             if (!$uid) {
                 throw new ErrorMessage('安全验证码错误，请检查使用邮件里的安全验证码');
             }
