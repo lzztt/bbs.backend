@@ -18,7 +18,7 @@ class Node extends DBObject
     public $weight;
     public $status;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'nodes', $id, $properties);
     }

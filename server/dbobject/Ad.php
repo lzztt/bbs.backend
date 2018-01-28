@@ -13,7 +13,7 @@ class Ad extends DBObject
     public $expTime;
     public $email;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'ads', $id, $properties);
     }
