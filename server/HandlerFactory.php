@@ -22,9 +22,7 @@ class HandlerFactory
         if (!$cls) {
             throw new NotFound();
         }
-        $handler = new $cls($req, $response, $config, $logger, $session);
-        $handler->args = $args;
-        return $handler;
+        return new $cls($req, $response, $config, $logger, $session, $args);
     }
 
     private static function getHandlerClassAndArgs(Request $req): array

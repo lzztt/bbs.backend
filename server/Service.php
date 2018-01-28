@@ -27,12 +27,13 @@ abstract class Service extends Handler
     public $args;
     public $session;
 
-    public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
+    public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
     {
         parent::__construct($req, $response, $logger);
         $this->response->type = Response::JSON;
         $this->session = $session;
         $this->config = $config;
+        $this->args = $args;
         $this->staticInit();
     }
 
@@ -62,9 +63,9 @@ abstract class Service extends Handler
         unset($this->session->captcha);
     }
 
-    protected function createIdentCode(int $uid): int
+    protected function createIdentCode(int $uid): string
     {
-        $code = rand(100000, 999999);
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $this->session->identCode = [
             'code' => $code,
             'uid' => $uid,
@@ -74,14 +75,14 @@ abstract class Service extends Handler
         return $code;
     }
 
-    protected function parseIdentCode(int $code): int
+    protected function parseIdentCode(string $code): int
     {
         if (!$this->session->identCode) {
             return self::UID_GUEST;
         }
 
         $c = $this->session->identCode;
-        if ($c['attempts'] > 5 || $c['expTime'] < $this->request->timestamp) {
+        if ($c['attempts'] > 3 || $c['expTime'] < $this->request->timestamp) {
             $this->session->identCode = null;
             return self::UID_GUEST;
         }
