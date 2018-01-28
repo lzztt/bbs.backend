@@ -14,7 +14,7 @@ class Handler extends Service
     // return: uid
     public function get(): void
     {
-        if (empty($this->args) || $this->args[0] != $this->session->getSessionID()) {
+        if (!$this->args || $this->args[0] != $this->session->getSessionID()) {
             $this->json(['sessionID' => $this->session->getSessionID(), 'uid' => 0]);
             return;
         }
@@ -46,7 +46,7 @@ class Handler extends Service
             } else {
                 $this->logger->info('Login Fail: ' . $user->email . ' | ' . $this->request->ip);
                 if ($user->exists()) {
-                    if (empty($user->password)) {
+                    if (!$user->password) {
                         throw new ErrorMessage('用户帐号尚未激活，请使用注册email里的安全验证码来设置初始密码。如有问题请联络网站管理员。');
                     }
 
@@ -68,7 +68,7 @@ class Handler extends Service
     // uri: /api/authentication/<session_id>?action=delete
     public function delete(): void
     {
-        if (empty($this->args) || $this->args[0] != $this->session->getSessionID()) {
+        if (!$this->args || $this->args[0] != $this->session->getSessionID()) {
             throw new Forbidden();
         }
 

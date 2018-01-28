@@ -17,7 +17,8 @@ class Handler extends Service
      */
     public function get(): void
     {
-        if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
+        $this->validateUser();
+        if (!$this->args || !is_numeric($this->args[0])) {
             throw new Forbidden();
         }
 
@@ -44,7 +45,8 @@ class Handler extends Service
      */
     public function post(): void
     {
-        if (!$this->request->uid || empty($this->request->post)) {
+        $this->validateUser();
+        if (!$this->request->post) {
             throw new Forbidden();
         }
 
@@ -66,7 +68,8 @@ class Handler extends Service
      */
     public function delete(): void
     {
-        if (!$this->request->uid || empty($this->args)) {
+        $this->validateUser();
+        if (!$this->args) {
             throw new Forbidden();
         }
 

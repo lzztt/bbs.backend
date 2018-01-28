@@ -18,7 +18,7 @@ abstract class App
         ErrorHandler::register($this->logger, false);
     }
 
-    abstract public function run(int $argc, array $argv): void;
+    abstract public function run(array $args): void;
 
     private static function errorToException(): void
     {

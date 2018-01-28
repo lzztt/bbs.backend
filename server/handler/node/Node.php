@@ -27,7 +27,7 @@ abstract class Node extends Controller
 
         $nodeObj = new NodeObject();
         $tags = $nodeObj->getTags($nid);
-        if (empty($tags)) {
+        if (!$tags) {
             throw new NotFound();
         }
 
