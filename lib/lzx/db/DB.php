@@ -78,7 +78,7 @@ class DB
      */
     public function query(string $sql, array $params = []): array
     {
-        if (empty($params)) {
+        if (!$params) {
             if (!self::$debug) {
                 $statement = $this->db->query($sql, PDO::FETCH_ASSOC);
             } else {

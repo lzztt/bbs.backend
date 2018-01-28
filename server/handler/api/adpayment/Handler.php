@@ -3,7 +3,6 @@
 namespace site\handler\api\adpayment;
 
 use lzx\core\Mailer;
-use lzx\exception\Forbidden;
 use lzx\html\Template;
 use site\Service;
 use site\dbobject\Ad;
@@ -17,9 +16,7 @@ class Handler extends Service
      */
     public function get(): void
     {
-        if ($this->request->uid != 1) {
-            throw new Forbidden();
-        }
+        $this->validateAdmin();
 
         $ad = new Ad();
         $a_month_ago = $this->request->timestamp - 2592000;
@@ -33,9 +30,7 @@ class Handler extends Service
      */
     public function post(): void
     {
-        if ($this->request->uid != 1) {
-            throw new Forbidden();
-        }
+        $this->validateAdmin();
 
         $ad = new Ad();
         $ap = new AdPayment();

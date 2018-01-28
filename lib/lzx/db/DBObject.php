@@ -298,11 +298,11 @@ abstract class DBObject
 
         $props = $this->parseProperties($properties, $this->properties_dirty);
 
-        if (empty($props)) {
+        if (!$props) {
             throw new Exception('updating property set is empty');
         }
 
-        if (empty($this->where)) {
+        if (!$this->where) {
             if ($this->pkey_property && array_key_exists($this->pkey_property, $this->values)) {
                 $this->where($this->pkey_property, $this->values[$this->pkey_property], '=');
             } else {

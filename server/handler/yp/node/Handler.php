@@ -35,7 +35,7 @@ class Handler extends Controller
             throw new ErrorMessage('错误：您不能在该类别中添加黄页，请到它的子类别中添加。');
         }
 
-        if (empty($this->request->post)) {
+        if (!$this->request->post) {
             $ad = new Ad();
             $ad->order('expTime', false);
             $this->var['content'] = new Template('editor_bbcode_yp', ['ads' => $ad->getList('name')]);
