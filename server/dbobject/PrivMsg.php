@@ -14,7 +14,7 @@ class PrivMsg extends DBObject
     public $time;
     public $body;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'priv_msgs', $id, $properties);
     }

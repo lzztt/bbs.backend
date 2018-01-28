@@ -15,7 +15,7 @@ class Tag extends DBObject
     public $root;
     public $weight;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'tags', $id, $properties);
     }

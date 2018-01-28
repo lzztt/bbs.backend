@@ -13,7 +13,7 @@ class AdPayment extends DBObject
     public $time;
     public $comment;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'ad_payments', $id, $properties);
     }

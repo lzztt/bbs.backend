@@ -2,14 +2,12 @@
 
 namespace site;
 
-use Exception;
-use lzx\db\DB;
+use site\dbobject\Session as SessionObj;
 
 class Session
 {
-    private static $cookieName = 'LZXSID';
+    const COOKIE_NAME = 'LZXSID';
     private $isNew = false;
-    private $db;
     private $sid = '';
     private $uid = 0;
     private $cid = 0;
@@ -19,53 +17,46 @@ class Session
     private $cidOriginal = 0;
     private $dataOriginal = [];
 
-    // id is 15 charactors
-    private function __construct(DB $db = null)
+    private function __construct(bool $useDb)
     {
-        if ($db) {
-            if ($_COOKIE[self::$cookieName]) {
-                // client has a session id
-                $this->sid = $_COOKIE[self::$cookieName];
-            } else {
-                // client has no session id
-                $this->startNewSession();
-            }
+        if (!$useDb) {
+            return;
+        }
 
-            $this->db = $db;
+        $this->sid = $_COOKIE[self::COOKIE_NAME];
 
-            if (!$this->isNew) {
-                // load session from database
-                $arr = $db->query('SELECT * FROM sessions WHERE id = :id', [':id' => $this->sid]);
-                if ($arr) {
-                    // validate session's user agent crc checksum
-                    if ($this->crc32() === (int) $arr[0]['crc']) {
-                        // valid agent
-                        $this->uid = (int) $arr[0]['uid'];
-                        $this->cid = (int) $arr[0]['cid'];
-                        $this->atime = (int) $arr[0]['atime'];
+        if(!$this->loadDbSession()) {
+            $this->startNewSession();
+        }
+    }
 
-                        $this->uidOriginal = $this->uid;
-                        $this->cidOriginal = $this->cid;
+    private function loadDbSession(): bool
+    {
+        if (!$this->sid || $this->isNew) {
+            return false;
+        }
 
-                        if ($arr[0]['data']) {
-                            $this->data = json_decode($arr[0]['data'], true);
+        $session = new SessionObj($this->sid);
+        if (!$session->exists() || $this->crc32() !== $session->crc) {
+            return false;
+        }
 
-                            if (is_array($this->data)) {
-                                $this->dataOriginal = $this->data;
-                            } else {
-                                $this->data = [];
-                            }
-                        }
-                    } else {
-                        // invalid agent. this shouldn't happen!!
-                        $this->startNewSession();
-                    }
-                } else {
-                    // no session found in database, start new session
-                    $this->startNewSession();
-                }
+        $this->uid = $session->uid;
+        $this->cid = $session->cid;
+        $this->atime = $session->atime;
+
+        $this->uidOriginal = $this->uid;
+        $this->cidOriginal = $this->cid;
+
+        if ($session->data) {
+            $data = json_decode($session->data, true);
+            if (is_array($data)) {
+                $this->data = $data;
+                $this->dataOriginal = $data;
             }
         }
+
+        return true;
     }
 
     final public function __get(string $key)
@@ -94,14 +85,12 @@ class Session
         }
     }
 
-    public static function getInstance(DB $db = null): Session
+    public static function getInstance(bool $useDb = true): Session
     {
         static $instance;
 
-        if (!isset($instance)) {
-            $instance = new self($db);
-        } else {
-            throw new Exception('Session instance already exists, cannot create a new instance');
+        if (!$instance) {
+            $instance = new self($useDb);
         }
 
         return $instance;
@@ -140,56 +129,63 @@ class Session
 
     public function close(): void
     {
-        if ($this->db) {
-            if ($this->isNew) {
-                // db insert for new session
-                $this->db->query('INSERT INTO sessions VALUES (:id, :data, :atime, :uid, :cid, :crc)', [
-                    ':id' => $this->sid,
-                    ':data' => $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '',
-                    ':atime' => $_SERVER['REQUEST_TIME'],
-                    ':uid' => $this->uid,
-                    ':cid' => $this->cid,
-                    ':crc' => $this->crc32()
-                ]);
-            } else {
-                // db update for existing session
-                $fields = [];
-                $values = [];
+        if (!$this->sid) {
+            return;
+        }
 
-                if ($this->uid != $this->uidOriginal) {
-                    $fields[] = 'uid=:uid';
-                    $values[':uid'] = $this->uid;
-                }
+        if ($this->isNew) {
+            $this->insertDbSession();
+        } else {
+            $this->updateDbSession();
+        }
+    }
 
-                if ($this->cid != $this->cidOriginal) {
-                    $fields[] = 'cid=:cid';
-                    $values[':cid'] = $this->cid;
-                }
+    private function insertDbSession(): void
+    {
+        $session = new SessionObj();
+        $session->id = $this->sid;
+        $session->data = $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
+        $session->atime = (int) $_SERVER['REQUEST_TIME'];
+        $session->uid = $this->uid;
+        $session->cid = $this->cid;
+        $session->crc = $this->crc32();
+        $session->add();
+    }
 
-                if ($this->data != $this->dataOriginal) {
-                    $fields[] = 'data=:data';
-                    $values[':data'] = $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
-                }
+    private function updateDbSession(): void
+    {
+        $update = [];
+        if ($this->uid != $this->uidOriginal) {
+            $update['uid'] = $this->uid;
+        }
 
-                // update access timestamp older than 1 minute
-                $time = (int) $_SERVER['REQUEST_TIME'];
-                if ($time - $this->atime > 60) {
-                    $fields[] = 'atime=:atime';
-                    $values[':atime'] = $time;
-                }
+        if ($this->cid != $this->cidOriginal) {
+            $update['cid'] = $this->cid;
+        }
 
-                if ($fields) {
-                    $sql = 'UPDATE sessions SET ' . implode($fields, ',') . ' WHERE id = "' . $this->sid . '"';
-                    $this->db->query($sql, $values);
-                }
+        if ($this->data != $this->dataOriginal) {
+            $update['data'] = $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
+        }
+
+        $time = (int) $_SERVER['REQUEST_TIME'];
+        if ($time - $this->atime > 600) {
+            $update['atime'] = $time;
+        }
+
+        if ($update) {
+            $session = new SessionObj();
+            $session->id = $this->sid;
+            foreach ($update as $k => $v) {
+                $session->$k = $v;
             }
+            $session->update();
         }
     }
 
     private function startNewSession(): void
     {
         $this->sid = sprintf("%02x", rand(0, 255)) . uniqid();
-        setcookie(self::$cookieName, $this->sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
+        setcookie(self::COOKIE_NAME, $this->sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
         $this->isNew = true;
     }
 
