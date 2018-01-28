@@ -27,11 +27,12 @@ abstract class Controller extends Handler
     public $session;
     protected $var = [];
 
-    public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session)
+    public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
     {
         parent::__construct($req, $response, $logger);
         $this->session = $session;
         $this->config = $config;
+        $this->args = $args;
         $this->staticInit();
 
         // register this controller as an observer of the HTML template
