@@ -12,10 +12,11 @@ class Comment extends DBObject
     public $uid;
     public $tid;
     public $body;
+    public $hash;
     public $createTime;
     public $lastModifiedTime;
 
-    public function __construct(int $id = 0, string $properties = '')
+    public function __construct($id = null, string $properties = '')
     {
         parent::__construct(DB::getInstance(), 'comments', $id, $properties);
     }
