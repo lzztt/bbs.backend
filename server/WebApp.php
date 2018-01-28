@@ -45,7 +45,7 @@ class WebApp extends App
         Template::$theme = $this->config->theme;
     }
 
-    public function run(int $argc = 0, array $argv = []): void
+    public function run(array $args = []): void
     {
         $request = Request::getInstance();
         $this->validateGetParameters($request);

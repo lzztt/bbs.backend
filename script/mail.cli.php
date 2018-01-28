@@ -30,13 +30,13 @@ class MailApp extends App
         $this->logger->setEmail($this->config->webmaster);
     }
 
-    public function run($argc, array $argv)
+    public function run(array $args): void
     {
-        if ($argc != 1 || empty($argv)) {
+        if (!$args) {
             throw new Exception('need the starting user id');
         }
 
-        $uid = $argv[0];
+        $uid = $args[0];
         $db = DB::getInstance($this->config->db, true);
         $users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 550');
         //$users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' AND email NOT LIKE "%@qq.com" LIMIT 550');

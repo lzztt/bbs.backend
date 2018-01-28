@@ -37,9 +37,9 @@ class CronApp extends App
         }
     }
 
-    public function run(int $argc, array $argv = []): void
+    public function run(array $args = []): void
     {
-        $task = strtolower($argv[1]);
+        $task = strtolower($args[1]);
         $func = $this->actions[$task];
 
         // for logger mail subject

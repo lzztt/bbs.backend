@@ -29,7 +29,8 @@ class Handler extends Service
      */
     public function get(): void
     {
-        if (!$this->request->uid || empty($this->args)) {
+        $this->validateUser();
+        if (!$this->args) {
             throw new Forbidden();
         }
 
@@ -54,9 +55,7 @@ class Handler extends Service
      */
     public function post(): void
     {
-        if (!$this->request->uid) {
-            throw new ErrorMessage('您必须先登录，才能发送站内短信');
-        }
+        $this->validateUser();
 
         if (array_key_exists('topicMID', $this->request->post)) {
             $this->request->post['topicMid'] = $this->request->post['topicMID'];
@@ -152,7 +151,8 @@ class Handler extends Service
      */
     public function delete(): void
     {
-        if (!$this->request->uid || empty($this->args)) {
+        $this->validateUser();
+        if (!$this->args) {
             throw new Forbidden();
         }
 
@@ -183,12 +183,12 @@ class Handler extends Service
         if ($mid > 0) {
             $pm = new PrivMsg();
             $msgs = $pm->getPMConversation($mid, $this->request->uid);
-            if (empty($msgs)) {
+            if (!$msgs) {
                 throw new ErrorMessage('错误：该条短信不存在。');
             }
 
             foreach ($msgs as $i => $m) {
-                if (empty($m['avatar'])) {
+                if (!$m['avatar']) {
                     $msgs[$i]['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
             }

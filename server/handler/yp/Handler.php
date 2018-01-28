@@ -56,7 +56,7 @@ class Handler extends Controller
             'cateDescription' => $tag->description,
             'breadcrumb' => Template::breadcrumb($breadcrumb),
             'pager' => $pager,
-            'nodes' => (empty($nodes) ? null : $nodes),
+            'nodes' => ($nodes ? $nodes : null),
             'ajaxURI' => '/api/viewcount/' . implode(',', $nids)
         ];
         $this->var['content'] = new Template('yp_list', $contents);

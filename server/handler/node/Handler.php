@@ -139,7 +139,7 @@ class Handler extends Node
             if (!$authorPanel) {
                 $info['joinTime'] = date('m/d/Y', (int) $info['join_time']);
                 $info['sex'] = isset($info['sex']) ? ($info['sex'] == 1 ? '男' : '女') : '未知';
-                if (empty($info['avatar'])) {
+                if (!$info['avatar']) {
                     $info['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
                 $info['city'] = $info['access_ip'] ? self::getLocationFromIp($info['access_ip'], false) : 'N/A';
