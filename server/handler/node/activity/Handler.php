@@ -44,7 +44,7 @@ class Handler extends Node
             throw new ErrorMessage('错误：您只能将自己发表的帖子发布为活动。');
         }
 
-        if (empty($this->request->post)) {
+        if (!$this->request->post) {
             // display pm edit form
             $tags = $node->getTags($nid);
             $breadcrumb = [];

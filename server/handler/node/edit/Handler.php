@@ -93,7 +93,7 @@ class Handler extends Node
             throw new Forbidden();
         }
 
-        if (empty($this->request->post)) {
+        if (!$this->request->post) {
             // display edit interface
             $nodeObj = new NodeObject();
             $contents = $nodeObj->getYellowPageNode($nid);

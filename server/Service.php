@@ -8,6 +8,7 @@ use lzx\core\Mailer;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use lzx\exception\NotFound;
 use lzx\html\Template;
 use site\Config;
@@ -49,6 +50,20 @@ abstract class Service extends Handler
             throw new NotFound();
         }
         $this->$action();
+    }
+
+    protected function validateUser(): void
+    {
+        if ($this->request->uid === self::UID_GUEST) {
+            throw new ErrorMessage('请先登陆');
+        }
+    }
+
+    protected function validateAdmin(): void
+    {
+        if ($this->request->uid !== self::UID_ADMIN) {
+            throw new Forbidden();
+        }
     }
 
     protected function validateCaptcha(): void

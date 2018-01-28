@@ -4,7 +4,6 @@ namespace site\handler\api\report;
 
 use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
-use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\Comment;
 use site\dbobject\Node;
@@ -15,9 +14,7 @@ class Handler extends Service
 {
     public function post(): void
     {
-        if (!$this->request->uid) {
-            throw new Forbidden();
-        }
+        $this->validateUser();
 
         $uid = (int) $this->request->post['uid'];
         $nid = (int) $this->request->post['nid'];

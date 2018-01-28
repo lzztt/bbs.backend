@@ -16,7 +16,8 @@ class Handler extends Service
      */
     public function get(): void
     {
-        if (!$this->request->uid || empty($this->args) || !is_numeric($this->args[0])) {
+        $this->validateUser();
+        if (!$this->args || !is_numeric($this->args[0])) {
             throw new Forbidden();
         }
 
@@ -48,7 +49,7 @@ class Handler extends Service
      */
     public function put(): void
     {
-        if (empty($this->args) || !is_numeric($this->args[0])) {
+        if (!$this->args || !is_numeric($this->args[0])) {
             throw new Forbidden();
         }
 
@@ -158,7 +159,7 @@ class Handler extends Service
         $this->validateCaptcha();
 
         // check username and email first
-        if (empty($this->request->json['username'])) {
+        if (!$this->request->json['username']) {
             throw new ErrorMessage('请填写用户名');
         } else {
             $username = strtolower($this->request->json['username']);
@@ -217,7 +218,8 @@ class Handler extends Service
      */
     public function delete(): void
     {
-        if ($this->request->uid != 1 || empty($this->args) || !is_numeric($this->args[0])) {
+        $this->validateAdmin();
+        if (!$this->args || !is_numeric($this->args[0])) {
             throw new Forbidden();
         }
 

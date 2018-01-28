@@ -15,7 +15,7 @@ class Handler extends Node
         list($nid, $type) = $this->getNodeType();
         $uri = $type === self::FORUM_TOPIC ? '/forum/' : '/yp/';
 
-        if (empty($this->args)) {
+        if (!$this->args) {
             throw new ErrorMessage('no tag id specified');
         }
 

@@ -98,7 +98,7 @@ class Handler extends Forum
             'boardDescription' => $tagRoot[$tid]['description'],
             'breadcrumb' => Template::breadcrumb($breadcrumb),
             'pager' => $pager,
-            'nodes' => (empty($nodes) ? null : $nodes),
+            'nodes' => ($nodes ? $nodes : null),
             'editor' => $editor,
             'ajaxURI' => '/api/viewcount/' . implode(',', $nids)
         ];

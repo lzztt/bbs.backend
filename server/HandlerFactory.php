@@ -33,7 +33,7 @@ class HandlerFactory
             return !is_numeric($value);
         });
 
-        if (empty($keys)) {
+        if (!$keys) {
             $keys[] = 'home';
         }
 

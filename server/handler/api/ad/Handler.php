@@ -2,7 +2,6 @@
 
 namespace site\handler\api\ad;
 
-use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\Ad;
 
@@ -15,9 +14,7 @@ class Handler extends Service
      */
     public function get(): void
     {
-        if ($this->request->uid != 1) {
-            throw new Forbidden();
-        }
+        $this->validateAdmin();
 
         $ad = new Ad();
 
@@ -39,9 +36,7 @@ class Handler extends Service
      */
     public function post(): void
     {
-        if ($this->request->uid != 1) {
-            throw new Forbidden();
-        }
+        $this->validateAdmin();
 
         $ad = new Ad();
 
