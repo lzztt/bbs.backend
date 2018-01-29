@@ -59,7 +59,7 @@ class Handler extends Service
 
         $u->addBookmark($nid);
 
-        $this->json(null);
+        $this->json();
     }
 
     /**
@@ -86,6 +86,6 @@ class Handler extends Service
             $u->deleteBookmark($nid);
         }
 
-        $this->json(null);
+        $this->json();
     }
 }

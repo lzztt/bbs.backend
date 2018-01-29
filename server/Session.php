@@ -97,27 +97,27 @@ class Session
         return $instance;
     }
 
-    public function getSessionID(): string
+    public function getSessionId(): string
     {
         return $this->sid;
     }
 
-    public function getCityID(): int
+    public function getCityId(): int
     {
         return $this->cid;
     }
 
-    public function setCityID(int $cid): void
+    public function setCityId(int $cid): void
     {
         $this->cid = $cid;
     }
 
-    public function getUserID(): int
+    public function getUserId(): int
     {
         return $this->uid;
     }
 
-    public function setUserID(int $uid): void
+    public function setUserId(int $uid): void
     {
         $this->uid = $uid;
     }
