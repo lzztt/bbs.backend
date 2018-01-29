@@ -7,6 +7,7 @@ use site\dbobject\Session as SessionObj;
 class Session
 {
     const COOKIE_NAME = 'LZXSID';
+    const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
     private $isNew = false;
     private $sid = '';
     private $uid = 0;
@@ -144,7 +145,7 @@ class Session
     {
         $session = new SessionObj();
         $session->id = $this->sid;
-        $session->data = $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
+        $session->data = $this->data ? json_encode($this->data, self::JSON_OPTIONS) : '';
         $session->atime = (int) $_SERVER['REQUEST_TIME'];
         $session->uid = $this->uid;
         $session->cid = $this->cid;
@@ -164,7 +165,7 @@ class Session
         }
 
         if ($this->data != $this->dataOriginal) {
-            $update['data'] = $this->data ? json_encode($this->data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
+            $update['data'] = $this->data ? json_encode($this->data, self::JSON_OPTIONS) : '';
         }
 
         $time = (int) $_SERVER['REQUEST_TIME'];
