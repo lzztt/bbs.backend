@@ -53,7 +53,7 @@ class WebApp extends App
         $db = DB::getInstance($this->config->db);
         $this->setupCache($db);
         $session = Session::getInstance(!$request->isRobot);
-        $request->uid = $session->getUserID();
+        $request->uid = $session->getUserId();
 
         $this->logger->addExtraInfo([
             'user' => 'https://www.houstonbbs.com/app/user/' . $request->uid,

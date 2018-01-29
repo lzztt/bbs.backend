@@ -108,6 +108,6 @@ class Handler extends Service
             }
         }
 
-        $this->json(null);
+        $this->json();
     }
 }
