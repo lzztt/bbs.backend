@@ -80,14 +80,23 @@ abstract class DBObject
         throw new Exception('unknown property: ' . $prop);
     }
 
-    public function __isset(string $prop)
+    public function fromArray(array $data): void
     {
-        throw new Exception('unknown property: ' . $prop);
-    }
+        foreach ($data as $k => $v) {
+            if (in_array($k, $this->properties)) {
+                $this->$k = $v;
+                continue;
+            }
 
-    public function __unset(string $prop)
-    {
-        throw new Exception('unknown property: ' . $prop);
+            $p = array_search($k, $this->fields);
+            if ($p) {
+                $this->$p = $v;
+                continue;
+            }
+
+            throw new Exception('failed to load key: ' . $k);
+        }
+        $this->sync();
     }
 
     public function toArray(): array

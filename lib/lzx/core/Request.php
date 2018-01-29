@@ -8,11 +8,12 @@ class Request
 {
     public $domain;
     public $ip;
+    public $method;
     public $uri;
     public $referer;
-    public $post;
-    public $get;
-    public $json;
+    public $get = [];
+    public $post = [];
+    public $json = null;
     public $uid;
     public $timestamp;
     public $isRobot;
@@ -25,13 +26,16 @@ class Request
         $params = $this->req->getServerParams();
         $this->domain = $params['SERVER_NAME'];
         $this->ip = $params['REMOTE_ADDR'];
+        $this->method = strtolower($this->req->getMethod());
         $this->uri = strtolower($params['REQUEST_URI']);
 
         $this->timestamp = (int) $params['REQUEST_TIME'];
 
-        $this->post = self::escapeArray($this->req->getParsedBody());
         $this->get = self::escapeArray($this->req->getQueryParams());
-        $this->json = json_decode((string) $this->req->getBody(), true);
+        if ($this->method === 'post') {
+            $this->post = self::escapeArray($this->req->getParsedBody());
+            $this->json = json_decode((string) $this->req->getBody(), true);
+        }
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
         $this->referer = sizeof($arr) > 1 ? $arr[1] : null;
