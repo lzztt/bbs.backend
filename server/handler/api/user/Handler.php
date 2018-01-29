@@ -145,7 +145,7 @@ class Handler extends Service
 
         $u->update();
 
-        $this->json(null);
+        $this->json();
 
         $this->getIndependentCache('ap' . $u->id)->delete();
     }
@@ -209,7 +209,7 @@ class Handler extends Service
         if ($this->sendIdentCode($user) === false) {
             throw new ErrorMessage('sending email error: ' . $user->email);
         } else {
-            $this->json(null);
+            $this->json();
         }
     }
 
@@ -231,7 +231,7 @@ class Handler extends Service
         }
 
         $this->deleteUser($uid);
-        $this->json(null);
+        $this->json();
     }
 
     private function isBot(string $m): bool

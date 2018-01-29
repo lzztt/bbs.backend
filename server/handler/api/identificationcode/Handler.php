@@ -37,7 +37,7 @@ class Handler extends Service
             if ($this->sendIdentCode($user) === false) {
                 throw new ErrorMessage('sending email error: ' . $user->email);
             } else {
-                $this->json(null);
+                $this->json();
             }
         } else {
             throw new ErrorMessage('你输入的用户名不存在');
