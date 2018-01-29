@@ -497,7 +497,7 @@ abstract class DBObject
         static $fields = [];
         static $int_type = ['int', 'bool'];
         static $float_type = ['float', 'double', 'real'];
-        static $text_type = ['char', 'text', 'binary', 'blob', 'date', 'time', 'year'];
+        static $text_type = ['char', 'text', 'binary', 'blob', 'date', 'time', 'year', 'enum'];
 
         if (array_key_exists($this->table, $fields)) {
             $this->fields_type = $fields[$this->table]['types'];
