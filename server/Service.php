@@ -22,9 +22,11 @@ abstract class Service extends Handler
 
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
-    const ACTIONS = ['get', 'post', 'put', 'delete'];
+    const ALTER_METHODS = [
+        'get' => 'delete',
+        'post' => 'put',
+    ];
 
-    public $action;
     public $args;
     public $session;
 
@@ -40,16 +42,23 @@ abstract class Service extends Handler
 
     public function run(): void
     {
-        if (array_key_exists('action', $this->request->get)
-                && in_array($this->request->get['action'], self::ACTIONS)) {
-            $action = $this->request->get['action'];
-        } else {
-            $action = ($this->request->post || $this->request->json) ? 'post' : 'get';
+        $method = $this->request->method;
+        if (array_key_exists('action', $this->request->get)) {
+            switch ($this->request->get['action']) {
+                case $method:
+                    break;
+                case self::ALTER_METHODS[$method]:
+                    $method = self::ALTER_METHODS[$method];
+                    break;
+                default:
+                    throw new NotFound();
+            }
         }
-        if (!method_exists($this, $action)) {
+
+        if (!method_exists($this, $method)) {
             throw new NotFound();
         }
-        $this->$action();
+        $this->$method();
     }
 
     protected function validateUser(): void
