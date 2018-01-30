@@ -106,7 +106,7 @@ abstract class Service extends Handler
         }
 
         $c = $this->session->identCode;
-        if ($c['attempts'] > 3 || $c['expTime'] < $this->request->timestamp) {
+        if ($c['attempts'] > 2 || $c['expTime'] < $this->request->timestamp) {
             $this->session->identCode = null;
             return self::UID_GUEST;
         }
@@ -116,7 +116,8 @@ abstract class Service extends Handler
             return $c['uid'];
         }
 
-        $this->session->identCode['attempts'] = $c['attempts'] + 1;
+        $c['attempts'] += 1;
+        $this->session->identCode = $c;
         return self::UID_GUEST;
     }
 
