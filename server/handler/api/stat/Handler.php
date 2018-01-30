@@ -39,13 +39,13 @@ class Handler extends Service
 
     private function getAlexa(string $city): string
     {
-        $data = self::curlGet('http://data.alexa.com/data?cli=10&dat=s&url=http://www.' . $city . 'bbs.com');
+        $data = self::curlGet('http://data.alexa.com/data?cli=10&dat=s&url=' . $city . 'bbs.com');
 
         if ($data) {
             preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $data, $p);
             if ($p[2]) {
                 $rank = number_format(intval($p[2]));
-                return ucfirst($city) . 'BBS最近三个月平均访问量<a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">Alexa排名</a>:<br><a href="http://www.alexa.com/data/details/main?url=http://www.' . $city . 'bbs.com">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
+                return ucfirst($city) . 'BBS最近三个月平均访问量<a href="https://www.alexa.com/siteinfo/' . $city . 'bbs.com">Alexa排名</a>:<br><a href="https://www.alexa.com/siteinfo/' . $city . 'bbs.com">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
             }
         }
 
