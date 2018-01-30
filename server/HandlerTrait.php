@@ -41,8 +41,8 @@ trait HandlerTrait
         self::$city->uriName = $site;
         self::$city->load();
         if (self::$city->exists()) {
-            if (self::$city->id != $this->session->getCityId()) {
-                $this->session->setCityId(self::$city->id);
+            if (self::$city->id != $this->session->get('cid')) {
+                $this->session->set('cid', self::$city->id);
             }
         } else {
             $this->error('unsupported website: ' . $this->request->domain);

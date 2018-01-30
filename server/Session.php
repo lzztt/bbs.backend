@@ -8,6 +8,14 @@ class Session
 {
     const SID_NAME = 'LZXSID';
     const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+    const DEFAULT_DATA = [
+        'id' => '',
+        'data' => [],
+        'uid' => 0,
+        'cid' => 0,
+        'atime' => 0,
+        'crc' => 0,
+    ];
 
     private $crc;
     private $current = [];
@@ -27,12 +35,7 @@ class Session
     private function __construct(bool $useDb)
     {
         if (!$useDb) {
-            $this->current = [
-                'id' => '',
-                'data' => [],
-                'uid' => 0,
-                'cid' => 0,
-            ];
+            $this->current = self::DEFAULT_DATA;
             return;
         }
 
@@ -66,14 +69,11 @@ class Session
 
     private function startNewSession(): void
     {
-        $this->current = [
+        $this->current = array_merge(self::DEFAULT_DATA, [
             'id' => bin2hex(random_bytes(8)),
-            'data' => [],
-            'uid' => 0,
-            'cid' => 0,
             'atime' => (int) $_SERVER['REQUEST_TIME'],
             'crc' => $this->crc,
-        ];
+        ]);
 
         setcookie(self::SID_NAME, $this->current['id'], ($this->current['atime'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
     }
@@ -93,53 +93,32 @@ class Session
         return is_array($array) ? $array : [];
     }
 
-    final public function __get(string $name)
+    final public function get(string $name)
     {
+        if (in_array($name, ['uid', 'cid'])) {
+            return $this->current[$name];
+        }
+
         return $this->current['data'][$name];
     }
 
-    final public function __set(string $name, $value)
+    final public function set(string $name, $value): void
     {
+        if (in_array($name, ['uid', 'cid'])) {
+            $this->current[$name] = (int) $value;
+            return;
+        }
+
         if (is_null($value)) {
-            unset($this->$name);
+            unset($this->current['data'][$name]);
         } else {
             $this->current['data'][$name] = $value;
         }
     }
 
-    final public function __isset(string $name)
-    {
-        return isset($this->current['data'][$name]);
-    }
-
-    final public function __unset(string $name)
-    {
-        unset($this->current['data'][$name]);
-    }
-
-    public function getSessionId(): string
+    public function id(): string
     {
         return $this->current['id'];
-    }
-
-    public function getCityId(): int
-    {
-        return $this->current['cid'];
-    }
-
-    public function setCityId(int $cid): void
-    {
-        $this->current['cid'] = $cid;
-    }
-
-    public function getUserId(): int
-    {
-        return $this->current['uid'];
-    }
-
-    public function setUserId(int $uid): void
-    {
-        $this->current['uid'] = $uid;
     }
 
     public function clear(): void
