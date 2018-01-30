@@ -10,7 +10,6 @@ use lzx\exception\Forbidden;
 use site\Config;
 use site\Service;
 
-
 class Handler extends Service
 {
     public function get(): void
@@ -20,7 +19,7 @@ class Handler extends Service
         }
 
         $code = substr(str_shuffle('aABCdEeFfGHKLMmNPRSTWXY23456789'), -5);
-        $this->session->captcha = $code;
+        $this->session->set('captcha', $code);
 
         $this->response->type = Response::JPEG;
         $this->response->setContent(self::generateImage(str_split($code), 'jpeg'));
