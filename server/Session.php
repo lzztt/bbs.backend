@@ -100,7 +100,11 @@ class Session
 
     final public function __set(string $name, $value)
     {
-        $this->current['data'][$name] = $value;
+        if (is_null($value)) {
+            unset($this->$name);
+        } else {
+            $this->current['data'][$name] = $value;
+        }
     }
 
     final public function __isset(string $name)
