@@ -14,16 +14,16 @@ class Handler extends Service
     // return: uid
     public function get(): void
     {
-        if (!$this->args || $this->args[0] != $this->session->getSessionId()) {
-            $this->json(['sessionID' => $this->session->getSessionId(), 'uid' => 0]);
+        if (!$this->args || $this->args[0] != $this->session->id()) {
+            $this->json(['sessionID' => $this->session->id(), 'uid' => 0]);
             return;
         }
 
         if ($this->request->uid) {
             $user = new User($this->request->uid, 'username');
-            $this->json(['sessionID' => $this->session->getSessionId(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
+            $this->json(['sessionID' => $this->session->id(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
         } else {
-            $this->json(['sessionID' => $this->session->getSessionId(), 'uid' => 0]);
+            $this->json(['sessionID' => $this->session->id(), 'uid' => 0]);
         }
     }
 
@@ -40,8 +40,8 @@ class Handler extends Service
             $loggedIn = $user->loginWithEmail($this->request->post['email'], $this->request->post['password']);
 
             if ($loggedIn) {
-                $this->session->setUserId($user->id);
-                $this->json(['sessionID' => $this->session->getSessionId(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
+                $this->session->set('uid', $user->id);
+                $this->json(['sessionID' => $this->session->id(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
                 return;
             } else {
                 $this->logger->info('Login Fail: ' . $user->email . ' | ' . $this->request->ip);
@@ -68,7 +68,7 @@ class Handler extends Service
     // uri: /api/authentication/<session_id>?action=delete
     public function delete(): void
     {
-        if (!$this->args || $this->args[0] != $this->session->getSessionId()) {
+        if (!$this->args || $this->args[0] != $this->session->id()) {
             throw new Forbidden();
         }
 
