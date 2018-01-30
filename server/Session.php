@@ -6,85 +6,12 @@ use site\dbobject\Session as SessionObj;
 
 class Session
 {
-    const COOKIE_NAME = 'LZXSID';
+    const SID_NAME = 'LZXSID';
     const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
-    private $isNew = false;
-    private $sid = '';
-    private $uid = 0;
-    private $cid = 0;
-    private $atime = 0;
-    private $data = [];
-    private $uidOriginal = 0;
-    private $cidOriginal = 0;
-    private $dataOriginal = [];
 
-    private function __construct(bool $useDb)
-    {
-        if (!$useDb) {
-            return;
-        }
-
-        $this->sid = $_COOKIE[self::COOKIE_NAME];
-
-        if(!$this->loadDbSession()) {
-            $this->startNewSession();
-        }
-    }
-
-    private function loadDbSession(): bool
-    {
-        if (!$this->sid || $this->isNew) {
-            return false;
-        }
-
-        $session = new SessionObj($this->sid);
-        if (!$session->exists() || $this->crc32() !== $session->crc) {
-            return false;
-        }
-
-        $this->uid = $session->uid;
-        $this->cid = $session->cid;
-        $this->atime = $session->atime;
-
-        $this->uidOriginal = $this->uid;
-        $this->cidOriginal = $this->cid;
-
-        if ($session->data) {
-            $data = json_decode($session->data, true);
-            if (is_array($data)) {
-                $this->data = $data;
-                $this->dataOriginal = $data;
-            }
-        }
-
-        return true;
-    }
-
-    final public function __get(string $key)
-    {
-        return array_key_exists($key, $this->data) ? $this->data[$key] : null;
-    }
-
-    final public function __set(string $key, $val)
-    {
-        if (is_null($val)) {
-            unset($this->$key);
-        } else {
-            $this->data[$key] = $val;
-        }
-    }
-
-    final public function __isset(string $key)
-    {
-        return array_key_exists($key, $this->data) ? isset($this->data[$key]) : false;
-    }
-
-    final public function __unset(string $key)
-    {
-        if (array_key_exists($key, $this->data)) {
-            unset($this->data[$key]);
-        }
-    }
+    private $crc;
+    private $current = [];
+    private $original = [];
 
     public static function getInstance(bool $useDb = true): Session
     {
@@ -97,44 +24,133 @@ class Session
         return $instance;
     }
 
+    private function __construct(bool $useDb)
+    {
+        if (!$useDb) {
+            $this->current = [
+                'id' => '',
+                'data' => [],
+                'uid' => 0,
+                'cid' => 0,
+            ];
+            return;
+        }
+
+        $this->crc = crc32($_SERVER['HTTP_USER_AGENT']);
+        if (!$this->loadDbSession()) {
+            $this->startNewSession();
+        }
+    }
+
+    private function loadDbSession(): bool
+    {
+        $sid = $_COOKIE[self::SID_NAME];
+
+        if (!$sid) {
+            return false;
+        }
+
+        $session = new SessionObj($sid);
+        if (!$session->exists() || $this->crc !== $session->crc) {
+            return false;
+        }
+
+        $this->original = $session->toArray();
+        $this->original['data'] = self::decodeData($session->data);
+
+        $this->current = $this->original;
+        $this->current['atime'] = (int) $_SERVER['REQUEST_TIME'];
+
+        return true;
+    }
+
+    private function startNewSession(): void
+    {
+        $this->current = [
+            'id' => bin2hex(random_bytes(8)),
+            'data' => [],
+            'uid' => 0,
+            'cid' => 0,
+            'atime' => (int) $_SERVER['REQUEST_TIME'],
+            'crc' => $this->crc,
+        ];
+
+        setcookie(self::SID_NAME, $this->current['id'], ($this->current['atime'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
+    }
+
+    private static function encodeData(array $data): string
+    {
+        return $data ? json_encode($data, self::JSON_OPTIONS) : '';
+    }
+
+    private static function decodeData(string $data): array
+    {
+        if (!$data) {
+            return [];
+        }
+
+        $array = json_decode($data, true);
+        return is_array($array) ? $array : [];
+    }
+
+    final public function __get(string $name)
+    {
+        return $this->current['data'][$name];
+    }
+
+    final public function __set(string $name, $value)
+    {
+        $this->current['data'][$name] = $value;
+    }
+
+    final public function __isset(string $name)
+    {
+        return isset($this->current['data'][$name]);
+    }
+
+    final public function __unset(string $name)
+    {
+        unset($this->current['data'][$name]);
+    }
+
     public function getSessionId(): string
     {
-        return $this->sid;
+        return $this->current['id'];
     }
 
     public function getCityId(): int
     {
-        return $this->cid;
+        return $this->current['cid'];
     }
 
     public function setCityId(int $cid): void
     {
-        $this->cid = $cid;
+        $this->current['cid'] = $cid;
     }
 
     public function getUserId(): int
     {
-        return $this->uid;
+        return $this->current['uid'];
     }
 
     public function setUserId(int $uid): void
     {
-        $this->uid = $uid;
+        $this->current['uid'] = $uid;
     }
 
     public function clear(): void
     {
-        $this->uid = 0;
-        $this->data = [];
+        $this->current['uid'] = 0;
+        $this->current['data'] = [];
     }
 
     public function close(): void
     {
-        if (!$this->sid) {
+        if (!$this->current['id']) {
             return;
         }
 
-        if ($this->isNew) {
+        if ($this->current['id'] !== $this->original['id']) {
             $this->insertDbSession();
         } else {
             $this->updateDbSession();
@@ -144,54 +160,33 @@ class Session
     private function insertDbSession(): void
     {
         $session = new SessionObj();
-        $session->id = $this->sid;
-        $session->data = $this->data ? json_encode($this->data, self::JSON_OPTIONS) : '';
-        $session->atime = (int) $_SERVER['REQUEST_TIME'];
-        $session->uid = $this->uid;
-        $session->cid = $this->cid;
-        $session->crc = $this->crc32();
+        $insert = $this->current;
+        $insert['data'] = self::encodeData($this->current['data']);
+        $session->fromArray($insert);
         $session->add();
     }
 
     private function updateDbSession(): void
     {
         $update = [];
-        if ($this->uid != $this->uidOriginal) {
-            $update['uid'] = $this->uid;
+        if ($this->current['uid'] !== $this->original['uid']) {
+            $update['uid'] = $this->current['uid'];
         }
-
-        if ($this->cid != $this->cidOriginal) {
-            $update['cid'] = $this->cid;
+        if ($this->current['cid'] !== $this->original['cid']) {
+            $update['cid'] = $this->current['cid'];
         }
-
-        if ($this->data != $this->dataOriginal) {
-            $update['data'] = $this->data ? json_encode($this->data, self::JSON_OPTIONS) : '';
+        if ($this->current['data'] !== $this->original['data']) {
+            $update['data'] = self::encodeData($this->current['data']);
         }
-
-        $time = (int) $_SERVER['REQUEST_TIME'];
-        if ($time - $this->atime > 600) {
-            $update['atime'] = $time;
+        if ($this->current['atime'] - $this->original['atime'] > 600) {
+            $update['atime'] = $this->current['atime'];
         }
 
         if ($update) {
             $session = new SessionObj();
-            $session->id = $this->sid;
-            foreach ($update as $k => $v) {
-                $session->$k = $v;
-            }
+            $session->id = $this->current['id'];
+            $session->fromArray($update);
             $session->update();
         }
-    }
-
-    private function startNewSession(): void
-    {
-        $this->sid = sprintf("%02x", rand(0, 255)) . uniqid();
-        setcookie(self::COOKIE_NAME, $this->sid, ((int) $_SERVER['REQUEST_TIME'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
-        $this->isNew = true;
-    }
-
-    private function crc32(): int
-    {
-        return crc32($_SERVER['HTTP_USER_AGENT'] . $this->sid);
     }
 }
