@@ -77,47 +77,47 @@ abstract class Service extends Handler
 
     protected function validateCaptcha(): void
     {
-        $captcha = $this->request->post['captcha']
-                ? $this->request->post['captcha']
-                : $this->request->json['captcha'];
-        if (!$captcha || !$this->session->captcha
-                || strtolower($captcha) !== strtolower($this->session->captcha)) {
+        $input = $this->request->post['captcha']
+               ? $this->request->post['captcha']
+               : $this->request->json['captcha'];
+        $captcha = $this->session->get('captcha');
+        if (!$input || !$captcha || strtolower($input) !== strtolower($captcha)) {
             throw new ErrorMessage('图形验证码错误');
         }
-        unset($this->session->captcha);
+        $this->session->set('captcha', null);
     }
 
     protected function createIdentCode(int $uid): string
     {
         $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $this->session->identCode = [
+        $this->session->set('identCode', [
             'code' => $code,
             'uid' => $uid,
             'attempts' => 0,
             'expTime' => $this->request->timestamp + 600
-        ];
+        ]);
         return $code;
     }
 
     protected function parseIdentCode(string $code): int
     {
-        if (!$this->session->identCode) {
+        $c = $this->session->get('identCode');
+        if (!$c) {
             return self::UID_GUEST;
         }
 
-        $c = $this->session->identCode;
         if ($c['attempts'] > 2 || $c['expTime'] < $this->request->timestamp) {
-            $this->session->identCode = null;
+            $this->session->set('identCode', null);
             return self::UID_GUEST;
         }
 
         if ($code === $c['code']) {
-            $this->session->identCode = null;
+            $this->session->set('identCode', null);
             return $c['uid'];
         }
 
         $c['attempts'] += 1;
-        $this->session->identCode = $c;
+        $this->session->set('identCode', $c);
         return self::UID_GUEST;
     }
 
