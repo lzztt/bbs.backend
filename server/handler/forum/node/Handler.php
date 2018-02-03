@@ -32,10 +32,10 @@ class Handler extends Forum
 
     public function createTopic(int $tid): void
     {
-        if (!$this->request->post['body']
-                || !$this->request->post['title']
-                || strlen($this->request->post['body']) < 5
-                || strlen($this->request->post['title']) < 5) {
+        if (!$this->request->data['body']
+                || !$this->request->data['title']
+                || strlen($this->request->data['body']) < 5
+                || strlen($this->request->data['title']) < 5) {
             throw new ErrorMessage('Topic title or body is too short.');
         }
 
@@ -45,7 +45,7 @@ class Handler extends Forum
             $node = new Node();
             $node->tid = $tid;
             $node->uid = $this->request->uid;
-            $node->title = $this->request->post['title'];
+            $node->title = $this->request->data['title'];
             $node->createTime = $this->request->timestamp;
             $node->status = 1;
             $node->add();
@@ -54,18 +54,18 @@ class Handler extends Forum
             $comment->nid = $node->id;
             $comment->tid = $tid;
             $comment->uid = $this->request->uid;
-            $comment->body = $this->request->post['body'];
+            $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();
         } catch (Exception $e) {
-            $this->logger->warn($e->getMessage(), ['post' => $this->request->post]);
+            $this->logger->warn($e->getMessage(), ['post' => $this->request->data]);
             throw new ErrorMessage($e->getMessage());
         }
 
-        if ($this->request->post['files']) {
+        if ($this->request->data['files']) {
             $file = new Image();
             $file->cityId = self::$city->id;
-            $file->updateFileList($this->request->post['files'], $this->config->path['file'], $node->id, $comment->id);
+            $file->updateFileList($this->request->data['files'], $this->config->path['file'], $node->id, $comment->id);
             $this->getCacheEvent('ImageUpdate')->trigger();
         }
 

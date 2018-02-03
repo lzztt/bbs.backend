@@ -22,10 +22,7 @@ abstract class Service extends Handler
 
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
-    const ALTER_METHODS = [
-        'get' => 'delete',
-        'post' => 'put',
-    ];
+    const METHODS = ['get', 'post', 'put', 'delete'];
 
     public $args;
     public $session;
@@ -43,19 +40,12 @@ abstract class Service extends Handler
     public function run(): void
     {
         $method = $this->request->method;
-        if (array_key_exists('action', $this->request->get)) {
-            switch ($this->request->get['action']) {
-                case $method:
-                    break;
-                case self::ALTER_METHODS[$method]:
-                    $method = self::ALTER_METHODS[$method];
-                    break;
-                default:
-                    throw new NotFound();
-            }
+        if (array_key_exists('action', $this->request->data)) {
+            $method = $this->request->data['action'];
+            unset($this->request->data['action']);
         }
 
-        if (!method_exists($this, $method)) {
+        if (!in_array($method, self::METHODS) || !method_exists($this, $method)) {
             throw new NotFound();
         }
         $this->$method();
@@ -77,9 +67,7 @@ abstract class Service extends Handler
 
     protected function validateCaptcha(): void
     {
-        $input = $this->request->post['captcha']
-               ? $this->request->post['captcha']
-               : $this->request->json['captcha'];
+        $input = $this->request->data['captcha'];
         $captcha = $this->session->get('captcha');
         if (!$input || !$captcha || strtolower($input) !== strtolower($captcha)) {
             throw new ErrorMessage('图形验证码错误');

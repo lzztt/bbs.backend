@@ -9,7 +9,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        $code = $this->request->get['c'];
+        $code = $this->request->data['c'];
         if ($code) {
             list($email, $uid) = User::decodeEmail($code);
             $this->var['content'] = $email . ' has been unsubscribed.';

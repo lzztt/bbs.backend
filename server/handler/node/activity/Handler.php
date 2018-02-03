@@ -44,7 +44,7 @@ class Handler extends Node
             throw new ErrorMessage('错误：您只能将自己发表的帖子发布为活动。');
         }
 
-        if (!$this->request->post) {
+        if (!$this->request->data) {
             // display pm edit form
             $tags = $node->getTags($nid);
             $breadcrumb = [];
@@ -59,8 +59,8 @@ class Handler extends Node
             ];
             $this->var['content'] = new Template('activity_create', $content);
         } else {
-            $startTime = strtotime($this->request->post['start_time']);
-            $endTime = strtotime($this->request->post['end_time']);
+            $startTime = strtotime($this->request->data['start_time']);
+            $endTime = strtotime($this->request->data['end_time']);
 
             if ($startTime < $this->request->timestamp || $endTime < $this->request->timestamp) {
                 throw new ErrorMessage('错误：活动开始时间或结束时间为过去的时间，不能发布为未来60天内的活动。');

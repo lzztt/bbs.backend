@@ -21,11 +21,11 @@ trait SpamFilterTrait
         if ($creationDays < 30) {
             $spamwords = (new SpamWord())->getList();
             
-            if (array_key_exists('title', $this->request->post)) {
-                $this->checkTitle($this->request->post['title'], $spamwords);
+            if (array_key_exists('title', $this->request->data)) {
+                $this->checkTitle($this->request->data['title'], $spamwords);
             }
 
-            $this->checkBody($this->request->post['body'], $spamwords);
+            $this->checkBody($this->request->data['body'], $spamwords);
 
             if ($creationDays < 10) {
                 $this->checkPostCounts($user, $creationDays);

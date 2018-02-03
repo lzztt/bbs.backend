@@ -16,9 +16,9 @@ class Handler extends Service
     {
         $this->validateUser();
 
-        $uid = (int) $this->request->post['uid'];
-        $nid = (int) $this->request->post['nid'];
-        $reason = $this->request->post['reason'];
+        $uid = (int) $this->request->data['uid'];
+        $nid = (int) $this->request->data['nid'];
+        $reason = $this->request->data['reason'];
 
         if ($uid == $this->request->uid) {
             throw new ErrorMessage('您不能举报自己的帖子');
