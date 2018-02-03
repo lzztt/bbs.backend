@@ -34,10 +34,10 @@ class Handler extends Service
     // return: session id and uid
     public function post(): void
     {
-        if (isset($this->request->post['password']) && isset($this->request->post['email'])) {
+        if (isset($this->request->data['password']) && isset($this->request->data['email'])) {
             // todo: login times control
             $user = new User();
-            $loggedIn = $user->loginWithEmail($this->request->post['email'], $this->request->post['password']);
+            $loggedIn = $user->loginWithEmail($this->request->data['email'], $this->request->data['password']);
 
             if ($loggedIn) {
                 $this->session->set('uid', $user->id);

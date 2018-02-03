@@ -34,20 +34,20 @@ class Handler extends Service
 
         $ad = new Ad();
         $ap = new AdPayment();
-        $ap->adId = $this->request->post['ad_id'];
-        $ap->amount = $this->request->post['amount'];
-        $ap->time = strtotime($this->request->post['time']);
-        $ap->comment = $this->request->post['comment'];
+        $ap->adId = $this->request->data['ad_id'];
+        $ap->amount = $this->request->data['amount'];
+        $ap->time = strtotime($this->request->data['time']);
+        $ap->comment = $this->request->data['comment'];
         $ap->add();
 
         $ad->id = $ap->adId;
         $ad->load('name,email,typeId,expTime');
         if ($ad->expTime < $this->request->timestamp) {
-            $exp_time = $this->request->post['time'];
+            $exp_time = $this->request->data['time'];
         } else {
             $exp_time = date('m/d/Y', $ad->expTime);
         }
-        $ad->expTime = strtotime($exp_time . ' +' . $this->request->post['ad_time'] . ' months');
+        $ad->expTime = strtotime($exp_time . ' +' . $this->request->data['ad_time'] . ' months');
         $ad->update('expTime');
         foreach (['latestYellowPages', '/'] as $key) {
             $this->getIndependentCache($key)->delete();

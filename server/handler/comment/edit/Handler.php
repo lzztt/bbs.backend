@@ -17,7 +17,7 @@ class Handler extends Comment
         // edit existing comment
         $cid = (int) $this->args[0];
 
-        if (strlen($this->request->post['body']) < 5) {
+        if (strlen($this->request->data['body']) < 5) {
             throw new ErrorMessage('Comment body is too short.');
         }
 
@@ -26,7 +26,7 @@ class Handler extends Comment
             $this->logger->warn('wrong action : uid = ' . $this->request->uid);
             throw new Forbidden();
         }
-        $comment->body = $this->request->post['body'];
+        $comment->body = $this->request->data['body'];
         $comment->lastModifiedTime = $this->request->timestamp;
         try {
             $comment->update('body,lastModifiedTime');
@@ -36,8 +36,8 @@ class Handler extends Comment
         }
 
         // FORUM comments images
-        if ($this->request->post['update_file']) {
-            $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+        if ($this->request->data['update_file']) {
+            $files = is_array($this->request->data['files']) ? $this->request->data['files'] : [];
             $file = new Image();
             $file->cityId = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $comment->nid, $cid);

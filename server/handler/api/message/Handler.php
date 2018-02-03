@@ -57,17 +57,17 @@ class Handler extends Service
     {
         $this->validateUser();
 
-        if (array_key_exists('topicMID', $this->request->post)) {
-            $this->request->post['topicMid'] = $this->request->post['topicMID'];
+        if (array_key_exists('topicMID', $this->request->data)) {
+            $this->request->data['topicMid'] = $this->request->data['topicMID'];
         }
 
-        if (array_key_exists('toUID', $this->request->post)) {
-            $this->request->post['toUid'] = $this->request->post['toUID'];
+        if (array_key_exists('toUID', $this->request->data)) {
+            $this->request->data['toUid'] = $this->request->data['toUID'];
         }
 
         $topicMid = null;
-        if (array_key_exists('topicMid', $this->request->post)) {
-            $topicMid = (int) $this->request->post['topicMid'];
+        if (array_key_exists('topicMid', $this->request->data)) {
+            $topicMid = (int) $this->request->data['topicMid'];
             if ($topicMid <= 0) {
                 $topicMid = null;
             }
@@ -75,7 +75,7 @@ class Handler extends Service
         $pm = new PrivMsg();
 
         // validate toUid
-        $toUid = (int) $this->request->post['toUid'];
+        $toUid = (int) $this->request->data['toUid'];
         if ($toUid) {
             if ($toUid == $this->request->uid) {
                 throw new ErrorMessage('不能给自己发送站内短信');
@@ -104,13 +104,13 @@ class Handler extends Service
         }
 
         // save pm to database
-        if (strlen($this->request->post['body']) < 5) {
+        if (strlen($this->request->data['body']) < 5) {
             throw new ErrorMessage('短信正文需最少5个字母或3个汉字');
         }
 
         $pm->fromUid = $this->request->uid;
         $pm->toUid = $user->id;
-        $pm->body = $this->request->post['body'];
+        $pm->body = $this->request->data['body'];
         $pm->time = $this->request->timestamp;
         if ($topicMid) {
             // reply an existing message topic
