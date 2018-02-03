@@ -71,19 +71,19 @@ class Handler extends Service
 
         $u = new User($uid, 'id');
 
-        if (array_key_exists('password', $this->request->post)) {
-            if (array_key_exists('password_old', $this->request->post)) {
+        if (array_key_exists('password', $this->request->data)) {
+            if (array_key_exists('password_old', $this->request->data)) {
                 // user to change password
-                if (!$u->verifyPassword($this->request->post['password_old'])) {
+                if (!$u->verifyPassword($this->request->data['password_old'])) {
                     throw new ErrorMessage('更改密码失败：输入的旧密码与当前密码不符，请确认输入正确的旧密码');
                 }
 
-                if ($this->request->post['password'] != $this->request->post['password2']) {
+                if ($this->request->data['password'] != $this->request->data['password2']) {
                     throw new ErrorMessage('更改密码失败：两次输入的新密码不一致');
                 }
 
-                unset($this->request->post['password_old']);
-                unset($this->request->post['password2']);
+                unset($this->request->data['password_old']);
+                unset($this->request->data['password2']);
             } else {
                 // guest set new password
                 $u->load('username,password,email');
@@ -100,7 +100,7 @@ class Handler extends Service
                                 // check location
                                 $geo = geoip_record_by_name($this->request->ip);
 
-                                if ((!$geo || $geo['region'] != 'TX') || strpos($this->request->post['password'], $u->username) !== false) {
+                                if ((!$geo || $geo['region'] != 'TX') || strpos($this->request->data['password'], $u->username) !== false) {
                                     // non texas user, or username = password
                                     // treat as spammer, make as disabled
                                     $u->status = 0;
@@ -112,10 +112,10 @@ class Handler extends Service
                                         $up->update();
                                     }
                                     // notify admin to check peers too
-                                    $this->logger->error('Serial User found: username=' . $u->username . ' password=' . $this->request->post['password'] . ' (this user is deleted, but check on similar users)');
+                                    $this->logger->error('Serial User found: username=' . $u->username . ' password=' . $this->request->data['password'] . ' (this user is deleted, but check on similar users)');
                                 } else {
                                     // texas user, notify admin
-                                    $this->logger->error('Serial User found: username=' . $u->username . ' password=' . $this->request->post['password']);
+                                    $this->logger->error('Serial User found: username=' . $u->username . ' password=' . $this->request->data['password']);
                                 }
                                 break;
                             }
@@ -124,22 +124,22 @@ class Handler extends Service
                 }
             }
 
-            $this->request->post['password'] = User::hashPassword($this->request->post['password']);
+            $this->request->data['password'] = User::hashPassword($this->request->data['password']);
         }
 
-        if (array_key_exists('avatar', $this->request->post)) {
-            $image = \base64_decode(substr($this->request->post['avatar'], strpos($this->request->post['avatar'], ',') + 1));
+        if (array_key_exists('avatar', $this->request->data)) {
+            $image = \base64_decode(substr($this->request->data['avatar'], strpos($this->request->data['avatar'], ',') + 1));
             if ($image !== false) {
                 $config = Config::getInstance();
                 $avatarFile = '/data/avatars/' . $this->request->uid . '_' . ($this->request->timestamp % 100) . '.png';
                 file_put_contents($config->path['file'] . $avatarFile, $image);
-                $this->request->post['avatar'] = $avatarFile;
+                $this->request->data['avatar'] = $avatarFile;
             } else {
-                unset($this->request->post['avatar']);
+                unset($this->request->data['avatar']);
             }
         }
 
-        foreach ($this->request->post as $k => $v) {
+        foreach ($this->request->data as $k => $v) {
             $u->$k = $v;
         }
 
@@ -159,28 +159,28 @@ class Handler extends Service
         $this->validateCaptcha();
 
         // check username and email first
-        if (!$this->request->json['username']) {
+        if (!$this->request->data['username']) {
             throw new ErrorMessage('请填写用户名');
         } else {
-            $username = strtolower($this->request->json['username']);
+            $username = strtolower($this->request->data['username']);
             if (strpos($username, 'admin') !== false || strpos($username, 'bbs') !== false) {
                 throw new ErrorMessage('不合法的用户名，请选择其他用户名');
             }
         }
 
-        if (!filter_var($this->request->json['email'], \FILTER_VALIDATE_EMAIL) || substr($this->request->json['email'], -8) == 'bccto.me') {
-            throw new ErrorMessage('不合法的电子邮箱 : ' . $this->request->json['email']);
+        if (!filter_var($this->request->data['email'], \FILTER_VALIDATE_EMAIL) || substr($this->request->data['email'], -8) == 'bccto.me') {
+            throw new ErrorMessage('不合法的电子邮箱 : ' . $this->request->data['email']);
         }
 
-        if (isset($this->request->json['submit']) || $this->isBot($this->request->json['email'])) {
-            $this->logger->info('STOP SPAMBOT : ' . $this->request->json['email']);
+        if (isset($this->request->data['submit']) || $this->isBot($this->request->data['email'])) {
+            $this->logger->info('STOP SPAMBOT : ' . $this->request->data['email']);
             throw new ErrorMessage('系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。');
         }
 
         $user = new User();
-        $user->username = $this->request->json['username'];
+        $user->username = $this->request->data['username'];
         $user->password = null;
-        $user->email = $this->request->json['email'];
+        $user->email = $this->request->data['email'];
         $user->lastAccessIp = inet_pton($this->request->ip);
         $user->cid = self::$city->id;
         $user->status = 1;

@@ -11,9 +11,7 @@ class Request
     public $method;
     public $uri;
     public $referer;
-    public $get = [];
-    public $post = [];
-    public $json = null;
+    public $data;
     public $uid;
     public $timestamp;
     public $isRobot;
@@ -31,10 +29,17 @@ class Request
 
         $this->timestamp = (int) $params['REQUEST_TIME'];
 
-        $this->get = self::escapeArray($this->req->getQueryParams());
+        $this->data = self::escapeArray($this->req->getQueryParams());
         if ($this->method === 'post') {
-            $this->post = self::escapeArray($this->req->getParsedBody());
-            $this->json = json_decode((string) $this->req->getBody(), true);
+            $contentType = strtolower(explode(';', $this->req->getHeader('content-type')[0])[0]);
+            switch ($contentType) {
+                case 'application/x-www-form-urlencoded':
+                case 'multipart/form-data':
+                    $this->data = array_merge($this->data, self::escapeArray($this->req->getParsedBody()));
+                    break;
+                case 'application/json':
+                    $this->data = array_merge($this->data, json_decode((string) $this->req->getBody(), true));
+            }
         }
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);

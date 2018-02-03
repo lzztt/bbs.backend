@@ -40,9 +40,9 @@ class Handler extends Service
 
         $ad = new Ad();
 
-        $ad->name = $this->request->post['name'];
-        $ad->email = $this->request->post['email'];
-        $ad->typeId = $this->request->post['type_id'];
+        $ad->name = $this->request->data['name'];
+        $ad->email = $this->request->data['email'];
+        $ad->typeId = $this->request->data['type_id'];
         $ad->expTime = $this->request->timestamp;
         $ad->add();
 

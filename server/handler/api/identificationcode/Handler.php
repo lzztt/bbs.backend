@@ -16,20 +16,20 @@ class Handler extends Service
     {
         $this->validateCaptcha();
 
-        if (!$this->request->post['username']) {
+        if (!$this->request->data['username']) {
             throw new ErrorMessage('请输入用户名');
         }
 
-        if (!$this->request->post['email']) {
+        if (!$this->request->data['email']) {
             throw new ErrorMessage('请输入注册电子邮箱');
         }
 
         $user = new User();
-        $user->username = $this->request->post['username'];
+        $user->username = $this->request->data['username'];
         $user->load('email');
 
         if ($user->exists()) {
-            if ($user->email != $this->request->post['email']) {
+            if ($user->email != $this->request->data['email']) {
                 throw new ErrorMessage('您输入的电子邮箱与与此用户的注册邮箱不匹配，请检查是否输入了正确的注册邮箱');
             }
 

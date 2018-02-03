@@ -37,10 +37,10 @@ class Handler extends Node
             throw new ErrorMessage('node does not exist.');
         }
 
-        if (!$this->request->post['body']
-                || !$this->request->post['title']
-                || strlen($this->request->post['body']) < 5
-                || strlen($this->request->post['title']) < 5) {
+        if (!$this->request->data['body']
+                || !$this->request->data['title']
+                || strlen($this->request->data['body']) < 5
+                || strlen($this->request->data['title']) < 5) {
             throw new ErrorMessage('Topic title or body is too short.');
         }
 
@@ -49,7 +49,7 @@ class Handler extends Node
             throw new Forbidden();
         }
 
-        $node->title = $this->request->post['title'];
+        $node->title = $this->request->data['title'];
         $node->lastModifiedTime = $this->request->timestamp;
 
         try {
@@ -65,11 +65,11 @@ class Handler extends Node
 
         $comment = new Comment();
         $comment->id = $arr[0]['id'];
-        $comment->body = $this->request->post['body'];
+        $comment->body = $this->request->data['body'];
         $comment->lastModifiedTime = $this->request->timestamp;
         $comment->update();
 
-        $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+        $files = is_array($this->request->data['files']) ? $this->request->data['files'] : [];
         $file = new Image();
         $file->cityId = self::$city->id;
         $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
@@ -93,7 +93,7 @@ class Handler extends Node
             throw new Forbidden();
         }
 
-        if (!$this->request->post) {
+        if (!$this->request->data) {
             // display edit interface
             $nodeObj = new NodeObject();
             $contents = $nodeObj->getYellowPageNode($nid);
@@ -114,14 +114,14 @@ class Handler extends Node
         } else {
             // save modification
             $node = new NodeObject($nid, 'tid');
-            $node->title = $this->request->post['title'];
+            $node->title = $this->request->data['title'];
             $node->lastModifiedTime = $this->request->timestamp;
             $node->update();
 
             $node_yp = new NodeYellowPage($nid);
             $keys = ['address', 'phone', 'email', 'website', 'fax'];
             foreach ($keys as $k) {
-                $node_yp->$k = $this->request->post[$k] ? $this->request->post[$k] : null;
+                $node_yp->$k = $this->request->data[$k] ? $this->request->data[$k] : null;
             }
 
             $node_yp->update();
@@ -132,11 +132,11 @@ class Handler extends Node
 
             $comment = new Comment();
             $comment->id = $arr[0]['id'];
-            $comment->body = $this->request->post['body'];
+            $comment->body = $this->request->data['body'];
             $comment->lastModifiedTime = $this->request->timestamp;
             $comment->update();
 
-            $files = is_array($this->request->post['files']) ? $this->request->post['files'] : [];
+            $files = is_array($this->request->data['files']) ? $this->request->data['files'] : [];
             $file = new Image();
             $file->cityId = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);

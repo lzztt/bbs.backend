@@ -48,7 +48,6 @@ class WebApp extends App
     public function run(array $args = []): void
     {
         $request = Request::getInstance();
-        $this->validateGetParameters($request);
 
         $db = DB::getInstance($this->config->db);
         $this->setupCache($db);
@@ -74,17 +73,6 @@ class WebApp extends App
 
         if (!$request->isRobot && $response->getStatus() < 400) {
             $this->flush($session, $db, $ctrler);
-        }
-    }
-
-    private function validateGetParameters(Request $request): void
-    {
-        $getCount = count($request->get);
-        if ($getCount) {
-            $request->get = array_intersect_key($request->get, array_flip($this->config->getkeys));
-            if (count($request->get) != $getCount) {
-                $this->config->cache = false;
-            }
         }
     }
 

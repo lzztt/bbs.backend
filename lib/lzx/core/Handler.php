@@ -37,11 +37,11 @@ abstract class Handler
         }
 
         $pageCount = $nTotal > 0 ? (int) ceil($nTotal / $nPerPage) : 1;
-        if ($this->request->get['p']) {
-            if ($this->request->get['p'] === 'l') {
+        if ($this->request->data['p']) {
+            if ($this->request->data['p'] === 'l') {
                 $pageNo = $pageCount;
-            } elseif (is_numeric($this->request->get['p'])) {
-                $pageNo = (int) $this->request->get['p'];
+            } elseif (is_numeric($this->request->data['p'])) {
+                $pageNo = (int) $this->request->data['p'];
 
                 if ($pageNo < 1 || $pageNo > $pageCount) {
                     throw new NotFound();
