@@ -35,7 +35,7 @@ class Handler extends Controller
             throw new ErrorMessage('错误：您不能在该类别中添加黄页，请到它的子类别中添加。');
         }
 
-        if (!$this->request->post) {
+        if (!$this->request->data) {
             $ad = new Ad();
             $ad->order('expTime', false);
             $this->var['content'] = new Template('editor_bbcode_yp', ['ads' => $ad->getList('name')]);
@@ -43,7 +43,7 @@ class Handler extends Controller
             $node = new Node();
             $node->tid = $tid;
             $node->uid = $this->request->uid;
-            $node->title = $this->request->post['title'];
+            $node->title = $this->request->data['title'];
             $node->createTime = $this->request->timestamp;
             $node->status = 1;
             $node->add();
@@ -52,22 +52,22 @@ class Handler extends Controller
             $comment->nid = $node->id;
             $comment->tid = $tid;
             $comment->uid = $this->request->uid;
-            $comment->body = $this->request->post['body'];
+            $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();
 
             $nodeYP = new NodeYellowPage();
             $nodeYP->nid = $node->id;
-            $nodeYP->adId = (int) $this->request->post['aid'];
+            $nodeYP->adId = (int) $this->request->data['aid'];
             foreach (array_diff($nodeYP->getProperties(), ['nid', 'adId']) as $k) {
-                $nodeYP->$k = $this->request->post[$k] ? $this->request->post[$k] : null;
+                $nodeYP->$k = $this->request->data[$k] ? $this->request->data[$k] : null;
             }
             $nodeYP->add();
 
-            if (isset($this->request->post['files'])) {
+            if (isset($this->request->data['files'])) {
                 $file = new Image();
                 $file->cityId = self::$city->id;
-                $file->updateFileList($this->request->post['files'], $this->config->path['file'], $node->id, $comment->id);
+                $file->updateFileList($this->request->data['files'], $this->config->path['file'], $node->id, $comment->id);
             }
 
             $tag = new Tag($tid, 'parent');

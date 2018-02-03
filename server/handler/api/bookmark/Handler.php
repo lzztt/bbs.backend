@@ -46,11 +46,11 @@ class Handler extends Service
     public function post(): void
     {
         $this->validateUser();
-        if (!$this->request->post) {
+        if (!$this->request->data) {
             throw new Forbidden();
         }
 
-        $nid = (int) $this->request->post['nid'];
+        $nid = (int) $this->request->data['nid'];
         if ($nid <= 0) {
             throw new ErrorMessage('node does not exist');
         }
