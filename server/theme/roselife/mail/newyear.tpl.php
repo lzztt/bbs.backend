@@ -15,6 +15,6 @@
       站长<br>
       田龙璋
     </article>
-      <br><br><a href="<?= $unsubscribeLink ?>" style="font-size:12px;color:#999999;">退订邮件 (Unsubscribe)</a><br>
+      <br><br><a href="<?= $unsubscribeLink ?>" style="font-size:12px;color:#666666;text-decoration:none;">退订邮件 (Unsubscribe)</a><br>
   </body>
 </html>
