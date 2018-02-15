@@ -58,14 +58,17 @@ class MailApp extends App
             foreach ($users as $i => $u) {
                 $cid = (int) $u['cid'] - 1;
                 $city = $cities[$cid];
+                $unsubLink = 'https://www.' . $domain[$cid] . 'bbs.com/unsubscribe?c=' . User::encodeEmail($u['email'], (int) $u['id']);
+
                 $mailer = new Mailer('newyear@' . $domain[$cid] . 'bbs.com');
                 $mailer->setSubject('新年快乐，狗年吉祥');
                 $mailer->setTo($u['email']);
+                $mailer->setUnsubscribe($unsubLink);
                 $contents = [
                     'username' => $u['username'],
                     'time' => $this->time((int) $u['create_time']),
                     'city' => $city,
-                    'unsubscribeLink' => 'https://www.' . $domain[$cid] . 'bbs.com/unsubscribe?c=' . User::encodeEmail($u['email'], (int) $u['id'])
+                    'unsubscribeLink' => $unsubLink
                 ];
 
                 $mailer->setBody((string) new Template('mail/newyear', $contents), true);

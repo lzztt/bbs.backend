@@ -14,6 +14,7 @@ class Mailer
     private $subject;
     private $body;
     private $isHtml = false;
+    private $unsubscribe;
 
     public function __construct(string $from = 'noreply')
     {
@@ -73,6 +74,11 @@ class Mailer
         $this->isHtml = $isHtml;
     }
 
+    public function setUnsubscribe(string $url): void
+    {
+        $this->unsubscribe = $url;
+    }
+
     public function send(): bool
     {
         if (!($this->to && $this->subject && $this->body)) {
@@ -87,6 +93,10 @@ class Mailer
                 'MIME-Version: 1.0' . PHP_EOL .
                 'Content-Type: ' . ($this->isHtml ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8; format=flowed; delsp=yes') . PHP_EOL .
                 'X-Mailer: WebMailer';
+        if ($this->unsubscribe) {
+            $headers = $headers . PHP_EOL .
+                'List-Unsubscribe: <mailto:unsubscribe@' . array_pop(explode('@', $this->from)) .'?subject=unsubscribe>, <' . $this->unsubscribe . '>';
+        }
 
         $subject = "=?UTF-8?B?" . base64_encode($this->subject) . "?=";
 
