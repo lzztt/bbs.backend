@@ -12,8 +12,14 @@ class Handler extends Controller
         $code = $this->request->data['c'];
         if ($code) {
             list($email, $uid) = User::decodeEmail($code);
-            $this->var['content'] = $email . ' has been unsubscribed.';
-            return;
+            if ($uid === self::UID_GUEST) {
+                $this->var['content'] = '<br><br>You have been unsubscribed.<br><br>';
+            } else {
+                $user = new User($uid, 'id');
+                $user->type = 1;
+                $user->update('type');
+                $this->var['content'] = '<br><br>' . $email . ' has been unsubscribed.<br><br>';
+            }
         }
     }
 }
