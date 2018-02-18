@@ -189,6 +189,7 @@ class Handler extends Service
         $user->load('id');
         if (!$user->exists()) {
             $user->createTime = $this->request->timestamp;
+            $user->lastAccessTime = $user->createTime;
 
             // spammer from Nanning
             $geo = geoip_record_by_name($this->request->ip);
