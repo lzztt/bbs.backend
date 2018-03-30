@@ -67,7 +67,8 @@ class Handler extends Service
                         $complain->where('uid', $uid, '=');
                         $complain->where('status', 1, '=');
                         $complain->where('weight', 0, '>');
-                        if ($complain->getCount() >= 3) {
+                        $reporters = array_unique(array_column($complain->getList('reporterUid'), 'reporterUid'));
+                        if (count($reporters) >= 3) {
                             $spammer->delete();
                             foreach ($spammer->getAllNodeIDs() as $nid) {
                                 $this->getIndependentCache('/node/' . $nid)->delete();
