@@ -152,6 +152,13 @@ class CronApp extends App
     }
 
 // daily
+    protected function doNewUserPoints(): void
+    {
+        $db = DB::getInstance($this->config->db);
+        $db->query('update users set points = 2 where points = 0 and create_time < unix_timestamp() - 30 * 24 * 3600;');
+    }
+
+// daily
     protected function doBackup(): void
     {
         // clean database before backup

@@ -35,7 +35,7 @@ trait SpamFilterTrait
 
     protected function checkTitle(string $title, array $spamwords): void
     {
-        $cleanTitle = self::cleanText($title, array_column(
+        $cleanTitle = $this->cleanText($title, array_column(
             array_filter($spamwords, function (array $record): bool {
                 return (bool) $record['title'];
             }),
@@ -49,7 +49,7 @@ trait SpamFilterTrait
 
     protected function checkBody(string $body, array $spamwords): void
     {
-        $cleanBody = self::cleanText($body, array_column($spamwords, 'word'));
+        $cleanBody = $this->cleanText($body, array_column($spamwords, 'word'));
 
         $bodyLen = mb_strlen($body);
         if ($bodyLen > 35 && ($bodyLen - mb_strlen($cleanBody)) / $bodyLen > 0.4) {
@@ -57,7 +57,7 @@ trait SpamFilterTrait
         }
     }
     
-    private static function cleanText(string $text, array $spamwords): string
+    private function cleanText(string $text, array $spamwords): string
     {
         $cleanText = preg_replace('#[^\p{Nd}\p{Han}\p{Latin}\s$/]+#u', '', $text);
 

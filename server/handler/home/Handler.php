@@ -18,11 +18,18 @@ class Handler extends Controller
     {
         $this->cache = new PageCache($this->request->uri);
 
-        $func = self::$city->uriName . 'Home';
-        if (method_exists($this, $func)) {
-            $this->$func();
-        } else {
-            throw new ErrorMessage('unsupported site: ' . self::$city->uriName);
+        switch (self::$city->uriName) {
+            case 'houston':
+                $this->houstonHome();
+                break;
+            case 'dallas':
+                $this->dallasHome();
+                break;
+            case 'austin':
+                $this->austinHome();
+                break;
+            default:
+                throw new ErrorMessage('unsupported site: ' . self::$city->uriName);
         }
     }
 
@@ -167,7 +174,7 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
             // 1 week for houstonbbs, 2 weeks for other cities
-            $start = (self::$city->id == 1 ? $this->request->timestamp - 604800 : $this->request->timestamp - 604800 * 2);
+            $start = (self::$city->id === 1 ? $this->request->timestamp - 604800 : $this->request->timestamp - 604800 * 2);
 
             foreach ((new Node())->getHotForumTopics(self::$city->tidForum, $count, $start) as $i => $n) {
                 $arr[] = ['after' => $i + 1,
