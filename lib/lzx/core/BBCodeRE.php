@@ -14,9 +14,9 @@ class BBCodeRE
         '/\[s\](.*?)\[\/s\]/ms'
         => '<del>\1</del>',
         '/\[img\="?(.*?)"?\](.*?)\[\/img\]/ms'
-        => '<div class="bb-image"><img src="\2" alt="\2" /></div>',
+        => '<img class="bb_image" src="\2" alt="\2">',
         '/\[img\](.*?)\[\/img\]/ms'
-        => '<div class="bb-image"><img src="\1" alt="\1" /></div>',
+        => '<img class="bb_image" src="\1" alt="\1">',
         '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms'
         => '<a href="\1">\2</a>',
         '/\[url](.*?)\[\/url\]/ms'
