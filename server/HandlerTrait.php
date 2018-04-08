@@ -7,7 +7,6 @@ use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\html\Template;
-use site\dbobject\City;
 use site\dbobject\User;
 
 trait HandlerTrait
@@ -37,10 +36,8 @@ trait HandlerTrait
         self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
 
         // validate site for session
-        self::$city = new City();
-        self::$city->uriName = $site;
-        self::$city->load();
-        if (self::$city->exists()) {
+        self::$city = $this->config->city;
+        if (self::$city->id) {
             if (self::$city->id != $this->session->get('cid')) {
                 $this->session->set('cid', self::$city->id);
             }
