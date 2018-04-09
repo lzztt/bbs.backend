@@ -13,6 +13,7 @@ class CacheHandler implements CacheHandlerInterface
 {
     static public $path;
     protected $db;
+    protected $domain;
     // Cache tables
     protected $nameTable;
     protected $treeTable;
@@ -43,24 +44,13 @@ class CacheHandler implements CacheHandlerInterface
         return $instance;
     }
 
-    public function getCacheTreeTable(): string
+    public function setDomain(string $domain): void
     {
-        return $this->treeTable;
-    }
-
-    public function getCacheEventTable(): string
-    {
-        return $this->eventTable;
-    }
-
-    public function setCacheTreeTable(string $treeTable): void
-    {
-        $this->treeTable = $treeTable;
-    }
-
-    public function setCacheEventTable(string $eventTable): void
-    {
-        $this->eventTable = $eventTable;
+        if (!$this->domain && $domain) {
+            $this->domain = $domain;
+            $this->treeTable .= ('_' . $domain);
+            $this->eventTable .= ('_' . $domain);
+        }
     }
 
     /**

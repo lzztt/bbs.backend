@@ -61,8 +61,7 @@ class CronApp extends App
 
         CacheHandler::$path = $this->config->path['cache'];
         $cacheHandler = CacheHandler::getInstance($db);
-        $cacheHandler->setCacheTreeTable($cacheHandler->getCacheTreeTable() . '_' . $site);
-        $cacheHandler->setCacheEventTable($cacheHandler->getCacheEventTable() . '_' . $site);
+        $cacheHandler->setDomain($site);
         Cache::setHandler($cacheHandler);
         Cache::setLogger($this->logger);
 
