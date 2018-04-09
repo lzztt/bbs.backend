@@ -27,13 +27,12 @@ trait HandlerTrait
         $initialized = true;
 
         // set site info
-        $site = preg_replace(['/\w*\./', '/bbs.*/'], '', $this->request->domain, 1);
+        $site = $this->config->city->uriName;
 
         Template::setSite($site);
 
         self::$cacheHandler = CacheHandler::getInstance();
-        self::$cacheHandler->setCacheTreeTable(self::$cacheHandler->getCacheTreeTable() . '_' . $site);
-        self::$cacheHandler->setCacheEventTable(self::$cacheHandler->getCacheEventTable() . '_' . $site);
+        self::$cacheHandler->setDomain($site);
 
         // validate site for session
         self::$city = $this->config->city;
@@ -42,7 +41,7 @@ trait HandlerTrait
                 $this->session->set('cid', self::$city->id);
             }
         } else {
-            $this->error('unsupported website: ' . $this->request->domain);
+            $this->logger->error('unsupported website: ' . $this->request->domain);
         }
 
         $this->updateAccessInfo();

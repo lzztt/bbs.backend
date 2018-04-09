@@ -30,7 +30,7 @@ class MailApp extends App
 
     public function run(array $args = []): void
     {
-        $db = DB::getInstance($this->config->db, true);
+        $db = DB::getInstance($this->config->db);
         $arr = $db->query('SELECT uid FROM mails ORDER BY uid DESC limit 1');
         $uid = $arr ? (int) array_pop(array_pop($arr)) : 0;
         $users = $db->query('SELECT id, username, email, create_time, cid FROM users WHERE id > ' . $uid . ' LIMIT 550');
