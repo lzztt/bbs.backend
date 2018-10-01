@@ -13,8 +13,8 @@ class Handler extends Controller
         $this->cache = new PageCache($this->request->uri);
 
         $sitename = [
-            'site_zh_cn' => '缤纷' . self::$city->name . '华人网',
-            'site_en_us' => ucfirst(self::$city->uriName) . 'BBS.com'
+            'site_zh_cn' => self::$city->domain === 'bayever.com' ? '生活在湾区' : '缤纷' . self::$city->nameZh,
+            'site_en_us' => self::$city->domain
         ];
 
         $this->var['content'] = new Template('term', $sitename);

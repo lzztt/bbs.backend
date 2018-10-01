@@ -67,16 +67,17 @@ abstract class Controller extends Handler
         $this->var['page_navbar'] = $navbar;
 
         // set headers
+        $siteName = self::$city->domain === 'bayever.com' ? '生活在湾区' : '缤纷' . self::$city->nameZh;
         if (!$this->var['head_title']) {
-            $this->var['head_title'] = '缤纷' . self::$city->name . '华人网';
+            $this->var['head_title'] = $siteName;
         }
 
         if (!$this->var['head_description']) {
-            $this->var['head_description'] = self::$city->name . ' 华人 旅游 黄页 移民 周末活动 单身 交友 ' . ucfirst(self::$city->uriName) . ' Chinese ' . self::$city->uriName . 'bbs';
+            $this->var['head_description'] = self::$city->nameZh . ' 华人 论坛 租房 旅游 黄页 移民 周末活动 单身 交友 ' . self::$city->nameEn . ' Chinese Forum';
         } else {
-            $this->var['head_description'] = $this->var['head_description'] . ' ' . self::$city->name . ' 华人 ' . ucfirst(self::$city->uriName) . ' Chinese ' . self::$city->uriName . 'bbs';
+            $this->var['head_description'] = $this->var['head_description'] . ' ' . self::$city->nameZh . ' 华人 论坛 ' . self::$city->nameEn . ' Chinese Forum';
         }
-        $this->var['sitename'] = '缤纷' . self::$city->name;
+        $this->var['sitename'] = $siteName;
 
         // set min version for css and js
         if (!Template::$debug) {

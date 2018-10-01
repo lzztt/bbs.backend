@@ -18,18 +18,21 @@ class Handler extends Controller
     {
         $this->cache = new PageCache($this->request->uri);
 
-        switch (self::$city->uriName) {
-            case 'houston':
+        switch (self::$city->domain) {
+            case 'houstonbbs.com':
                 $this->houstonHome();
                 break;
-            case 'dallas':
+            case 'dallasbbs.com':
                 $this->dallasHome();
                 break;
-            case 'austin':
+            case 'austinbbs.com':
                 $this->austinHome();
                 break;
+            case 'bayever.com':
+                $this->bayHome();
+                break;
             default:
-                throw new ErrorMessage('unsupported site: ' . self::$city->uriName);
+                throw new ErrorMessage('unsupported site: ' . self::$city->domain);
         }
     }
 
@@ -79,6 +82,36 @@ class Handler extends Controller
     }
 
     private function austinHome(): void
+    {
+        $tag = new Tag(self::$city->tidForum, 'id');
+        $tagTree = $tag->getTagTree();
+
+        $nodeInfo = [];
+        $groupTrees = [];
+        foreach ($tagTree[$tag->id]['children'] as $group_id) {
+            $groupTrees[$group_id] = [];
+            $group = $tagTree[$group_id];
+            $groupTrees[$group_id][$group_id] = $group;
+            foreach ($group['children'] as $board_id) {
+                $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
+                $nodeInfo[$board_id] = $this->nodeInfo($board_id);
+                $this->cache->addParent('/forum/' . $board_id);
+            }
+        }
+
+        $content = [
+            'latestForumTopics' => $this->getLatestForumTopics(10),
+            'hotForumTopics' => $this->getHotForumTopics(10),
+            'latestForumTopicReplies' => $this->getLatestForumTopicReplies(10),
+            'imageSlider' => $this->getImageSlider(),
+            'groups' => $groupTrees,
+            'nodeInfo' => $nodeInfo
+        ];
+
+        $this->var['content'] = new Template('home', $content);
+    }
+
+    private function bayHome(): void
     {
         $tag = new Tag(self::$city->tidForum, 'id');
         $tagTree = $tag->getTagTree();

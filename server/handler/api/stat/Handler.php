@@ -17,7 +17,7 @@ class Handler extends Service
         $alexaCache = $this->getIndependentCache('alexa');
         $alexa = $alexaCache->fetch();
         if (!$alexa) {
-            $alexa = $this->getAlexa(self::$city->uriName);
+            $alexa = $this->getAlexa(self::$city->domain);
             if ($alexa) {
                 $alexaCache->store($alexa);
             }
@@ -37,15 +37,15 @@ class Handler extends Service
         $this->json(array_merge($r, $u));
     }
 
-    private function getAlexa(string $city): string
+    private function getAlexa(string $domain): string
     {
-        $data = self::curlGet('http://data.alexa.com/data?cli=10&dat=s&url=' . $city . 'bbs.com');
+        $data = self::curlGet('http://data.alexa.com/data?cli=10&dat=s&url=' . $domain);
 
         if ($data) {
             preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $data, $p);
             if ($p[2]) {
                 $rank = number_format(intval($p[2]));
-                return ucfirst($city) . 'BBS最近三个月平均访问量<a href="https://www.alexa.com/siteinfo/' . $city . 'bbs.com">Alexa排名</a>:<br><a href="https://www.alexa.com/siteinfo/' . $city . 'bbs.com">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
+                return $this->getSiteName() . '最近三个月平均访问量<a target="_blank" href="https://www.alexa.com/siteinfo/' . $domain . '">Alexa排名</a>:<br><a target="_blank" href="https://www.alexa.com/siteinfo/' . $domain . '">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
             }
         }
 

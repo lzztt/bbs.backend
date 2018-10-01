@@ -86,7 +86,7 @@ class Handler extends Controller
     {
         $mailer = new Mailer('ad');
         $mailer->setTo($ad->email);
-        $siteName = ucfirst(self::$city->uriName) . 'BBS';
+        $siteName = $this->getSiteName();
         $mailer->setSubject($ad->name . '在' . $siteName . '的电子黄页创建成功');
         $contents = [
             'name' => $ad->name,

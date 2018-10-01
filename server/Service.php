@@ -113,7 +113,7 @@ abstract class Service extends Handler
     {
         $mailer = new Mailer('system');
         $mailer->setTo($user->email);
-        $siteName = ucfirst(self::$city->uriName) . 'BBS';
+        $siteName = $this->getSiteName();
         $mailer->setSubject($user->username . '在' . $siteName . '的用户安全验证码');
         $contents = [
             'username'    => $user->username,

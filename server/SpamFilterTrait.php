@@ -27,7 +27,7 @@ trait SpamFilterTrait
 
             $this->checkBody($this->request->data['body'], $spamwords);
 
-            if ($creationDays < 10) {
+            if ($creationDays < 10 && self::$city->domain === 'houstonbbs.com') {
                 $this->checkPostCounts($user, $creationDays);
             }
         }

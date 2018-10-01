@@ -23,28 +23,19 @@
       </header>
 
       <div class="article_content">
-        <?php if ($index == 0): ?>
-          <style>
-            .responsive-ad { display:inline-block; float:right; width:300px; height:250px; }
-            @media(max-width: 767px) { .responsive-ad { display:none } }
-          </style>
-          <!-- responsive_ad -->
-          <ins class="adsbygoogle responsive-ad"
-              data-ad-client="ca-pub-8257334386742604"
-              data-ad-slot="4245946485"></ins>
-          <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-          </script>
-        <?php endif ?>
         <?= $p['HTMLbody'] . $p['attachments'] ?>
       </div>
 
       <footer class='v_user'>
         <div class="actions">
           <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
+          <?php if ($p['report']): ?>
+            <button type="button" class="report" data-action="nid=<?= $nid ?>&uid=<?= $p['uid'] ?>">举报</button>
+          <?php endif ?>
           <?php if ($tid == 16 && $p['type'] == 'node'): ?>
             <a class="button <?= $urole ?>" href="/node/<?= $p['id'] ?>/activity" rel="nofollow">发布为活动</a>
           <?php endif ?>
+
           <button type="button" class="edit <?= $urole ?>" data-raw="#<?= $p['type'] . '_' . $p['id'] ?>_raw" data-action="<?= '/' . $p['type'] . '/' . $p['id'] . '/edit' ?>">编辑</button>
           <button type="button" class="delete <?= $urole ?>" data-action="<?= '/' . $p['type'] . '/' . $p['id'] . '/delete' ?>">删除</button>
           <button type="button" class="reply" data-action="/node/<?= $nid ?>/comment">回复</button>

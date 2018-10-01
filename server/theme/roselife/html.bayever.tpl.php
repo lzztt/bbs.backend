@@ -11,11 +11,12 @@
     <![endif]-->
     <script>
       if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
-        document.write('<script defer src="//code.jquery.com/jquery-2.1.3.min.js"><\/script>');
+        document.write('<script defer src="//code.jquery.com/jquery-2.1.1.min.js"><\/script>');
       } else {
-        document.write('<script defer src="//code.jquery.com/jquery-1.11.2.min.js"><\/script>');
+        document.write('<script defer src="//code.jquery.com/jquery-1.11.0.min.js"><\/script>');
       }
     </script>
+
     <script>(typeof JSON === 'object') || document.write('<script defer src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
 
     <?php if ($tpl_debug): ?>
@@ -43,21 +44,16 @@
       <link href="/themes/<?= $tpl_theme ?>/css/main_sm.css" rel="stylesheet" type="text/css">
       <link href="/themes/<?= $tpl_theme ?>/css/main_md.css" rel="stylesheet" type="text/css">
       <link href="/themes/<?= $tpl_theme ?>/css/main_lg.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/css/main.dallas.css" rel="stylesheet" type="text/css">
       <link href="/themes/<?= $tpl_theme ?>/css/fontello.css" rel="stylesheet" type="text/css">
     <?php else: ?>
       <link href="/themes/<?= $tpl_theme ?>/min/<?= $min_version ?>.min.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/min/1464241922.dallas.min.css" rel="stylesheet" type="text/css">
     <?php endif ?>
     <!--END CSS-->
 
     <title><?= $head_title ?></title>
     <meta name='description' content='<?= $head_description ?>'>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({
-       google_ad_client: "ca-pub-8257334386742604",
-       enable_page_level_ads: true
-      });
-    </script>
   </head>
   <body>
     <div id='page'>
@@ -65,13 +61,38 @@
         <div class="nav_mobile">
           <a class="icon-home" href="/">首页</a><a class="icon-left-big" href="#">后退</a><a class="icon-right-big" href="#">前进</a><a class="icon-cw" href="#">刷新</a><a class="icon-menu" href="#">菜单</a>
         </div>
+        <style scoped>
+        div#logo_div {
+          display: none;
+        }
+        @media (min-width: 768px) {
+          div#logo_div {
+            display: block;
+            font-size: 1.2rem;
+            padding: .25rem;
+          }
+          div#logo_div span {
+            padding: .25rem;
+            border: 1px solid #28a745;
+          }
+          div#logo_div span:first-child {
+            background-color: #28a745;
+            color: #fff;
+            border-top-left-radius: .25rem;
+            border-bottom-left-radius: .25rem;
+          }
+          div#logo_div span:last-child {
+            background-color: #fff;
+            color: #28a745;
+            border-top-right-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+          }
+        }
+        </style>
         <div id="logo_div">
-          <a id='logo' href='/'><img src='/themes/roselife/images/logo.png'></a>
-          <span><?= $sitename ?></span>
+          <span>bayever</span><span>forever</span>
         </div>
-        <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a
-              ><img src="/data/ad/sunflower3.jpg"></a><a
-              href="/node/68817" target="_blank"><img src="/data/ad/geekpush2.jpg"></a></span></div>
+        <div id="page_header_ad" style="background-image: url('/data/ad/bg_bayever.jpg');"><span><a></a></span></div>
       </header>
       <nav id='page_navbar' class='hidden'>
         <ul class="sf-menu" style="display: inline-block; float: right;">
@@ -89,7 +110,7 @@
       </nav>
       <section id='page_body'><?= $content ?></section>
       <footer id='page_footer'>
-        <div id='copyright'>© 2009-2018 HoustonBBS 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:support@houstonbbs.com">联系我们</a> | <a href="mailto:ad@houstonbbs.com?subject=想在HoustonBBS上做个广告">广告洽谈</a></div>
+        <div id='copyright'>© 2018 bayever 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:support@bayever.com">联系我们</a></div>
       </footer>
     </div>
     <div id="messagebox"></div>
@@ -97,21 +118,12 @@
     <a id="goTop" class="button">返回顶部</a>
   </body>
   <?php if (!$debug): ?>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-36671672-5"></script>
     <script>
-      (function(i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function() {
-          (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-              m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-      ga('create', 'UA-36671672-1', 'auto');
-      ga('send', 'pageview');
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-36671672-5');
     </script>
   <?php endif ?>
 </html>

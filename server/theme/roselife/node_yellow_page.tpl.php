@@ -46,7 +46,7 @@
             <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $c['uid'] ?>
             <button type="button" class="edit <?= $urole ?>" data-action="<?= '/' . $c['type'] . '/' . $c['id'] . '/edit' ?>" data-raw="#<?= $c['type'] . '-' . $c['id'] ?>_raw">编辑</button>
             <button type="button" class="delete <?= $urole ?>" data-action="<?= '/' . $c['type'] . '/' . $c['id'] . '/delete' ?>">删除</button>
-            <button type="button" class="reply " data-action="/node/<?= $nid ?>/comment">回复</button>
+            <button type="button" class="reply" data-action="/node/<?= $nid ?>/comment">回复</button>
             <button type="button" class="quote" data-action="/node/<?= $nid ?>/comment" data-raw="#<?= $c['type'] . '-' . $c['id'] ?>_raw">引用</button>
           </div>
           <div id="<?= $c['type'] . '-' . $c['id'] ?>_raw" style="display:none;">

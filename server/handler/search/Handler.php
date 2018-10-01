@@ -11,28 +11,32 @@ class Handler extends Controller
     {
         $this->cache = new PageCache($this->request->uri);
 
-        $searchEngineIDs = ['houston' => 'ff_lfzbzonw', 'dallas' => 'gznplywzy7a', 'austin' => 'ihghalygyj8'];
-        $seid = $searchEngineIDs[self::$city->uriName];
+        $searchEngineIDs = ['houstonbbs.com' => 'ff_lfzbzonw', 'dallasbbs.com' => 'gznplywzy7a', 'austinbbs.com' => 'ihghalygyj8', 'bayever.com' => 'vx3u09xj83w'];
+        $seid = $searchEngineIDs[self::$city->domain];
 
         $html = <<<HTML
 <style>
 .gsc-search-box {
-width: auto !important;
+  width: auto !important;
 }
 tbody, tr {
-border: none !important;
+  border: none !important;
 }
 .gsc-search-box td {
-width: auto !important;
-padding: 0.3em !important;
+  width: auto !important;
+  padding: 0.3em !important;
 }
-input[type=text].gsc-input
+input.gsc-input
 {
-min-width: 200px;
+  min-width: 200px;
 }
 td.gsc-input,
 input.gsc-input {
-background-image:none !important;
+  background-image: none !important;
+  text-indent: 0px !important;
+}
+button {
+  height: auto !important;
 }
 </style>
 <script>
@@ -46,9 +50,7 @@ background-image:none !important;
     s.parentNode.insertBefore(gcse, s);
   })();
 </script>
-<gcse:searchbox></gcse:searchbox>
-
-<gcse:searchresults></gcse:searchresults>
+<gcse:search></gcse:search>
 HTML;
 
         $this->var['content'] = $html;

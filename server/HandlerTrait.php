@@ -26,8 +26,9 @@ trait HandlerTrait
 
         $initialized = true;
 
+        self::$city = $this->config->city;
         // set site info
-        $site = $this->config->city->uriName;
+        $site = str_replace(['bbs.com', '.com'], '', self::$city->domain);
 
         Template::setSite($site);
 
@@ -35,7 +36,6 @@ trait HandlerTrait
         self::$cacheHandler->setDomain($site);
 
         // validate site for session
-        self::$city = $this->config->city;
         if (self::$city->id) {
             if (self::$city->id != $this->session->get('cid')) {
                 $this->session->set('cid', self::$city->id);
@@ -81,6 +81,15 @@ trait HandlerTrait
                 $e->flush();
             }
         }
+    }
+
+    protected function getSiteName(): string
+    {
+        $siteName = str_replace('.com', '', self::$city->domain);
+        if (substr($siteName, -3) === 'bbs') {
+            $siteName = ucfirst(substr($siteName, 0, -3)) . 'BBS';
+        }
+        return $siteName;
     }
 
     protected function getIndependentCache(string $key): Cache

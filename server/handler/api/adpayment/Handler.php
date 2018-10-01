@@ -61,7 +61,7 @@ class Handler extends Service
     {
         $mailer = new Mailer('ad');
         $mailer->setTo($ad->email);
-        $siteName = ucfirst(self::$city->uriName) . 'BBS';
+        $siteName = $this->getSiteName();
         $type = $ad->typeId == 1 ? '电子黄页' : '页顶广告';
         $date = date('m/d/Y', $ad->expTime);
         $mailer->setSubject($ad->name . '在' . $siteName . '的' . $type . '有效日期更新至' . $date);

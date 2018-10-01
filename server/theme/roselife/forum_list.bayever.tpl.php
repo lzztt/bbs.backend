@@ -19,12 +19,3 @@
     </tbody>
   </table>
 <?php endforeach ?>
-
-<div style="margin-top:15px; clear: both;">
-  <div style="padding:0.4em 0.7em;">友情链接</div>
-  <div style="padding:0.4em 0.7em; background:#EEEEEE none repeat scroll 0 0;">
-    <a style="padding: 4px;" target="_blank" href="https://www.bayever.com">生活在湾区</a>
-    <a style="padding: 4px;" target="_blank" href="https://www.dallasbbs.com">缤纷达拉斯</a>
-    <a style="padding: 4px;" target="_blank" href="https://www.austinbbs.com">缤纷奥斯汀</a>
-  </div>
-</div>
