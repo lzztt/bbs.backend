@@ -89,7 +89,7 @@
       </nav>
       <section id='page_body'><?= $content ?></section>
       <footer id='page_footer'>
-        <div id='copyright'>© 2009-2018 HoustonBBS 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:support@houstonbbs.com">联系我们</a> | <a href="mailto:ad@houstonbbs.com?subject=想在HoustonBBS上做个广告">广告洽谈</a></div>
+        <div id='copyright'>© 2009-2019 HoustonBBS 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:support@houstonbbs.com">联系我们</a> | <a href="mailto:ad@houstonbbs.com?subject=想在HoustonBBS上做个广告">广告洽谈</a></div>
       </footer>
     </div>
     <div id="messagebox"></div>

@@ -6,7 +6,7 @@
   </head>
   <body>
     <article>
-        [<?= $type ?>] <a style="text-decoration:none;" href="http://www.<?= $site ?>.com/forum.php?mod=viewthread&action=printable&tid=<?= $tid ?>">by <?= $author ?></a>
+        [<?= $type ?>] <a style="text-decoration:none;" href="http://www.<?= $site ?>.com/forum.php?mod=viewthread&tid=<?= $tid ?>&action=printable">by <?= $author ?></a>
         @ <?= $createTime ?><br>
         <h2><?= $title ?></h2>
         <p><?= nl2br($body) ?></p>
