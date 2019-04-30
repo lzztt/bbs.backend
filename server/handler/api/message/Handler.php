@@ -7,11 +7,14 @@ use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Service;
+use site\SpamFilterTrait;
 use site\dbobject\PrivMsg;
 use site\dbobject\User;
 
 class Handler extends Service
 {
+    use SpamFilterTrait;
+
     const TOPICS_PER_PAGE = 25;
 
     private static $mailbox = ['inbox', 'sent'];
@@ -71,6 +74,12 @@ class Handler extends Service
             if ($topicMid <= 0) {
                 $topicMid = null;
             }
+        }
+        try {
+            $this->validatePost();
+        } catch (Exception $e) {
+            $this->logger->warn($e->getMessage(), ['post' => $this->request->data]);
+            throw new ErrorMessage($e->getMessage());
         }
         $pm = new PrivMsg();
 
