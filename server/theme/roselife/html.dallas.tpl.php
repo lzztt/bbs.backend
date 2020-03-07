@@ -90,7 +90,7 @@
       </nav>
       <section id='page_body'><?= $content ?></section>
       <footer id='page_footer'>
-        <div id='copyright'>© 2014-2019 DallasBBS 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:support@dallasbbs.com">联系我们</a></div>
+        <div id='copyright'>© 2014-2020 DallasBBS 版权所有 | <a href='/term'>免责声明</a> | <a href="mailto:support@dallasbbs.com">联系我们</a></div>
       </footer>
     </div>
     <div id="messagebox"></div>
