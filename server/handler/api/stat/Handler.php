@@ -49,7 +49,7 @@ class Handler extends Service
             }
         }
 
-        $this->logger->warn('Get Alexa Rank Error');
+        $this->logger->warning('Get Alexa Rank Error');
         return '';
     }
 }

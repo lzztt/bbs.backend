@@ -40,7 +40,7 @@ class Handler extends Node
         }
 
         if ($this->request->uid != $node->uid && $this->request->uid != 1) {
-            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new ErrorMessage('错误：您只能将自己发表的帖子发布为活动。');
         }
 

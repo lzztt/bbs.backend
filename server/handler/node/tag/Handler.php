@@ -33,7 +33,7 @@ class Handler extends Node
 
             throw new Redirect('/node/' . $nid);
         } else {
-            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new Forbidden();
         }
     }

@@ -18,7 +18,7 @@ class Handler extends Comment
         $comment->load('uid,nid');
 
         if ($this->request->uid != 1 && $this->request->uid != $comment->uid) {
-            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new Forbidden();
         }
 

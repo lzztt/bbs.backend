@@ -45,7 +45,7 @@ class Handler extends Node
         }
 
         if ($this->request->uid != 1 && $this->request->uid != $node->uid) {
-            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new Forbidden();
         }
 
@@ -89,7 +89,7 @@ class Handler extends Node
         }
 
         if ($this->request->uid != 1 && $this->request->uid != $node->uid) {
-            $this->logger->warn('wrong action : uid = ' . $this->request->uid);
+            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new Forbidden();
         }
 

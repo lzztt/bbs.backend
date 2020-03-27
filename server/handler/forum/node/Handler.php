@@ -58,7 +58,7 @@ class Handler extends Forum
             $comment->createTime = $this->request->timestamp;
             $comment->add();
         } catch (Exception $e) {
-            $this->logger->warn($e->getMessage(), ['post' => $this->request->data]);
+            $this->logger->warning($e->getMessage(), ['post' => $this->request->data]);
             throw new ErrorMessage($e->getMessage());
         }
 

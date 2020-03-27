@@ -69,7 +69,7 @@ abstract class Cache
             unlink(self::$handler->getFileName($this));
         } catch (Exception $e) {
             if (self::$logger) {
-                self::$logger->warn($e->getMessage());
+                self::$logger->warning($e->getMessage());
             } else {
                 error_log($e->getMessage());
             }

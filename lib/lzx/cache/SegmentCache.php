@@ -55,7 +55,7 @@ class SegmentCache extends Cache
             return is_file($file) ? file_get_contents($file) : '';
         } catch (Exception $e) {
             if (self::$logger) {
-                self::$logger->warn('Could not read from file [' . $file . ']: ' . $e->getMessage());
+                self::$logger->warning('Could not read from file [' . $file . ']: ' . $e->getMessage());
             } else {
                 error_log('Could not read from file [' . $file . ']: ' . $e->getMessage());
             }
