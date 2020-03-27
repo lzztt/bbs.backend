@@ -2,7 +2,7 @@
 
 namespace lzx\core;
 
-use Zend\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\ServerRequestFactory;
 
 class Request
 {

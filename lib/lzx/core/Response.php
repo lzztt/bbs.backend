@@ -3,11 +3,11 @@
 namespace lzx\core;
 
 use Exception;
-use Zend\Diactoros\Response\EmptyResponse;
-use Zend\Diactoros\Response\HtmlResponse;
-use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\Response\RedirectResponse;
-use Zend\Diactoros\Response\SapiEmitter;
+use Laminas\Diactoros\Response\EmptyResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use lzx\cache\PageCache;
 use lzx\core\JpegResponse;
 use lzx\exception\ErrorMessage;
