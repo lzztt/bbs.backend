@@ -65,51 +65,56 @@ class CacheHandler implements CacheHandlerInterface
     {
         static $names = [];
 
+        $name = trim($name);
+
         if (array_key_exists($name, $names)) {
             return $names[$name];
         }
 
-        $name = trim($name);
+        $value = $name;
 
-        if (strlen($name) == 0 || strpos($name, ' ') !== false) {
-            throw new Exception('cache name is empty : ' . $name);
+        if (strlen($name) == 0) {
+            throw new Exception('cache name is empty.');
+        }
+
+        if (strpos($name, ' ') !== false) {
+            throw new Exception('cache name contains spaces: ' . $name);
         }
 
         if ($name[0] === '/') {
             // page uri
-            if (!strpos($name, '#')) {
-                // not previously processed
-                // use # to seperate uri and query string
-                if (strpos($name, '?')) {
-                    // has query string
-                    $name = str_replace('?', '#', $name);
-                } else {
-                    $name = $name . '#';
-                }
-            } else {
-                // previously processed or pre-processed name
-                // validate '#'
-                if (substr_count($name, '#') > 1) {
-                    throw new Exception('pre-processed cache name has multiple "#" charactor : ' . $name);
-                }
-
-                // validate '?'
-                if (strpos($name, '?')) {
-                    throw new Exception('pre-processed cache name has "?" charactor : ' . $name);
-                }
+            switch (substr_count($name, '#')) {
+                case 0:
+                    // not previously processed, use # to seperate uri and query string
+                    switch (substr_count($name, '?')) {
+                        case 0:
+                            $value = $name . '#';
+                            break;
+                        case 1:
+                            // has query string
+                            $value = str_replace('?', '#', $name);
+                            break;
+                        default:
+                            throw new Exception('page uri has multiple "?" charactors: ' . $name);
+                    }
+                    break;
+                case 1:
+                    // previously processed or pre-processed name, validate '?'
+                    if (strpos($name, '?')) {
+                        throw new Exception('pre-processed cache name has "?" charactor: ' . $name);
+                    }
+                    break;
+                default:
+                    throw new Exception('pre-processed cache name has multiple "#" charactors: ' . $name);
             }
         } else {
             // segment name or event name
-            $name = preg_replace('/[^0-9a-z\.\_\-]/i', '_', $name);
+            $value = preg_replace('/[^0-9a-z\.\_\-]/i', '_', $name);
         }
 
         // save processed name to name cache
-        $names[$name] = $name;
-        if ($name != $name) {
-            $names[$name] = $name;
-        }
-
-        return $name;
+        $names[$name] = $value;
+        return $value;
     }
 
     public function getFileName(Cache $cache): string
