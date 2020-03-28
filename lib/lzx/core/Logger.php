@@ -19,7 +19,7 @@ class Logger extends MonoLogger
         static $instance;
 
         if (!$instance) {
-            $instance = new static();
+            $instance = new self();
         }
 
         return $instance;

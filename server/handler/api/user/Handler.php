@@ -84,44 +84,6 @@ class Handler extends Service
 
                 unset($this->request->data['password_old']);
                 unset($this->request->data['password2']);
-            } else {
-                // guest set new password
-                $u->load('username,password,email');
-                if (!$u->password) {
-                    // this is a new user
-                    if ($u->username == strstr($u->email, '@', true)) {
-                        // load 3 users before this one
-                        $userObj = new User();
-                        $userObj->where('id', $uid - 4, '>');
-                        $userObj->where('id', $uid, '<');
-                        foreach ($userObj->getList('username,email,status') as $user) {
-                            if ($user['username'] == strstr($user['email'], '@', true) && substr($u->username, 0, 4) == substr($user['username'], 0, 4)) {
-                                // found username has the same prefix
-                                // check location
-                                $geo = geoip_record_by_name($this->request->ip);
-
-                                if ((!$geo || $geo['region'] != 'TX') || strpos($this->request->data['password'], $u->username) !== false) {
-                                    // non texas user, or username = password
-                                    // treat as spammer, make as disabled
-                                    $u->status = 0;
-                                    // also disable spammer peer, if it is not disable
-                                    if ($user['status'] > 0) {
-                                        $up = new User();
-                                        $up->id = $user['id'];
-                                        $up->status = 0;
-                                        $up->update();
-                                    }
-                                    // notify admin to check peers too
-                                    $this->logger->error('Serial User found: username=' . $u->username . ' password=' . $this->request->data['password'] . ' (this user is deleted, but check on similar users)');
-                                } else {
-                                    // texas user, notify admin
-                                    $this->logger->error('Serial User found: username=' . $u->username . ' password=' . $this->request->data['password']);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
             }
 
             $this->request->data['password'] = User::hashPassword($this->request->data['password']);

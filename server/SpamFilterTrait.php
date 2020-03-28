@@ -3,6 +3,7 @@
 namespace site;
 
 use Exception;
+use lzx\geo\Reader;
 use site\dbobject\SpamWord;
 use site\dbobject\User;
 
@@ -73,13 +74,13 @@ trait SpamFilterTrait
     
     protected function checkPostCounts(User $user, int $creationDays): void
     {
-        $geo = geoip_record_by_name($this->request->ip);
-        if ($geo && $geo['city'] === 'Nanning') {
+        $geo = Reader::getInstance()->get($this->request->ip);
+        if ($geo->city->en === 'Nanning') {
             $this->deleteSpammer();
             throw new Exception('User is blocked! You cannot post any message!');
         }
 
-        if (!$geo || $geo['region'] != 'TX') {
+        if ($geo->region->en !== 'Texas') {
             $postCount = (int) array_pop(array_pop($user->call('get_user_post_count(' . $user->id . ')')));
             if ($postCount >= $creationDays) {
                 throw new Exception('Quota Limit Exceeded! You can only post no more than ' . $creationDays . ' messages up to now. Please wait one day to get more quota.');

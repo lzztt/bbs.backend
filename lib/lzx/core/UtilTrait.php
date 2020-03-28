@@ -2,7 +2,7 @@
 
 namespace lzx\core;
 
-use Exception;
+use lzx\geo\Reader;
 
 trait UtilTrait
 {
@@ -22,45 +22,9 @@ trait UtilTrait
 
     protected static function getLocationFromIp(string $ip, bool $fullInfo = true): string
     {
-        static $cache = [];
 
-        if (array_key_exists($ip, $cache)) {
-            goto done;
-        }
-
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6) === false) {
-            try {
-                $ip = inet_ntop($ip);
-            } catch (Exception $e) {
-                $cache[$ip] = ['UNKNOWN'];
-                goto done;
-            }
-            if ($ip === false) {
-                $cache[$ip] = ['UNKNOWN'];
-                goto done;
-            }
-        }
-
-        $geo = geoip_record_by_name($ip);
-        if ($geo === false) {
-            $cache[$ip] = ['UNKNOWN'];
-            goto done;
-        }
-
-        $encoding = mb_internal_encoding();
-
-        $city = $geo['city'] ? self::encode($geo['city'], $encoding) : 'N/A';
-        $country = $geo['country_name'] ? self::encode($geo['country_name'], $encoding) : 'N/A';
-
-        if ($geo['region'] && $geo['country_code']) {
-            $region = geoip_region_name_by_code($geo['country_code'], $geo['region']);
-        }
-        $region = $region ? self::encode($region, $encoding) : 'N/A';
-
-        $cache[$ip] = [$city, $region, $country];
-
-        done:
-        return $fullInfo ? implode(', ', $cache[$ip]) : $cache[$ip][0];
+        $geo = Reader::getInstance()->get($ip);
+        return $fullInfo ? $geo->getCityWithRegion() : $geo->getCity();
     }
 
     private static function encode(string $str, string $toEncoding): string
