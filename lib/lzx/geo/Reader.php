@@ -73,6 +73,10 @@ class Reader
             return Geo::getEmpty();
         }
 
+        if (!$r['country']['names']) {
+            return Geo::getEmpty();
+        }
+
         $name = $this->findChinaRegion($r['country']['names']);
         if ($name) {
             $country = new Name(self::CHINA_EN, self::CHINA_ZH);
