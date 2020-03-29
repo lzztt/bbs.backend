@@ -2,6 +2,7 @@
 
 namespace lzx\core;
 
+use Exception;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;

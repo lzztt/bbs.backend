@@ -15,14 +15,18 @@ class HandlerFactory
 {
     protected static $route = [];
 
-    public static function create(Request $req, Response $response, Config $config, Logger $logger, Session $session): Handler
+    public static function create(Request $req, Response $resp, Config $config, Logger $logger, Session $session): Handler
     {
+        if (strpos($req->uri, Request::QUERY_INVALID_CHAR) !== false) {
+            throw new NotFound();
+        }
+
         list($cls, $args) = self::getHandlerClassAndArgs($req);
 
         if (!$cls) {
             throw new NotFound();
         }
-        return new $cls($req, $response, $config, $logger, $session, $args);
+        return new $cls($req, $resp, $config, $logger, $session, $args);
     }
 
     private static function getHandlerClassAndArgs(Request $req): array

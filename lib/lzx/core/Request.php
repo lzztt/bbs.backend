@@ -6,6 +6,10 @@ use Laminas\Diactoros\ServerRequestFactory;
 
 class Request
 {
+    const METHOD_GET = 'get';
+    const METHOD_POST = 'post';
+    const QUERY_INVALID_CHAR = '%';
+
     public $domain;
     public $ip;
     public $method;
@@ -29,8 +33,17 @@ class Request
 
         $this->timestamp = (int) $params['REQUEST_TIME'];
 
-        $this->data = self::escapeArray($this->req->getQueryParams());
-        if ($this->method === 'post') {
+        $this->data = array_filter(
+            self::escapeArray($this->req->getQueryParams()),
+            function ($v, $k) {
+                return $k && $v
+                    && strpos($k, self::QUERY_INVALID_CHAR) === false
+                    && strpos($v, self::QUERY_INVALID_CHAR) === false;
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        if ($this->method === self::METHOD_POST) {
             $contentType = strtolower(explode(';', (string) $this->req->getHeader('content-type')[0])[0]);
             switch ($contentType) {
                 case 'application/x-www-form-urlencoded':
