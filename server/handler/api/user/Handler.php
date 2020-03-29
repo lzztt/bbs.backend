@@ -4,6 +4,7 @@ namespace site\handler\api\user;
 
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
+use lzx\geo\Reader;
 use site\Config;
 use site\Service;
 use site\dbobject\User;
@@ -154,9 +155,9 @@ class Handler extends Service
             $user->lastAccessTime = $user->createTime;
 
             // spammer from Nanning
-            $geo = geoip_record_by_name($this->request->ip);
+            $geo = Reader::getInstance()->get($this->request->ip);
             // from Nanning
-            if ($geo && $geo['city'] === 'Nanning') {
+            if ($geo->city->en === 'Nanning') {
                 // mark as disabled
                 $user->status = 0;
             }

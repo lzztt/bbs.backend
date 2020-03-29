@@ -31,7 +31,7 @@ class Request
 
         $this->data = self::escapeArray($this->req->getQueryParams());
         if ($this->method === 'post') {
-            $contentType = strtolower(explode(';', $this->req->getHeader('content-type')[0])[0]);
+            $contentType = strtolower(explode(';', (string) $this->req->getHeader('content-type')[0])[0]);
             switch ($contentType) {
                 case 'application/x-www-form-urlencoded':
                 case 'multipart/form-data':
