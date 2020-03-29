@@ -17,7 +17,7 @@ class HandlerFactory
 
     public static function create(Request $req, Response $resp, Config $config, Logger $logger, Session $session): Handler
     {
-        if (strpos($req->uri, Request::QUERY_INVALID_CHAR) !== false) {
+        if ($req->isBad()) {
             throw new NotFound();
         }
 

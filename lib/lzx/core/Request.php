@@ -19,7 +19,9 @@ class Request
     public $uid;
     public $timestamp;
     public $isRobot;
+
     private $req;
+    private $hasBadUrl;
 
     private function __construct()
     {
@@ -30,18 +32,17 @@ class Request
         $this->ip = $params['REMOTE_ADDR'];
         $this->method = strtolower($this->req->getMethod());
         $this->uri = strtolower($params['REQUEST_URI']);
-
         $this->timestamp = (int) $params['REQUEST_TIME'];
 
-        $this->data = array_filter(
-            self::escapeArray($this->req->getQueryParams()),
-            function ($v, $k) {
-                return $k && $v
-                    && strpos($k, self::QUERY_INVALID_CHAR) === false
-                    && strpos($v, self::QUERY_INVALID_CHAR) === false;
-            },
-            ARRAY_FILTER_USE_BOTH
-        );
+        $this->hasBadUrl = false;
+        if (strpos($this->uri, self::QUERY_INVALID_CHAR) !== false) {
+            $this->hasBadUrl = true;
+            $this->data = [];
+            $this->isRobot = true;
+            return;
+        }
+
+        $this->data = self::escapeArray($this->req->getQueryParams());
 
         if ($this->method === self::METHOD_POST) {
             $contentType = strtolower(explode(';', (string) $this->req->getHeader('content-type')[0])[0]);
@@ -68,6 +69,11 @@ class Request
             $instance = new self();
         }
         return $instance;
+    }
+
+    public function isBad(): bool
+    {
+        return $this->hasBadUrl;
     }
 
     private static function escapeArray(array $in): array
