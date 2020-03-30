@@ -18,10 +18,10 @@ class Request
     public $data;
     public $uid;
     public $timestamp;
-    public $isRobot;
 
     private $req;
     private $hasBadUrl;
+    private $isRobot;
 
     private function __construct()
     {
@@ -74,6 +74,11 @@ class Request
     public function isBad(): bool
     {
         return $this->hasBadUrl;
+    }
+
+    public function isRobot(): bool
+    {
+        return $this->hasBadUrl || $this->isRobot;
     }
 
     private static function escapeArray(array $in): array
