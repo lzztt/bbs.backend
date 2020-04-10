@@ -8,7 +8,7 @@ class Request
 {
     const METHOD_GET = 'get';
     const METHOD_POST = 'post';
-    const QUERY_INVALID_CHAR = '%';
+    const URL_INVALID_CHAR = '%';
 
     public $domain;
     public $ip;
@@ -35,7 +35,7 @@ class Request
         $this->timestamp = (int) $params['REQUEST_TIME'];
 
         $this->hasBadUrl = false;
-        if (strpos($this->uri, self::QUERY_INVALID_CHAR) !== false) {
+        if (!self::validateUrl($this->uri)) {
             $this->hasBadUrl = true;
             $this->data = [];
             $this->isRobot = true;
@@ -79,6 +79,12 @@ class Request
     public function isRobot(): bool
     {
         return $this->hasBadUrl || $this->isRobot;
+    }
+
+    private function validateUrl(string $url): bool
+    {
+        return strpos($url, self::URL_INVALID_CHAR) === false &&
+            substr_count($url, '?') < 2;
     }
 
     private static function escapeArray(array $in): array
