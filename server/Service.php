@@ -82,7 +82,7 @@ abstract class Service extends Handler
             'code' => $code,
             'uid' => $uid,
             'attempts' => 0,
-            'expTime' => $this->request->timestamp + 600
+            'expTime' => $this->request->timestamp + 3600
         ]);
         return $code;
     }
@@ -116,9 +116,9 @@ abstract class Service extends Handler
         $siteName = $this->getSiteName();
         $mailer->setSubject($user->username . '在' . $siteName . '的用户安全验证码');
         $contents = [
-            'username'    => $user->username,
+            'username' => $user->username,
             'ident_code' => $this->createIdentCode($user->id),
-            'sitename'    => $siteName
+            'sitename' => $siteName
         ];
         $mailer->setBody((string) new Template('mail/ident_code', $contents));
 
