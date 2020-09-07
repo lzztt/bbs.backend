@@ -16,7 +16,7 @@
     <article>
       <header>
         <a href="/app/user/<?= $p['uid'] ?>"><?= $p['username'] ?></a> <span class='city'><?= $p['city'] ?></span>
-        <span class='time'><?= $p['createTime'] . ($p['lastModifiedTime'] ? ' (修改于 ' . $p['lastModifiedTime'] . ')' : '') ?></span>
+        <span class='time'><?= $p['createTime'] . (empty($p['lastModifiedTime']) ? '' : ' (修改于 ' . $p['lastModifiedTime'] . ')') ?></span>
         <?php if ($p['type'] == 'comment'): ?>
           <span class="comment_num">#<?= $postNumStart + $index ?></span>
         <?php endif ?>
@@ -42,7 +42,7 @@
       <footer class='v_user'>
         <div class="actions">
           <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
-          <?php if ($p['report']): ?>
+          <?php if (!empty($p['report'])): ?>
             <button type="button" class="report" data-action="nid=<?= $nid ?>&uid=<?= $p['uid'] ?>">举报</button>
           <?php endif ?>
           <?php if ($tid == 16 && $p['type'] == 'node'): ?>

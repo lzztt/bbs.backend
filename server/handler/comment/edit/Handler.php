@@ -3,6 +3,7 @@
 namespace site\handler\comment\edit;
 
 use Exception;
+use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\Redirect;
@@ -14,6 +15,8 @@ class Handler extends Comment
 {
     public function run(): void
     {
+        $this->response->type = Response::JSON;
+
         // edit existing comment
         $cid = (int) $this->args[0];
 
@@ -37,7 +40,8 @@ class Handler extends Comment
 
         // FORUM comments images
         if ($this->request->data['update_file']) {
-            $files = is_array($this->request->data['files']) ? $this->request->data['files'] : [];
+            $files = $this->getFormFiles();
+
             $file = new Image();
             $file->cityId = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $comment->nid, $cid);

@@ -27,6 +27,7 @@ class Handler extends Controller
         $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
         $actList = $act->getActivityList($limit, $offset);
 
+        $data = '';
         foreach ($actList as $k => $n) {
             $type = ($n['start_time'] < $this->request->timestamp) ? (($n['end_time'] > $this->request->timestamp) ? 'activity_now' : 'activity_before') : 'activity_future';
             $data .= '<a href="/node/' . $n['nid'] . '" class="' . $type . '" data-before="' . date('m/d', (int) $n['start_time']) . '">' . $n['title'] . '</a>';

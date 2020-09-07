@@ -16,7 +16,7 @@
     <article>
       <header>
         <a href="/app/user/<?= $p['uid'] ?>"><?= $p['username'] ?></a> <span class='city'><?= $p['city'] ?></span>
-        <span class='time'><?= $p['createTime'] . ($p['lastModifiedTime'] ? ' (修改于 ' . $p['lastModifiedTime'] . ')' : '') ?></span>
+        <span class='time'><?= $p['createTime'] . (empty($p['lastModifiedTime']) ? '' : ' (修改于 ' . $p['lastModifiedTime'] . ')') ?></span>
         <?php if ($p['type'] == 'comment'): ?>
           <span class="comment_num">#<?= $postNumStart + $index ?></span>
         <?php endif ?>

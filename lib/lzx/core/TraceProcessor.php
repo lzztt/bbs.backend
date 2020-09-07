@@ -46,8 +46,8 @@ class TraceProcessor
     private function formatTrace(array $traces): array
     {
         return array_map(function (array $frame): string {
-            return ($frame['class'] ? $frame['class'] . $frame['type'] . $frame['function'] : $frame['function'])
-                    . ' @' . ($frame['file'] ? $this->trimPrefix($frame['file']) : '') . ':' . $frame['line'];
+            return (array_key_exists('class', $frame) ? $frame['class'] . $frame['type'] . $frame['function'] : $frame['function'])
+            . ' @' . (array_key_exists('file', $frame) ? $this->trimPrefix($frame['file']) : '') . ':' . $frame['line'];
         }, $traces);
     }
 

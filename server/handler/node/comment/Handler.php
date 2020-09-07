@@ -3,6 +3,7 @@
 namespace site\handler\node\comment;
 
 use Exception;
+use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\Redirect;
@@ -19,6 +20,8 @@ class Handler extends Node
 
     public function run(): void
     {
+        $this->response->type = Response::JSON;
+
         if ($this->request->uid == self::UID_GUEST) {
             throw new Forbidden();
         }
@@ -67,10 +70,12 @@ class Handler extends Node
             throw new ErrorMessage($e->getMessage());
         }
 
-        if ($this->request->data['files']) {
+        $files = $this->getFormFiles();
+
+        if ($files) {
             $file = new Image();
             $file->cityId = self::$city->id;
-            $file->updateFileList($this->request->data['files'], $this->config->path['file'], $nid, $comment->id);
+            $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
             $this->getCacheEvent('ImageUpdate')->trigger();
         }
 

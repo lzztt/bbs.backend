@@ -38,7 +38,7 @@ abstract class Handler
         }
 
         $pageCount = $nTotal > 0 ? (int) ceil($nTotal / $nPerPage) : 1;
-        if ($this->request->data['p']) {
+        if (array_key_exists('p', $this->request->data)) {
             if ($this->request->data['p'] === 'l') {
                 $pageNo = $pageCount;
             } elseif (is_numeric($this->request->data['p'])) {

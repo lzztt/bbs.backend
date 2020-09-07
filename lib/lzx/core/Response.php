@@ -80,9 +80,17 @@ class Response
                 $this->resp = new EmptyResponse(403);
             }
         } elseif ($e instanceof NotFound) {
-            $this->resp = new EmptyResponse(404);
+            if ($this->type === Response::JSON) {
+                $this->setContent(['error' => 'Not Found']);
+            } else {
+                $this->resp = new EmptyResponse(404);
+            }
         } elseif ($e instanceof Redirect) {
-            $this->resp = new RedirectResponse($e->getMessage());
+            if ($this->type === Response::JSON) {
+                $this->setContent(['redirect' => $e->getMessage()]);
+            } else {
+                $this->resp = new RedirectResponse($e->getMessage());
+            }
         } else {
             throw $e;
         }

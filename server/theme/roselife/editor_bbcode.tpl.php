@@ -1,24 +1,32 @@
 <form enctype="multipart/form-data" id="bbcode_editor" class='v_user' method="post" accept-charset="UTF-8" action="<?= $form_handler ?>">
-  <fieldset class="node_title"<?php if (!$displayTitle): ?> style='display: none;'<?php endif ?>>
+  <fieldset class="node_title"<?php if (empty($displayTitle)): ?> style='display: none;'<?php endif ?>>
     <label class='label' for="title">标题</label>
-    <input type="text" name="title" value="<?= $title ?>" placeholder="最少5个字母或3个汉字">
+    <input type="text" name="title" value="<?= empty($title) ? '' : $title ?>" placeholder="最少5个字母或3个汉字">
   </fieldset>
   <fieldset>
     <label class='label' for="body">正文</label>
     <textarea name="body" required placeholder="最少5个字母或3个汉字"></textarea>
   </fieldset>
-  <?php if ($hasFile): ?>
+  <?php if (!empty($hasFile)): ?>
     <fieldset>
       <label class='label'>文件附件</label>
       <input type="hidden" name='update_file' value='1'>
-      <table id="file_list" style="display:none;">
-        <thead><tr><th>图片名</th><th>BBCode</th><th>删除</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div id="file_list"></div>
+      <template>
+        <figure>
+          <img src="" width="200">
+          <figcaption width="200">
+            <input disabled type="text" value="" name="file_id[]" hidden>
+            <label>名称</label><input disabled type="text" value="" size=15 name="file_name[]"><br>
+            <label>代码</label><input disabled type="text" value="" size=15 name="file_code[]"><br>
+            <button type="button">删除</button>
+          </figcaption>
+        </figure>
+      </template>
       <div>
-        <label for="ajax_file_select">上传新附件</label>
-        <input type="file" id="file_select" class="form-file" name="attachment[]" multiple="multiple"><button type="button" id="file_upload">上传</button> <button type="button" id="file_clear">取消选中图片</button>
-        <div class="description">分辨率大于 <em>600x960</em> 的图片将被调整尺寸。 文件最大上传大小为 <em>1 MB</em> 。只允许以下上传文件格式：<em>jpg jpeg gif png</em> 。 </div>
+        <label for="ajax_file_select">上传图片</label>
+        <input type="file" id="file_select">
+        <div class="description">宽度大于 <em>600</em> 像素的图片将被调整尺寸。</div>
       </div>
     </fieldset>
   <?php endif ?>

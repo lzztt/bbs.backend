@@ -60,7 +60,7 @@ class WebApp extends App
         $request->uid = $session->get('uid');
 
         $this->logger->addExtraInfo([
-            'user' => 'https://www.' + $this->config->domain + '/app/user/' . $request->uid,
+            'user' => 'https://www.' . $this->config->domain . '/app/user/' . $request->uid,
             'ip' => $request->ip,
             'city' => self::getLocationFromIp($request->ip),
         ]);
@@ -95,7 +95,7 @@ class WebApp extends App
         $session->close();
 
         if ($this->debug) {
-            $this->logger->info($db->queries);
+            $this->logger->info(implode(' ', $db->queries));
         }
 
         $db->flush();

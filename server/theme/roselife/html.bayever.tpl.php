@@ -117,7 +117,7 @@
     <div id="popupbox"></div>
     <a id="goTop" class="button">返回顶部</a>
   </body>
-  <?php if (!$debug): ?>
+  <?php if (!$tpl_debug): ?>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-36671672-5"></script>
     <script>
       window.dataLayer = window.dataLayer || [];

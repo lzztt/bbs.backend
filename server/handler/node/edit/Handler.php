@@ -3,6 +3,7 @@
 namespace site\handler\node\edit;
 
 use Exception;
+use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\Redirect;
@@ -17,6 +18,8 @@ class Handler extends Node
 {
     public function run(): void
     {
+        $this->response->type = Response::JSON;
+
         list($nid, $type) = $this->getNodeType();
         switch ($type) {
             case self::FORUM_TOPIC:
@@ -69,7 +72,8 @@ class Handler extends Node
         $comment->lastModifiedTime = $this->request->timestamp;
         $comment->update();
 
-        $files = is_array($this->request->data['files']) ? $this->request->data['files'] : [];
+        $files = $this->getFormFiles();
+
         $file = new Image();
         $file->cityId = self::$city->id;
         $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);
@@ -94,6 +98,8 @@ class Handler extends Node
         }
 
         if (!$this->request->data) {
+            $this->response->type = Response::HTML;
+
             // display edit interface
             $nodeObj = new NodeObject();
             $contents = $nodeObj->getYellowPageNode($nid);
@@ -118,13 +124,12 @@ class Handler extends Node
             $node->lastModifiedTime = $this->request->timestamp;
             $node->update();
 
-            $node_yp = new NodeYellowPage($nid);
-            $keys = ['address', 'phone', 'email', 'website', 'fax'];
-            foreach ($keys as $k) {
-                $node_yp->$k = $this->request->data[$k] ? $this->request->data[$k] : null;
+            $nodeYP = new NodeYellowPage($nid);
+            foreach (array_diff($nodeYP->getProperties(), ['nid', 'adId']) as $k) {
+                $nodeYP->$k = !empty($this->request->data[$k]) ? $this->request->data[$k] : null;
             }
 
-            $node_yp->update();
+            $nodeYP->update();
 
             $comment = new Comment();
             $comment->nid = $nid;
@@ -136,7 +141,8 @@ class Handler extends Node
             $comment->lastModifiedTime = $this->request->timestamp;
             $comment->update();
 
-            $files = is_array($this->request->data['files']) ? $this->request->data['files'] : [];
+            $files = $this->getFormFiles();
+
             $file = new Image();
             $file->cityId = self::$city->id;
             $file->updateFileList($files, $this->config->path['file'], $nid, $comment->id);

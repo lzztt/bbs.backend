@@ -3,6 +3,7 @@
 namespace site\handler\forum\node;
 
 use Exception;
+use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Redirect;
 use site\SpamFilterTrait;
@@ -17,6 +18,8 @@ class Handler extends Forum
 
     public function run(): void
     {
+        $this->response->type = Response::JSON;
+
         if ($this->request->uid == self::UID_GUEST) {
             throw new Redirect('/app/user/login');
         }
@@ -24,7 +27,7 @@ class Handler extends Forum
         $tag = $this->getTagObj();
         $tagTree = $tag->getTagTree();
 
-        if ($tagTree[$tag->id]['children']) {
+        if (!empty($tagTree[$tag->id]['children'])) {
             throw new ErrorMessage('Could not post topic in this forum');
         }
         $this->createTopic($tag->id);
@@ -62,10 +65,12 @@ class Handler extends Forum
             throw new ErrorMessage($e->getMessage());
         }
 
-        if ($this->request->data['files']) {
+        $files = $this->getFormFiles();
+
+        if ($files) {
             $file = new Image();
             $file->cityId = self::$city->id;
-            $file->updateFileList($this->request->data['files'], $this->config->path['file'], $node->id, $comment->id);
+            $file->updateFileList($files, $this->config->path['file'], $node->id, $comment->id);
             $this->getCacheEvent('ImageUpdate')->trigger();
         }
 

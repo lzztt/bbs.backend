@@ -69,7 +69,7 @@ class Geo
         if ($this->continent->en === self::ASIA_EN) {
             $city = $this->city->zh;
         }
-        if (!$city && $this->country->en !== self::CHINA_EN) {
+        if (empty($city) && $this->country->en !== self::CHINA_EN) {
             $city = $this->city->en;
         }
         return $city;

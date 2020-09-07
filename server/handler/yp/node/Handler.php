@@ -2,6 +2,7 @@
 
 namespace site\handler\yp\node;
 
+use lzx\core\Response;
 use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
@@ -40,6 +41,8 @@ class Handler extends Controller
             $ad->order('expTime', false);
             $this->var['content'] = new Template('editor_bbcode_yp', ['ads' => $ad->getList('name')]);
         } else {
+            $this->response->type = Response::JSON;
+
             $node = new Node();
             $node->tid = $tid;
             $node->uid = $this->request->uid;
@@ -64,10 +67,12 @@ class Handler extends Controller
             }
             $nodeYP->add();
 
-            if (isset($this->request->data['files'])) {
+            $files = $this->getFormFiles();
+
+            if ($files) {
                 $file = new Image();
                 $file->cityId = self::$city->id;
-                $file->updateFileList($this->request->data['files'], $this->config->path['file'], $node->id, $comment->id);
+                $file->updateFileList($files, $this->config->path['file'], $node->id, $comment->id);
             }
 
             $tag = new Tag($tid, 'parent');

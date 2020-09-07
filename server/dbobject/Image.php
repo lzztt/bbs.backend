@@ -40,23 +40,20 @@ class Image extends DBObject
             if (is_numeric($fid)) {
                 // existing image
                 $fid = (int) $fid;
-                if ($file['name'] != $images[$fid]['name']) {
+                if (array_key_exists($fid, $images) && $file['name'] != $images[$fid]['name']) {
                     $this->call('image_update(:fid, :name)', [':fid' => $fid, ':name' => $file['name']]);
                 }
                 unset($images[$fid]);
             } else {
                 // new uploaded files
                 try {
-                    $info = getimagesize($filePath . $file['path']);
-                    $width = $info[0];
-                    $height = $info[1];
                     $this->call('image_add(:nid, :cid, :name, :path, :height, :width, :city_id)', [
                         ':nid' => $nid,
                         ':cid' => $cid,
                         ':name' => $file['name'],
                         ':path' => $file['path'],
-                        ':height' => $height,
-                        ':width' => $width,
+                        ':height' => $file['height'],
+                        ':width' => $file['width'],
                         ':city_id' => $this->cityId]);
                 } catch (Exception $e) {
                     Logger::getInstance()->logException($e);

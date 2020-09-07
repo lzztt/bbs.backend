@@ -34,14 +34,14 @@ class Handler extends Node
     {
         $nodeObj = new NodeObject();
         $node = $nodeObj->getForumNode($nid);
+        if (!$node) {
+            throw new NotFound();
+        }
+
         $tags = $nodeObj->getTags($nid);
 
         $this->var['head_title'] = $node['title'];
         $this->var['head_description'] = $node['title'];
-
-        if (!$node) {
-            throw new NotFound();
-        }
 
         $breadcrumb = [];
         foreach ($tags as $i => $t) {
@@ -85,9 +85,7 @@ class Handler extends Node
             foreach ($comments as $c) {
                 $c['type'] = 'comment';
                 $c['createTime'] = date('m/d/Y H:i', (int) $c['create_time']);
-                if ($c['lastModifiedTime']) {
-                    $c['lastModifiedTime'] = date('m/d/Y H:i', (int) $c['last_modified_time']);
-                }
+                $c['lastModifiedTime'] = empty($c['lastModifiedTime']) ? '' : date('m/d/Y H:i', (int) $c['last_modified_time']);
 
                 try {
                     $c['HTMLbody'] = BBCode::parse($c['body']);
@@ -201,14 +199,14 @@ class Handler extends Node
     {
         $nodeObj = new NodeObject();
         $node = $nodeObj->getYellowPageNode($nid);
+        if (!$node) {
+            throw new NotFound();
+        }
+
         $tags = $nodeObj->getTags($nid);
 
         $this->var['head_title'] = $node['title'];
         $this->var['head_description'] = $node['title'];
-
-        if (!$node) {
-            throw new NotFound();
-        }
 
         $breadcrumb = [];
         foreach ($tags as $i => $t) {
@@ -223,9 +221,7 @@ class Handler extends Node
 
         $contents = [
             'nid' => $nid,
-            'cid' => $tags[2]['cid'],
             'commentCount' => $node['comment_count'],
-            'status' => $node['status'],
             'breadcrumb' => Template::breadcrumb($breadcrumb),
             'pager' => $pager,
             'postNumStart' => $postNumStart,
@@ -253,13 +249,9 @@ class Handler extends Node
 
                     $nodeComment = false;
                 } else {
-                    $c['id'] = $c['id'];
                     $c['type'] = 'comment';
                     $c['createTime'] = date('m/d/Y H:i', (int) $c['create_time']);
-                    if ($c['lastModifiedTime']) {
-                        $c['lastModifiedTime'] = date('m/d/Y H:i', (int) $c['last_modified_time']);
-                    }
-                    $c['HTMLbody'] = nl2br($c['body']);
+                    $c['lastModifiedTime'] = empty($c['lastModifiedTime']) ? '' : date('m/d/Y H:i', (int) $c['last_modified_time']);
                     try {
                         $c['HTMLbody'] = BBCode::parse($c['body']);
                     } catch (Exception $e) {

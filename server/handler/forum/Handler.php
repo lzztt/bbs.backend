@@ -22,7 +22,7 @@ class Handler extends Forum
         $this->var['head_title'] = $tagTree[$tid]['name'];
         $this->var['head_description'] = $tagTree[$tid]['name'];
 
-        $tagTree[$tid]['children'] ? $this->showForumList($tid, $tagRoot, $tagTree) : $this->showTopicList($tid, $tagRoot);
+        !empty($tagTree[$tid]['children']) ? $this->showForumList($tid, $tagRoot, $tagTree) : $this->showTopicList($tid, $tagRoot);
     }
 
     // $forum, $groups, $boards are arrays of category id

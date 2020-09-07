@@ -11,7 +11,6 @@ class NodeYellowPage extends DBObject
     public $adId;
     public $address;
     public $phone;
-    public $fax;
     public $email;
     public $website;
 

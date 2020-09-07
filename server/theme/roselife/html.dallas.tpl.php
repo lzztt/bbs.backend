@@ -97,7 +97,7 @@
     <div id="popupbox"></div>
     <a id="goTop" class="button">返回顶部</a>
   </body>
-  <?php if (!$debug): ?>
+  <?php if (!$tpl_debug): ?>
     <script>
       (function(i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r;

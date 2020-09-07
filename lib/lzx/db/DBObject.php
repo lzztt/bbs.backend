@@ -161,7 +161,9 @@ abstract class DBObject
     private function sync(): void
     {
         foreach ($this->properties as $p) {
-            if ($this->$p === $this->values[$p]) {
+            if ((!array_key_exists($p, $this->values) && $this->$p === NULL)
+                || (array_key_exists($p, $this->values) && $this->$p === $this->values[$p])
+            ) {
                 continue;
             }
             $this->setValue($p, $this->$p);

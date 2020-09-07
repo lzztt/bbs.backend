@@ -41,7 +41,7 @@ class Reader
     public function get(string $ip): Geo
     {
         static $cache = [];
-        
+
         if (strlen($ip) === 4) {
             $key = $ip;
             $ip = inet_ntop($ip);
@@ -73,7 +73,7 @@ class Reader
             return Geo::getEmpty();
         }
 
-        if (!$r['country']['names']) {
+        if (empty($r['country']['names'])) {
             return Geo::getEmpty();
         }
 
@@ -82,30 +82,34 @@ class Reader
             $country = new Name(self::CHINA_EN, self::CHINA_ZH);
             $region = new Name($name, self::$CHINA_REGIONS[$name]);
         } else {
-            $country = new Name(
-                (string) $r['country']['names'][self::LANG_EN],
-                (string) $r['country']['names'][self::LANG_ZH]
-            );
-            $region = new Name(
-                (string) $r['subdivisions'][0]['names'][self::LANG_EN],
-                (string) $r['subdivisions'][0]['names'][self::LANG_ZH]
-            );
+            $country = empty($r['country']['names'])
+                ? new Name('', '')
+                : $this->getName($r['country']['names']);
+            $region = empty($r['subdivisions'][0]['names'])
+                ? new Name('', '')
+                : $this->getName($r['subdivisions'][0]['names']);
         }
 
-        $city = new Name(
-            (string) $r['city']['names'][self::LANG_EN],
-            (string) $r['city']['names'][self::LANG_ZH]
-        );
+        $city = empty($r['city']['names'])
+            ? new Name('', '')
+            : $this->getName($r['city']['names']);
 
-        $continent = new Name(
-            (string) $r['continent']['names'][self::LANG_EN],
-            (string) $r['continent']['names'][self::LANG_ZH]
-        );
+        $continent = empty($r['continent']['names'])
+            ? new Name('', '')
+            : $this->getName($r['continent']['names']);
 
         $geo = new Geo($city, $region, $country, $continent);
 
         $cache[$key] = $geo;
         return $geo;
+    }
+
+    private function getName(array $data): Name
+    {
+        return new Name(
+            array_key_exists(self::LANG_EN, $data) ? $data[self::LANG_EN] : '',
+            array_key_exists(self::LANG_ZH, $data) ? $data[self::LANG_ZH] : ''
+        );
     }
 
     private function findChinaRegion(array $names): ?string

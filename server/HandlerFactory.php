@@ -44,7 +44,7 @@ class HandlerFactory
         $cls = null;
         while ($keys) {
             $key = implode('/', $keys);
-            $cls = HandlerRouter::$route[$key];
+            $cls = array_key_exists($key, HandlerRouter::$route) ? HandlerRouter::$route[$key] : null;
 
             if ($cls) {
                 break;

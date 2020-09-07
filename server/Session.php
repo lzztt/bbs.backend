@@ -47,7 +47,7 @@ class Session
 
     private function loadDbSession(): bool
     {
-        $sid = $_COOKIE[self::SID_NAME];
+        $sid = empty($_COOKIE[self::SID_NAME]) ? '' : $_COOKIE[self::SID_NAME];
 
         if (!$sid) {
             return false;
@@ -133,7 +133,7 @@ class Session
             return;
         }
 
-        if ($this->current['id'] !== $this->original['id']) {
+        if (!$this->original || $this->current['id'] !== $this->original['id']) {
             $this->insertDbSession();
         } else {
             $this->updateDbSession();

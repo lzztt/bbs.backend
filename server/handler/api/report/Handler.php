@@ -73,7 +73,7 @@ class Handler extends Service
                             $user->where('id', $reporterUids, '=');
                             $reporterIps = array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp'));
                         }
-                        if ($reporterIps && count($reporterIps) >= 3) {
+                        if (!empty($reporterIps) && count($reporterIps) >= 3) {
                             $spammer->delete();
                             foreach ($spammer->getAllNodeIDs() as $nid) {
                                 $this->getIndependentCache('/node/' . $nid)->delete();

@@ -22,7 +22,6 @@ abstract class Controller extends Handler
     public $args;
     public $id;
     public $config;
-    public $cache;
     public $site;
     public $session;
     protected $var = [];
@@ -68,11 +67,11 @@ abstract class Controller extends Handler
 
         // set headers
         $siteName = self::$city->domain === 'bayever.com' ? '生活在湾区' : '缤纷' . self::$city->nameZh;
-        if (!$this->var['head_title']) {
+        if (!array_key_exists('head_title', $this->var)) {
             $this->var['head_title'] = $siteName;
         }
 
-        if (!$this->var['head_description']) {
+        if (!array_key_exists('head_description', $this->var)) {
             $this->var['head_description'] = self::$city->nameZh . ' 华人 论坛 租房 旅游 黄页 移民 周末活动 单身 交友 ' . self::$city->nameEn . ' Chinese Forum';
         } else {
             $this->var['head_description'] = $this->var['head_description'] . ' ' . self::$city->nameZh . ' 华人 论坛 ' . self::$city->nameEn . ' Chinese Forum';

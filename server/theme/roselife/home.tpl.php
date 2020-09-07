@@ -16,7 +16,7 @@
   <header>最新论坛回复</header><?= $latestForumTopicReplies ?></section><section class="items home_hot_nodes">
   <header>本周热门</header><?= $hotForumTopics ?></section><section class="items">
   <header>最新黄页一</header><?= $latestYellowPages[0] ?></section><section class="items">
-  <header>最新黄页二</header><?= $latestYellowPages[1] ?></section><section class="items">
+  <header>最新黄页二</header><?= count($latestYellowPages) > 1 ? $latestYellowPages[1] : '' ?></section><section class="items">
   <header>最新黄页回复</header><?= $latestYellowPageReplies ?></section>
 <div id='site_stat' class='ajax_load' data-ajax='/api/stat'>
   <div>当前在线用户：<span class='ajax_onlineCount'></span> (<span class='ajax_onlineUserCount'></span> 用户| <span class='ajax_onlineGuestCount'></span> 访客)</div>

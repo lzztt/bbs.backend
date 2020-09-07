@@ -7,14 +7,16 @@ use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\html\Template;
+use site\File;
 use site\dbobject\User;
 
 trait HandlerTrait
 {
     protected static $city;
     private static $cacheHandler;
-    private $independentCacheList = [];
-    private $cacheEvents = [];
+    protected $cache;
+    protected $independentCacheList = [];
+    protected $cacheEvents = [];
 
     private function staticInit(): void
     {
@@ -135,5 +137,33 @@ trait HandlerTrait
         foreach ($user->getAllNodeIDs() as $nid) {
             $this->getIndependentCache('/node/' . $nid)->delete();
         }
+    }
+
+    protected function getFormFiles(): array
+    {
+        $files = [];
+        if (!empty($this->request->data['file_id']) && is_array($this->request->data['file_id'])) {
+            $ids = $this->request->data['file_id'];
+            $names = $this->request->data['file_name'];
+            $new = [];
+            for ($i = 0; $i < count($ids); $i++) {
+                if (strlen($ids[$i]) === 3) {
+                    $new[$ids[$i]]['name'] = $names[$i];
+                } else {
+                    $files[$ids[$i]]['name'] = $names[$i];
+                }
+            }
+
+            if (count($new) && count($_FILES)) {
+                $saveDir = $this->config->path['file'];
+                $saveName = $this->request->timestamp . $this->request->uid;
+                $upload = File::saveFiles($_FILES, $saveDir, $saveName, $this->config->image);
+                foreach ($upload['saved'] as $f) {
+                    $f['name'] = $new[$f['name']]['name'];
+                    $files[$f['path']] = $f;
+                }
+            }
+        }
+        return $files;
     }
 }

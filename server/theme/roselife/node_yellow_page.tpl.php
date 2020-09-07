@@ -22,7 +22,9 @@
       <?php endif ?>
     </ul>
   </div>
-  <div class="article_content"><?= $node['HTMLbody'] . $node['attachments'] ?></div>
+  <?php if (!empty($node['HTMLbody'])): ?>
+    <div class="article_content"><?= $node['HTMLbody'] . $node['attachments'] ?></div>
+  <?php endif ?>
 </article>
 
 <?php if ($comments): ?>
@@ -32,18 +34,18 @@
       <a id="comment<?= $c['id'] ?>"></a>
       <article>
         <header>
-          <a href="/app/user/<?= $c['uid'] ?>"><?= $c['username'] ?></a> <span class='city'><?= $c['city'] ?></span>
+          <a href="/app/user/<?= $c['uid'] ?>"><?= $c['username'] ?></a>
           <span class='time'><?= $c['createTime'] . ($c['lastModifiedTime'] ? ' (修改于 ' . $c['lastModifiedTime'] . ')' : '') ?></span>
           <?php if ($c['type'] == 'comment'): ?>
             <span class="comment_num">#<?= $postNumStart + $index ?></span>
           <?php endif ?>
         </header>
 
-        <div class="article_content"><?= $c['HTMLbody'] . $c['attachments'] ?></div>
+        <div class="article_content"><?= $c['HTMLbody'] ?></div>
 
         <footer class='v_user'>
           <div class="actions">
-            <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $c['uid'] ?>
+            <?php $urole = 'v_user_superadm' . ' v_user_' . $c['uid'] ?>
             <button type="button" class="edit <?= $urole ?>" data-action="<?= '/' . $c['type'] . '/' . $c['id'] . '/edit' ?>" data-raw="#<?= $c['type'] . '-' . $c['id'] ?>_raw">编辑</button>
             <button type="button" class="delete <?= $urole ?>" data-action="<?= '/' . $c['type'] . '/' . $c['id'] . '/delete' ?>">删除</button>
             <button type="button" class="reply" data-action="/node/<?= $nid ?>/comment">回复</button>
