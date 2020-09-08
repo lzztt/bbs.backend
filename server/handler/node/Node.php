@@ -14,10 +14,9 @@ abstract class Node extends Controller
 
     protected function getNodeType(): array
     {
-        $types = [
-            self::$city->tidForum => self::FORUM_TOPIC,
-            self::$city->tidYp => self::YELLOW_PAGE,
-        ];
+        if (count($this->args) < 1) {
+            throw new NotFound();
+        }
 
         $nid = (int) $this->args[0];
         if ($nid <= 0) {
@@ -32,6 +31,11 @@ abstract class Node extends Controller
         }
 
         $rootTagID = array_shift(array_keys($tags));
+
+        $types = [
+            self::$city->tidForum => self::FORUM_TOPIC,
+            self::$city->tidYp => self::YELLOW_PAGE,
+        ];
 
         if (!array_key_exists($rootTagID, $types)) {
             throw new NotFound();

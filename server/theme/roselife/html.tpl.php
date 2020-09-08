@@ -4,9 +4,9 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 
-  <!--BEGIN JS-->
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-  <script defer src="//cdnjs.cloudflare.com/ajax/libs/pica/6.1.1/pica.min.js" integrity="sha512-bfVc1C16JO+zN0PADKfNz2gZz+x3H1ZGo7aLsHz1i7XncAb3eE/GV559ndX1pMhwPtjwIe+0y9EgX99l4PmFIA==" crossorigin="anonymous"></script>
+    <!--BEGIN JS-->
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/pica/6.1.1/pica.min.js" integrity="sha512-bfVc1C16JO+zN0PADKfNz2gZz+x3H1ZGo7aLsHz1i7XncAb3eE/GV559ndX1pMhwPtjwIe+0y9EgX99l4PmFIA==" crossorigin="anonymous"></script>
 
     <?php if ($tpl_debug): ?>
       <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.cookie.js"></script>

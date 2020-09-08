@@ -29,7 +29,7 @@
       <footer class='v_user'>
         <div class="actions">
           <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
-          <?php if ($p['report']): ?>
+          <?php if (!empty($p['report'])): ?>
             <button type="button" class="report" data-action="nid=<?= $nid ?>&uid=<?= $p['uid'] ?>">举报</button>
           <?php endif ?>
           <?php if ($tid == 16 && $p['type'] == 'node'): ?>

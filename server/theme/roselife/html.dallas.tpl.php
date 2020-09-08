@@ -5,18 +5,8 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 
     <!--BEGIN JS-->
-    <!--[if lt IE 9]>
-    <script defer src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script defer src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <script>
-      if ('querySelector' in document && 'localStorage' in window && 'addEventListener' in window) {
-        document.write('<script defer src="//code.jquery.com/jquery-2.1.3.min.js"><\/script>');
-      } else {
-        document.write('<script defer src="//code.jquery.com/jquery-1.11.2.min.js"><\/script>');
-      }
-    </script>
-    <script>(typeof JSON === 'object') || document.write('<script defer src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"><\/script>')</script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/pica/6.1.1/pica.min.js" integrity="sha512-bfVc1C16JO+zN0PADKfNz2gZz+x3H1ZGo7aLsHz1i7XncAb3eE/GV559ndX1pMhwPtjwIe+0y9EgX99l4PmFIA==" crossorigin="anonymous"></script>
 
     <?php if ($tpl_debug): ?>
       <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.cookie.js"></script>
@@ -26,6 +16,7 @@
       <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.markitup.js"></script>
       <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.markitup.bbcode.set.js"></script>
       <script defer src="/themes/<?= $tpl_theme ?>/js/jquery.upload-1.0.2.js"></script>
+      <script defer src="/themes/<?= $tpl_theme ?>/js/image-blob-reduce.js"></script>
       <script defer src="/themes/<?= $tpl_theme ?>/js/main.js"></script>
     <?php else: ?>
       <script defer src="/themes/<?= $tpl_theme ?>/min/<?= $min_version ?>.min.js"></script>
@@ -47,7 +38,7 @@
       <link href="/themes/<?= $tpl_theme ?>/css/fontello.css" rel="stylesheet" type="text/css">
     <?php else: ?>
       <link href="/themes/<?= $tpl_theme ?>/min/<?= $min_version ?>.min.css" rel="stylesheet" type="text/css">
-      <link href="/themes/<?= $tpl_theme ?>/min/1464241922.dallas.min.css" rel="stylesheet" type="text/css">
+      <link href="/themes/<?= $tpl_theme ?>/min/<?= $min_version ?>.dallas.min.css" rel="stylesheet" type="text/css">
     <?php endif ?>
     <!--END CSS-->
 
