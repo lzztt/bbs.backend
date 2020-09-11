@@ -3,38 +3,26 @@
 namespace lzx\cache;
 
 use lzx\cache\Cache;
-use lzx\cache\CacheHandlerInterface;
 
-class CacheEvent
+class CacheEvent extends Cache
 {
-    static protected $handler;
-    protected $id;
-    protected $name;
-    protected $objID;
-    protected $listeners = [];
-    protected $dirty = false;
-    protected $triggered = false;
+    protected $children = [];
 
-    public static function setHandler(CacheHandlerInterface $handler): void
+    public function __construct(string $key, int $objectID = 0)
     {
-        self::$handler = $handler;
-    }
+        parent::__construct($key);
 
-    public function __construct(string $name, int $objectID = 0)
-    {
-        $this->name = self::$handler->getCleanName($name);
-
-        $this->objID = (int) $objectID;
-        if ($this->objID < 0) {
-            $this->objID = 0;
+        $this->data = (int) $objectID;
+        if ($this->data < 0) {
+            $this->data = 0;
         }
     }
 
     public function addListener(Cache $c): void
     {
         if ($c) {
-            if (!in_array($c->getKey(), $this->listeners)) {
-                $this->listeners[] = $c->getKey();
+            if (!in_array($c->getKey(), $this->children)) {
+                $this->children[] = $c->getKey();
             }
             $this->dirty = true;
         }
@@ -42,33 +30,25 @@ class CacheEvent
 
     public function trigger(): void
     {
-        $this->triggered = true;
+        $this->deleted = true;
         $this->dirty = true;
     }
 
     public function flush(): void
     {
         if ($this->dirty) {
-            $this->id = self::$handler->getID($this->name);
+            $this->id = self::$handler->getId($this->key);
 
-            if ($this->triggered) {
-                // update current listeners
-                foreach ($this->listeners as $key) {
-                    $c = self::$handler->createCache($key);
-                    $c->delete();
-                    $c->flush();
+            if ($this->deleted) {
+                // update children
+                foreach (array_unique(array_merge($this->children, self::$handler->getEventListeners($this))) as $key) {
+                    self::deleteCache($key);
                 }
-                // clear current listeners
-                $this->listeners = [];
 
-                // update listeners in DB
-                foreach (self::$handler->getEventListeners($this->id, $this->objID) as $key) {
-                    $c = self::$handler->createCache($key);
-                    $c->delete();
-                    $c->flush();
-                }
+                // clear current children
+                $this->children = [];
             } else {
-                self::$handler->addEventListeners($this->id, $this->objID, $this->listeners);
+                self::$handler->addEventListeners($this, $this->children);
             }
             $this->dirty = false;
         }

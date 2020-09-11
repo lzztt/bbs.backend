@@ -1,4 +1,4 @@
-<?= $breadcrumb ?>
+<?= empty($breadcrumb) ? '' : $breadcrumb ?>
 <?php foreach ($groups as $group_id => $tags): ?>
   <table>
     <thead>

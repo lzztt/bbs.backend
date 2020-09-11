@@ -135,8 +135,8 @@ class Handler extends Service
             throw new ErrorMessage('不合法的电子邮箱 : ' . $this->request->data['email']);
         }
 
-        if (isset($this->request->data['submit']) || $this->isBot($this->request->data['email'])) {
-            $this->logger->info('STOP SPAMBOT : ' . $this->request->data['email']);
+        if (isset($this->request->data['submit']) || $this->isBot($this->request->ip, $this->request->data['email'])) {
+            $this->logger->info('STOP SPAMBOT : ' . $this->request->ip . ' ' . $this->request->data['email']);
             throw new ErrorMessage('系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。');
         }
 
@@ -198,14 +198,13 @@ class Handler extends Service
         $this->json();
     }
 
-    private function isBot(string $m): bool
+    private function isBot(string $ip, string $email): bool
     {
-        $try1 = unserialize(self::curlGet('http://www.stopforumspam.com/api?f=serial&email=' . $m));
-        if ($try1['email']['appears'] == 1) {
-            return true;
-        }
-        $try2 = self::curlGet('http://botscout.com/test/?mail=' . $m);
-        if ($try2[0] == 'Y') {
+        $url = 'http://api.stopforumspam.org/api?json&ip=' . $ip . '&email=' . $email;
+        $data = json_decode(self::curlGet($url));
+        if ((!empty($data->ip->appears) && $data->ip->appears > 0)
+            || (!empty($data->email->appears) && $data->email->appears > 0)
+        ) {
             return true;
         }
         return false;

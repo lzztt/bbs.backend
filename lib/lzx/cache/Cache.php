@@ -8,16 +8,14 @@ use lzx\core\Logger;
 
 abstract class Cache
 {
-    static protected $handler;
-    static protected $logger;
-    static protected $ids = [];
-    protected $key;
+    static protected CacheHandlerInterface $handler;
+    static protected Logger $logger;
+    protected string $key;
     protected $data;
-    protected $deleted = false;
-    protected $parents = [];
-    protected $events = [];
-    protected $id;
-    protected $dirty = false;
+    protected bool $deleted = false;
+    protected array $parents = [];
+    protected int $id;
+    protected bool $dirty = false;
 
     public static function setHandler(CacheHandlerInterface $handler): void
     {
@@ -29,14 +27,31 @@ abstract class Cache
         self::$logger = $logger;
     }
 
+    protected static function deleteCache($key): void
+    {
+        $cache = self::$handler->createCache($key);
+        $cache->delete();
+        $cache->flush();
+    }
+
     public function __construct(string $key)
     {
         $this->key = self::$handler->getCleanName($key);
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getKey(): string
     {
         return $this->key;
+    }
+
+    public function getData()
+    {
+        return $this->data;
     }
 
     public function store(string $data): void
@@ -79,14 +94,5 @@ abstract class Cache
     protected function writeDataFile(string $data): void
     {
         file_put_contents(self::$handler->getFileName($this), $data, LOCK_EX);
-    }
-
-    protected function deleteChildren(): void
-    {
-        foreach (self::$handler->getChildren($this->id) as $key) {
-            $cache = self::$handler->createCache($key);
-            $cache->delete();
-            $cache->flush();
-        }
     }
 }

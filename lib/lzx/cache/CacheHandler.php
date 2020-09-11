@@ -145,7 +145,7 @@ class CacheHandler implements CacheHandlerInterface
         return $filename;
     }
 
-    public function getID(string $name): int
+    public function getId(string $name): int
     {
         static $ids = [];
         // found from cached id
@@ -175,22 +175,22 @@ class CacheHandler implements CacheHandlerInterface
         return $id;
     }
 
-    public function unlinkParents(int $id): void
+    public function unlinkParents(Cache $cache): void
     {
-        $this->db->query('DELETE FROM ' . $this->treeTable . ' WHERE cid = :cid', [':cid' => $id]);
+        $this->db->query('DELETE FROM ' . $this->treeTable . ' WHERE cid = :cid', [':cid' => $cache->getId()]);
     }
 
-    public function linkParents(int $id, array $parents): void
+    public function linkParents(Cache $cache, array $parents): void
     {
         if ($parents) {
             array_unique($parents);
 
-            $existing = array_column($this->db->query('SELECT DISTINCT(pid) AS id FROM ' . $this->treeTable . ' WHERE cid = :cid', [':cid' => $id]), 'id');
+            $existing = array_column($this->db->query('SELECT DISTINCT(pid) AS id FROM ' . $this->treeTable . ' WHERE cid = :cid', [':cid' => $cache->getId()]), 'id');
             $values = [];
             foreach ($parents as $key) {
-                $pid = $this->getID($key);
+                $pid = $this->getId($key);
                 if (!in_array($pid, $existing)) {
-                    $values[] = '(' . $pid . ',' . $id . ')';
+                    $values[] = '(' . $pid . ',' . $cache->getId() . ')';
                 }
             }
 
@@ -200,9 +200,9 @@ class CacheHandler implements CacheHandlerInterface
         }
     }
 
-    public function getChildren(int $id): array
+    public function getChildren(Cache $cache): array
     {
-        $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->treeTable . ' AS t ON c.id = t.cid WHERE t.pid = :pid', [':pid' => $id]);
+        $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->treeTable . ' AS t ON c.id = t.cid WHERE t.pid = :pid', [':pid' => $cache->getId()]);
         foreach ($children as $c) {
             $this->ids[$c['name']] = $c['id'];
         }
@@ -210,14 +210,14 @@ class CacheHandler implements CacheHandlerInterface
         return array_column($children, 'name');
     }
 
-    public function unlinkEvents(int $id): void
+    public function unlinkEvents(Cache $cache): void
     {
-        $this->db->query('DELETE FROM ' . $this->eventTable . ' WHERE lid = :lid', [':lid' => $id]);
+        $this->db->query('DELETE FROM ' . $this->eventTable . ' WHERE lid = :lid', [':lid' => $cache->getId()]);
     }
 
-    public function getEventListeners(int $eid, int $oid): array
+    public function getEventListeners(Cache $cache): array
     {
-        $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->eventTable . ' AS e ON c.id = e.lid WHERE e.eid = :eid AND e.oid = :oid', [':eid' => $eid, ':oid' => $oid]);
+        $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->eventTable . ' AS e ON c.id = e.lid WHERE e.eid = :eid AND e.oid = :oid', [':eid' => $cache->getId(), ':oid' => $cache->getData()]);
         foreach ($children as $c) {
             $this->ids[$c['name']] = $c['id'];
         }
@@ -225,17 +225,17 @@ class CacheHandler implements CacheHandlerInterface
         return array_column($children, 'name');
     }
 
-    public function addEventListeners(int $eid, int $oid, array $listeners): void
+    public function addEventListeners(Cache $cache, array $listeners): void
     {
         if ($listeners) {
             array_unique($listeners);
 
-            $existing = array_column($this->db->query('SELECT DISTINCT(lid) AS id FROM ' . $this->eventTable . ' WHERE eid = :eid AND oid = :oid', [':eid' => $eid, ':oid' => $oid]), 'id');
+            $existing = array_column($this->db->query('SELECT DISTINCT(lid) AS id FROM ' . $this->eventTable . ' WHERE eid = :eid AND oid = :oid', [':eid' => $cache->getId(), ':oid' => $cache->getData()]), 'id');
             $values = [];
             foreach ($listeners as $key) {
-                $lid = $this->getID($key);
+                $lid = $this->getId($key);
                 if (!in_array($lid, $existing)) {
-                    $values[] = '(' . $eid . ',' . $oid . ',' . $lid . ')';
+                    $values[] = '(' . $cache->getId() . ',' . $cache->getData() . ',' . $lid . ')';
                 }
             }
 

@@ -99,7 +99,7 @@ class Session
             return $this->current[$name];
         }
 
-        return $this->current['data'][$name];
+        return array_key_exists($name, $this->current['data']) ? $this->current['data'][$name] : null;
     }
 
     final public function set(string $name, $value): void

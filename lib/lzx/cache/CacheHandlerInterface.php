@@ -13,17 +13,17 @@ interface CacheHandlerInterface
 
     public function getFileName(Cache $cache): string;
 
-    public function getID(string $name): int;
+    public function getId(string $name): int;
 
-    public function unlinkParents(int $id): void;
+    public function unlinkParents(Cache $cache): void;
 
-    public function linkParents(int $id, array $parents): void;
+    public function linkParents(Cache $cache, array $parents): void;
 
-    public function getChildren(int $id): array;
+    public function getChildren(Cache $cache): array;
 
-    public function unlinkEvents(int $id): void;
+    public function unlinkEvents(Cache $cache): void;
 
-    public function getEventListeners(int $eid, int $oid): array;
+    public function getEventListeners(Cache $cache): array;
 
-    public function addEventListeners(int $eid, int $oid, array $listeners): void;
+    public function addEventListeners(Cache $cache, array $listeners): void;
 }

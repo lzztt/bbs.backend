@@ -20,11 +20,11 @@ class SegmentCache extends Cache
     public function flush(): void
     {
         if ($this->dirty) {
-            $this->id = self::$handler->getID($this->key);
+            $this->id = self::$handler->getId($this->key);
 
             // unlink existing parent cache nodes
-            self::$handler->unlinkParents($this->id);
-            self::$handler->unlinkEvents($this->id);
+            self::$handler->unlinkParents($this);
+            self::$handler->unlinkEvents($this);
 
             // update self
             if ($this->deleted) {
@@ -36,12 +36,14 @@ class SegmentCache extends Cache
                     $this->writeDataFile($this->data);
 
                     // link to current parent nodes
-                    self::$handler->linkParents($this->id, $this->parents);
+                    self::$handler->linkParents($this, $this->parents);
                 }
             }
 
             // delete(flush) child cache nodes
-            $this->deleteChildren();
+            foreach (self::$handler->getChildren($this) as $key) {
+                self::deleteCache($key);
+            }
 
             $this->dirty = false;
         }
