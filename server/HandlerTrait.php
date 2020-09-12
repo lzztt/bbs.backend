@@ -6,17 +6,19 @@ use InvalidArgumentException;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
+use lzx\cache\PageCache;
 use lzx\html\Template;
 use site\File;
 use site\dbobject\User;
+use stdClass;
 
 trait HandlerTrait
 {
-    protected static $city;
-    private static $cacheHandler;
-    protected $cache;
-    protected $independentCacheList = [];
-    protected $cacheEvents = [];
+    protected static stdClass $city;
+    private static CacheHandler $cacheHandler;
+    protected ?PageCache $cache = null;
+    protected array $independentCacheList = [];
+    protected array $cacheEvents = [];
 
     private function staticInit(): void
     {
@@ -94,9 +96,14 @@ trait HandlerTrait
         return $siteName;
     }
 
+    protected function getPageCache(): PageCache
+    {
+        return new PageCache($this->request->uri, self::$cacheHandler);
+    }
+
     protected function getIndependentCache(string $key): Cache
     {
-        $key = self::$cacheHandler->getCleanName($key);
+        $key = self::$cacheHandler->cleanKey($key);
         if (array_key_exists($key, $this->independentCacheList)) {
             return $this->independentCacheList[$key];
         } else {
@@ -108,7 +115,7 @@ trait HandlerTrait
 
     protected function getCacheEvent(string $name, int $objectID = 0): CacheEvent
     {
-        $name = self::$cacheHandler->getCleanName($name);
+        $name = self::$cacheHandler->cleanKey($name);
         $objID = (int) $objectID;
         if ($objID < 0) {
             $objID = 0;

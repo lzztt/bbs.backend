@@ -81,13 +81,12 @@ class WebApp extends App
         }
     }
 
-    private function setupCache(DB $db): void
+    private function setupCache(): void
     {
-        CacheHandler::$path = $this->config->path['cache'];
-        $cacheHandler = CacheHandler::getInstance($db);
-        Cache::setHandler($cacheHandler);
-        CacheEvent::setHandler($cacheHandler);
-        Cache::setLogger($this->logger);
+        $cacheHandler = CacheHandler::getInstance();
+        $cacheHandler->setLogger($this->logger);
+        $cacheHandler->setPath($this->config->path['cache']);
+        $cacheHandler->setDomain($this->config->domain);
     }
 
     private function flush(Session $session, DB $db, $ctrler): void

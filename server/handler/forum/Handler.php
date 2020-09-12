@@ -12,7 +12,7 @@ class Handler extends Forum
 {
     public function run(): void
     {
-        $this->cache = new PageCache($this->request->uri);
+        $this->cache = $this->getPageCache();
 
         $tag = $this->getTagObj();
         $tagRoot = $tag->getTagRoot();

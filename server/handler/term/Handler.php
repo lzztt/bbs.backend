@@ -10,7 +10,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        $this->cache = new PageCache($this->request->uri);
+        $this->cache = $this->getPageCache();
 
         $sitename = [
             'site_zh_cn' => self::$city->domain === 'bayever.com' ? '生活在湾区' : '缤纷' . self::$city->nameZh,

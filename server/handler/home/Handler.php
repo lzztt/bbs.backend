@@ -16,7 +16,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        $this->cache = new PageCache($this->request->uri);
+        $this->cache = $this->getPageCache();
 
         switch (self::$city->domain) {
             case 'houstonbbs.com':

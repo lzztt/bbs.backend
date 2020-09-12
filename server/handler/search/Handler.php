@@ -9,7 +9,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        $this->cache = new PageCache($this->request->uri);
+        $this->cache = $this->getPageCache();
 
         $searchEngineIDs = ['houstonbbs.com' => 'ff_lfzbzonw', 'dallasbbs.com' => 'gznplywzy7a', 'austinbbs.com' => 'ihghalygyj8', 'bayever.com' => 'vx3u09xj83w'];
         $seid = $searchEngineIDs[self::$city->domain];

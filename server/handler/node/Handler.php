@@ -15,7 +15,7 @@ class Handler extends Node
 {
     public function run(): void
     {
-        $this->cache = new PageCache($this->request->uri);
+        $this->cache = $this->getPageCache();
 
         list($nid, $type) = $this->getNodeType();
         switch ($type) {
