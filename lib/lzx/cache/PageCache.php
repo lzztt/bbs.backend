@@ -2,6 +2,7 @@
 
 namespace lzx\cache;
 
+use Exception;
 use lzx\cache\Cache;
 use lzx\cache\SegmentCache;
 
@@ -11,28 +12,28 @@ class PageCache extends Cache
 
     public function getSegment(string $key): SegmentCache
     {
-        $cleanKey = self::$handler->getCleanName($key);
+        $key = $this->handler->cleanKey($key);
 
-        if (!array_key_exists($cleanKey, $this->segments)) {
-            $this->segments[$cleanKey] = new SegmentCache($key);
+        if (!array_key_exists($key, $this->segments)) {
+            $this->segments[$key] = new SegmentCache($key, $this->handler);
+            $this->addParent($key);
         }
 
-        return $this->segments[$cleanKey];
+        return $this->segments[$key];
+    }
+
+    public function addChild(string $key): void
+    {
+        throw new Exception('not supported');
     }
 
     public function flush(): void
     {
         if ($this->dirty) {
-            $this->id = self::$handler->getId($this->key);
-
-            // unlink existing parent cache nodes
-            self::$handler->unlinkParents($this);
-            self::$handler->unlinkEvents($this);
-
-            // update self
             if ($this->deleted) {
-                // delete self
-                $this->deleteDataFile();
+                // delete self, data first
+                $this->handler->deleteDataFile($this);
+                $this->handler->syncParents($this, []);
             } else {
                 if ($this->data) {
                     // save (flush) all segments first, this may delete segment's children (this cache)
@@ -40,24 +41,12 @@ class PageCache extends Cache
                         $seg->flush();
                     }
 
-                    // save self
-                    // gzip data for public cache file used by webserver
-                    // use 6 as default and equal to webserver gzip compression level
-                    $this->writeDataFile(gzencode($this->data, 6));
-
-                    // make segments as parent nodes
-                    foreach (array_keys($this->segments) as $pkey) {
-                        $this->parents[] = $pkey;
-                    }
-
                     // link to current parent nodes
-                    self::$handler->linkParents($this, $this->parents);
-                }
-            }
+                    $this->handler->syncParents($this, $this->parents);
 
-            // flush/delete child cache nodes
-            foreach (self::$handler->getChildren($this) as $key) {
-                self::deleteCache($key);
+                    // save data
+                    $this->handler->syncDataFile($this);
+                }
             }
 
             $this->dirty = false;

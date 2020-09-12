@@ -3,54 +3,53 @@
 namespace lzx\cache;
 
 use Exception;
+use Redis;
 use lzx\cache\Cache;
-use lzx\cache\CacheHandlerInterface;
 use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
-use lzx\db\DB;
+use lzx\core\Logger;
 
-class CacheHandler implements CacheHandlerInterface
+class CacheHandler
 {
-    static public $path;
-    protected $db;
-    protected $domain;
-    // Cache tables
-    protected $nameTable;
-    protected $treeTable;
-    protected $eventTable;
+    protected const SEP = ':';
+    protected Logger $logger;
+    protected string $path;
+    protected string $domain;
+    protected Redis $db;
 
-    private function __construct(DB $db)
+    private function __construct()
     {
-        $this->db = $db;
-        $this->nameTable = 'cache_names';
-        $this->treeTable = 'cache_tree';
-        $this->eventTable = 'cache_event_listeners';
+        $this->db = new Redis();
+        $this->db->pconnect('/run/redis/redis-server.sock');
     }
 
     /**
      * singleton design pattern
      */
-    public static function getInstance(DB $db = null): CacheHandler
+    public static function getInstance(): self
     {
         static $instance;
 
-        if (!isset($instance)) {
-            if ($db) {
-                $instance = new self($db);
-            } else {
-                throw new Exception('no instance is available. a DB object is required for creating a new instance.');
-            }
+        if (!$instance) {
+            $instance = new self();
         }
+
         return $instance;
+    }
+
+    public function setLogger(Logger $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
     }
 
     public function setDomain(string $domain): void
     {
-        if (!$this->domain && $domain) {
-            $this->domain = $domain;
-            $this->treeTable .= ('_' . $domain);
-            $this->eventTable .= ('_' . $domain);
-        }
+        $this->domain = str_replace('.com', '', $domain);
     }
 
     /**
@@ -58,190 +57,183 @@ class CacheHandler implements CacheHandlerInterface
      */
     public function createCache(string $key): Cache
     {
-        return $key[0] === '/' ? new PageCache($key) : new SegmentCache($key);
+        $key = $this->cleanKey($key);
+        return $key[1] === '/'
+            ? new PageCache($key, $this)
+            : new SegmentCache($key, $this);
     }
 
-    public function getCleanName(string $name): string
+    public function deleteCache(string $key): void
     {
-        static $names = [];
+        $cache = $this->createCache($key);
+        $cache->delete();
+        $cache->flush();
+    }
 
-        $name = trim($name);
-
-        if (array_key_exists($name, $names)) {
-            return $names[$name];
+    public function cleanKey(string $key): string
+    {
+        if (!$key || $key === self::SEP) {
+            throw new Exception('cache key is empty');
         }
 
-        $value = $name;
-
-        if (strlen($name) == 0) {
-            throw new Exception('cache name is empty.');
+        // already processed
+        if ($key[0] === self::SEP) {
+            return $key;
         }
 
-        if (strpos($name, ' ') !== false) {
-            throw new Exception('cache name contains spaces: ' . $name);
+        if (strpos($key, ' ') !== false) {
+            throw new Exception('cache key contains spaces: ' . $key);
         }
 
-        if ($name[0] === '/') {
+        if ($key[0] === '/') {
             // page uri
-            switch (substr_count($name, '#')) {
-                case 0:
-                    // not previously processed, use # to seperate uri and query string
-                    switch (substr_count($name, '?')) {
-                        case 0:
-                            $value = $name . '#';
-                            break;
-                        case 1:
-                            // has query string
-                            $value = str_replace('?', '#', $name);
-                            break;
-                        default:
-                            throw new Exception('page uri has multiple "?" charactors: ' . $name);
-                    }
-                    break;
-                case 1:
-                    // previously processed or pre-processed name, validate '?'
-                    if (strpos($name, '?')) {
-                        throw new Exception('pre-processed cache name has "?" charactor: ' . $name);
-                    }
-                    break;
-                default:
-                    throw new Exception('pre-processed cache name has multiple "#" charactors: ' . $name);
+            if (strpos($key, '#') === false) {
+                switch (substr_count($key, '?')) {
+                    case 0:
+                        $key = $key . '#';
+                        break;
+                    case 1:
+                        // has query string
+                        $key = str_replace('?', '#', $key);
+                        break;
+                    default:
+                        throw new Exception('page uri has multiple "?" charactors: ' . $key);
+                }
+            } else {
+                throw new Exception('page uri has "#" charactor: ' . $key);
             }
         } else {
-            // segment name or event name
-            $value = preg_replace('/[^0-9a-z\.\_\-]/i', '_', $name);
+            // segment key or event key
+            $key = preg_replace('/[^0-9a-z\.\_\-]/i', '_', $key);
         }
 
-        // save processed name to name cache
-        $names[$name] = $value;
-        return $value;
+        return self::SEP . $key;
     }
 
-    public function getFileName(Cache $cache): string
+    protected function getFileName(Cache $cache): string
     {
-        static $filenames = [];
-
-        $key = $cache->getKey();
-        if (array_key_exists($key, $filenames)) {
-            return $filenames[$key];
+        if (get_class($cache) !== 'lzx\cache\PageCache') {
+            throw new Exception('unsupport cache type: ' . get_class($cache));
         }
 
-        switch (get_class($cache)) {
-            case 'lzx\cache\PageCache':
-                $filename = self::$path . '/page' . $key . '.html.gz';
-                break;
-            case 'lzx\cache\SegmentCache':
-                $filename = self::$path . '/segment/' . $key . '.txt';
-                break;
-            default:
-                throw new Exception('unsupport cache type: ' . get_class($cache));
-        }
+        $key = substr($cache->getKey(), 1);
+        return $this->path . '/page' . $key . '.html.gz';
+    }
 
+    public function deleteDataFile(Cache $cache): void
+    {
+        try {
+            unlink($this->getFileName($cache));
+        } catch (Exception $e) {
+            if ($this->logger) {
+                $this->logger->warning($e->getMessage());
+            } else {
+                error_log($e->getMessage());
+            }
+        }
+    }
+
+    public function syncDataFile(Cache $cache): void
+    {
+        $filename = $this->getFileName($cache);
         $dir = dirname($filename);
         if (!file_exists($dir)) {
             mkdir($dir, 0755, true);
         }
-        $filenames[$key] = $filename;
-        return $filename;
+        // gzip data for public cache file used by webserver
+        // use 6 as default and equal to webserver gzip compression level
+        file_put_contents($filename, gzencode($cache->getData(), 6), LOCK_EX);
     }
 
-    public function getId(string $name): int
+    protected function getDataKey($key): string
     {
-        static $ids = [];
-        // found from cached id
-        if (array_key_exists($name, $ids)) {
-            return $ids[$name];
-        }
-
-        // found from database
-        $res = $this->db->query('SELECT id FROM ' . $this->nameTable . ' WHERE name = :key', [':key' => $name]);
-        switch (count($res)) {
-            case 0:
-                // add to database
-                $this->db->query('INSERT INTO ' . $this->nameTable . ' (name) VALUEs (:key)', [':key' => $name]);
-                // save to id cache
-                $id = (int) $this->db->insertId();
-                break;
-            case 1:
-                // save to id cache
-                $id = (int) array_pop($res[0]);
-                break;
-            default:
-                throw new Exception('multiple ID found for name: ' . $name);
-        }
-        // save to cache
-        $ids[$name] = $id;
-
-        return $id;
+        return $this->domain . $key;
     }
 
-    public function unlinkParents(Cache $cache): void
+    protected function getParentsKey($key): string
     {
-        $this->db->query('DELETE FROM ' . $this->treeTable . ' WHERE cid = :cid', [':cid' => $cache->getId()]);
+        return $this->domain . $key . ':p';
     }
 
-    public function linkParents(Cache $cache, array $parents): void
+    protected function getChildrenKey($key): string
     {
-        if ($parents) {
-            array_unique($parents);
+        return $this->domain . $key . ':c';
+    }
 
-            $existing = array_column($this->db->query('SELECT DISTINCT(pid) AS id FROM ' . $this->treeTable . ' WHERE cid = :cid', [':cid' => $cache->getId()]), 'id');
-            $values = [];
-            foreach ($parents as $key) {
-                $pid = $this->getId($key);
-                if (!in_array($pid, $existing)) {
-                    $values[] = '(' . $pid . ',' . $cache->getId() . ')';
-                }
+    public function fetchData(Cache $cache): string
+    {
+        $data = $this->db->get($this->getDataKey($cache->getKey()));
+        return $data ? $data : '';
+    }
+
+    public function syncData(Cache $cache): void
+    {
+        $this->db->set($this->getDataKey($cache->getKey()), $cache->getData());
+    }
+
+    public function deleteData(Cache $cache): void
+    {
+        $this->db->del($this->getDataKey($cache->getKey()));
+    }
+
+    public function fetchParents(Cache $cache): array
+    {
+        return $this->db->sMembers($this->getParentsKey($cache->getKey()));
+    }
+
+    public function syncParents(Cache $cache, array $parents): void
+    {
+        $existing = $this->fetchParents($cache);
+        $old = array_diff($existing, $parents);
+        $new = array_diff($parents, $existing);
+
+        if ($old) {
+            foreach ($old as $key) {
+                $this->db->sRem($this->getChildrenKey($key), $cache->getKey());
             }
 
-            if ($values) {
-                $this->db->query('INSERT INTO ' . $this->treeTable . ' VALUES ' . implode(',', $values));
+            if (count($old) === count($existing)) {
+                $this->db->del($this->getParentsKey($cache->getKey()));
+            } else {
+                $this->db->sRem($this->getParentsKey($cache->getKey()), ...$old);
             }
+        }
+
+        if ($new) {
+            foreach ($new as $key) {
+                $this->db->sAdd($this->getChildrenKey($key), $cache->getKey());
+            }
+            $this->db->sAdd($this->getParentsKey($cache->getKey()), ...$new);
         }
     }
 
-    public function getChildren(Cache $cache): array
+    public function fetchChildren(Cache $cache): array
     {
-        $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->treeTable . ' AS t ON c.id = t.cid WHERE t.pid = :pid', [':pid' => $cache->getId()]);
-        foreach ($children as $c) {
-            $this->ids[$c['name']] = $c['id'];
+        return $this->db->sMembers($this->getChildrenKey($cache->getKey()));
+    }
+
+    public function syncChildren(Cache $cache, array $children): void
+    {
+        $existing = $this->fetchChildren($cache);
+        $old = array_diff($existing, $children);
+        $new = array_diff($children, $existing);
+
+        if ($old) {
+            foreach ($old as $key) {
+                $this->db->sRem($this->getParentsKey($key), $cache->getKey());
+            }
+            if (count($old) === count($existing)) {
+                $this->db->del($this->getChildrenKey($cache->getKey()));
+            } else {
+                $this->db->sRem($this->getChildrenKey($cache->getKey()), ...$old);
+            }
         }
 
-        return array_column($children, 'name');
-    }
-
-    public function unlinkEvents(Cache $cache): void
-    {
-        $this->db->query('DELETE FROM ' . $this->eventTable . ' WHERE lid = :lid', [':lid' => $cache->getId()]);
-    }
-
-    public function getEventListeners(Cache $cache): array
-    {
-        $children = $this->db->query('SELECT DISTINCT(c.id), c.name FROM ' . $this->nameTable . ' AS c JOIN ' . $this->eventTable . ' AS e ON c.id = e.lid WHERE e.eid = :eid AND e.oid = :oid', [':eid' => $cache->getId(), ':oid' => $cache->getData()]);
-        foreach ($children as $c) {
-            $this->ids[$c['name']] = $c['id'];
-        }
-
-        return array_column($children, 'name');
-    }
-
-    public function addEventListeners(Cache $cache, array $listeners): void
-    {
-        if ($listeners) {
-            array_unique($listeners);
-
-            $existing = array_column($this->db->query('SELECT DISTINCT(lid) AS id FROM ' . $this->eventTable . ' WHERE eid = :eid AND oid = :oid', [':eid' => $cache->getId(), ':oid' => $cache->getData()]), 'id');
-            $values = [];
-            foreach ($listeners as $key) {
-                $lid = $this->getId($key);
-                if (!in_array($lid, $existing)) {
-                    $values[] = '(' . $cache->getId() . ',' . $cache->getData() . ',' . $lid . ')';
-                }
+        if ($new) {
+            foreach ($new as $key) {
+                $this->db->sAdd($this->getParentsKey($key), $cache->getKey());
             }
-
-            if ($values) {
-                $this->db->query('INSERT INTO ' . $this->eventTable . ' VALUES ' . implode(',', $values));
-            }
+            $this->db->sAdd($this->getChildrenKey($cache->getKey()), ...$new);
         }
     }
 }

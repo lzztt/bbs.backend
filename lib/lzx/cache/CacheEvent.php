@@ -2,53 +2,44 @@
 
 namespace lzx\cache;
 
+use Exception;
 use lzx\cache\Cache;
+use lzx\cache\CacheHandler;
 
 class CacheEvent extends Cache
 {
-    protected $children = [];
 
     public function __construct(string $key, int $objectID = 0)
     {
-        parent::__construct($key);
-
-        $this->data = (int) $objectID;
-        if ($this->data < 0) {
-            $this->data = 0;
-        }
+        $id = $objectID > 0 ? $objectID : 0;
+        parent::__construct($key . ':' . $id, CacheHandler::getInstance());
     }
 
-    public function addListener(Cache $c): void
+    public function addParent(string $key): void
     {
-        if ($c) {
-            if (!in_array($c->getKey(), $this->children)) {
-                $this->children[] = $c->getKey();
-            }
-            $this->dirty = true;
-        }
+        throw new Exception('not supported');
+    }
+
+    public function addListener(Cache $cache): void
+    {
+        $this->addChild($cache->getKey());
     }
 
     public function trigger(): void
     {
-        $this->deleted = true;
-        $this->dirty = true;
+        $this->delete();
     }
 
     public function flush(): void
     {
         if ($this->dirty) {
-            $this->id = self::$handler->getId($this->key);
-
             if ($this->deleted) {
                 // update children
-                foreach (array_unique(array_merge($this->children, self::$handler->getEventListeners($this))) as $key) {
-                    self::deleteCache($key);
+                foreach (array_unique(array_merge($this->children, $this->handler->fetchChildren($this))) as $key) {
+                    $this->handler->deleteCache($key);
                 }
-
-                // clear current children
-                $this->children = [];
             } else {
-                self::$handler->addEventListeners($this, $this->children);
+                $this->handler->syncChildren($this, $this->children);
             }
             $this->dirty = false;
         }

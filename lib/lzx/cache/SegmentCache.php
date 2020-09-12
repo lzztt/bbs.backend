@@ -10,58 +10,41 @@ class SegmentCache extends Cache
 
     public function fetch(): string
     {
-        if ($this->data) {
-            return $this->data;
+        if (!$this->data) {
+            $this->data = $this->handler->fetchData($this);
         }
+        return $this->data;
+    }
 
-        return $this->fetchFromFile();
+    public function addChild(string $key): void
+    {
+        throw new Exception('not supported');
     }
 
     public function flush(): void
     {
         if ($this->dirty) {
-            $this->id = self::$handler->getId($this->key);
-
-            // unlink existing parent cache nodes
-            self::$handler->unlinkParents($this);
-            self::$handler->unlinkEvents($this);
-
-            // update self
+            $children = $this->handler->fetchChildren($this);
             if ($this->deleted) {
-                // delete self
-                $this->deleteDataFile();
+                // delete self, data first
+                $this->handler->deleteData($this);
+                $this->handler->syncParents($this, []);
+                $this->handler->syncChildren($this, []);
             } else {
                 if ($this->data) {
-                    // save self
-                    $this->writeDataFile($this->data);
-
                     // link to current parent nodes
-                    self::$handler->linkParents($this, $this->parents);
+                    $this->handler->syncParents($this, $this->parents);
+                    // save data
+                    $this->handler->syncData($this);
                 }
             }
 
             // delete(flush) child cache nodes
-            foreach (self::$handler->getChildren($this) as $key) {
-                self::deleteCache($key);
+            foreach ($children as $key) {
+                $this->handler->deleteCache($key);
             }
 
             $this->dirty = false;
-        }
-    }
-
-    public function fetchFromFile(): string
-    {
-        $file = self::$handler->getFileName($this);
-        try {
-            // read only if exist!!
-            return is_file($file) ? file_get_contents($file) : '';
-        } catch (Exception $e) {
-            if (self::$logger) {
-                self::$logger->warning('Could not read from file [' . $file . ']: ' . $e->getMessage());
-            } else {
-                error_log('Could not read from file [' . $file . ']: ' . $e->getMessage());
-            }
-            return '';
         }
     }
 }

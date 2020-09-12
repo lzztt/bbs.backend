@@ -2,46 +2,22 @@
 
 namespace lzx\cache;
 
-use Exception;
-use lzx\cache\CacheHandlerInterface;
-use lzx\core\Logger;
+use lzx\cache\CacheHandler;
 
 abstract class Cache
 {
-    static protected CacheHandlerInterface $handler;
-    static protected Logger $logger;
+    protected CacheHandler $handler;
     protected string $key;
-    protected $data;
-    protected bool $deleted = false;
+    protected string $data = '';
     protected array $parents = [];
-    protected int $id;
+    protected array $children = [];
+    protected bool $deleted = false;
     protected bool $dirty = false;
 
-    public static function setHandler(CacheHandlerInterface $handler): void
+    public function __construct(string $key, CacheHandler $handler)
     {
-        self::$handler = $handler;
-    }
-
-    public static function setLogger(Logger $logger): void
-    {
-        self::$logger = $logger;
-    }
-
-    protected static function deleteCache($key): void
-    {
-        $cache = self::$handler->createCache($key);
-        $cache->delete();
-        $cache->flush();
-    }
-
-    public function __construct(string $key)
-    {
-        $this->key = self::$handler->getCleanName($key);
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
+        $this->key = $handler->cleanKey($key);
+        $this->handler = $handler;
     }
 
     public function getKey(): string
@@ -49,50 +25,56 @@ abstract class Cache
         return $this->key;
     }
 
-    public function getData()
+    public function getData(): string
     {
         return $this->data;
     }
 
-    public function store(string $data): void
+    public function setData(string $data): void
     {
         $this->data = $data;
         $this->dirty = true;
     }
 
+    public function store(string $data): void
+    {
+        $this->setData($data);
+    }
+
     public function delete(): void
     {
-        $this->data = null;
+        $this->data = '';
         $this->dirty = true;
         $this->deleted = true;
     }
 
     public function addParent(string $key): void
     {
-        $cleanKey = self::$handler->getCleanName($key);
-        if ($cleanKey && !in_array($cleanKey, $this->parents)) {
-            $this->parents[] = $cleanKey;
+        $key = $this->handler->cleanKey($key);
+        if (!in_array($key, $this->parents)) {
+            $this->parents[] = $key;
         }
         $this->dirty = true;
     }
 
-    abstract public function flush(): void;
-
-    protected function deleteDataFile(): void
+    public function addChild(string $key): void
     {
-        try {
-            unlink(self::$handler->getFileName($this));
-        } catch (Exception $e) {
-            if (self::$logger) {
-                self::$logger->warning($e->getMessage());
-            } else {
-                error_log($e->getMessage());
-            }
+        $key = $this->handler->cleanKey($key);
+        if (!in_array($key, $this->children)) {
+            $this->children[] = $key;
         }
+        $this->dirty = true;
     }
 
-    protected function writeDataFile(string $data): void
+    public function getParents(): array
     {
-        file_put_contents(self::$handler->getFileName($this), $data, LOCK_EX);
+        return $this->parents;
     }
+
+    public function getChildren(): array
+    {
+        return $this->children;
+    }
+
+    abstract public function flush(): void;
 }
