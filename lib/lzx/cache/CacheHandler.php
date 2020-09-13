@@ -236,4 +236,11 @@ class CacheHandler
             $this->db->sAdd($this->getChildrenKey($cache->getKey()), ...$new);
         }
     }
+
+    public function addChildren(Cache $cache, array $children): void
+    {
+        if (count($children)) {
+            $this->db->sAdd($this->getChildrenKey($cache->getKey()), ...$children);
+        }
+    }
 }

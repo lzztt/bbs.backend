@@ -20,9 +20,14 @@ class CacheEvent extends Cache
         throw new Exception('not supported');
     }
 
+    public function addChild(string $key): void
+    {
+        throw new Exception('not supported');
+    }
+
     public function addListener(Cache $cache): void
     {
-        $this->addChild($cache->getKey());
+        parent::addChild($cache->getKey());
     }
 
     public function trigger(): void
@@ -34,14 +39,15 @@ class CacheEvent extends Cache
     {
         if ($this->dirty) {
             if ($this->deleted) {
-                // update children
+                // delete(flush) children
                 foreach (array_unique(array_merge($this->children, $this->handler->fetchChildren($this))) as $key) {
                     $this->handler->deleteCache($key);
                 }
             } else {
-                // save
-                $this->handler->syncChildren($this, $this->children);
+                // save, no data refresh
+                $this->handler->addChildren($this, $this->children);
             }
+
             $this->dirty = false;
         }
     }

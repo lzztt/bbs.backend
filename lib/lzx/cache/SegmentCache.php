@@ -33,14 +33,12 @@ class SegmentCache extends Cache
             } else {
                 // save
                 if ($this->data) {
-                    // link to current parent nodes
                     $this->handler->syncParents($this, $this->parents);
-                    // save data
                     $this->handler->syncData($this);
                 }
             }
 
-            // delete(flush) child cache nodes
+            // delete(flush) children
             foreach ($children as $key) {
                 $this->handler->deleteCache($key);
             }

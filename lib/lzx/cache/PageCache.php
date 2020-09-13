@@ -39,20 +39,18 @@ class PageCache extends Cache
             } else {
                 // save
                 if ($this->data) {
-                    // save (flush) all segments first, this may delete segment's children (this cache)
+                    // save (flush) all segments first.
+                    // this will delete segment's children (may include this cache)
                     foreach ($this->segments as $seg) {
                         $seg->flush();
                     }
 
-                    // link to current parent nodes
                     $this->handler->syncParents($this, $this->parents);
-
-                    // save data
                     $this->handler->syncDataFile($this);
                 }
             }
 
-            // delete(flush) child cache nodes
+            // delete(flush) children
             foreach ($children as $key) {
                 $this->handler->deleteCache($key);
             }
