@@ -39,6 +39,7 @@ class CacheEvent extends Cache
                     $this->handler->deleteCache($key);
                 }
             } else {
+                // save
                 $this->handler->syncChildren($this, $this->children);
             }
             $this->dirty = false;

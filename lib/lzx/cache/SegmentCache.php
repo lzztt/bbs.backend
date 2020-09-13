@@ -26,11 +26,12 @@ class SegmentCache extends Cache
         if ($this->dirty) {
             $children = $this->handler->fetchChildren($this);
             if ($this->deleted) {
-                // delete self, data first
+                // delete, data first
                 $this->handler->deleteData($this);
                 $this->handler->syncParents($this, []);
                 $this->handler->syncChildren($this, []);
             } else {
+                // save
                 if ($this->data) {
                     // link to current parent nodes
                     $this->handler->syncParents($this, $this->parents);

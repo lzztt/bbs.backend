@@ -30,11 +30,14 @@ class PageCache extends Cache
     public function flush(): void
     {
         if ($this->dirty) {
+            $children = $this->handler->fetchChildren($this);
             if ($this->deleted) {
-                // delete self, data first
+                // delete, data first
                 $this->handler->deleteDataFile($this);
                 $this->handler->syncParents($this, []);
+                $this->handler->syncChildren($this, []);
             } else {
+                // save
                 if ($this->data) {
                     // save (flush) all segments first, this may delete segment's children (this cache)
                     foreach ($this->segments as $seg) {
@@ -47,6 +50,11 @@ class PageCache extends Cache
                     // save data
                     $this->handler->syncDataFile($this);
                 }
+            }
+
+            // delete(flush) child cache nodes
+            foreach ($children as $key) {
+                $this->handler->deleteCache($key);
             }
 
             $this->dirty = false;
