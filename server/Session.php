@@ -2,24 +2,25 @@
 
 namespace site;
 
+use lzx\db\MemStore;
+use Redis;
 use site\dbobject\Session as SessionObj;
 
 class Session
 {
-    const SID_NAME = 'LZXSID';
-    const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
-    const DEFAULT_DATA = [
-        'id' => '',
+    private const SID_NAME = 'LZXSID';
+    private const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+    private const DEFAULT_DATA = [
+        'uid' => '0',
+        'cid' => '0',
         'data' => [],
-        'uid' => 0,
-        'cid' => 0,
-        'atime' => 0,
-        'crc' => 0,
     ];
 
-    private $crc;
-    private $current = [];
-    private $original = [];
+    private string $id = '';
+    private Redis $redis;
+    private int $time;
+    private array $current = [];
+    private array $original = [];
 
     public static function getInstance(bool $useDb = true): Session
     {
@@ -34,12 +35,14 @@ class Session
 
     private function __construct(bool $useDb)
     {
+        $this->time = (int) $_SERVER['REQUEST_TIME'];
         if (!$useDb) {
             $this->current = self::DEFAULT_DATA;
             return;
         }
 
-        $this->crc = crc32($_SERVER['HTTP_USER_AGENT']);
+        $this->redis = MemStore::getRedis();
+
         if (!$this->loadDbSession()) {
             $this->startNewSession();
         }
@@ -53,29 +56,37 @@ class Session
             return false;
         }
 
-        $session = new SessionObj($sid);
-        if (!$session->exists() || $this->crc !== $session->crc) {
-            return false;
+        $data = $this->redis->hGetAll('s:' . $sid);
+        if ($data) {
+            $this->original = $data;
+        } else {
+            $session = new SessionObj($sid);
+            if (!$session->exists()) {
+                return false;
+            }
+
+            $this->original = $session->toArray();
+            $this->original['uid'] = (string) $this->original['uid'];
+            $this->original['cid'] = (string) $this->original['cid'];
+            unset($this->original['id']);
+            unset($this->original['crc']);
+            unset($this->original['atime']);
         }
 
-        $this->original = $session->toArray();
-        $this->original['data'] = self::decodeData($session->data);
+        $this->id = $sid;
+        $this->original['data'] = self::decodeData($this->original['data']);
 
         $this->current = $this->original;
-        $this->current['atime'] = (int) $_SERVER['REQUEST_TIME'];
 
         return true;
     }
 
     private function startNewSession(): void
     {
-        $this->current = array_merge(self::DEFAULT_DATA, [
-            'id' => bin2hex(random_bytes(8)),
-            'atime' => (int) $_SERVER['REQUEST_TIME'],
-            'crc' => $this->crc,
-        ]);
+        $this->id = bin2hex(random_bytes(8));
+        $this->current = self::DEFAULT_DATA;
 
-        setcookie(self::SID_NAME, $this->current['id'], ($this->current['atime'] + 2592000), '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
+        setcookie(self::SID_NAME, $this->id, $this->time + 2592000, '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
     }
 
     private static function encodeData(array $data): string
@@ -96,7 +107,7 @@ class Session
     final public function get(string $name)
     {
         if (in_array($name, ['uid', 'cid'])) {
-            return $this->current[$name];
+            return (int) $this->current[$name];
         }
 
         return array_key_exists($name, $this->current['data']) ? $this->current['data'][$name] : null;
@@ -105,7 +116,7 @@ class Session
     final public function set(string $name, $value): void
     {
         if (in_array($name, ['uid', 'cid'])) {
-            $this->current[$name] = (int) $value;
+            $this->current[$name] = (string) $value;
             return;
         }
 
@@ -118,58 +129,49 @@ class Session
 
     public function id(): string
     {
-        return $this->current['id'];
+        return $this->id;
     }
 
     public function clear(): void
     {
-        $this->current['uid'] = 0;
+        $this->current['uid'] = '0';
         $this->current['data'] = [];
     }
 
     public function close(): void
     {
-        if (!$this->current['id']) {
+        if (!$this->id) {
             return;
         }
-
-        if (!$this->original || $this->current['id'] !== $this->original['id']) {
-            $this->insertDbSession();
-        } else {
-            $this->updateDbSession();
-        }
-    }
-
-    private function insertDbSession(): void
-    {
-        $session = new SessionObj();
-        $insert = $this->current;
-        $insert['data'] = self::encodeData($this->current['data']);
-        $session->fromArray($insert);
-        $session->add();
+        $this->updateDbSession();
     }
 
     private function updateDbSession(): void
     {
-        $update = [];
-        if ($this->current['uid'] !== $this->original['uid']) {
-            $update['uid'] = $this->current['uid'];
-        }
-        if ($this->current['cid'] !== $this->original['cid']) {
-            $update['cid'] = $this->current['cid'];
-        }
-        if ($this->current['data'] !== $this->original['data']) {
-            $update['data'] = self::encodeData($this->current['data']);
-        }
-        if ($this->current['atime'] - $this->original['atime'] > 600) {
-            $update['atime'] = $this->current['atime'];
-        }
+        $insert = $this->current;
+        $insert['data'] = self::encodeData($this->current['data']);
+        $this->redis->hMSet('s:' . $this->id, $insert);
+        $this->redis->expire('s:' . $this->id, (int) $this->current['uid'] > 0 ? 2592000 : 86400);
 
-        if ($update) {
-            $session = new SessionObj();
-            $session->id = $this->current['id'];
-            $session->fromArray($update);
-            $session->update();
+        if ($this->original && $this->current['uid'] != $this->original['uid']) {
+            $this->redis->del($this->getTimeKey($this->original['uid']));
         }
+        $this->redis->set($this->getTimeKey($this->current['uid']), '', 300);
+    }
+
+    private function getTimeKey(string $uid): string
+    {
+        return 'st:' . $this->current['cid'] . ':' . $uid . ':' . $this->id;
+    }
+
+    public function getLiveUids(): array
+    {
+        $keys = $this->redis->keys('st:' . $this->current['cid'] . ':*');
+        $uids = [];
+        foreach ($keys as $k) {
+            $f = explode(':', $k);
+            $uids[] = (int) $f[2];
+        }
+        return $uids;
     }
 }

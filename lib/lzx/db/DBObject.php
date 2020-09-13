@@ -398,6 +398,9 @@ abstract class DBObject
         if (!in_array($prop, $this->properties)) {
             throw new Exception('ERROR non-existing propperty : ' . $prop);
         }
+        if (!$condition) {
+            throw new Exception('no condition specified.');
+        }
         // NULL value
         if ($value === null) {
             $value = 'NULL';

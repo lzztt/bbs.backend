@@ -86,7 +86,6 @@ class WebApp extends App
         $cacheHandler = CacheHandler::getInstance();
         $cacheHandler->setLogger($this->logger);
         $cacheHandler->setPath($this->config->path['cache']);
-        $cacheHandler->setDomain($this->config->domain);
     }
 
     private function flush(Session $session, DB $db, $ctrler): void

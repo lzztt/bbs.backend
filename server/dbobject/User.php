@@ -165,29 +165,17 @@ class User extends DBObject
     {
         $stats = array_pop($this->call('get_user_stat(' . strtotime(date("m/d/Y")) . ',' . $cid . ')'));
 
-        $onlines = $this->call('get_user_online(' . $timestamp . ',' . $cid . ')');
-
-        $users = [];
-        $guestCount = 0;
-        if (isset($onlines)) {
-            foreach ($onlines as $u) {
-                if ($u['uid'] > 0) {
-                    $users[] = $u['username'];
-                } else {
-                    $guestCount++;
-                }
-            }
-        }
-
         return [
             'userCount' => $stats['user_count_total'],
             'userTodayCount' => $stats['user_count_recent'],
             'latestUser' => $stats['latest_user'],
-            'onlineUsers' => implode(', ', $users),
-            'onlineUserCount' => sizeof($users),
-            'onlineGuestCount' => $guestCount,
-            'onlineCount' => sizeof($users) + $guestCount
         ];
+    }
+
+    public function getUsernames(array $uids): array
+    {
+        $this->where('id', $uids, '=');
+        return array_column($this->getList('username'), 'username');
     }
 
     public function addBookmark(int $nid): void

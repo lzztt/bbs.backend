@@ -25,9 +25,25 @@ class Handler extends Service
 
         $r['alexa'] = $alexa;
 
-
         $user = new User();
         $u = $user->getUserStat($this->request->timestamp - 300, self::$city->id);
+
+        $uids = $this->session->getLiveUids();
+        $u['onlineCount'] = count($uids);
+
+        $guestCount = count(array_filter($uids, function($uid) {
+            return $uid == 0;
+        }));
+        $u['onlineGuestCount'] = $guestCount;
+
+        $uids = array_filter($uids, function($uid) {
+            return $uid != 0;
+        });
+        $u['onlineUserCount'] = count($uids);
+
+        $u['onlineUsers'] = $uids ? implode(', ', $user->getUsernames($uids)) : '';
+
+
         // make some fake guest :)
         if ($u['onlineCount'] > 1) {
             $ratio = self::$city->id == 1 ? 1.2 : 1.5;

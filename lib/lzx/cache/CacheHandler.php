@@ -8,6 +8,7 @@ use lzx\cache\Cache;
 use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
 use lzx\core\Logger;
+use lzx\db\MemStore;
 
 class CacheHandler
 {
@@ -19,8 +20,7 @@ class CacheHandler
 
     private function __construct()
     {
-        $this->db = new Redis();
-        $this->db->pconnect('/run/redis/redis-server.sock');
+        $this->db = MemStore::getRedis();
     }
 
     /**
