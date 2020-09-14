@@ -135,9 +135,8 @@ trait HandlerTrait
     protected function validateUserExists(int $uid): void
     {
         if ($uid > 0) {
-            $user = new User();
-            $user->id = $uid;
-            if ($user->exists()) {
+            $user = new User($uid, 'status');
+            if ($user->exists() && $user->status > 0) {
                 return;
             }
         }
