@@ -155,7 +155,7 @@ class Session
         return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $this->id;
     }
 
-    public function getLiveUids(): array
+    public function getOnlineUids(): array
     {
         if (empty($this->redisOnline)) {
             return [];

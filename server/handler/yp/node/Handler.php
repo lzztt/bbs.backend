@@ -21,7 +21,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        if ($this->request->uid != 1 && $this->request->uid != 8831 && $this->request->uid != 3) {
+        if ($this->request->uid != 1) {
             throw new Forbidden();
         }
 

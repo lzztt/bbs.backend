@@ -22,9 +22,7 @@ class Handler extends Node
     {
         $this->response->type = Response::JSON;
 
-        if ($this->request->uid == self::UID_GUEST) {
-            throw new Forbidden();
-        }
+        $this->validateUser();
 
         unset($this->request->data['title']);
 

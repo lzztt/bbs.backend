@@ -20,9 +20,7 @@ class Handler extends Forum
     {
         $this->response->type = Response::JSON;
 
-        if ($this->request->uid == self::UID_GUEST) {
-            throw new Redirect('/app/user/login');
-        }
+        $this->validateUser();
 
         $tag = $this->getTagObj();
         $tagTree = $tag->getTagTree();

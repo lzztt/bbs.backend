@@ -2,7 +2,6 @@
 
 namespace site\handler\forum;
 
-use lzx\cache\PageCache;
 use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Tag;

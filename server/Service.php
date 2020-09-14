@@ -51,13 +51,6 @@ abstract class Service extends Handler
         $this->$method();
     }
 
-    protected function validateUser(): void
-    {
-        if ($this->request->uid === self::UID_GUEST) {
-            throw new ErrorMessage('请先登陆');
-        }
-    }
-
     protected function validateAdmin(): void
     {
         if ($this->request->uid !== self::UID_ADMIN) {

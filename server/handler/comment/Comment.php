@@ -16,9 +16,6 @@ abstract class Comment extends Controller
     {
         parent::__construct($req, $response, $config, $logger, $session, $args);
 
-        if ($this->request->uid == 0) {
-            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
-            throw new Forbidden();
-        }
+        $this->validateUser();
     }
 }

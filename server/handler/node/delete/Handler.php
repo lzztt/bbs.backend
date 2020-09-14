@@ -13,9 +13,7 @@ class Handler extends Node
 {
     public function run(): void
     {
-        if ($this->request->uid == self::UID_GUEST) {
-            throw new Forbidden();
-        }
+        $this->validateUser();
 
         list($nid, $type) = $this->getNodeType();
         switch ($type) {

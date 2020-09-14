@@ -7,6 +7,7 @@ use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\cache\PageCache;
+use lzx\exception\ErrorMessage;
 use lzx\html\Template;
 use site\File;
 use site\dbobject\User;
@@ -129,6 +130,28 @@ trait HandlerTrait
             $this->cacheEvents[$key] = $event;
             return $event;
         }
+    }
+
+    protected function validateUserExists(int $uid): void
+    {
+        if ($uid > 0) {
+            $user = new User();
+            $user->id = $uid;
+            if ($user->exists()) {
+                return;
+            }
+        }
+
+        throw new ErrorMessage('用户不存在');
+    }
+
+    protected function validateUser(): void
+    {
+        if ($this->request->uid === self::UID_GUEST) {
+            throw new ErrorMessage('请先登陆');
+        }
+
+        $this->validateUserExists($this->request->uid);
     }
 
     protected function deleteUser(int $uid): void

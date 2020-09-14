@@ -28,7 +28,7 @@ class Handler extends Service
         $user = new User();
         $u = $user->getUserStat($this->request->timestamp - 300, self::$city->id);
 
-        $uids = $this->session->getLiveUids();
+        $uids = $this->session->getOnlineUids();
         $u['onlineCount'] = count($uids);
 
         $guestCount = count(array_filter($uids, function($uid) {

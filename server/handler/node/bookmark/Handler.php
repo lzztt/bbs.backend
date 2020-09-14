@@ -10,9 +10,11 @@ class Handler extends Node
 {
     public function run(): void
     {
-        if ($this->request->uid == self::UID_GUEST || !$this->args) {
+        if (!$this->args) {
             throw new Forbidden();
         }
+
+        $this->validateUser();
 
         $nid = (int) $this->args[0];
 

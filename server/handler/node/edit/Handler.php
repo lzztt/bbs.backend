@@ -20,6 +20,8 @@ class Handler extends Node
     {
         $this->response->type = Response::JSON;
 
+        $this->validateUser();
+
         list($nid, $type) = $this->getNodeType();
         switch ($type) {
             case self::FORUM_TOPIC:
