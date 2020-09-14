@@ -6,15 +6,22 @@ use Redis;
 
 class MemStore
 {
-    private static ?Redis $redis = null;
-
-    public static function getRedis(): Redis
+    // persistent_id=$db, needs INI setting: redis.pconnect.pooling_enabled=0
+    public static function getRedis(int $db = 0): Redis
     {
-        if (!self::$redis) {
-            self::$redis = new Redis();
-            self::$redis->pconnect('/run/redis/redis-server.sock');
+        static $instances = [];
+
+        $id = (string) $db;
+        if (array_key_exists($id, $instances)) {
+            return $instances[$id];
         }
 
-        return self::$redis;
+        $redis = new Redis();
+        $redis->pconnect('/run/redis/redis-server.sock', -1, 0, $id);
+        $redis->select($db);
+
+        $instances[$id] = $redis;
+
+        return $redis;
     }
 }

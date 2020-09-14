@@ -18,6 +18,7 @@ class Session
 
     private string $id = '';
     private Redis $redis;
+    private Redis $redisOnline;
     private int $time;
     private array $current = [];
     private array $original = [];
@@ -41,7 +42,8 @@ class Session
             return;
         }
 
-        $this->redis = MemStore::getRedis();
+        $this->redis = MemStore::getRedis(1);
+        $this->redisOnline = MemStore::getRedis(2);
 
         if (!$this->loadDbSession()) {
             $this->startNewSession();
@@ -154,19 +156,23 @@ class Session
         $this->redis->expire('s:' . $this->id, (int) $this->current['uid'] > 0 ? 2592000 : 86400);
 
         if ($this->original && $this->current['uid'] != $this->original['uid']) {
-            $this->redis->del($this->getTimeKey($this->original['uid']));
+            $this->redisOnline->del($this->getTimeKey($this->original['uid']));
         }
-        $this->redis->set($this->getTimeKey($this->current['uid']), '', 300);
+        $this->redisOnline->set($this->getTimeKey($this->current['uid']), '', 300);
     }
 
     private function getTimeKey(string $uid): string
     {
-        return 'st:' . $this->current['cid'] . ':' . $uid . ':' . $this->id;
+        return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $this->id;
     }
 
     public function getLiveUids(): array
     {
-        $keys = $this->redis->keys('st:' . $this->current['cid'] . ':*');
+        if (empty($this->redisOnline)) {
+            return [];
+        }
+
+        $keys = $this->redisOnline->keys('o:' . $this->current['cid'] . ':*');
         $uids = [];
         foreach ($keys as $k) {
             $f = explode(':', $k);
