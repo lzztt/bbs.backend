@@ -4,7 +4,6 @@ namespace site;
 
 use lzx\db\MemStore;
 use Redis;
-use site\dbobject\Session as SessionObj;
 
 class Session
 {
@@ -59,21 +58,11 @@ class Session
         }
 
         $data = $this->redis->hGetAll('s:' . $sid);
-        if ($data) {
-            $this->original = $data;
-        } else {
-            $session = new SessionObj($sid);
-            if (!$session->exists()) {
-                return false;
-            }
-
-            $this->original = $session->toArray();
-            $this->original['uid'] = (string) $this->original['uid'];
-            $this->original['cid'] = (string) $this->original['cid'];
-            unset($this->original['id']);
-            unset($this->original['crc']);
-            unset($this->original['atime']);
+        if (!$data) {
+            return false;
         }
+
+        $this->original = $data;
 
         $this->id = $sid;
         $this->original['data'] = self::decodeData($this->original['data']);
