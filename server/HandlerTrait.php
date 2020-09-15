@@ -59,13 +59,9 @@ trait HandlerTrait
             return;
         }
 
-        $user = new User($this->request->uid, 'lastAccessTime,lastAccessIp');
+        $user = new User($this->request->uid, 'lastAccessTime');
         if ($this->request->timestamp - $user->lastAccessTime > 259200) { // 3 days
             $user->lastAccessTime = $this->request->timestamp;
-            $ip = inet_pton($this->request->ip);
-            if ($user->lastAccessIp !== $ip) {
-                $user->lastAccessIp = $ip;
-            }
             $user->update();
 
             $this->updateSessionEvent(SessionEvent::EVENT_UPDATE);
