@@ -9,6 +9,7 @@ use lzx\cache\CacheHandler;
 use lzx\cache\PageCache;
 use lzx\exception\ErrorMessage;
 use lzx\html\Template;
+use site\dbobject\SessionEvent;
 use site\File;
 use site\dbobject\User;
 use stdClass;
@@ -54,19 +55,32 @@ trait HandlerTrait
 
     private function updateAccessInfo(): void
     {
-        if ($this->request->uid === self::UID_GUEST) {
+        if ($this->request->uri !== '/api/stat' || $this->request->uid === self::UID_GUEST) {
             return;
         }
 
         $user = new User($this->request->uid, 'lastAccessTime,lastAccessIp');
-        if ($this->request->timestamp - $user->lastAccessTime > 900) {
+        if ($this->request->timestamp - $user->lastAccessTime > 259200) { // 3 days
             $user->lastAccessTime = $this->request->timestamp;
             $ip = inet_pton($this->request->ip);
             if ($user->lastAccessIp !== $ip) {
                 $user->lastAccessIp = $ip;
             }
             $user->update();
+
+            $this->updateSessionEvent(SessionEvent::EVENT_UPDATE);
         }
+    }
+
+    public function updateSessionEvent(string $event) {
+        $sessionEvent = new SessionEvent();
+        $sessionEvent->sessionId = $this->session->id();
+        $sessionEvent->userId = $this->session->get('uid');
+        $sessionEvent->event = $event;
+        $sessionEvent->time = $this->request->timestamp;
+        $sessionEvent->ip = ip2long($this->request->ip);
+        $sessionEvent->agent = $this->request->agent;
+        $sessionEvent->add();
     }
 
     public function flushCache(): void

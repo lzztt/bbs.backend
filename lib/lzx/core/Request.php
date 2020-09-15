@@ -18,6 +18,7 @@ class Request
     public $data;
     public $uid;
     public $timestamp;
+    public $agent;
 
     private $req;
     private $hasBadUrl;
@@ -33,6 +34,7 @@ class Request
         $this->method = strtolower($this->req->getMethod());
         $this->uri = strtolower($params['REQUEST_URI']);
         $this->timestamp = (int) $params['REQUEST_TIME'];
+        $this->agent = $params['HTTP_USER_AGENT'];
 
         $this->hasBadUrl = false;
         if (!self::validateUrl($this->uri)) {

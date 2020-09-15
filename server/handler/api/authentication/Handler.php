@@ -4,6 +4,7 @@ namespace site\handler\api\authentication;
 
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
+use site\dbobject\SessionEvent;
 use site\Service;
 use site\dbobject\User;
 
@@ -29,7 +30,6 @@ class Handler extends Service
 
     // login a user
     // uri: /api/authentication[?action=post]
-    // post: username=<username>&password=<password>
     // post: email=<email>&password=<password>
     // return: session id and uid
     public function post(): void
@@ -41,6 +41,8 @@ class Handler extends Service
 
             if ($loggedIn) {
                 $this->session->set('uid', $user->id);
+                $this->updateSessionEvent(SessionEvent::EVENT_BEGIN);
+
                 $this->json(['sessionID' => $this->session->id(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
                 return;
             } else {
@@ -71,6 +73,8 @@ class Handler extends Service
         if (!$this->args || $this->args[0] != $this->session->id()) {
             throw new Forbidden();
         }
+
+        $this->updateSessionEvent(SessionEvent::EVENT_END);
 
         $this->session->clear(); // keep session record but clear session data
 
