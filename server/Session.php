@@ -16,8 +16,8 @@ class Session
     ];
 
     private string $id = '';
-    private Redis $redis;
-    private Redis $redisOnline;
+    private ?Redis $redis = null;
+    private ?Redis $redisOnline = null;
     private int $time;
     private array $current = [];
     private array $original = [];
@@ -44,6 +44,8 @@ class Session
         $this->redis = MemStore::getRedis(1);
         $this->redisOnline = MemStore::getRedis(2);
 
+        $this->id = empty($_COOKIE[self::SID_NAME]) ? '' : $_COOKIE[self::SID_NAME];
+
         if (!$this->loadDbSession()) {
             $this->startNewSession();
         }
@@ -51,20 +53,16 @@ class Session
 
     private function loadDbSession(): bool
     {
-        $sid = empty($_COOKIE[self::SID_NAME]) ? '' : $_COOKIE[self::SID_NAME];
-
-        if (!$sid) {
+        if (!$this->id) {
             return false;
         }
 
-        $data = $this->redis->hGetAll('s:' . $sid);
+        $data = $this->redis->hGetAll('s:' . $this->id);
         if (!$data) {
             return false;
         }
 
         $this->original = $data;
-
-        $this->id = $sid;
         $this->original['data'] = self::decodeData($this->original['data']);
 
         $this->current = $this->original;
@@ -153,6 +151,13 @@ class Session
     private function getTimeKey(string $uid): string
     {
         return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $this->id;
+    }
+
+    public function deleteSession(string $id): void
+    {
+        if ($this->redis) {
+            $this->redis->del($id);
+        }
     }
 
     public function getOnlineUids(): array

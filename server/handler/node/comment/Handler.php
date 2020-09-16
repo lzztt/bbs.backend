@@ -5,7 +5,6 @@ namespace site\handler\node\comment;
 use Exception;
 use lzx\core\Response;
 use lzx\exception\ErrorMessage;
-use lzx\exception\Forbidden;
 use lzx\exception\Redirect;
 use site\SpamFilterTrait;
 use site\dbobject\Comment;

@@ -2,7 +2,6 @@
 
 namespace site\handler\home;
 
-use lzx\cache\PageCache;
 use lzx\cache\SegmentCache;
 use lzx\exception\ErrorMessage;
 use lzx\html\Template;

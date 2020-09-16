@@ -23,4 +23,17 @@ class SessionEvent extends DBObject
     {
         parent::__construct(DB::getInstance(), 'session_events', $id, $properties);
     }
+
+    public function getSessionId(int $userId): string
+    {
+        if ($userId < 1) {
+            return '';
+        }
+        $sessionEvent = new SessionEvent();
+        $sessionEvent->userId = $userId;
+        $sessionEvent->where('event', SessionEvent::EVENT_END, '!=');
+        $sessionEvent->order('time', false);
+        $arr = $sessionEvent->getList('sessionId', 1);
+        return $arr ? $arr[0]['sessionId'] : '';
+    }
 }

@@ -7,6 +7,7 @@ use lzx\exception\Forbidden;
 use lzx\geo\Reader;
 use site\Config;
 use site\Service;
+use site\dbobject\SessionEvent;
 use site\dbobject\User;
 
 class Handler extends Service
@@ -195,6 +196,13 @@ class Handler extends Service
         }
 
         $this->deleteUser($uid);
+
+        $sessionEvent = new SessionEvent();
+        $sessionId = $sessionEvent->getSessionId($uid);
+        if ($sessionId) {
+            $this->session->deleteSession($sessionId);
+        }
+
         $this->json();
     }
 

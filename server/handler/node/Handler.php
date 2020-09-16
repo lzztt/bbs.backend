@@ -3,7 +3,6 @@
 namespace site\handler\node;
 
 use Exception;
-use lzx\cache\PageCache;
 use lzx\core\BBCodeRE as BBCode;
 use lzx\exception\NotFound;
 use lzx\html\HTMLElement;

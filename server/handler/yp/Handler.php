@@ -2,7 +2,6 @@
 
 namespace site\handler\yp;
 
-use lzx\cache\PageCache;
 use lzx\html\Template;
 use site\Controller;
 use site\dbobject\Node;

@@ -4,7 +4,6 @@ namespace site\handler\node\activity;
 
 use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
-use lzx\exception\Forbidden;
 use lzx\exception\NotFound;
 use lzx\html\Template;
 use site\dbobject\Activity;

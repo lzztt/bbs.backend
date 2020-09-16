@@ -2,7 +2,6 @@
 
 namespace site\handler\term;
 
-use lzx\cache\PageCache;
 use lzx\html\Template;
 use site\Controller;
 

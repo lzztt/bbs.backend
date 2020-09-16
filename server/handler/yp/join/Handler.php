@@ -2,7 +2,6 @@
 
 namespace site\handler\yp\join;
 
-use lzx\cache\PageCache;
 use lzx\html\Template;
 use site\Controller;
 

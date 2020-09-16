@@ -4,8 +4,6 @@ namespace site;
 
 use Exception;
 use lzx\App;
-use lzx\cache\Cache;
-use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\core\Request;
 use lzx\core\Response;
