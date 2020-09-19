@@ -10,11 +10,11 @@ use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\NotFound;
-use lzx\html\Template;
 use site\Config;
 use site\HandlerTrait;
 use site\Session;
 use site\dbobject\User;
+use site\gen\theme\roselife\mail\IdentCode;
 
 abstract class Service extends Handler
 {
@@ -39,9 +39,9 @@ abstract class Service extends Handler
 
     public function run(): void
     {
-        $method = $this->request->method;
+        $method = strtolower($this->request->method);
         if (array_key_exists('action', $this->request->data)) {
-            $method = $this->request->data['action'];
+            $method = strtolower($this->request->data['action']);
             unset($this->request->data['action']);
         }
 
@@ -108,12 +108,12 @@ abstract class Service extends Handler
         $mailer->setTo($user->email);
         $siteName = $this->getSiteName();
         $mailer->setSubject($user->username . '在' . $siteName . '的用户安全验证码');
-        $contents = [
-            'username' => $user->username,
-            'ident_code' => $this->createIdentCode($user->id),
-            'sitename' => $siteName
-        ];
-        $mailer->setBody((string) new Template('mail/ident_code', $contents));
+        $mailer->setBody(
+            (string) (new IdentCode())
+                ->setUsername($user->username)
+                ->setIdentCode($this->createIdentCode($user->id))
+                ->setSitename($siteName)
+        );
 
         return $mailer->send();
     }

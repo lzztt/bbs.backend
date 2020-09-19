@@ -3,12 +3,15 @@
 namespace lzx\cache;
 
 use lzx\cache\CacheHandler;
+use lzx\html\Template;
 
 abstract class Cache
 {
+    protected const NOT_SUPPORTED = 'not supported';
+
     protected CacheHandler $handler;
     protected string $key;
-    protected string $data = '';
+    protected ?Template $data = null;
     protected array $parents = [];
     protected array $children = [];
     protected bool $deleted = false;
@@ -25,25 +28,20 @@ abstract class Cache
         return $this->key;
     }
 
-    public function getData(): string
+    public function getData(): ?Template
     {
         return $this->data;
     }
 
-    public function setData(string $data): void
+    public function setData(Template $data): void
     {
         $this->data = $data;
         $this->dirty = true;
     }
 
-    public function store(string $data): void
-    {
-        $this->setData($data);
-    }
-
     public function delete(): void
     {
-        $this->data = '';
+        $this->data = null;
         $this->dirty = true;
         $this->deleted = true;
     }

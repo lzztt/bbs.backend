@@ -59,7 +59,7 @@ class Response
     public function cacheContent(PageCache $cache): void
     {
         if ($this->status < 300 && $this->data instanceof Template) {
-            $cache->store((string) $this->data);
+            $cache->setData($this->data);
         } else {
             throw new Exception('Cache content failed: status=' . $this->status . ' response content type=' . gettype($this->data));
         }

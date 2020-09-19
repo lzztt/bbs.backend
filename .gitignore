@@ -1,4 +1,6 @@
 .venv
+/.vscode/
 /.phpintel/
 /vendor/
 /server/Config.php
+/server/gen/

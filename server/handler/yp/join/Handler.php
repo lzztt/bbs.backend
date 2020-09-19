@@ -2,8 +2,8 @@
 
 namespace site\handler\yp\join;
 
-use lzx\html\Template;
 use site\Controller;
+use site\gen\theme\roselife\YpJoin;
 
 class Handler extends Controller
 {
@@ -11,7 +11,8 @@ class Handler extends Controller
     {
         $this->cache = $this->getPageCache();
 
-        $this->var['content'] = new Template('yp_join');
-        $this->var['head_title'] = '市场推广 先入为主';
+        $this->html
+            ->setHeadTitle('市场推广 先入为主')
+            ->setContent(new YpJoin());
     }
 }

@@ -11,6 +11,8 @@ use site\Config;
 use site\HandlerTrait;
 use site\Session;
 use site\dbobject\Tag;
+use site\gen\theme\roselife\Html;
+use site\gen\theme\roselife\PageNavbar;
 
 abstract class Controller extends Handler
 {
@@ -25,6 +27,7 @@ abstract class Controller extends Handler
     public $site;
     public $session;
     protected $var = [];
+    protected Html $html;
 
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
     {
@@ -34,60 +37,49 @@ abstract class Controller extends Handler
         $this->args = $args;
         $this->staticInit();
 
-        // register this controller as an observer of the HTML template
-        $html = new Template('html');
-        $html->onBeforeRender([$this, 'update']);
-        $this->response->setContent($html);
+        $this->html = new Html();
+        $this->response->setContent($this->html);
     }
 
-    // interface for Observer design pattern
-    public function update(Template $html): void
+    public function afterRun(): void
     {
+        $html = $this->html;
+        $html->setCity(self::$city->id)
+            ->setDebug($this->config->mode === Config::MODE_DEV)
+            ->setTheme($this->config->theme);
+
         // set navbar
         $navbarCache = $this->getIndependentCache('page_navbar');
-        $navbar = $navbarCache->fetch();
+        $navbar = $navbarCache->getData();
         if (!$navbar) {
-            if (self::$city->tidYp) {
-                $vars = [
-                    'forumMenu' => $this->createMenu(self::$city->tidForum),
-                    'ypMenu' => $this->createMenu(self::$city->tidYp),
-                    'uid' => $this->request->uid
-                ];
-            } else {
-                $vars = [
-                    'forumMenu' => $this->createMenu(self::$city->tidForum),
-                    'uid' => $this->request->uid
-                ];
-            }
-
-            $navbar = (string) new Template('page_navbar', $vars);
-            $navbarCache->store($navbar);
+            $navbar = (new PageNavbar())
+                ->setCity(self::$city->id)
+                ->setForumMenu(Template::fromStr($this->createMenu(self::$city->tidForum)))
+                ->setYpMenu(Template::fromStr(self::$city->tidYp ? $this->createMenu(self::$city->tidYp) : ''));
+            $navbarCache->setData($navbar);
         }
-        $this->var['page_navbar'] = $navbar;
+        $html->setPageNavbar($navbar);
 
         // set headers
         $siteName = self::$city->domain === 'bayever.com' ? '生活在湾区' : '缤纷' . self::$city->nameZh;
-        if (!array_key_exists('head_title', $this->var)) {
-            $this->var['head_title'] = $siteName;
+        if (empty($html->getHeadTitle())) {
+            $html->setHeadTitle($siteName);
         }
 
-        if (!array_key_exists('head_description', $this->var)) {
-            $this->var['head_description'] = self::$city->nameZh . ' 华人 论坛 租房 旅游 黄页 移民 周末活动 单身 交友 ' . self::$city->nameEn . ' Chinese Forum';
+        if (empty($html->getHeadDescription())) {
+            $html->setHeadDescription(self::$city->nameZh . ' 华人 论坛 租房 旅游 黄页 移民 周末活动 单身 交友 ' . self::$city->nameEn . ' Chinese Forum');
         } else {
-            $this->var['head_description'] = $this->var['head_description'] . ' ' . self::$city->nameZh . ' 华人 论坛 ' . self::$city->nameEn . ' Chinese Forum';
+            $html->setHeadDescription($html->getHeadDescription() . ' ' . self::$city->nameZh . ' 华人 论坛 ' . self::$city->nameEn . ' Chinese Forum');
         }
-        $this->var['sitename'] = $siteName;
+        $html->setSitename($siteName);
 
         // set min version for css and js
-        if (!Template::$debug) {
-            $min_version = $this->config->path['file'] . '/themes/' . Template::$theme . '/min/min.current';
+        if (!$html->getDebug()) {
+            $min_version = $this->config->path['file'] . '/themes/' . $html->getTheme() . '/min/min.current';
             if (file_exists($min_version)) {
-                $this->var['min_version'] = file_get_contents($min_version);
+                $html->setMinVersion(file_get_contents($min_version));
             }
         }
-
-        // populate template variables and remove self as an observer
-        $html->setVar($this->var);
     }
 
     protected function createMenu(int $tid): string

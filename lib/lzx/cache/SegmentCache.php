@@ -4,21 +4,25 @@ namespace lzx\cache;
 
 use Exception;
 use lzx\cache\Cache;
+use lzx\html\Template;
 
 class SegmentCache extends Cache
 {
 
-    public function fetch(): string
+    public function getData(): ?Template
     {
         if (!$this->data) {
-            $this->data = $this->handler->fetchData($this);
+            $data = $this->handler->fetchData($this);
+            if ($data) {
+                $this->data = Template::fromStr($data);
+            }
         }
         return $this->data;
     }
 
     public function addChild(string $key): void
     {
-        throw new Exception('not supported');
+        throw new Exception(self::NOT_SUPPORTED);
     }
 
     public function flush(): void

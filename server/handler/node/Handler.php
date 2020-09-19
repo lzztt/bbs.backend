@@ -4,10 +4,15 @@ namespace site\handler\node;
 
 use Exception;
 use lzx\core\BBCodeRE as BBCode;
+use lzx\db\MemStore;
 use lzx\exception\NotFound;
-use lzx\html\HTMLElement;
+use lzx\html\HtmlElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
+use site\gen\theme\roselife\AuthorPanelForum;
+use site\gen\theme\roselife\EditorBbcode;
+use site\gen\theme\roselife\NodeForumTopic;
+use site\gen\theme\roselife\NodeYellowPage;
 use site\handler\node\Node;
 
 class Handler extends Node
@@ -31,6 +36,40 @@ class Handler extends Node
 
     private function displayForumTopic(int $nid): void
     {
+        $rateLimiter = MemStore::getRedis(3);
+        $key = date("d") . ':' . ($this->session->get('uid') ?: $this->request->ip);
+        $oneDay = 86400;
+        $skip = false;
+        if ($rateLimiter->sCard($key) > 50) {
+            // check bots
+            $isGoogleBot = false;
+            if ($this->request->isRobot()) {
+                $botKey = 'b:' . $this->request->ip;
+                if ($rateLimiter->exists($botKey)) {
+                    $isGoogleBot = boolval($rateLimiter->get($botKey));
+                } else {
+                    $isGoogleBot = $this->request->isGoogleBot();
+                    $rateLimiter->set($botKey, $isGoogleBot ? '1' : '0', $oneDay);
+                }
+            }
+
+            if ($isGoogleBot) {
+                $skip = true;
+            } else {
+                // mail error log
+                if (!$rateLimiter->exists($key . ':log')) {
+                    $this->logger->error('rate limit ' . $this->request->ip);
+                    $rateLimiter->set($key . ':log', '', $oneDay);
+                }
+                throw new NotFound();
+            }
+        }
+
+        if (!$skip) {
+            $rateLimiter->sAdd($key, $nid);
+            $rateLimiter->expire($key, 86400);
+        }
+
         $nodeObj = new NodeObject();
         $node = $nodeObj->getForumNode($nid);
         if (!$node) {
@@ -39,8 +78,9 @@ class Handler extends Node
 
         $tags = $nodeObj->getTags($nid);
 
-        $this->var['head_title'] = $node['title'];
-        $this->var['head_description'] = $node['title'];
+        $this->html
+            ->setHeadTitle($node['title'])
+            ->setHeadDescription($node['title']);
 
         $breadcrumb = [];
         foreach ($tags as $i => $t) {
@@ -49,20 +89,19 @@ class Handler extends Node
         $breadcrumb[$node['title']] = null;
 
         list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
-        $pager = Template::pager($pageNo, $pageCount, '/node/' . $node['id']);
+        $pager = HtmlElement::pager($pageNo, $pageCount, '/node/' . $node['id']);
 
         $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE; // first page start from the node and followed by comments
 
-        $contents = [
-            'nid' => $nid,
-            'tid' => $node['tid'],
-            'commentCount' => $node['comment_count'] - 1,
-            'status' => $node['status'],
-            'breadcrumb' => Template::breadcrumb($breadcrumb),
-            'pager' => $pager,
-            'postNumStart' => $postNumStart,
-            'ajaxURI' => '/api/viewcount/' . $nid
-        ];
+        $page = (new NodeForumTopic())
+            ->setCity(self::$city->id)
+            ->setNid($nid)
+            ->setTid((int) $node['tid'])
+            ->setCommentCount($node['comment_count'] - 1)
+            ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
+            ->setPager($pager)
+            ->setPostNumStart($postNumStart)
+            ->setAjaxUri('/api/viewcount/' . $nid);
 
         $posts = [];
 
@@ -107,32 +146,28 @@ class Handler extends Node
             }
         }
 
-        $editor_contents = [
-            'title'          => $node['title'],
-            'form_handler' => '/node/' . $nid . '/comment',
-            'hasFile'        => true
-        ];
-        $editor = new Template('editor_bbcode', $editor_contents);
-
-        $contents += [
-            'posts'  => $posts,
-            'editor' => $editor
-        ];
-
-        $this->var['content'] = new Template('node_forum_topic', $contents);
+        $this->html->setContent(
+            $page->setPosts($posts)
+                ->setEditor(
+                    (new EditorBbcode())
+                        ->setTitle($node['title'])
+                        ->setFormHandler('/node/' . $nid . '/comment')
+                        ->setHasFile(true)
+                )
+        );
     }
 
-    private function authorPanel(array $info): string
+    private function authorPanel(array $info): Template
     {
         static $authorPanels = [];
 
         if (!(array_key_exists('uid', $info) && $info['uid'] > 0)) {
-            return '';
+            return Template::fromStr('');
         }
 
         if (!array_key_exists($info['uid'], $authorPanels)) {
             $authorPanelCache = $this->getIndependentCache('ap' . $info['uid']);
-            $authorPanel = $authorPanelCache->fetch();
+            $authorPanel = $authorPanelCache->getData();
             if (!$authorPanel) {
                 $info['joinTime'] = date('m/d/Y', (int) $info['join_time']);
                 $info['sex'] = isset($info['sex']) ? ($info['sex'] == 1 ? '男' : '女') : '未知';
@@ -140,8 +175,15 @@ class Handler extends Node
                     $info['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
                 }
                 $info['city'] = $info['access_ip'] ? self::getLocationFromIp($info['access_ip'], false) : 'N/A';
-                $authorPanel = (string) new Template('author_panel_forum', $info);
-                $authorPanelCache->store($authorPanel);
+                $authorPanel = (new AuthorPanelForum())
+                    ->setUid((int) $info['uid'])
+                    ->setUsername($info['username'])
+                    ->setAvatar($info['avatar'])
+                    ->setSex($info['sex'])
+                    ->setCity($info['city'])
+                    ->setJoinTime($info['joinTime'])
+                    ->setPoints((int) $info['points']);
+                $authorPanelCache->setData($authorPanel);
             }
             $authorPanels[$info['uid']] = $authorPanel;
         }
@@ -175,20 +217,21 @@ class Handler extends Node
             }
 
             if ($isImage) {
-                $imageElements[] = new HTMLElement('figure', [
-                    new HTMLElement('figcaption', $f['name']),
-                    new HTMLElement('img', null, ['src' => $f['path'], 'alt' => '图片加载失败 : ' . $f['name']])]);
+                $imageElements[] = new HtmlElement('figure', [
+                    new HtmlElement('figcaption', $f['name']),
+                    new HtmlElement('img', null, ['src' => $f['path'], 'alt' => '图片加载失败 : ' . $f['name']])
+                ]);
             } else {
-                $fileElements[] = Template::link($f['name'], $f['path']);
+                $fileElements[] = HtmlElement::link($f['name'], $f['path']);
             }
         }
 
         $attachments = '';
         if (sizeof($imageElements) > 0) {
-            $attachments .= new HTMLElement('div', $imageElements, ['class' => 'attach_images']);
+            $attachments .= new HtmlElement('div', $imageElements, ['class' => 'attach_images']);
         }
         if (sizeof($fileElements) > 0) {
-            $attachments .= new HTMLElement('div', $fileElements, ['class' => 'attach_files']);
+            $attachments .= new HtmlElement('div', $fileElements, ['class' => 'attach_files']);
         }
 
         return $attachments;
@@ -214,18 +257,17 @@ class Handler extends Node
         $breadcrumb[$node['title']] = null;
 
         list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
-        $pager = Template::pager($pageNo, $pageCount, '/node/' . $nid);
+        $pager = HtmlElement::pager($pageNo, $pageCount, '/node/' . $nid);
 
         $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
 
-        $contents = [
-            'nid' => $nid,
-            'commentCount' => $node['comment_count'],
-            'breadcrumb' => Template::breadcrumb($breadcrumb),
-            'pager' => $pager,
-            'postNumStart' => $postNumStart,
-            'ajaxURI' => '/api/viewcount/' . $nid
-        ];
+        $page = (new NodeYellowPage())
+            ->setNid($nid)
+            ->setCommentCount((int) $node['comment_count'])
+            ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
+            ->setPager($pager)
+            ->setPostNumStart($postNumStart)
+            ->setAjaxUri('/api/viewcount/' . $nid);
 
         $node['type'] = 'node';
 
@@ -263,17 +305,14 @@ class Handler extends Node
             }
         }
 
-        $editor_contents = [
-            'form_handler' => '/node/' . $nid . '/comment'
-        ];
-        $editor = new Template('editor_bbcode', $editor_contents);
 
-        $contents += [
-            'node' => $node,
-            'comments' => $cmts,
-            'editor' => $editor
-        ];
+        $page->setNode($node)
+            ->setComments(($cmts))
+            ->setEditor(
+                (new EditorBbcode())
+                    ->setFormHandler('/node/' . $nid . '/comment')
+            );
 
-        $this->var['content'] = new Template('node_yellow_page', $contents);
+        $this->html->setContent($page);
     }
 }

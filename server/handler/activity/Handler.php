@@ -3,9 +3,10 @@
 namespace site\handler\activity;
 
 use lzx\exception\ErrorMessage;
-use lzx\html\Template;
+use lzx\html\HtmlElement;
 use site\Controller;
 use site\dbobject\Activity as ActivityObject;
+use site\gen\theme\roselife\ActivityList;
 
 class Handler extends Controller
 {
@@ -21,7 +22,7 @@ class Handler extends Controller
         }
 
         list($pageNo, $pageCount) = $this->getPagerInfo($total, self::NODES_PER_PAGE);
-        $pager = Template::pager($pageNo, $pageCount, '/activity');
+        $pager = HtmlElement::pager($pageNo, $pageCount, '/activity');
 
         $limit = self::NODES_PER_PAGE;
         $offset = ($pageNo - 1) * self::NODES_PER_PAGE;
@@ -33,11 +34,10 @@ class Handler extends Controller
             $data .= '<a href="/node/' . $n['nid'] . '" class="' . $type . '" data-before="' . date('m/d', (int) $n['start_time']) . '">' . $n['title'] . '</a>';
         }
 
-        $contents = [
-            'pager' => $pager,
-            'data' => $data
-        ];
-
-        $this->var['content'] = new Template('activity_list', $contents);
+        $this->html->setContent(
+            (new ActivityList())
+                ->setPager($pager)
+                ->setData($data)
+        );
     }
 }

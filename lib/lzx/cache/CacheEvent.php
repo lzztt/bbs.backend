@@ -5,6 +5,7 @@ namespace lzx\cache;
 use Exception;
 use lzx\cache\Cache;
 use lzx\cache\CacheHandler;
+use lzx\html\Template;
 
 class CacheEvent extends Cache
 {
@@ -15,14 +16,24 @@ class CacheEvent extends Cache
         parent::__construct($key . ':' . $id, CacheHandler::getInstance());
     }
 
+    public function getData(): Template
+    {
+        throw new Exception(self::NOT_SUPPORTED);
+    }
+
+    public function setData(Template $data): void
+    {
+        throw new Exception(self::NOT_SUPPORTED);
+    }
+
     public function addParent(string $key): void
     {
-        throw new Exception('not supported');
+        throw new Exception(self::NOT_SUPPORTED);
     }
 
     public function addChild(string $key): void
     {
-        throw new Exception('not supported');
+        throw new Exception(self::NOT_SUPPORTED);
     }
 
     public function addListener(Cache $cache): void

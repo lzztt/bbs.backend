@@ -1,7 +1,8 @@
 import sys
 
+
 def partition(file):
-    lines = file.readlines();
+    lines = file.readlines()
     ret = [[], [], []]
 
     part = 0
@@ -17,15 +18,23 @@ def partition(file):
     return ret
 
 
+def diff(l1, l2):
+    if len(l1) != len(l2):
+        return True
+    for i in range(len(l1)):
+        if l1[i] != l2[i]:
+            return True
+    return False
+
+
 if __name__ == '__main__':
     filename = sys.argv[1]
     with open(filename) as f:
         parts = partition(f)
 
     if parts[1]:
-        ordered = parts[1][:]
+        ordered = list(set(parts[1]))
         ordered.sort()
-        if cmp(parts[1], ordered) != 0:
+        if diff(parts[1], ordered):
             with open(filename, 'w') as f:
                 f.write(''.join(parts[0] + ordered + parts[2]))
-

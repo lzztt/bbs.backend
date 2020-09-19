@@ -8,15 +8,13 @@ use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\cache\PageCache;
 use lzx\exception\ErrorMessage;
-use lzx\html\Template;
-use site\dbobject\SessionEvent;
 use site\File;
+use site\dbobject\SessionEvent;
 use site\dbobject\User;
-use stdClass;
 
 trait HandlerTrait
 {
-    protected static stdClass $city;
+    protected static City $city;
     private static CacheHandler $cacheHandler;
     protected ?PageCache $cache = null;
     protected array $independentCacheList = [];
@@ -35,8 +33,6 @@ trait HandlerTrait
         self::$city = $this->config->city;
         // set site info
         $site = str_replace(['bbs.com', '.com'], '', self::$city->domain);
-
-        Template::setSite($site);
 
         self::$cacheHandler = CacheHandler::getInstance();
         self::$cacheHandler->setDomain($site);
@@ -68,13 +64,14 @@ trait HandlerTrait
         }
     }
 
-    public function updateSessionEvent(string $event) {
+    public function updateSessionEvent(string $event)
+    {
         $sessionEvent = new SessionEvent();
         $sessionEvent->sessionId = $this->session->id();
         $sessionEvent->userId = $this->session->get('uid');
         $sessionEvent->event = $event;
         $sessionEvent->time = $this->request->timestamp;
-        $sessionEvent->ip = ip2long($this->request->ip);
+        $sessionEvent->ip = inet_pton($this->request->ip);
         $sessionEvent->agent = $this->request->agent;
         $sessionEvent->add();
     }
@@ -82,7 +79,7 @@ trait HandlerTrait
     public function flushCache(): void
     {
         if ($this->config->cache) {
-            if ($this->cache && $this->response->getStatus() < 300 && Template::hasError() === false) {
+            if ($this->cache && $this->response->getStatus() < 300) {
                 $this->response->cacheContent($this->cache);
                 $this->cache->flush();
                 $this->cache = null;
@@ -172,6 +169,12 @@ trait HandlerTrait
         $user = new User();
         $user->id = $uid;
         $user->delete();
+
+        $sessionEvent = new SessionEvent();
+        $sessionId = $sessionEvent->getSessionId($uid);
+        if ($sessionId) {
+            $this->session->deleteSession($sessionId);
+        }
 
         foreach ($user->getAllNodeIDs() as $nid) {
             $this->getIndependentCache('/node/' . $nid)->delete();

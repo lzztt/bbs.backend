@@ -135,14 +135,17 @@ class CacheHandler
 
     public function syncDataFile(Cache $cache): void
     {
-        $filename = $this->getFileName($cache);
-        $dir = dirname($filename);
-        if (!file_exists($dir)) {
-            mkdir($dir, 0755, true);
+        $data = (string) $cache->getData();
+        if ($data) {
+            $filename = $this->getFileName($cache);
+            $dir = dirname($filename);
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            // gzip data for public cache file used by webserver
+            // use 6 as default and equal to webserver gzip compression level
+            file_put_contents($filename, gzencode($data, 6), LOCK_EX);
         }
-        // gzip data for public cache file used by webserver
-        // use 6 as default and equal to webserver gzip compression level
-        file_put_contents($filename, gzencode($cache->getData(), 6), LOCK_EX);
     }
 
     protected function getDataKey($key): string
@@ -168,7 +171,10 @@ class CacheHandler
 
     public function syncData(Cache $cache): void
     {
-        $this->db->set($this->getDataKey($cache->getKey()), $cache->getData());
+        $data = (string) $cache->getData();
+        if ($data) {
+            $this->db->set($this->getDataKey($cache->getKey()), $data);
+        }
     }
 
     public function deleteData(Cache $cache): void

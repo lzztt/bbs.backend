@@ -8,8 +8,8 @@ use lzx\core\Request;
 use lzx\core\Response;
 use lzx\exception\NotFound;
 use site\Config;
-use site\HandlerRouter;
 use site\Session;
+use site\gen\HandlerRouter;
 
 class HandlerFactory
 {

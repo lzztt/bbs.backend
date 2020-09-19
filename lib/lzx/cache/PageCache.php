@@ -24,7 +24,7 @@ class PageCache extends Cache
 
     public function addChild(string $key): void
     {
-        throw new Exception('not supported');
+        throw new Exception(self::NOT_SUPPORTED);
     }
 
     public function flush(): void

@@ -9,7 +9,6 @@ use lzx\core\Request;
 use lzx\core\Response;
 use lzx\core\UtilTrait;
 use lzx\db\DB;
-use lzx\html\Template;
 use site\Config;
 use site\HandlerFactory;
 use site\Session;
@@ -31,21 +30,11 @@ class WebApp extends App
         } else {
             date_default_timezone_set('America/Chicago');
         }
-        $this->debug = $this->config->stage === Config::STAGE_DEVELOPMENT;
-        if ($this->debug) {
-            DB::$debug = true;
-            Template::$debug = true;
-        } else {
-            DB::$debug = false;
-            Template::$debug = false;
-        }
+        $this->debug = $this->config->mode === Config::MODE_DEV;
+        DB::$debug = $this->debug;
 
         $this->logger->setFile($this->config->path['log'] . '/' . $this->config->domain . '.log');
         $this->logger->setEmail($this->config->webmaster, 'Error: ' . $_SERVER['REQUEST_URI'], 'logger@' . $this->config->domain);
-
-        Template::setLogger($this->logger);
-        Template::$path = $this->config->path['theme'];
-        Template::$theme = $this->config->theme;
     }
 
     public function run(array $args): void
@@ -61,6 +50,9 @@ class WebApp extends App
             'user' => 'https://www.' . $this->config->domain . '/app/user/' . $request->uid,
             'ip' => $request->ip,
             'city' => self::getLocationFromIp($request->ip),
+            'agent' => $request->agent,
+            'referer' => $request->referer,
+            'data' => $request->data,
         ]);
 
         $response = Response::getInstance();
@@ -68,6 +60,7 @@ class WebApp extends App
         try {
             $ctrler = HandlerFactory::create($request, $response, $this->config, $this->logger, $session);
             $ctrler->run();
+            $ctrler->afterRun();
         } catch (Exception $e) {
             $response->handleException($e);
         }

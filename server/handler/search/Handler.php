@@ -2,6 +2,7 @@
 
 namespace site\handler\search;
 
+use lzx\html\Template;
 use site\Controller;
 
 class Handler extends Controller
@@ -52,6 +53,6 @@ button {
 <gcse:search></gcse:search>
 HTML;
 
-        $this->var['content'] = $html;
+        $this->html->setContent(Template::fromStr($html));
     }
 }

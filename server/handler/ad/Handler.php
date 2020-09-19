@@ -2,7 +2,7 @@
 
 namespace site\handler\ad;
 
-use lzx\html\HTMLElement;
+use lzx\html\HtmlElement;
 use site\Controller;
 
 class Handler extends Controller
@@ -60,18 +60,18 @@ YP;
 </form>
 HEAD;
 
-        $content = new HTMLElement('div');
+        $content = new HtmlElement('div');
 
-        $form = new HTMLElement('div', null, ['style' => 'padding:1em;']);
-        $form->addData(new HTMLElement('h3', '商家黄页广告'));
+        $form = new HtmlElement('div', null, ['style' => 'padding:1em;']);
+        $form->addData(new HtmlElement('h3', '商家黄页广告'));
         $form->addData($form_yp);
         $content->addData($form);
 
-        $form = new HTMLElement('div', null, ['style' => 'padding:1em;']);
-        $form->addData(new HTMLElement('h3', '页顶图片广告'));
+        $form = new HtmlElement('div', null, ['style' => 'padding:1em;']);
+        $form->addData(new HtmlElement('h3', '页顶图片广告'));
         $form->addData($form_banner);
         $content->addData($form);
 
-        $this->var['content'] = $content;
+        $this->html->setContent($content);
     }
 }

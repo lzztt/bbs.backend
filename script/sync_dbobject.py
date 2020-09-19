@@ -3,13 +3,16 @@ import os
 import mysql.connector
 import inflection
 
+
 def getTables(cursor):
     cursor.execute('SHOW TABLES')
     return [r[0] for r in cursor]
 
+
 def getFields(cursor, table):
     cursor.execute('DESCRIBE ' + table)
     return [r[0] for r in cursor]
+
 
 def php(cls, table, fields):
     return """<?php declare(strict_types=1);
@@ -35,7 +38,8 @@ if __name__ == '__main__':
     db = sys.argv[1]
     basedir = sys.argv[2]
 
-    cnx = mysql.connector.connect(option_files=os.path.expanduser('~/.my.cnf'), database=db)
+    cnx = mysql.connector.connect(
+        option_files=os.path.expanduser('~/.my.cnf'), database=db)
     cursor = cnx.cursor()
     for table in getTables(cursor):
         cls = inflection.camelize(inflection.singularize(table))

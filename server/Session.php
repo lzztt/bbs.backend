@@ -2,8 +2,8 @@
 
 namespace site;
 
-use lzx\db\MemStore;
 use Redis;
+use lzx\db\MemStore;
 
 class Session
 {

@@ -4,8 +4,8 @@ namespace site\handler\api\authentication;
 
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
-use site\dbobject\SessionEvent;
 use site\Service;
+use site\dbobject\SessionEvent;
 use site\dbobject\User;
 
 class Handler extends Service

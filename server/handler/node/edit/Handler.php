@@ -7,11 +7,11 @@ use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\Redirect;
-use lzx\html\Template;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\Node as NodeObject;
 use site\dbobject\NodeYellowPage;
+use site\gen\theme\roselife\EditorBbcodeYp;
 use site\handler\node\Node;
 
 class Handler extends Node
@@ -111,14 +111,22 @@ class Handler extends Node
             $arr = $comment->getList('id', 1);
 
             $comment = new Comment((int) $arr[0]['id'], 'body');
-            $contents['body'] = $comment->body;
 
             $image = new Image();
             $image->nid = $nid;
             $image->cid = $comment->id;
-            $contents['files'] = $image->getList('id,name,path');
 
-            $this->var['content'] = new Template('editor_bbcode_yp', $contents);
+            $this->html->setContent(
+                (new EditorBbcodeYp())
+                    ->setAds($contents['ads'])
+                    ->setTitle($contents['title'])
+                    ->setAddress($contents['address'])
+                    ->setPhone($contents['phone'])
+                    ->setEmail($contents['email'])
+                    ->setWebsite($contents['website'])
+                    ->setBody($comment->boday)
+                    ->setFiles($image->getList('id,name,path'))
+            );
         } else {
             // save modification
             $node = new NodeObject($nid, 'tid');

@@ -21,7 +21,7 @@ trait SpamFilterTrait
         $creationDays = (int) (($this->request->timestamp - $user->createTime) / 86400);
         if ($creationDays < 30) {
             $spamwords = (new SpamWord())->getList();
-            
+
             if (array_key_exists('title', $this->request->data)) {
                 $this->checkTitle($this->request->data['title'], $spamwords);
             }
@@ -57,7 +57,7 @@ trait SpamFilterTrait
             throw new Exception('Body text is not valid!');
         }
     }
-    
+
     private function cleanText(string $text, array $spamwords): string
     {
         $cleanText = preg_replace('#[^\p{Nd}\p{Han}\p{Latin}\s$/]+#u', '', $text);
@@ -68,10 +68,10 @@ trait SpamFilterTrait
                 throw new Exception('User is blocked! You cannot post any message!');
             }
         }
-        
+
         return $cleanText;
     }
-    
+
     protected function checkPostCounts(User $user, int $creationDays): void
     {
         $geo = Reader::getInstance()->get($this->request->ip);

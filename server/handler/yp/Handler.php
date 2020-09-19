@@ -2,10 +2,12 @@
 
 namespace site\handler\yp;
 
-use lzx\html\Template;
+use lzx\html\HtmlElement;
 use site\Controller;
 use site\dbobject\Node;
 use site\dbobject\Tag;
+use site\gen\theme\roselife\YpHome;
+use site\gen\theme\roselife\YpList;
 
 class Handler extends Controller
 {
@@ -26,8 +28,11 @@ class Handler extends Controller
     protected function ypHome(): void
     {
         $tag = new Tag(self::$city->tidYp, 'id');
-        $yp = $tag->getTagTree();
-        $this->var['content'] = new Template('yp_home', ['tid' => $tag->id, 'yp' => $yp]);
+        $this->html->setContent(
+            (new YpHome())
+                ->setTid(($tag->id))
+                ->setYp($tag->getTagTree())
+        );
     }
 
     protected function nodeList(int $tid): void
@@ -43,21 +48,19 @@ class Handler extends Controller
 
         $node = new Node();
         list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount($tids), self::NODES_PER_PAGE);
-        $pager = Template::pager($pageNo, $pageCount, '/yp/' . $tid);
+        $pager = HtmlElement::pager($pageNo, $pageCount, '/yp/' . $tid);
 
         $nodes = $node->getYellowPageNodeList($tids, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
 
         $nids = array_column($nodes, 'id');
 
-        $contents = [
-            'tid' => $tid,
-            'cateName' => $tag->name,
-            'cateDescription' => $tag->description,
-            'breadcrumb' => Template::breadcrumb($breadcrumb),
-            'pager' => $pager,
-            'nodes' => ($nodes ? $nodes : null),
-            'ajaxURI' => '/api/viewcount/' . implode(',', $nids)
-        ];
-        $this->var['content'] = new Template('yp_list', $contents);
+        $this->html->setContent(
+            (new YpList())
+                ->setCateDescription((string) $tag->description)
+                ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
+                ->setPager($pager)
+                ->setNodes($nodes ? $nodes : [])
+                ->setAjaxUri('/api/viewcount/' . implode(',', $nids))
+        );
     }
 }

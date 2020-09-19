@@ -5,7 +5,7 @@ namespace site\handler\node\activity;
 use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
 use lzx\exception\NotFound;
-use lzx\html\Template;
+use lzx\html\HtmlElement;
 use site\dbobject\Activity;
 use site\dbobject\Node as NodeObject;
 use site\handler\node\Node;
@@ -51,10 +51,10 @@ class Handler extends Node
             $breadcrumb[$node->title] = null;
 
             $content = [
-                'breadcrumb' => Template::breadcrumb($breadcrumb),
+                'breadcrumb' => HtmlElement::breadcrumb($breadcrumb),
                 'exampleDate' => $this->request->timestamp - ($this->request->timestamp % 3600) + 259200
             ];
-            $this->var['content'] = new Template('activity_create', $content);
+            $this->var['content'] = new HtmlElement('activity_create', $content);
         } else {
             $startTime = strtotime($this->request->data['start_time']);
             $endTime = strtotime($this->request->data['end_time']);

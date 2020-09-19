@@ -2,10 +2,10 @@
 
 namespace site\handler\api\captcha;
 
+use Gregwar\Captcha\CaptchaBuilder;
 use lzx\core\Response;
 use lzx\exception\Forbidden;
 use site\Service;
-use Gregwar\Captcha\CaptchaBuilder;
 
 class Handler extends Service
 {

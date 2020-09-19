@@ -2,9 +2,13 @@
 
 namespace site\handler\forum;
 
+use lzx\html\HtmlElement;
 use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Tag;
+use site\gen\theme\roselife\EditorBbcode;
+use site\gen\theme\roselife\ForumList;
+use site\gen\theme\roselife\TopicList;
 use site\handler\forum\Forum;
 
 class Handler extends Forum
@@ -56,11 +60,18 @@ class Handler extends Forum
                 $this->cache->addParent('/forum/' . $board_id);
             }
         }
-        $contents = ['groups' => $groupTrees, 'nodeInfo' => $nodeInfo];
-        if (sizeof($breadcrumb) > 1) {
-            $contents['breadcrumb'] = Template::breadcrumb($breadcrumb);
-        }
-        $this->var['content'] = new Template('forum_list', $contents);
+
+        $this->html->setContent(
+            (new ForumList())
+                ->setCity(self::$city->id)
+                ->setGroups($groupTrees)
+                ->setNodeInfo($nodeInfo)
+                ->setBreadcrumb(
+                    count($breadcrumb) > 1
+                        ? HtmlElement::breadcrumb($breadcrumb)
+                        : Template::fromStr('')
+                )
+        );
     }
 
     public function showTopicList(int $tid, array $tagRoot): void
@@ -74,7 +85,7 @@ class Handler extends Forum
 
         $node = new Node();
         list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount((string) $tid), self::NODES_PER_PAGE);
-        $pager = Template::pager($pageNo, $pageCount, '/forum/' . $tid);
+        $pager = HtmlElement::pager($pageNo, $pageCount, '/forum/' . $tid);
 
         $nodes = $node->getForumNodeList(self::$city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
         $nids = array_column($nodes, 'id');
@@ -83,25 +94,23 @@ class Handler extends Forum
             $nodes[$i]['comment_time'] = date('m/d/Y H:i', (int) $n['comment_time']);
         }
 
-        $editor_contents = [
-            'form_handler' => '/forum/' . $tid . '/node',
-            'displayTitle' => true,
-            'hasFile' => true
-        ];
-        $editor = new Template('editor_bbcode', $editor_contents);
+        $editor = (new EditorBbcode())
+            ->setFormHandler('/forum/' . $tid . '/node')
+            ->setDisplayTitle(true)
+            ->setHasFile(true)
+            ->setTitle('');
 
         // will not build node-forum map, would be too many nodes point to forum, too big map
+        $topics = (new TopicList())
+            ->setTid($tid)
+            ->setBoardDescription($tagRoot[$tid]['description'])
+            ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
+            ->setPager($pager)
+            ->setNodes($nodes)
+            ->setEditor($editor)
+            ->setAjaxUri('/api/viewcount/' . implode(',', $nids));
 
-        $contents = [
-            'tid' => $tid,
-            'boardDescription' => $tagRoot[$tid]['description'],
-            'breadcrumb' => Template::breadcrumb($breadcrumb),
-            'pager' => $pager,
-            'nodes' => ($nodes ? $nodes : null),
-            'editor' => $editor,
-            'ajaxURI' => '/api/viewcount/' . implode(',', $nids)
-        ];
-        $this->var['content'] = new Template('topic_list', $contents);
+        $this->html->setContent($topics);
     }
 
     protected function nodeInfo(int $tid): array

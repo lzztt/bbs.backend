@@ -2,13 +2,12 @@
 
 namespace site\handler\yp\node;
 
-use lzx\core\Response;
 use lzx\core\Mailer;
+use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\NotFound;
 use lzx\exception\Redirect;
-use lzx\html\Template;
 use site\Controller;
 use site\dbobject\Ad;
 use site\dbobject\Comment;
@@ -16,6 +15,8 @@ use site\dbobject\Image;
 use site\dbobject\Node;
 use site\dbobject\NodeYellowPage;
 use site\dbobject\Tag;
+use site\gen\theme\roselife\EditorBbcodeYp;
+use site\gen\theme\roselife\mail\Adcreation;
 
 class Handler extends Controller
 {
@@ -39,7 +40,10 @@ class Handler extends Controller
         if (!$this->request->data) {
             $ad = new Ad();
             $ad->order('expTime', false);
-            $this->var['content'] = new Template('editor_bbcode_yp', ['ads' => $ad->getList('name')]);
+            $this->html->setContent(
+                (new EditorBbcodeYp())
+                    ->setAds($ad->getList('name'))
+            );
         } else {
             $this->response->type = Response::JSON;
 
@@ -93,12 +97,12 @@ class Handler extends Controller
         $mailer->setTo($ad->email);
         $siteName = $this->getSiteName();
         $mailer->setSubject($ad->name . '在' . $siteName . '的电子黄页创建成功');
-        $contents = [
-            'name' => $ad->name,
-            'url' => 'https://www.' . $this->config->domain . '/node/' . $nid,
-            'sitename' => $siteName,
-        ];
-        $mailer->setBody((string) new Template('mail/adcreation', $contents));
+        $mailer->setBody(
+            (string) (new Adcreation())
+                ->setName($ad->name)
+                ->setUrl('https://www.' . $this->config->domain . '/node/' . $nid)
+                ->setSitename($siteName)
+        );
 
         $mailer->setBcc($this->config->webmaster);
         $mailer->send();

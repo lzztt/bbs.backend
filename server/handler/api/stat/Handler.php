@@ -2,6 +2,7 @@
 
 namespace site\handler\api\stat;
 
+use lzx\html\Template;
 use site\Service;
 use site\dbobject\Node;
 use site\dbobject\User;
@@ -15,12 +16,14 @@ class Handler extends Service
         $r = $node->getNodeStat(self::$city->tidForum);
 
         $alexaCache = $this->getIndependentCache('alexa');
-        $alexa = $alexaCache->fetch();
+        $alexa = $alexaCache->getData();
         if (!$alexa) {
             $alexa = $this->getAlexa(self::$city->domain);
             if ($alexa) {
-                $alexaCache->store($alexa);
+                $alexaCache->setData(Template::fromStr($alexa));
             }
+        } else {
+            $alexa = (string) $alexa;
         }
 
         $r['alexa'] = $alexa;
@@ -31,12 +34,12 @@ class Handler extends Service
         $uids = $this->session->getOnlineUids();
         $u['onlineCount'] = count($uids);
 
-        $guestCount = count(array_filter($uids, function($uid) {
+        $guestCount = count(array_filter($uids, function ($uid) {
             return $uid == 0;
         }));
         $u['onlineGuestCount'] = $guestCount;
 
-        $uids = array_filter($uids, function($uid) {
+        $uids = array_filter($uids, function ($uid) {
             return $uid != 0;
         });
         $u['onlineUserCount'] = count($uids);

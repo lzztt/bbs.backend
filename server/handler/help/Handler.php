@@ -2,13 +2,16 @@
 
 namespace site\handler\help;
 
-use lzx\html\Template;
 use site\Controller;
+use site\gen\theme\roselife\Help;
 
 class Handler extends Controller
 {
     public function run(): void
     {
-         $this->var['content'] = new Template('help');
+        $this->html->setContent(
+            (new Help())
+                ->setCity(self::$city->id)
+        );
     }
 }

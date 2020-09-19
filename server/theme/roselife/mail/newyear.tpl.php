@@ -1,9 +1,20 @@
-<!DOCTYPE html>
-<html lang="zh" dir="ltr">
+<?php
+function (
+  string $city,
+  string $time,
+  string $unsubscribeLink,
+  string $username
+) {
+?>
+
+  <!DOCTYPE html>
+  <html lang="zh" dir="ltr">
+
   <head>
-    <meta charset="UTF-8">    
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
+
   <body>
     <article>
       Hi <?php print $username; ?>，<br>
@@ -15,6 +26,10 @@
       站长<br>
       田龙璋
     </article>
-      <br><br><a href="<?= $unsubscribeLink ?>" style="font-size:12px;color:#666666;text-decoration:none;">退订邮件 (Unsubscribe)</a><br>
+    <br><br><a href="<?= $unsubscribeLink ?>" style="font-size:12px;color:#666666;text-decoration:none;">退订邮件 (Unsubscribe)</a><br>
   </body>
-</html>
+
+  </html>
+
+<?php
+};
