@@ -6,6 +6,7 @@ use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
 use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
+use lzx\html\Template;
 use site\dbobject\Activity;
 use site\dbobject\Node as NodeObject;
 use site\gen\theme\roselife\ActivityCreate;
@@ -90,7 +91,7 @@ class Handler extends Node
 
             $this->getIndependentCache('recentActivities')->delete();
 
-            $this->var['content'] = '您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。';
+            $this->html->setContent(Template::fromStr('您的活动申请已经提交并等待管理员激活，一般会在一小时之内被激活并且提交到首页，活动被激活后您将会收到电子邮件通知。'));
         }
     }
 }
