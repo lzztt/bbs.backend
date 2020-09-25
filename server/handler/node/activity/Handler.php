@@ -8,6 +8,7 @@ use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
 use site\dbobject\Activity;
 use site\dbobject\Node as NodeObject;
+use site\gen\theme\roselife\ActivityCreate;
 use site\handler\node\Node;
 
 class Handler extends Node
@@ -50,11 +51,11 @@ class Handler extends Node
             }
             $breadcrumb[$node->title] = null;
 
-            $content = [
-                'breadcrumb' => HtmlElement::breadcrumb($breadcrumb),
-                'exampleDate' => $this->request->timestamp - ($this->request->timestamp % 3600) + 259200
-            ];
-            $this->var['content'] = new HtmlElement('activity_create', $content);
+            $this->html->setContent(
+                (new ActivityCreate())
+                    ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
+                    ->setExampleTime($this->request->timestamp - ($this->request->timestamp % 3600) + 259200)
+            );
         } else {
             $startTime = strtotime($this->request->data['start_time']);
             $endTime = strtotime($this->request->data['end_time']);
