@@ -75,6 +75,25 @@ function (
         });
       </script>
     <?php endif ?>
+    <style>
+      .avatar_circle {
+        width: 128px;
+        height: 128px;
+        line-height: 128px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: gray;
+        margin-bottom: 0.3rem;
+      }
+      .avatar_circle div {
+        margin: 0 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        font-size: 50px;
+        color: #fff;
+        text-align: center;
+      }
+    </style>
   </head>
 
   <body>
@@ -126,9 +145,14 @@ function (
           <?php endif ?>
         </div>
         <?php if ($city === City::HOUSTON) : ?>
-          <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a href="http://31realty.net" target="_blank"><img src="/data/ad/31realty.jpg"></a><a href="/node/165651" target="_blank"><img src="/data/ad/117377011_qq_com.gif"></a></span></div>
+          <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');">
+            <span>
+              <a href="http://31realty.net" target="_blank"><img src="/data/ad/31realty.jpg"></a>
+              <a><img src="/data/ad/sunflower3.jpg"></a>
+            </span>
+          </div>
         <?php elseif ($city === City::DALLAS) : ?>
-          <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a href="/node/68810" target="_blank"><img src="/data/ad/geekpush2.jpg"></a></span></div>
+          <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');"><span><a></a></span></div>
         <?php elseif ($city === City::SFBAY) : ?>
           <div id="page_header_ad" style="background-image: url('/data/ad/bg_bayever.jpg');"><span><a></a></span></div>
         <?php endif ?>

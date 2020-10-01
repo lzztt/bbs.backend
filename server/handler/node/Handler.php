@@ -170,17 +170,13 @@ class Handler extends Node
             $authorPanel = $authorPanelCache->getData();
             if (!$authorPanel) {
                 $info['joinTime'] = date('m/d/Y', (int) $info['join_time']);
-                $info['sex'] = isset($info['sex']) ? ($info['sex'] == 1 ? '男' : '女') : '未知';
                 if (!$info['avatar']) {
-                    $info['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
+                    $info['avatar'] = '';
                 }
-                $info['city'] = $info['access_ip'] ? self::getLocationFromIp($info['access_ip'], false) : 'N/A';
                 $authorPanel = (new AuthorPanelForum())
                     ->setUid((int) $info['uid'])
                     ->setUsername($info['username'])
                     ->setAvatar($info['avatar'])
-                    ->setSex($info['sex'])
-                    ->setCity($info['city'])
                     ->setJoinTime($info['joinTime'])
                     ->setPoints((int) $info['points']);
                 $authorPanelCache->setData($authorPanel);
