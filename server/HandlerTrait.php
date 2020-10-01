@@ -72,7 +72,12 @@ trait HandlerTrait
         $sessionEvent->event = $event;
         $sessionEvent->time = $this->request->timestamp;
         $sessionEvent->ip = inet_pton($this->request->ip);
-        $sessionEvent->agent = $this->request->agent;
+        if (strlen($this->request->agent) < 256) {
+            $sessionEvent->agent = $this->request->agent;
+        } else {
+            $sessionEvent->agent = substr($this->request->agent, 0, 255);
+            $this->logger->warn("Long user agent: " . $this->request->agent);
+        }
         $sessionEvent->add();
     }
 

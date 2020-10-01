@@ -2,6 +2,7 @@
 
 namespace lzx\core;
 
+use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\ServerRequestFactory;
 
 class Request
@@ -23,7 +24,7 @@ class Request
     public $timestamp;
     public $agent;
 
-    private $req;
+    private ServerRequest $req;
     private $hasBadUrl;
     private $isRobot;
 
@@ -50,7 +51,7 @@ class Request
         $this->data = self::escapeArray($this->req->getQueryParams());
 
         if (in_array($this->method, [self::METHOD_POST, self::METHOD_PUT, self::METHOD_PATCH])) {
-            $contentType = strtolower(explode(';', (string) $this->req->getHeader('content-type')[0])[0]);
+            $contentType = strtolower(explode(';', (string) array_pop($this->req->getHeader('content-type')))[0]);
             switch ($contentType) {
                 case 'application/x-www-form-urlencoded':
                 case 'multipart/form-data':
