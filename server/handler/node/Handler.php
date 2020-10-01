@@ -41,19 +41,22 @@ class Handler extends Node
         $oneDay = 86400;
         $skip = false;
         if ($rateLimiter->sCard($key) > 50) {
-            // check bots
-            $isGoogleBot = false;
+            // check if allowed bots
+            $isAllowedBot = false;
             if ($this->request->isRobot()) {
                 $botKey = 'b:' . $this->request->ip;
                 if ($rateLimiter->exists($botKey)) {
-                    $isGoogleBot = boolval($rateLimiter->get($botKey));
+                    $isAllowedBot = boolval($rateLimiter->get($botKey));
                 } else {
-                    $isGoogleBot = $this->request->isGoogleBot();
-                    $rateLimiter->set($botKey, $isGoogleBot ? '1' : '0', $oneDay);
+                    $isAllowedBot = $this->request->isGoogleBot();
+                    if (!$isAllowedBot) {
+                        $isAllowedBot = $this->request->isBingBot();
+                    }
+                    $rateLimiter->set($botKey, $isAllowedBot ? '1' : '0', $oneDay);
                 }
             }
 
-            if ($isGoogleBot) {
+            if ($isAllowedBot) {
                 $skip = true;
             } else {
                 // mail error log

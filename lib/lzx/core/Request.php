@@ -94,6 +94,10 @@ class Request
 
     public function isGoogleBot(): bool
     {
+        if (str_contains($this->agent, 'Google') === false) {
+            return false;
+        }
+
         $host = gethostbyaddr($this->ip);
         if (!$host) {
             return false;
@@ -101,6 +105,30 @@ class Request
 
         $domain = implode('.', array_slice(explode('.', $host), -2));
         if (!in_array($domain, ['googlebot.com', 'google.com'])) {
+            return false;
+        }
+
+        $ip = gethostbyname($host);
+        if (!$ip || $ip !== $this->ip) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isBingBot(): bool
+    {
+        if (str_contains($this->agent, 'bing') === false) {
+            return false;
+        }
+
+        $host = gethostbyaddr($this->ip);
+        if (!$host) {
+            return false;
+        }
+
+        $domain = implode('.', array_slice(explode('.', $host), -3));
+        if ($domain !== 'search.msn.com') {
             return false;
         }
 
