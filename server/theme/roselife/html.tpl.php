@@ -81,17 +81,14 @@ function (
         height: 128px;
         line-height: 128px;
         border-radius: 50%;
-        overflow: hidden;
-        background: gray;
-        margin-bottom: 0.3rem;
-      }
-      .avatar_circle div {
-        margin: 0 1rem;
         white-space: nowrap;
         overflow: hidden;
-        font-size: 50px;
-        color: #fff;
+        background: white;
+        color: black;
+        border: 1px solid gray;
         text-align: center;
+        font-size: 50px;
+        font-family: "Courier New", Courier, monospace;
       }
     </style>
   </head>
