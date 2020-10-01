@@ -75,7 +75,7 @@ class Session
         $this->id = bin2hex(random_bytes(8));
         $this->current = self::DEFAULT_DATA;
 
-        setcookie(self::SID_NAME, $this->id, $this->time + 2592000, '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
+        setcookie(self::SID_NAME, $this->id, $this->time + 2592000, '/');
     }
 
     private static function encodeData(array $data): string
