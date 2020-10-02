@@ -61,11 +61,14 @@ class Request
                         $data = [];
                         parse_str((string) $this->req->getBody(), $data);
                     }
-                    $this->data = array_merge($this->data, self::escapeArray($data));
                     break;
                 case 'application/json':
-                    $this->data = array_merge($this->data, json_decode((string) $this->req->getBody(), true));
+                    $data = json_decode((string) $this->req->getBody(), true);
             }
+            if (!is_array($data)) {
+                $data = [];
+            }
+            $this->data = array_merge($this->data, self::escapeArray($data));
         }
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
@@ -156,7 +159,9 @@ class Request
                 : $key;
             $val = is_string($val)
                 ? self::escapeString($val)
-                : self::escapeArray($val);
+                : (is_array($val)
+                    ? self::escapeArray($val)
+                    : $val);
             $out[$key] = $val;
         }
         return $out;

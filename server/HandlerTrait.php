@@ -76,7 +76,7 @@ trait HandlerTrait
             $sessionEvent->agent = $this->request->agent;
         } else {
             $sessionEvent->agent = substr($this->request->agent, 0, 255);
-            $this->logger->warn("Long user agent: " . $this->request->agent);
+            $this->logger->warning("Long user agent: " . $this->request->agent);
         }
         $sessionEvent->add();
     }

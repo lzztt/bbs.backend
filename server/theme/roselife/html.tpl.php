@@ -145,7 +145,7 @@ function (
           <div id="page_header_ad" style="background-image: url('/data/ad/ad_bg.jpg');">
             <span>
               <a href="http://31realty.net" target="_blank"><img src="/data/ad/31realty.jpg"></a>
-              <a><img src="/data/ad/sunflower3.jpg"></a>
+              <a href="https://www.johnleeins.com" target="_blank"><img src="/data/ad/johnlee.gif"></a>
             </span>
           </div>
         <?php elseif ($city === City::DALLAS) : ?>
