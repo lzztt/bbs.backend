@@ -14,19 +14,19 @@ class Request
     const METHOD_DELETE = 'DELETE';
     const URL_INVALID_CHAR = '%';
 
-    public $domain;
-    public $ip;
-    public $method;
-    public $uri;
-    public $referer;
-    public $data;
+    public string $domain;
+    public string $ip;
+    public string $method;
+    public string $uri;
+    public string $referer;
+    public array $data;
     public int $uid = 0;
-    public $timestamp;
-    public $agent;
+    public int $timestamp;
+    public string $agent;
 
     private ServerRequest $req;
-    private $hasBadUrl;
-    private $isRobot;
+    private bool $hasBadUrl;
+    private bool $isRobot;
 
     private function __construct()
     {
@@ -38,7 +38,7 @@ class Request
         $this->method = $this->req->getMethod();
         $this->uri = strtolower($params['REQUEST_URI']);
         $this->timestamp = (int) $params['REQUEST_TIME'];
-        $this->agent = $params['HTTP_USER_AGENT'];
+        $this->agent = (string) $params['HTTP_USER_AGENT'];
 
         $this->hasBadUrl = false;
         if (!self::validateUrl($this->uri)) {
@@ -51,6 +51,7 @@ class Request
         $this->data = self::escapeArray($this->req->getQueryParams());
 
         if (in_array($this->method, [self::METHOD_POST, self::METHOD_PUT, self::METHOD_PATCH])) {
+            $data = [];
             $contentType = strtolower(explode(';', (string) array_pop($this->req->getHeader('content-type')))[0]);
             switch ($contentType) {
                 case 'application/x-www-form-urlencoded':
@@ -72,7 +73,7 @@ class Request
         }
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
-        $this->referer = sizeof($arr) > 1 ? $arr[1] : null;
+        $this->referer = sizeof($arr) > 1 ? $arr[1] : '';
         $this->isRobot = (bool) preg_match('/(http|yahoo|bot|spider)/i', $params['HTTP_USER_AGENT']);
     }
 
