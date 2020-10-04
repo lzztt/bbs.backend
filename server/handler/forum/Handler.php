@@ -22,8 +22,9 @@ class Handler extends Forum
         $tagTree = $tag->getTagTree();
 
         $tid = $tag->id;
-        $this->var['head_title'] = $tagTree[$tid]['name'];
-        $this->var['head_description'] = $tagTree[$tid]['name'];
+        $this->html
+            ->setHeadTitle($tagTree[$tid]['name'])
+            ->setHeadDescription($tagTree[$tid]['name']);
 
         !empty($tagTree[$tid]['children']) ? $this->showForumList($tid, $tagRoot, $tagTree) : $this->showTopicList($tid, $tagRoot);
     }
