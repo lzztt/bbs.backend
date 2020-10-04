@@ -4,6 +4,7 @@ namespace site\handler\app;
 
 use Exception;
 use lzx\exception\NotFound;
+use lzx\html\Template;
 use site\Controller;
 
 class Handler extends Controller
@@ -11,6 +12,12 @@ class Handler extends Controller
     public function run(): void
     {
         $app = $this->args[0];
+
+        if ($app === 'default') {
+            $this->html->setContent(Template::fromStr(''));
+            return;
+        }
+
         if (!$app) {
             throw new NotFound();
         }

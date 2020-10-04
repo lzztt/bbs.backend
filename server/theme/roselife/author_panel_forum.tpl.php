@@ -10,7 +10,7 @@ function (
 
   <aside class="author_panel">
     <div class="picture">
-      <a title="浏览用户信息" href="/app/user/<?= $uid ?>">
+      <a title="浏览用户信息" href="/user/<?= $uid ?>">
         <?php if ($avatar) : ?>
           <div class="avatar_circle" style="border: 0;">
             <img width="128" height="128" title="<?= $username ?> 的头像" alt="<?= $username ?> 的头像" src="<?= $avatar ?>">

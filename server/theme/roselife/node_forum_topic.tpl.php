@@ -19,7 +19,7 @@ function (
 
   <header class="content_header">
     <?= $breadcrumb ?>
-    <span class='v_guest'>您需要先<a class='popup' href="#login">登录</a>或<a href="/app/user/register">注册</a>才能发表新话题或回复</span>
+    <span class='v_guest'>您需要先<a href="/user/login">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
     <button type="button" class='v_user create_node' data-action="/forum/<?= $tid ?>/node">发表新话题</button>
     <button type="button" class='v_user reply' data-action="/node/<?= $nid ?>/comment">回复</button>
     <button type="button" class='v_user bookmark' data-action="/node/<?= $nid ?>/bookmark">收藏</button>
@@ -34,7 +34,7 @@ function (
       <?= $p['authorPanel'] ?>
       <article>
         <header>
-          <a href="/app/user/<?= $p['uid'] ?>"><?= $p['username'] ?></a> <span class='city'><?= $p['city'] ?></span>
+          <a href="/user/<?= $p['uid'] ?>"><?= $p['username'] ?></a> <span class='city'><?= $p['city'] ?></span>
           <span class='time'><?= $p['createTime'] . (empty($p['lastModifiedTime']) ? '' : ' (修改于 ' . $p['lastModifiedTime'] . ')') ?></span>
           <?php if ($p['type'] == 'comment') : ?>
             <span class="comment_num">#<?= $postNumStart + $index ?></span>

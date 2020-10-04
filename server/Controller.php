@@ -52,8 +52,7 @@ abstract class Controller extends Handler
         $navbarCache = $this->getIndependentCache('page_navbar');
         $navbar = $navbarCache->getData();
         if (!$navbar) {
-            $navbar = (new PageNavbar())
-                ->setForumMenu(Template::fromStr($this->createMenu(self::$city->tidForum)));
+            $navbar = Template::fromStr($this->createMenu(self::$city->tidForum));
             $navbarCache->setData($navbar);
         }
         $html->setPageNavbar($navbar);
@@ -84,31 +83,16 @@ abstract class Controller extends Handler
     {
         $tag = new Tag($tid, 'id');
         $tree = $tag->getTagTree();
-        $type = 'tag';
-        $root_id = array_shift(array_keys($tag->getTagRoot()));
-        if (self::$city->tidForum == $root_id) {
-            $type = 'forum';
-        } elseif (self::$city->tidYp == $root_id) {
-            $type = 'yp';
-        }
-        $liMenu = '';
-
-        if (sizeof($tree) > 0) {
-            foreach ($tree[$tid]['children'] as $branch_id) {
-                $branch = $tree[$branch_id];
-                $liMenu .= '<li><a title="' . $branch['name'] . '" href="/' . $type . '/' . $branch['id'] . '">' . $branch['name'] . '</a>';
-                if (sizeof($branch['children'])) {
-                    $liMenu .= '<ul style="display: none;">';
-                    foreach ($branch['children'] as $leaf_id) {
-                        $leaf = $tree[$leaf_id];
-                        $liMenu .= '<li><a title="' . $leaf['name'] . '" href="/' . $type . '/' . $leaf['id'] . '">' . $leaf['name'] . '</a></li>';
-                    }
-                    $liMenu .= '</ul>';
-                }
-                $liMenu .= '</li>';
-            }
-        }
-
-        return $liMenu;
+        return json_encode(
+            array_map(
+                function ($i) {
+                    return array_intersect_key($i, ['id' => null, 'name' => null]);
+                },
+                array_values(array_filter($tree, function ($i) {
+                    return !array_key_exists('children', $i);
+                }))
+            ),
+            JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        );
     }
 }

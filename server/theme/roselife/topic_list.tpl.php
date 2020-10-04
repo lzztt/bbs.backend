@@ -17,7 +17,7 @@ function (
     <?= $breadcrumb ?>
     <div><?= $boardDescription ?></div>
     <div>
-      <span class='v_guest'>您需要先<a class='popup' href="#login">登录</a>或<a href="/app/user/register">注册</a>才能发表新话题</span>
+      <span class='v_guest'>您需要先<a href="/user/login">登录</a>或<a href="/user/register">注册</a>才能发表新话题</span>
       <button type="button" class='v_user create_node' data-action="/forum/<?= $tid ?>/node">发表新话题</button>
       <?= $pager ?>
     </div>

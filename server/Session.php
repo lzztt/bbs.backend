@@ -49,6 +49,8 @@ class Session
         if (!$this->loadDbSession()) {
             $this->startNewSession();
         }
+        // remove old version cookie with domain wildcard
+        setcookie(self::SID_NAME, $this->id, $this->time - 2592000, '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
     }
 
     private function loadDbSession(): bool

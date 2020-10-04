@@ -24,7 +24,9 @@ class HandlerFactory
         list($cls, $args) = self::getHandlerClassAndArgs($req);
 
         if (!$cls) {
-            throw new NotFound();
+            $cls = HandlerRouter::$route['app'];
+            $args = ['default'];
+            // throw new NotFound();
         }
         return new $cls($req, $resp, $config, $logger, $session, $args);
     }

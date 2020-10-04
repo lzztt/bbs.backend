@@ -17,7 +17,7 @@ function (
 
   <header class="content_header">
     <?= $breadcrumb ?>
-    <span class='v_guest'>您需要先<a class='popup' href="#login">登录</a>或<a href="/app/user/register">注册</a>才能发表新话题或回复</span>
+    <span class='v_guest'>您需要先<a href="/user/login">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
     <button type="button" class='v_user comment' data-action="/node/<?= $nid ?>/comment">评论</button>
     <span class="ajax_load" data-ajax='<?= $ajaxUri ?>'><?= $commentCount ?> replies, <span class="ajax_viewCount<?= $nid ?>"></span> views</span>
     <?= $pager ?>
@@ -51,7 +51,7 @@ function (
         <a id="comment<?= $c['id'] ?>"></a>
         <article>
           <header>
-            <a href="/app/user/<?= $c['uid'] ?>"><?= $c['username'] ?></a>
+            <a href="/user/<?= $c['uid'] ?>"><?= $c['username'] ?></a>
             <span class='time'><?= $c['createTime'] . ($c['lastModifiedTime'] ? ' (修改于 ' . $c['lastModifiedTime'] . ')' : '') ?></span>
             <?php if ($c['type'] == 'comment') : ?>
               <span class="comment_num">#<?= $postNumStart + $index ?></span>
