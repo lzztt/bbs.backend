@@ -53,9 +53,7 @@ abstract class Controller extends Handler
         $navbar = $navbarCache->getData();
         if (!$navbar) {
             $navbar = (new PageNavbar())
-                ->setCity(self::$city->id)
-                ->setForumMenu(Template::fromStr($this->createMenu(self::$city->tidForum)))
-                ->setYpMenu(Template::fromStr(self::$city->tidYp ? $this->createMenu(self::$city->tidYp) : ''));
+                ->setForumMenu(Template::fromStr($this->createMenu(self::$city->tidForum)));
             $navbarCache->setData($navbar);
         }
         $html->setPageNavbar($navbar);

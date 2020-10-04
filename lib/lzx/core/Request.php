@@ -45,6 +45,7 @@ class Request
             $this->hasBadUrl = true;
             $this->data = [];
             $this->isRobot = true;
+            $this->referer = (string) $params['HTTP_REFERER'];
             return;
         }
 
