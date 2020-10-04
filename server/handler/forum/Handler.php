@@ -32,7 +32,7 @@ class Handler extends Forum
     // $forum, $groups, $boards are arrays of category id
     public function showForumList(int $tid, array $tagRoot, array $tagTree): void
     {
-        $breadcrumb = [];
+        $breadcrumb = ['首页' => '/'];
         foreach ($tagRoot as $i => $t) {
             $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
         }
@@ -79,7 +79,7 @@ class Handler extends Forum
     {
         $this->getCacheEvent('ForumUpdate', $tid)->addListener($this->cache);
 
-        $breadcrumb = [];
+        $breadcrumb = ['首页' => '/'];
         foreach ($tagRoot as $i => $t) {
             $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
         }

@@ -85,7 +85,7 @@ class Handler extends Node
             ->setHeadTitle($node['title'])
             ->setHeadDescription($node['title']);
 
-        $breadcrumb = [];
+        $breadcrumb = ['首页' => '/'];
         foreach ($tags as $i => $t) {
             $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
         }
@@ -249,7 +249,7 @@ class Handler extends Node
         $this->var['head_title'] = $node['title'];
         $this->var['head_description'] = $node['title'];
 
-        $breadcrumb = [];
+        $breadcrumb = ['首页' => '/'];
         foreach ($tags as $i => $t) {
             $breadcrumb[$t['name']] = ($i === self::$city->tidYp ? '/yp' : ('/yp/' . $i));
         }

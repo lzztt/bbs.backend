@@ -46,7 +46,7 @@ class Handler extends Node
         if (!$this->request->data) {
             // display pm edit form
             $tags = $node->getTags($nid);
-            $breadcrumb = [];
+            $breadcrumb = ['首页' => '/'];
             foreach ($tags as $i => $t) {
                 $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
             }

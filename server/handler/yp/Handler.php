@@ -41,7 +41,7 @@ class Handler extends Controller
         $tagRoot = $tag->getTagRoot();
         $tids = implode(',', $tag->getLeafTIDs());
 
-        $breadcrumb = [];
+        $breadcrumb = ['首页' => '/'];
         foreach ($tagRoot as $i => $t) {
             $breadcrumb[$t['name']] = ($i === self::$city->tidYp ? '/yp' : ('/yp/' . $i));
         }
