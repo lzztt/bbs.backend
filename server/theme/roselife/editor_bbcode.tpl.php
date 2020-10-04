@@ -18,7 +18,7 @@ function (
     </fieldset>
     <?php if (!empty($hasFile)) : ?>
       <fieldset>
-        <label class='label'>文件附件</label>
+        <label class='label'>上传图片</label>
         <input type="hidden" name='update_file' value='1'>
         <div id="file_list"></div>
         <template>
@@ -33,7 +33,6 @@ function (
           </figure>
         </template>
         <div>
-          <label for="ajax_file_select">上传图片</label>
           <input type="file" id="file_select">
           <div class="description">宽度大于 <em>600</em> 像素的图片将被调整尺寸。</div>
         </div>

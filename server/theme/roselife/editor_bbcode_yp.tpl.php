@@ -47,7 +47,7 @@ function (
       <textarea name="body" required placeholder="最少5个字母或3个汉字"><?= empty($body) ? '' : $body  ?></textarea>
     </fieldset>
     <fieldset>
-      <label class='label'>文件附件</label>
+      <label class='label'>上传图片</label>
       <input type="hidden" name='update_file' value='1'>
       <div id="file_list">
         <?php if (!empty($files)) : ?>
@@ -82,7 +82,6 @@ function (
         </figure>
       </template>
       <div>
-        <label for="ajax_file_select">上传图片</label>
         <input type="file" id="file_select">
         <div class="description">宽度大于 <em>600</em> 像素的图片将被调整尺寸。</div>
       </div>
