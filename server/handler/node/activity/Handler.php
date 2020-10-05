@@ -9,6 +9,7 @@ use lzx\html\HtmlElement;
 use lzx\html\Template;
 use site\dbobject\Activity;
 use site\dbobject\Node as NodeObject;
+use site\dbobject\Tag;
 use site\gen\theme\roselife\ActivityCreate;
 use site\handler\node\Node;
 
@@ -45,11 +46,9 @@ class Handler extends Node
 
         if (!$this->request->data) {
             // display pm edit form
-            $tags = $node->getTags($nid);
             $breadcrumb = ['首页' => '/'];
-            foreach ($tags as $i => $t) {
-                $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
-            }
+            $tag = new Tag($node->tid, 'name');
+            $breadcrumb[$tag->name] = '/forum/' . $node->tid;
             $breadcrumb[$node->title] = null;
 
             $this->html->setContent(

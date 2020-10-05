@@ -4,16 +4,12 @@ use lzx\html\Template;
 
 function (
   string $ajaxUri,
-  Template $breadcrumb,
-  string $cateDescription,
   array $nodes,
   Template $pager
 ) {
 ?>
 
   <header class="content_header">
-    <div class="breadcrumb"><?= $breadcrumb ?></div>
-    <div class="taxonomy-term-description"><?= $cateDescription ?></div>
     <?= $pager ?>
   </header>
 

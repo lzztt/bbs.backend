@@ -38,13 +38,7 @@ class Handler extends Controller
     protected function nodeList(int $tid): void
     {
         $tag = new Tag($tid, 'id');
-        $tagRoot = $tag->getTagRoot();
         $tids = implode(',', $tag->getLeafTIDs());
-
-        $breadcrumb = ['首页' => '/'];
-        foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->tidYp ? '/yp' : ('/yp/' . $i));
-        }
 
         $node = new Node();
         list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount($tids), self::NODES_PER_PAGE);
@@ -56,8 +50,6 @@ class Handler extends Controller
 
         $this->html->setContent(
             (new YpList())
-                ->setCateDescription((string) $tag->description)
-                ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
                 ->setPager($pager)
                 ->setNodes($nodes ? $nodes : [])
                 ->setAjaxUri('/api/viewcount/' . implode(',', $nids))

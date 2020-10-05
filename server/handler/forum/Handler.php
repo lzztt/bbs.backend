@@ -3,7 +3,6 @@
 namespace site\handler\forum;
 
 use lzx\html\HtmlElement;
-use lzx\html\Template;
 use site\dbobject\Node;
 use site\dbobject\Tag;
 use site\gen\theme\roselife\EditorBbcode;
@@ -32,11 +31,6 @@ class Handler extends Forum
     // $forum, $groups, $boards are arrays of category id
     public function showForumList(int $tid, array $tagRoot, array $tagTree): void
     {
-        $breadcrumb = ['首页' => '/'];
-        foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
-        }
-
         $nodeInfo = [];
         $groupTrees = [];
         if ($tid == self::$city->tidForum) {
@@ -67,22 +61,12 @@ class Handler extends Forum
                 ->setCity(self::$city->id)
                 ->setGroups($groupTrees)
                 ->setNodeInfo($nodeInfo)
-                ->setBreadcrumb(
-                    count($breadcrumb) > 1
-                        ? HtmlElement::breadcrumb($breadcrumb)
-                        : Template::fromStr('')
-                )
         );
     }
 
     public function showTopicList(int $tid, array $tagRoot): void
     {
         $this->getCacheEvent('ForumUpdate', $tid)->addListener($this->cache);
-
-        $breadcrumb = ['首页' => '/'];
-        foreach ($tagRoot as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
-        }
 
         $node = new Node();
         list($pageNo, $pageCount) = $this->getPagerInfo($node->getNodeCount((string) $tid), self::NODES_PER_PAGE);
@@ -104,8 +88,6 @@ class Handler extends Forum
         // will not build node-forum map, would be too many nodes point to forum, too big map
         $topics = (new TopicList())
             ->setTid($tid)
-            ->setBoardDescription($tagRoot[$tid]['description'])
-            ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
             ->setPager($pager)
             ->setNodes($nodes)
             ->setEditor($editor)

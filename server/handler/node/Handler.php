@@ -9,6 +9,7 @@ use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
 use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
+use site\dbobject\Tag;
 use site\gen\theme\roselife\AuthorPanelForum;
 use site\gen\theme\roselife\EditorBbcode;
 use site\gen\theme\roselife\NodeForumTopic;
@@ -79,16 +80,14 @@ class Handler extends Node
             throw new NotFound();
         }
 
-        $tags = $nodeObj->getTags($nid);
-
         $this->html
             ->setHeadTitle($node['title'])
             ->setHeadDescription($node['title']);
 
         $breadcrumb = ['首页' => '/'];
-        foreach ($tags as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->tidForum ? '/forum' : ('/forum/' . $i));
-        }
+        $tid = (int) $node['tid'];
+        $tag = new Tag($tid, 'name');
+        $breadcrumb[$tag->name] = '/forum/' . $tid;
         $breadcrumb[$node['title']] = null;
 
         list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
@@ -99,7 +98,7 @@ class Handler extends Node
         $page = (new NodeForumTopic())
             ->setCity(self::$city->id)
             ->setNid($nid)
-            ->setTid((int) $node['tid'])
+            ->setTid($tid)
             ->setCommentCount($node['comment_count'] - 1)
             ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
             ->setPager($pager)
@@ -244,15 +243,14 @@ class Handler extends Node
             throw new NotFound();
         }
 
-        $tags = $nodeObj->getTags($nid);
-
         $this->var['head_title'] = $node['title'];
         $this->var['head_description'] = $node['title'];
 
         $breadcrumb = ['首页' => '/'];
-        foreach ($tags as $i => $t) {
-            $breadcrumb[$t['name']] = ($i === self::$city->tidYp ? '/yp' : ('/yp/' . $i));
-        }
+        $nodeObj->id = $nid;
+        $nodeObj->load('tid');
+        $tag = new Tag($nodeObj->tid, 'name');
+        $breadcrumb[$tag->name] = '/yp/' . $nodeObj->tid;
         $breadcrumb[$node['title']] = null;
 
         list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);

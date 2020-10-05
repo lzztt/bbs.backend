@@ -50,7 +50,6 @@ class Tag extends DBObject
                     $tags[$id] = [
                         'id' => $id,
                         'name' => $r['name'],
-                        'description' => $r['description'],
                         'parent' => $parent
                     ];
                 }
