@@ -5,6 +5,7 @@ namespace site\handler\home;
 use lzx\cache\SegmentCache;
 use lzx\exception\ErrorMessage;
 use lzx\html\Template;
+use site\City;
 use site\Controller;
 use site\dbobject\Activity;
 use site\dbobject\Image;
@@ -144,8 +145,8 @@ class Handler extends Controller
         $ul = $ulCache->getData();
         if (!$ul) {
             $arr = [];
-            // 1 week for houstonbbs, 2 weeks for other cities
-            $start = (self::$city->id === 1 ? $this->request->timestamp - 604800 : $this->request->timestamp - 604800 * 2);
+            // 1 week for houstonbbs, 3 weeks for other cities
+            $start = $this->request->timestamp - (self::$city->id === City::HOUSTON ? 604800 : 604800 * 3);
 
             foreach ((new Node())->getHotForumTopics(self::$city->tidForum, $count, $start) as $i => $n) {
                 $arr[] = [
