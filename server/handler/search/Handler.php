@@ -7,14 +7,18 @@ use site\Controller;
 
 class Handler extends Controller
 {
-    public function run(): void
-    {
-        $this->cache = $this->getPageCache();
+  public function run(): void
+  {
+    $this->cache = $this->getPageCache();
 
-        $searchEngineIDs = ['houstonbbs.com' => 'ff_lfzbzonw', 'dallasbbs.com' => 'gznplywzy7a', 'austinbbs.com' => 'ihghalygyj8', 'bayever.com' => 'vx3u09xj83w'];
-        $seid = $searchEngineIDs[self::$city->domain];
+    $searchEngineIDs = [
+      'houstonbbs.com' => 'ff_lfzbzonw',
+      'dallasbbs.com' => 'gznplywzy7a',
+      'bayever.com' => 'vx3u09xj83w'
+    ];
+    $seid = $searchEngineIDs[self::$city->domain];
 
-        $html = <<<HTML
+    $html = <<<HTML
 <style>
 .gsc-search-box {
   width: auto !important;
@@ -35,24 +39,17 @@ input.gsc-input {
   background-image: none !important;
   text-indent: 0px !important;
 }
+td:first-child {
+    background: white none no-repeat !important;
+}
 button {
-  height: auto !important;
+  height: 13px !important;
 }
 </style>
-<script>
-  (function() {
-    var cx = '011972505836335581212:$seid';
-    var gcse = document.createElement('script');
-    gcse.type = 'text/javascript';
-    gcse.async = true;
-    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(gcse, s);
-  })();
-</script>
-<gcse:search></gcse:search>
+<script async src="https://cse.google.com/cse.js?cx=011972505836335581212:$seid"></script>
+<div class="gcse-search"></div>
 HTML;
 
-        $this->html->setContent(Template::fromStr($html));
-    }
+    $this->html->setContent(Template::fromStr($html));
+  }
 }
