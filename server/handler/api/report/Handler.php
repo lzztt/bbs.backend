@@ -88,7 +88,7 @@ class Handler extends Service
                     $mailer->setSubject($title . ': ' . $spammer->username . ' <' . $spammer->email . '>');
                     $mailer->setBody(print_r([
                         'spammer'  => [
-                            'id'         => 'https://' . $this->request->domain . '/app/user/' . $uid,
+                            'id'         => 'https://' . $this->request->domain . '/user/' . $uid,
                             'username' => $spammer->username,
                             'email'     => $spammer->email,
                             'city'      => self::getLocationFromIp($spammer->lastAccessIp),
@@ -101,7 +101,7 @@ class Handler extends Service
                             'body'  => $body,
                         ],
                         'reporter' => [
-                            'id'         => 'https://' . $this->request->domain . '/app/user/' . $reporter->id,
+                            'id'         => 'https://' . $this->request->domain . '/user/' . $reporter->id,
                             'username' => $reporter->username,
                             'email'     => $reporter->email,
                             'city'      => self::getLocationFromIp($this->request->ip),
