@@ -12,7 +12,6 @@ use site\HandlerTrait;
 use site\Session;
 use site\dbobject\Tag;
 use site\gen\theme\roselife\Html;
-use site\gen\theme\roselife\PageNavbar;
 
 abstract class Controller extends Handler
 {
