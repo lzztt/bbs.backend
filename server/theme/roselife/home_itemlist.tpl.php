@@ -4,11 +4,14 @@ function (
 ) {
 ?>
 
-  <div>
+  <ul class="even_odd_parent">
     <?php foreach ($data as $n) : ?>
-      <a href="<?= $n['uri'] ?>"><?= $n['text'] ?></a><span><?= $n['after'] ?></span>
+      <li <?= array_key_exists('class', $n) ? ('class="' . $n['class'] . '"') : '' ?>>
+        <a href="<?= $n['uri'] ?>"><?= $n['text'] ?></a>
+        <span><?= $n['after'] ?></span>
+      </li>
     <?php endforeach ?>
-  </div>
+  </ul>
 
 <?php
 };
