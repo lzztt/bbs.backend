@@ -12,9 +12,9 @@ class Handler extends Controller
     $this->cache = $this->getPageCache();
 
     $searchEngineIDs = [
-      'houstonbbs.com' => 'ff_lfzbzonw',
-      'dallasbbs.com' => 'gznplywzy7a',
-      'bayever.com' => 'vx3u09xj83w'
+      'houstonbbs.com' => 'f181bd1f07d3699da',
+      'dallasbbs.com' => '0173f1aadfdbf13f5',
+      'bayever.com' => '666eb4297624b23f4'
     ];
     $seid = $searchEngineIDs[self::$city->domain];
 
@@ -45,8 +45,11 @@ td:first-child {
 button {
   height: 13px !important;
 }
+.gcsc-more-maybe-branding-root {
+  display: none !important;
+}
 </style>
-<script async src="https://cse.google.com/cse.js?cx=011972505836335581212:$seid"></script>
+<script async src="https://cse.google.com/cse.js?cx=$seid"></script>
 <div class="gcse-search"></div>
 HTML;
 
