@@ -29,9 +29,9 @@ function (
       <span>声望:</span> <?= $points ?>
     </div>
     <div>
-      <a href="#sendPM" class="popup" data-vars='{"uid":<?= $uid ?>,"username":"<?= $username ?>"}'>
-        <img title="发送站内短信" alt="发送站内短信" src="/themes/default/images/forum/pm.gif">
-      </a>
+      <button onclick='window.app.openMsgEditor({toUser: {id:<?= $uid ?>,username:"<?= $username ?>"}})'>
+        发短信
+      </button>
     </div>
   </aside>
 
