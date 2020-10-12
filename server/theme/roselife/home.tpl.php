@@ -77,7 +77,7 @@ function (
       <header>本月热门</header><?= $hotForumTopicsMonthly ?>
     </section>
     <section class="items">
-      <header>最新黄页一</header><?= $latestYellowPages ?>
+      <header>最新黄页</header><?= $latestYellowPages ?>
     </section>
     <section class="items">
       <header>最新黄页回复</header><?= $latestYellowPageReplies ?>
