@@ -80,10 +80,6 @@ class Handler extends Node
         $this->getCacheEvent('ForumComment')->trigger();
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
 
-        if (in_array($nid, $node->getHotForumTopicNIDs(self::$city->tidForum, 15, $this->request->timestamp - 604800))) {
-            $this->getIndependentCache('hotForumTopics')->delete();
-        }
-
         throw new Redirect('/node/' . $nid . '?p=l#comment' . $comment->id);
     }
 

@@ -5,7 +5,6 @@ namespace site\handler\home;
 use lzx\cache\SegmentCache;
 use lzx\exception\ErrorMessage;
 use lzx\html\Template;
-use site\City;
 use site\Controller;
 use site\dbobject\Activity;
 use site\dbobject\Image;
@@ -41,7 +40,8 @@ class Handler extends Controller
                 ->setCity(self::$city->id)
                 ->setRecentActivities($this->getRecentActivities())
                 ->setLatestForumTopics($this->getLatestForumTopics(15))
-                ->setHotForumTopics($this->getHotForumTopics(15))
+                ->setHotForumTopicsWeekly($this->getHotForumTopics(15, 7))
+                ->setHotForumTopicsMonthly($this->getHotForumTopics(15, 30))
                 ->setLatestYellowPages($this->getLatestYellowPages(15))
                 ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(15))
                 ->setLatestYellowPageReplies(($this->getLatestYellowPageReplies(15)))
@@ -71,7 +71,7 @@ class Handler extends Controller
             (new Home())
                 ->setCity(self::$city->id)
                 ->setLatestForumTopics($this->getLatestForumTopics(10))
-                ->setHotForumTopics($this->getHotForumTopics(10))
+                ->setHotForumTopicsMonthly($this->getHotForumTopics(10, 30))
                 ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(10))
                 ->setImageSlider($this->getImageSlider())
                 ->setGroups($groupTrees)
@@ -139,14 +139,13 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getHotForumTopics(int $count): Template
+    private function getHotForumTopics(int $count, int $days): Template
     {
-        $ulCache = $this->cache->getSegment('hotForumTopics');
+        $ulCache = $this->cache->getSegment('hotForumTopics' . $days);
         $ul = $ulCache->getData();
         if (!$ul) {
             $arr = [];
-            // 1 week for houstonbbs, 3 weeks for other cities
-            $start = $this->request->timestamp - (self::$city->id === City::HOUSTON ? 604800 : 604800 * 3);
+            $start = $this->request->timestamp - $days * 86400;
 
             foreach ((new Node())->getHotForumTopics(self::$city->tidForum, $count, $start) as $i => $n) {
                 $arr[] = [

@@ -6,7 +6,8 @@ use site\City;
 function (
   int $city,
   array $groups,
-  Template $hotForumTopics,
+  Template $hotForumTopicsWeekly,
+  Template $hotForumTopicsMonthly,
   Template $imageSlider,
   Template $latestForumTopicReplies,
   Template $latestForumTopics,
@@ -70,7 +71,10 @@ function (
       <header>最新论坛回复</header><?= $latestForumTopicReplies ?>
     </section>
     <section class="items home_hot_nodes">
-      <header>本周热门</header><?= $hotForumTopics ?>
+      <header>本周热门</header><?= $hotForumTopicsWeekly ?>
+    </section>
+    <section class="items home_hot_nodes">
+      <header>本月热门</header><?= $hotForumTopicsMonthly ?>
     </section>
     <section class="items">
       <header>最新黄页一</header><?= $latestYellowPages ?>
@@ -133,7 +137,7 @@ function (
       <header>最新论坛回复</header><?= $latestForumTopicReplies ?>
     </section>
     <section class="items home_hot_nodes">
-      <header>本周热门</header><?= $hotForumTopics ?>
+      <header>本月热门</header><?= $hotForumTopicsMonthly ?>
     </section>
     <?php foreach ($groups as $group_id => $tags) : ?>
       <table>
