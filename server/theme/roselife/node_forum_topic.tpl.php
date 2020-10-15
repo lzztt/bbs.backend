@@ -20,8 +20,8 @@ function (
   <header class="content_header">
     <?= $breadcrumb ?>
     <span class='v_guest'>您需要先<a href="/user/login">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
-    <button type="button" class='v_user create_node' data-action="/forum/<?= $tid ?>/node">发表新话题</button>
-    <button type="button" class='v_user reply' data-action="/node/<?= $nid ?>/comment">回复</button>
+    <button type="button" class='v_user' onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
+    <button type="button" class='v_user' onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
     <button type="button" class='v_user bookmark' data-action="/node/<?= $nid ?>/bookmark">收藏</button>
     <span class="ajax_load" data-ajax='<?= $ajaxUri ?>'><?= $commentCount ?> replies, <span class="ajax_viewCount<?= $nid ?>"></span> views</span>
     <?= $pager ?>
@@ -75,16 +75,14 @@ function (
             <?php if ($tid == 16 && $p['type'] == 'node') : ?>
               <a class="button <?= $urole ?>" href="/node/<?= $p['id'] ?>/activity" rel="nofollow">发布为活动</a>
             <?php endif ?>
-
-            <button type="button" class="edit <?= $urole ?>" data-raw="#<?= $p['type'] . '_' . $p['id'] ?>_raw" data-action="<?= '/' . $p['type'] . '/' . $p['id'] . '/edit' ?>">编辑</button>
+            <script>
+              const editJson_<?= $p['id'] ?> = <?= $p["editJson"] ?>;
+              const quoteJson_<?= $p['id'] ?> = <?= $p["quoteJson"] ?>;
+            </script>
+            <button type="button" class="edit <?= $urole ?>" onclick="window.app.open<?= $p['type'] === 'node' ? 'Node' : 'Comment' ?>Editor(editJson_<?= $p['id'] ?>)">编辑</button>
             <button type="button" class="delete <?= $urole ?>" data-action="<?= '/' . $p['type'] . '/' . $p['id'] . '/delete' ?>">删除</button>
-            <button type="button" class="reply" data-action="/node/<?= $nid ?>/comment">回复</button>
-            <button type="button" class="quote" data-raw="#<?= $p['type'] . '_' . $p['id'] ?>_raw" data-action="/node/<?= $nid ?>/comment">引用</button>
-          </div>
-          <div id="<?= $p['type'] . '_' . $p['id'] ?>_raw" style="display:none;">
-            <pre class='username'><?= $p['username'] ?></pre>
-            <pre class="body"><?= $p['body'] ?></pre>
-            <pre class="files"><?= $p['filesJSON'] ?></pre>
+            <button type="button" class="reply" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
+            <button type="button" class="quote" onclick="window.app.openCommentEditor(quoteJson_<?= $p['id'] ?>)">引用</button>
           </div>
         </footer>
       </article>

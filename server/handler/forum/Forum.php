@@ -14,6 +14,13 @@ abstract class Forum extends Controller
     {
         if ($this->args) {
             $tid = (int) $this->args[0];
+        } elseif (array_key_exists('tagId', $this->request->data)) {
+            $tid = (int) $this->request->data['tagId'];
+        } else {
+            $tid = self::$city->tidForum;
+        }
+
+        if ($tid != self::$city->tidForum) {
             if ($tid > 0) {
                 $tag = new Tag($tid, 'id');
                 $tag->load('id');

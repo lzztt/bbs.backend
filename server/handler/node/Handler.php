@@ -18,6 +18,8 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
+    private const JSON_OPTIONS = JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+
     public function run(): void
     {
         $this->cache = $this->getPageCache();
@@ -136,14 +138,30 @@ class Handler extends Node
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
                 $c['city'] = $c['access_ip'] ? self::getLocationFromIp($c['access_ip'], false) : 'N/A';
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
-                $c['filesJSON'] = json_encode($c['files']);
+                $c['quoteJson'] = json_encode([
+                    'nodeId' => $nid,
+                    'body' => '[quote="' . $c['username'] . '"]' . $c['body'] . '[/quote]'
+                ], self::JSON_OPTIONS);
                 if ($nodeComment) {
                     $c['type'] = 'node';
                     $c['id'] = $node['id'];
                     $c['report'] = ($node['points'] < 5 || strpos($c['body'], 'http') !== false);
+                    $c['editJson'] = json_encode([
+                        'tagId' => $tag->id,
+                        'nodeId' => $nid,
+                        'title' => $node['title'],
+                        'body' => $c['body'],
+                        'images' => $c['files']
+                    ], self::JSON_OPTIONS);
                     $nodeComment = false;
+                } else {
+                    $c['editJson'] = json_encode([
+                        'nodeId' => $nid,
+                        'commentId' =>  $c['id'],
+                        'body' => $c['body'],
+                        'images' => $c['files']
+                    ], self::JSON_OPTIONS);
                 }
-
                 $posts[] = $c;
             }
         }
@@ -151,10 +169,7 @@ class Handler extends Node
         $this->html->setContent(
             $page->setPosts($posts)
                 ->setEditor(
-                    (new EditorBbcode())
-                        ->setTitle($node['title'])
-                        ->setFormHandler('/node/' . $nid . '/comment')
-                        ->setHasFile(true)
+                    Template::fromStr('')
                 )
         );
     }
