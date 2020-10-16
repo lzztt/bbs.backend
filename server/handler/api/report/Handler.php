@@ -16,13 +16,8 @@ class Handler extends Service
     {
         $this->validateUser();
 
-        $uid = (int) $this->request->data['uid'];
-        $nid = (int) $this->request->data['nid'];
+        $nid = (int) $this->request->data['nodeId'];
         $reason = $this->request->data['reason'];
-
-        if ($uid == $this->request->uid) {
-            throw new ErrorMessage('您不能举报自己的帖子');
-        }
 
         $complain = new NodeComplain();
         $complain->nid = $nid;
@@ -33,22 +28,23 @@ class Handler extends Service
             throw new ErrorMessage('您已经举报过此帖，不能重复举报');
         }
 
-        $node = new Node();
-        $node->id = $nid;
-        $node->uid = $uid;
-        $node->load();
+        $node = new Node($nid);
         if (!$node->exists()) {
             throw new ErrorMessage('被举报的帖子不存在');
         }
 
+        if ($node->uid == $this->request->uid) {
+            throw new ErrorMessage('您不能举报自己的帖子');
+        }
+
         if ($node->status > 0) {
-            $spammer = new User($uid);
+            $spammer = new User($node->uid);
 
             if ($spammer->exists() && $spammer->status > 0) {
                 $reporter = new User($this->request->uid);
 
                 if ($reporter->status > 0) {
-                    $complain->uid = $uid;
+                    $complain->uid = $node->uid;
                     $complain->weight = $reporter->points;
                     $complain->time = $this->request->timestamp;
                     $complain->reason = $reason;
@@ -64,7 +60,7 @@ class Handler extends Service
                     if ($reporter->points > 0 && ($spammer->points < 2 || (strpos($body, 'http') && $spammer->points < 18) !== false)) {
                         // check complains
                         $complain = new NodeComplain();
-                        $complain->where('uid', $uid, '=');
+                        $complain->where('uid', $node->uid, '=');
                         $complain->where('status', 1, '=');
                         $complain->where('weight', 0, '>');
                         $reporterUids = array_unique(array_column($complain->getList('reporterUid'), 'reporterUid'));
@@ -88,7 +84,7 @@ class Handler extends Service
                     $mailer->setSubject($title . ': ' . $spammer->username . ' <' . $spammer->email . '>');
                     $mailer->setBody(print_r([
                         'spammer'  => [
-                            'id'         => 'https://' . $this->request->domain . '/user/' . $uid,
+                            'id'         => 'https://' . $this->request->domain . '/user/' . $node->uid,
                             'username' => $spammer->username,
                             'email'     => $spammer->email,
                             'city'      => self::getLocationFromIp($spammer->lastAccessIp),

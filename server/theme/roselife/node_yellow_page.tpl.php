@@ -6,7 +6,6 @@ function (
   string $ajaxUri,
   Template $breadcrumb,
   int $commentCount,
-  Template $editor,
   int $nid,
   array $node,
   Template $pager,
@@ -17,8 +16,8 @@ function (
 
   <header class="content_header">
     <?= $breadcrumb ?>
-    <span class='v_guest'>您需要先<a href="/user/login">登录</a>或<a href="/user/register">注册</a>才能发表新话题或回复</span>
-    <button type="button" class='v_user comment' data-action="/node/<?= $nid ?>/comment">评论</button>
+    <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>
+    <button type="button" class='v_user' onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
     <span class="ajax_load" data-ajax='<?= $ajaxUri ?>'><?= $commentCount ?> replies, <span class="ajax_viewCount<?= $nid ?>"></span> views</span>
     <?= $pager ?>
   </header>
@@ -51,7 +50,7 @@ function (
         <a id="comment<?= $c['id'] ?>"></a>
         <article>
           <header>
-            <a href="/user/<?= $c['uid'] ?>"><?= $c['username'] ?></a>
+            <a onclick="window.app.user(<?= $c['uid'] ?>)"><?= $c['username'] ?></a>
             <span class='time'><?= $c['createTime'] . ($c['lastModifiedTime'] ? ' (修改于 ' . $c['lastModifiedTime'] . ')' : '') ?></span>
             <?php if ($c['type'] == 'comment') : ?>
               <span class="comment_num">#<?= $postNumStart + $index ?></span>
@@ -63,15 +62,14 @@ function (
           <footer class='v_user'>
             <div class="actions">
               <?php $urole = 'v_user_superadm' . ' v_user_' . $c['uid'] ?>
-              <button type="button" class="edit <?= $urole ?>" data-action="<?= '/' . $c['type'] . '/' . $c['id'] . '/edit' ?>" data-raw="#<?= $c['type'] . '-' . $c['id'] ?>_raw">编辑</button>
-              <button type="button" class="delete <?= $urole ?>" data-action="<?= '/' . $c['type'] . '/' . $c['id'] . '/delete' ?>">删除</button>
-              <button type="button" class="reply" data-action="/node/<?= $nid ?>/comment">回复</button>
-              <button type="button" class="quote" data-action="/node/<?= $nid ?>/comment" data-raw="#<?= $c['type'] . '-' . $c['id'] ?>_raw">引用</button>
-            </div>
-            <div id="<?= $c['type'] . '-' . $c['id'] ?>_raw" style="display:none;">
-              <pre class='username'><?= $c['username'] ?></pre>
-              <pre class="body"><?= $c['body'] ?></pre>
-              <pre class="files">[]</pre>
+              <script>
+                const editJson_<?= $c['id'] ?> = <?= $c["editJson"] ?>;
+                const quoteJson_<?= $c['id'] ?> = <?= $c["quoteJson"] ?>;
+              </script>
+              <button type="button" class="edit <?= $urole ?>" onclick="window.app.openCommentEditor(editJson_<?= $c['id'] ?>)">编辑</button>
+              <button type="button" class="delete <?= $urole ?>" onclick="window.app.delete('comment', <?= $c['id'] ?>)">删除</button>
+              <button type="button" class="reply" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
+              <button type="button" class="quote" onclick="window.app.openCommentEditor(quoteJson_<?= $c['id'] ?>)">引用</button>
             </div>
           </footer>
         </article>
@@ -80,7 +78,6 @@ function (
   <?php endif ?>
 
   <?= $pager ?>
-  <?= $editor ?>
 
 <?php
 };

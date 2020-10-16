@@ -4,7 +4,6 @@ use lzx\html\Template;
 
 function (
   string $ajaxUri,
-  Template $editor,
   array $nodes,
   Template $pager,
   int $tid
@@ -13,8 +12,8 @@ function (
 
   <header class='content_header'>
     <div>
-      <span class='v_guest'>您需要先<a href="/user/login">登录</a>或<a href="/user/register">注册</a>才能发表新话题</span>
-      <button type="button" class='v_user create_node' data-action="/forum/<?= $tid ?>/node">发表新话题</button>
+      <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题</span>
+      <button type="button" class='v_user' onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
       <?= $pager ?>
     </div>
   </header>
@@ -42,9 +41,7 @@ function (
     </table>
   <?php endif ?>
 
-  <?= $editor ?>
   <?= $pager ?>
-
 
 <?php
 };

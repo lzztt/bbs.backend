@@ -11,7 +11,6 @@ use lzx\html\Template;
 use site\dbobject\Node as NodeObject;
 use site\dbobject\Tag;
 use site\gen\theme\roselife\AuthorPanelForum;
-use site\gen\theme\roselife\EditorBbcode;
 use site\gen\theme\roselife\NodeForumTopic;
 use site\gen\theme\roselife\NodeYellowPage;
 use site\handler\node\Node;
@@ -166,12 +165,7 @@ class Handler extends Node
             }
         }
 
-        $this->html->setContent(
-            $page->setPosts($posts)
-                ->setEditor(
-                    Template::fromStr('')
-                )
-        );
+        $this->html->setContent($page->setPosts($posts));
     }
 
     private function authorPanel(array $info): Template
@@ -311,6 +305,16 @@ class Handler extends Node
                         $c['HTMLbody'] = nl2br($c['body']);
                         $this->logger->logException($e);
                     }
+                    $c['quoteJson'] = json_encode([
+                        'nodeId' => $nid,
+                        'body' => '[quote="' . $c['username'] . '"]' . $c['body'] . '[/quote]'
+                    ], self::JSON_OPTIONS);
+                    $c['editJson'] = json_encode([
+                        'nodeId' => $nid,
+                        'commentId' =>  $c['id'],
+                        'body' => $c['body'],
+                        'images' => $c['files']
+                    ], self::JSON_OPTIONS);
 
                     $cmts[] = $c;
                 }
@@ -319,11 +323,7 @@ class Handler extends Node
 
 
         $page->setNode($node)
-            ->setComments(($cmts))
-            ->setEditor(
-                (new EditorBbcode())
-                    ->setFormHandler('/node/' . $nid . '/comment')
-            );
+            ->setComments(($cmts));
 
         $this->html->setContent($page);
     }

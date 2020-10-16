@@ -5,7 +5,6 @@ namespace site\handler\forum;
 use lzx\html\HtmlElement;
 use site\dbobject\Node;
 use site\dbobject\Tag;
-use site\gen\theme\roselife\EditorBbcode;
 use site\gen\theme\roselife\ForumList;
 use site\gen\theme\roselife\TopicList;
 use site\handler\forum\Forum;
@@ -79,18 +78,11 @@ class Handler extends Forum
             $nodes[$i]['comment_time'] = date('m/d/Y H:i', (int) $n['comment_time']);
         }
 
-        $editor = (new EditorBbcode())
-            ->setFormHandler('/forum/' . $tid . '/node')
-            ->setDisplayTitle(true)
-            ->setHasFile(true)
-            ->setTitle('');
-
         // will not build node-forum map, would be too many nodes point to forum, too big map
         $topics = (new TopicList())
             ->setTid($tid)
             ->setPager($pager)
             ->setNodes($nodes)
-            ->setEditor($editor)
             ->setAjaxUri('/api/viewcount/' . implode(',', $nids));
 
         $this->html->setContent($topics);
