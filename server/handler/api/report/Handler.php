@@ -66,7 +66,7 @@ class Handler extends Service
                         $reporterUids = array_unique(array_column($complain->getList('reporterUid'), 'reporterUid'));
                         if (count($reporterUids) >= 3) {
                             $user = new User();
-                            $user->where('id', $reporterUids, '=');
+                            $user->where('id', $reporterUids, 'IN');
                             $reporterIps = array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp'));
                         }
                         if (!empty($reporterIps) && count($reporterIps) >= 3) {

@@ -47,7 +47,7 @@ class TraceProcessor
     {
         return array_map(function (array $frame): string {
             return (array_key_exists('class', $frame) ? $frame['class'] . $frame['type'] . $frame['function'] : $frame['function'])
-            . ' @' . (array_key_exists('file', $frame) ? $this->trimPrefix($frame['file']) : '') . ':' . $frame['line'];
+            . ' @' . (array_key_exists('file', $frame) ? $this->trimPrefix($frame['file']) : '') . ':' . (array_key_exists('line', $frame) ? $frame['line'] : '');
         }, $traces);
     }
 

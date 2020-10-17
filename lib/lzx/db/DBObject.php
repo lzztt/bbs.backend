@@ -403,10 +403,17 @@ abstract class DBObject
         }
         // NULL value
         if ($value === null) {
+            $key = array_search($condition, ['IS', 'IS NOT'], true);
+            if ($key === false) {
+                throw new Exception('non-supported operator: ' . $condition);
+            }
             $value = 'NULL';
-            $condition = in_array($condition, ['=', 'is', 'IS']) ? 'IS' : 'IS NOT';
         } else {
             if (is_array($value)) {
+                $key = array_search($condition, ['IN', 'NOT IN'], true);
+                if ($key === false) {
+                    throw new Exception('non-supported operator: ' . $condition);
+                }
                 // a list of values
                 if (sizeof($value) == 0) {
                     throw new Exception('empty value set provided in where condition');
@@ -416,28 +423,31 @@ abstract class DBObject
                     throw new Exception('NULL provided in the value set. but NULL is not a value');
                 }
 
-                $value_clean = [];
+                $bind_names = [];
+                $i = 0;
                 switch ($this->fields_type[$this->fields[$prop]]) {
                     case self::T_INT:
                         foreach ($value as $v) {
-                            $value_clean[] = intval($v);
+                            $this->bind_values[':' . $prop . $key . $i] = intval($v);
+                            $bind_names[] = ':' . $prop . $key . $i++;
                         }
                         break;
                     case self::T_FLOAT:
                         foreach ($value as $v) {
-                            $value_clean[] = floatval($v);
+                            $this->bind_values[':' . $prop . $key . $i] = floatval($v);
+                            $bind_names[] = ':' . $prop . $key . $i++;
                         }
                         break;
                     case self::T_STRING:
                         foreach ($value as $v) {
-                            $value_clean[] = $this->db->str($v);
+                            $this->bind_values[':' . $prop . $key . $i] = $this->db->str($v);
+                            $bind_names[] = ':' . $prop . $key . $i++;
                         }
                         break;
                     default:
                         throw new Exception('non-supported field data type: ' . $this->fields[$prop] . '(' . $this->fields_type[$this->fields[$prop]] . ')');
                 }
-                $value = '(' . implode(', ', $value_clean) . ')';
-                $condition = in_array($condition, ['=', 'in', 'IN']) ? 'IN' : 'NOT IN';
+                $value = '(' . implode(', ', $bind_names) . ')';
             } else {
                 $key = array_search($condition, ['>', '>=', '<', '<=', '=', '!=', '<>', 'LIKE', 'NOT LIKE'], true);
                 if ($key === false) {

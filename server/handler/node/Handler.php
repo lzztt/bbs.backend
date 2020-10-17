@@ -312,8 +312,7 @@ class Handler extends Node
                     $c['editJson'] = json_encode([
                         'nodeId' => $nid,
                         'commentId' =>  $c['id'],
-                        'body' => $c['body'],
-                        'images' => $c['files']
+                        'body' => $c['body']
                     ], self::JSON_OPTIONS);
 
                     $cmts[] = $c;

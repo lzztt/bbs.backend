@@ -174,7 +174,7 @@ class User extends DBObject
 
     public function getUsernames(array $uids): array
     {
-        $this->where('id', $uids, '=');
+        $this->where('id', $uids, 'IN');
         return array_column($this->getList('username'), 'username');
     }
 

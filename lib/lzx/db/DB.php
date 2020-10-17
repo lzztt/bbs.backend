@@ -19,6 +19,7 @@ class DB
         $this->db = new PDO($config['dsn'], $config['user'], $config['password'], [
             PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_AUTOCOMMIT => false,
+            PDO::ATTR_EMULATE_PREPARES => false,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
             PDO::MYSQL_ATTR_MULTI_STATEMENTS => false,
@@ -113,7 +114,10 @@ class DB
             }
         }
 
-        $res = $statement->columnCount() > 0 ? $statement->fetchAll(PDO::FETCH_ASSOC) : [];
+        $res = $statement->columnCount() > 0
+            ? $statement->fetchAll(PDO::FETCH_ASSOC)
+            : [];
+        $statement->nextRowSet();
         $statement->closeCursor();
 
         return $res;

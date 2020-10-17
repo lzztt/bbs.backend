@@ -32,7 +32,9 @@ class Logger extends MonoLogger
 
     public function setFile(string $file): void
     {
-        $this->pushHandler(new BufferHandler(new StreamHandler($file)));
+        $handler = new BufferHandler(new StreamHandler($file));
+        // $handler->pushProcessor(new TraceProcessor(self::getPathPrefix())); // debug @ dev
+        $this->pushHandler($handler);
     }
 
     public function setEmail(string $to, string $subject, string $from): void
