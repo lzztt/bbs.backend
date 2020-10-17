@@ -12,7 +12,7 @@ class Request
     const METHOD_PUT = 'PUT';
     const METHOD_PATCH = 'PATCH';
     const METHOD_DELETE = 'DELETE';
-    const URL_INVALID_CHAR = '%';
+    const URL_INVALID_CHAR = '%'; // encoded uri, sql injection
 
     public string $domain;
     public string $ip;
@@ -25,8 +25,8 @@ class Request
     public string $agent;
 
     private ServerRequest $req;
-    private bool $hasBadUrl;
-    private bool $isRobot;
+    private bool $hasBadData = false;
+    private bool $isRobot = false;
 
     private function __construct()
     {
@@ -40,9 +40,13 @@ class Request
         $this->timestamp = (int) $params['REQUEST_TIME'];
         $this->agent = (string) $params['HTTP_USER_AGENT'];
 
-        $this->hasBadUrl = false;
-        if (!self::validateUrl($this->uri)) {
-            $this->hasBadUrl = true;
+        if (substr($params['SERVER_PROTOCOL'], 0, 6) === 'HTTP/1' || empty($params['HTTPS'])) {
+            $this->isRobot = true;
+        }
+
+        $inputData = (string) $this->req->getBody();
+        if (!self::validateUrl($this->uri) || ($this->isRobot && strlen($inputData) > 0)) {
+            $this->hasBadData = true;
             $this->data = [];
             $this->isRobot = true;
             $this->referer = (string) $params['HTTP_REFERER'];
@@ -61,11 +65,11 @@ class Request
                         $data = $this->req->getParsedBody();
                     } else {
                         $data = [];
-                        parse_str((string) $this->req->getBody(), $data);
+                        parse_str($inputData, $data);
                     }
                     break;
                 case 'application/json':
-                    $data = json_decode((string) $this->req->getBody(), true);
+                    $data = json_decode($inputData, true);
             }
             if (!is_array($data)) {
                 $data = [];
@@ -75,7 +79,7 @@ class Request
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
         $this->referer = sizeof($arr) > 1 ? $arr[1] : '';
-        $this->isRobot = (bool) preg_match('/(http|yahoo|bot|spider)/i', $params['HTTP_USER_AGENT']);
+        $this->isRobot = $this->isRobot && (bool) preg_match('/(http|yahoo|bot|spider)/i', $params['HTTP_USER_AGENT']);
     }
 
     public static function getInstance(): Request
@@ -90,12 +94,12 @@ class Request
 
     public function isBad(): bool
     {
-        return $this->hasBadUrl;
+        return $this->hasBadData;
     }
 
     public function isRobot(): bool
     {
-        return $this->uid === 0 && ($this->hasBadUrl || $this->isRobot);
+        return $this->uid === 0 && ($this->hasBadData || $this->isRobot);
     }
 
     public function isGoogleBot(): bool

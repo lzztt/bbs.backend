@@ -55,7 +55,7 @@ class Handler extends Node
         }
 
         $node->title = $this->request->data['title'];
-        $node->tid = $this->request->data['tagId'];
+        $node->tid = (int) $this->request->data['tagId'];
         $node->lastModifiedTime = $this->request->timestamp;
 
         try {
@@ -71,7 +71,7 @@ class Handler extends Node
 
         $comment = new Comment();
         $comment->id = $arr[0]['id'];
-        $comment->tid = $this->request->data['tagId'];
+        $comment->tid = (int) $this->request->data['tagId'];
         $comment->body = $this->request->data['body'];
         $comment->lastModifiedTime = $this->request->timestamp;
         $comment->update();

@@ -91,7 +91,7 @@ class Handler extends Service
         }
 
         if (array_key_exists('avatar', $this->request->data)) {
-            $image = \base64_decode(substr($this->request->data['avatar'], strpos($this->request->data['avatar'], ',') + 1));
+            $image = base64_decode(substr($this->request->data['avatar'], strpos($this->request->data['avatar'], ',') + 1));
             if ($image !== false) {
                 $config = Config::getInstance();
                 $avatarFile = '/data/avatars/' . $this->request->uid . '_' . ($this->request->timestamp % 100) . '.png';

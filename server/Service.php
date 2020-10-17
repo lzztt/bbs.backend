@@ -40,10 +40,6 @@ abstract class Service extends Handler
     public function run(): void
     {
         $method = strtolower($this->request->method);
-        if (array_key_exists('action', $this->request->data)) {
-            $method = strtolower($this->request->data['action']);
-            unset($this->request->data['action']);
-        }
 
         if (!in_array($method, self::METHODS) || !method_exists($this, $method)) {
             throw new NotFound();

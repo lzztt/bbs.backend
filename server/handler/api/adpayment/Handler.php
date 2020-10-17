@@ -34,8 +34,8 @@ class Handler extends Service
 
         $ad = new Ad();
         $ap = new AdPayment();
-        $ap->adId = $this->request->data['adId'];
-        $ap->amount = $this->request->data['amount'];
+        $ap->adId = (int) $this->request->data['adId'];
+        $ap->amount = (int) $this->request->data['amount'];
         $ap->time = strtotime($this->request->data['time']);
         $ap->comment = $this->request->data['comment'];
         $ap->add();
