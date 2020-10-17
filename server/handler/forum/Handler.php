@@ -2,6 +2,7 @@
 
 namespace site\handler\forum;
 
+use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
 use site\dbobject\Node;
 use site\dbobject\Tag;
@@ -30,37 +31,7 @@ class Handler extends Forum
     // $forum, $groups, $boards are arrays of category id
     public function showForumList(int $tid, array $tagRoot, array $tagTree): void
     {
-        $nodeInfo = [];
-        $groupTrees = [];
-        if ($tid == self::$city->tidForum) {
-            foreach ($tagTree[$tid]['children'] as $group_id) {
-                $groupTrees[$group_id] = [];
-                $group = $tagTree[$group_id];
-                $groupTrees[$group_id][$group_id] = $group;
-                foreach ($group['children'] as $board_id) {
-                    $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
-                    $nodeInfo[$board_id] = $this->nodeInfo($board_id);
-                    $this->cache->addParent('/forum/' . $board_id);
-                }
-            }
-        } else {
-            $group_id = $tid;
-            $groupTrees[$group_id] = [];
-            $group = $tagTree[$group_id];
-            $groupTrees[$group_id][$group_id] = $group;
-            foreach ($group['children'] as $board_id) {
-                $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
-                $nodeInfo[$board_id] = $this->nodeInfo($board_id);
-                $this->cache->addParent('/forum/' . $board_id);
-            }
-        }
-
-        $this->html->setContent(
-            (new ForumList())
-                ->setCity(self::$city->id)
-                ->setGroups($groupTrees)
-                ->setNodeInfo($nodeInfo)
-        );
+        throw new NotFound();
     }
 
     public function showTopicList(int $tid, array $tagRoot): void

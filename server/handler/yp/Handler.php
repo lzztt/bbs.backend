@@ -2,6 +2,7 @@
 
 namespace site\handler\yp;
 
+use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
 use site\Controller;
 use site\dbobject\Node;
@@ -27,12 +28,7 @@ class Handler extends Controller
 
     protected function ypHome(): void
     {
-        $tag = new Tag(self::$city->tidYp, 'id');
-        $this->html->setContent(
-            (new YpHome())
-                ->setTid(($tag->id))
-                ->setYp($tag->getTagTree())
-        );
+        throw new NotFound();
     }
 
     protected function nodeList(int $tid): void
