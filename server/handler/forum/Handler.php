@@ -46,7 +46,6 @@ class Handler extends Forum
         $nids = array_column($nodes, 'id');
         foreach ($nodes as $i => $n) {
             $nodes[$i]['create_time'] = date('m/d/Y H:i', (int) $n['create_time']);
-            $nodes[$i]['comment_time'] = date('m/d/Y H:i', (int) $n['comment_time']);
         }
 
         // will not build node-forum map, would be too many nodes point to forum, too big map

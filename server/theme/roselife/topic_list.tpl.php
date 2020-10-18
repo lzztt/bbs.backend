@@ -23,8 +23,7 @@ function (
         <tr>
           <th>主题</th>
           <th>作者</th>
-          <th>最后回复</th>
-          <th>回复 / 浏览</th>
+          <th>浏览</th>
         </tr>
       </thead>
 
@@ -33,8 +32,7 @@ function (
           <tr class="<?= ($node['weight'] >= 2) ? 'topic-sticky' : '' ?>">
             <td><a href="/node/<?= $node['id'] ?>"><?= $node['title'] ?></a></td>
             <td><?= $node['creater_name'] ?> <span class='time'><?= ($node['create_time']) ?></span></td>
-            <td><?php if ($node['comment_count'] > 0) : ?><?= $node['commenter_name'] ?> <span class='time'><?= ($node['comment_time']) ?></span><?php endif ?></td>
-            <td><?= $node['comment_count'] ?> / <span class="ajax_viewCount<?= $node['id'] ?>"></span></td>
+            <td><span class="ajax_viewCount<?= $node['id'] ?>"></span></td>
           </tr>
         <?php endforeach ?>
       </tbody>
