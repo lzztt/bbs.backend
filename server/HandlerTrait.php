@@ -7,7 +7,9 @@ use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\cache\PageCache;
+use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
+use lzx\exception\NotFound;
 use site\File;
 use site\dbobject\SessionEvent;
 use site\dbobject\User;
@@ -30,6 +32,8 @@ trait HandlerTrait
 
         $initialized = true;
 
+        $this->rateLimit();
+
         self::$city = $this->config->city;
         // set site info
         $site = str_replace(['bbs.com', '.com'], '', self::$city->domain);
@@ -47,6 +51,54 @@ trait HandlerTrait
         }
 
         $this->updateAccessInfo();
+    }
+
+    protected function rateLimit()
+    {
+        $rateLimiter = MemStore::getRedis(3);
+        if ($this->session->get('uid')) {
+            $key = date("d") . static::class . ':' . $this->session->get('uid');
+            $limit = 100;
+            $window = 43200;
+        } else {
+            $key = date("d") . static::class . ':' . $this->request->ip;
+            $limit = 50;
+            $window = 86400;
+        }
+
+        $skip = false;
+        if ((int) $rateLimiter->get($key) > $limit) {
+            // check if allowed bots
+            $isAllowedBot = false;
+            if ($this->request->isRobot()) {
+                $botKey = 'b:' . $this->request->ip;
+                if ($rateLimiter->exists($botKey)) {
+                    $isAllowedBot = boolval($rateLimiter->get($botKey));
+                } else {
+                    $isAllowedBot = $this->request->isGoogleBot();
+                    if (!$isAllowedBot) {
+                        $isAllowedBot = $this->request->isBingBot();
+                    }
+                    $rateLimiter->set($botKey, $isAllowedBot ? '1' : '0', $window);
+                }
+            }
+
+            if ($isAllowedBot) {
+                $skip = true;
+            } else {
+                // mail error log
+                if (!$rateLimiter->exists($key . ':log')) {
+                    $this->logger->error('rate limit ' . $this->request->ip);
+                    $rateLimiter->set($key . ':log', '', $window);
+                }
+                throw new NotFound();
+            }
+        }
+
+        if (!$skip) {
+            $rateLimiter->incr($key);
+            $rateLimiter->expire($key, $window);
+        }
     }
 
     private function updateAccessInfo(): void

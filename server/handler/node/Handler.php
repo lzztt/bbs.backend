@@ -38,43 +38,6 @@ class Handler extends Node
 
     private function displayForumTopic(int $nid): void
     {
-        $rateLimiter = MemStore::getRedis(3);
-        $key = date("d") . ':' . ($this->session->get('uid') ?: $this->request->ip);
-        $oneDay = 86400;
-        $skip = false;
-        if ($rateLimiter->sCard($key) > 50) {
-            // check if allowed bots
-            $isAllowedBot = false;
-            if ($this->request->isRobot()) {
-                $botKey = 'b:' . $this->request->ip;
-                if ($rateLimiter->exists($botKey)) {
-                    $isAllowedBot = boolval($rateLimiter->get($botKey));
-                } else {
-                    $isAllowedBot = $this->request->isGoogleBot();
-                    if (!$isAllowedBot) {
-                        $isAllowedBot = $this->request->isBingBot();
-                    }
-                    $rateLimiter->set($botKey, $isAllowedBot ? '1' : '0', $oneDay);
-                }
-            }
-
-            if ($isAllowedBot) {
-                $skip = true;
-            } else {
-                // mail error log
-                if (!$rateLimiter->exists($key . ':log')) {
-                    $this->logger->error('rate limit ' . $this->request->ip);
-                    $rateLimiter->set($key . ':log', '', $oneDay);
-                }
-                throw new NotFound();
-            }
-        }
-
-        if (!$skip) {
-            $rateLimiter->sAdd($key, $nid);
-            $rateLimiter->expire($key, 86400);
-        }
-
         $nodeObj = new NodeObject();
         $node = $nodeObj->getForumNode($nid);
         if (!$node) {
