@@ -24,7 +24,7 @@ class Handler extends Service
             $user = new User($this->request->uid, 'username');
             $this->json(['sessionID' => $this->session->id(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
         } else {
-            $this->json(['sessionID' => $this->session->id(), 'uid' => 0]);
+            $this->json(['sessionID' => $this->session->id(), 'uid' => 0, 'username' => null, 'role' => null]);
         }
     }
 

@@ -30,11 +30,12 @@ abstract class Service extends Handler
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
     {
         parent::__construct($req, $response, $logger);
-        $this->response->type = Response::JSON;
         $this->session = $session;
         $this->config = $config;
         $this->args = $args;
         $this->staticInit();
+
+        $this->response->type = Response::JSON;
     }
 
     public function run(): void
