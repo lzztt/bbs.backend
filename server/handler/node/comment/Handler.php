@@ -62,6 +62,9 @@ class Handler extends Node
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();
+
+            $node->lastCommentTime = $this->request->timestamp;
+            $node->update();
         } catch (Exception $e) {
             $this->logger->warning($e->getMessage(), ['post' => $this->request->data]);
             throw new ErrorMessage($e->getMessage());

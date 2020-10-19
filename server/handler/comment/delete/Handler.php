@@ -15,7 +15,7 @@ class Handler extends Comment
     {
         $comment = new CommentObject();
         $comment->id = (int) $this->args[0];
-        $comment->load('uid,nid');
+        $comment->load('uid,nid,createTime');
 
         if ($this->request->uid != 1 && $this->request->uid != $comment->uid) {
             $this->logger->warning('wrong action : uid = ' . $this->request->uid);
@@ -24,7 +24,7 @@ class Handler extends Comment
 
         $this->getCacheEvent('NodeUpdate', $comment->nid)->trigger();
 
-        $node = new Node($comment->nid, 'tid');
+        $node = new Node($comment->nid, 'tid,lastCommentTime');
         if (in_array($node->tid, (new Tag(self::$city->tidForum, 'id'))->getLeafTIDs())) { // forum tag
             $this->getCacheEvent('ForumComment')->trigger();
             $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
@@ -35,6 +35,13 @@ class Handler extends Comment
         }
 
         $comment->delete();
+        if ($comment->createTime === $node->lastCommentTime) {
+            $c = new CommentObject();
+            $c->nid = $comment->nid;
+            $c->order('createTime', false);
+            $node->lastCommentTime = intval(array_pop(array_column($c->getList('createTime', 1), 'createTime')));
+            $node->update();
+        }
 
         throw new Redirect($this->request->referer);
     }

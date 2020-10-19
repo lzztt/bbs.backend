@@ -13,6 +13,7 @@ class Node extends DBObject
     public $tid;
     public $createTime;
     public $lastModifiedTime;
+    public $lastCommentTime;
     public $title;
     public $viewCount;
     public $weight;

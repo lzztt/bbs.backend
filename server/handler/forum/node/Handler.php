@@ -48,6 +48,7 @@ class Handler extends Forum
             $node->uid = $this->request->uid;
             $node->title = $this->request->data['title'];
             $node->createTime = $this->request->timestamp;
+            $node->lastCommentTime = $this->request->timestamp;
             $node->status = 1;
             $node->add();
 
