@@ -47,7 +47,9 @@ class WebApp extends App
         $request->uid = $session->get('uid');
 
         $this->logger->addExtraInfo([
-            'user' => 'https://www.' . $this->config->domain . '/app/user/' . $request->uid,
+            'user' => $request->uid > 0
+                ? 'https://www.' . $this->config->domain . '/app/user/' . $request->uid
+                : ($request->isRobot() ? 'ROBOT' : 'GUEST'),
             'ip' => $request->ip,
             'city' => self::getLocationFromIp($request->ip),
             'agent' => $request->agent,

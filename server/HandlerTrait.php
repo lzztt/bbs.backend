@@ -68,6 +68,9 @@ trait HandlerTrait
                 $window = 86400;
             } else {
                 $limit = 50;
+                if ($key === ':api:viewcount:') {
+                    $limit *= 2;
+                }
                 $window = 86400;
             }
         }
