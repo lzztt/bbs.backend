@@ -56,14 +56,20 @@ trait HandlerTrait
     protected function rateLimit()
     {
         $rateLimiter = MemStore::getRedis(3);
+        $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
         if ($this->session->get('uid')) {
-            $key = date("d") . static::class . ':' . $this->session->get('uid');
+            $key = date("d") . $handler . $this->session->get('uid');
             $limit = 100;
             $window = 43200;
         } else {
-            $key = date("d") . static::class . ':' . $this->request->ip;
-            $limit = 50;
-            $window = 86400;
+            $key = date("d") . $handler . $this->request->ip;
+            if ($this->request->isRobot()) {
+                $limit = 20;
+                $window = 86400;
+            } else {
+                $limit = 50;
+                $window = 86400;
+            }
         }
 
         $skip = false;
