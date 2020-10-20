@@ -16,7 +16,6 @@ class Node extends DBObject
     public $lastCommentTime;
     public $title;
     public $viewCount;
-    public $weight;
     public $status;
 
     public function __construct($id = null, string $properties = '')
