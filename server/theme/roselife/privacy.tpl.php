@@ -14,7 +14,9 @@ function (
 
     <h2>第三方服务收集的信息</h2>
     <p>1. <?= $site_zh_cn ?>使用<a href="https://analytics.google.com">Google Analytics</a>统计所有访客（包括登陆用户和匿名访客）的浏览数据。该浏览数据为汇总统计数据。<?= $site_zh_cn ?>不与Google Analytics共享用户信息。Google Analytics用Cookie和JavaScript技术在浏览器端统计网页浏览信息</p>
-    <p>2. <?= $site_zh_cn ?>使用<a href="https://www.google.com/adsense">Google AdSense</a>提供的广告服务，Google AdSense用Cookie和JavaScript技术收集访客（包括登陆用户和匿名访客）正在浏览的网页信息以在该页面上显示相关的广告。Google AdSense不与<?= $site_zh_cn ?>共享广告信息和推荐算法。</p>
+    <?php if ($site_en_us !== 'bayever.com') : ?>
+      <p>2. <?= $site_zh_cn ?>使用<a href="https://www.google.com/adsense">Google AdSense</a>提供的广告服务，Google AdSense用Cookie和JavaScript技术收集访客（包括登陆用户和匿名访客）正在浏览的网页信息以在该页面上显示相关的广告。Google AdSense不与<?= $site_zh_cn ?>共享广告信息和推荐算法。</p>
+    <?php endif; ?>
   </article>
 
 <?php
