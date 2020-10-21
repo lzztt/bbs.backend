@@ -26,7 +26,6 @@ function (
     <?= $pager ?>
   </header>
 
-
   <?php foreach ($posts as $index => $p) : ?>
     <div class='forum_post'>
       <a id="<?= $p['type'] . $p['id'] ?>"></a>
@@ -88,7 +87,12 @@ function (
     </div>
   <?php endforeach ?>
 
-  <?= $pager ?>
+  <header class="content_header">
+    <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>
+    <button type="button" class='v_user' onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
+    <button type="button" class='v_user' onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
+    <?= $pager ?>
+  </header>
 
 <?php
 };

@@ -41,7 +41,11 @@ function (
     </table>
   <?php endif ?>
 
-  <?= $pager ?>
+  <div>
+    <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题</span>
+    <button type="button" class='v_user' onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
+    <?= $pager ?>
+  </div>
 
 <?php
 };
