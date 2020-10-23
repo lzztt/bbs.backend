@@ -1,7 +1,7 @@
 <?php
 function (
     string $domain,
-    string $nid,
+    int $nid,
     string $sitename,
     string $title,
     string $username
