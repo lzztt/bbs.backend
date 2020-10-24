@@ -66,10 +66,10 @@ function (
                 const editJson_<?= $c['id'] ?> = <?= $c["editJson"] ?>;
                 const quoteJson_<?= $c['id'] ?> = <?= $c["quoteJson"] ?>;
               </script>
-              <button type="button" class="edit <?= $urole ?>" onclick="window.app.openCommentEditor(editJson_<?= $c['id'] ?>)">编辑</button>
-              <button type="button" class="delete <?= $urole ?>" onclick="window.app.delete('comment', <?= $c['id'] ?>)">删除</button>
-              <button type="button" class="reply" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
-              <button type="button" class="quote" onclick="window.app.openCommentEditor(quoteJson_<?= $c['id'] ?>)">引用</button>
+              <button type="button" class="<?= $urole ?>" onclick="window.app.openCommentEditor(editJson_<?= $c['id'] ?>)">编辑</button>
+              <button type="button" class="<?= $urole ?>" onclick="window.app.delete('comment', <?= $c['id'] ?>)">删除</button>
+              <button type="button" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
+              <button type="button" onclick="window.app.openCommentEditor(quoteJson_<?= $c['id'] ?>)">引用</button>
             </div>
           </footer>
         </article>
