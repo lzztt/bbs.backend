@@ -40,9 +40,9 @@ class Request
         $this->timestamp = (int) $params['REQUEST_TIME'];
         $this->agent = (string) $params['HTTP_USER_AGENT'];
 
-        if (substr($params['SERVER_PROTOCOL'], 0, 6) === 'HTTP/1' || empty($params['HTTPS'])) {
-            $this->isRobot = true;
-        }
+        $this->isRobot = substr($params['SERVER_PROTOCOL'], 0, 6) === 'HTTP/1'
+            || empty($params['HTTPS'])
+            || (bool) preg_match('/(http|yahoo|bot|spider)/i', $params['HTTP_USER_AGENT']);
 
         $inputData = (string) $this->req->getBody();
         if (!self::validateUrl($this->uri) || ($this->isRobot && strlen($inputData) > 0)) {
@@ -79,7 +79,6 @@ class Request
 
         $arr = explode($this->domain, $params['HTTP_REFERER']);
         $this->referer = sizeof($arr) > 1 ? $arr[1] : '';
-        $this->isRobot = $this->isRobot && (bool) preg_match('/(http|yahoo|bot|spider)/i', $params['HTTP_USER_AGENT']);
     }
 
     public static function getInstance(): Request
