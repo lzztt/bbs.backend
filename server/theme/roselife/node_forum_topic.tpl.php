@@ -42,21 +42,21 @@ function (
         <div class="article_content">
           <?php if ($index === 0 && ($city === City::HOUSTON || $city === City::DALLAS)) : ?>
             <style>
-              .responsive-ad {
-                display: inline-block;
-                float: right;
-                width: 300px;
-                height: 250px;
+              .adsbygoogle {
+                display: none;
               }
 
-              @media(max-width: 767px) {
-                .responsive-ad {
-                  display: none
+              @media(min-width: 768px) {
+                .adsbygoogle {
+                  display: block;
+                  float: right;
+                  width: 300px;
+                  height: 250px;
                 }
               }
             </style>
             <!-- responsive_ad -->
-            <ins class="adsbygoogle responsive-ad" data-ad-client="ca-pub-8257334386742604" data-ad-slot="<?= $city === City::HOUSTON ? '1050744881' : '4245946485' ?>"></ins>
+            <ins class="adsbygoogle" data-ad-client="ca-pub-8257334386742604" data-ad-slot="<?= $city === City::HOUSTON ? '1050744881' : '4245946485' ?>"></ins>
             <script>
               (adsbygoogle = window.adsbygoogle || []).push({});
             </script>

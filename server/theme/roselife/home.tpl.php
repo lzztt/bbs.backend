@@ -21,7 +21,7 @@ function (
   <div style="display:flex; flex-flow:row wrap">
     <div class="image_slider"><?= $imageSlider ?></div>
     <?php if ($city === City::HOUSTON) : ?>
-      <div class="google_ad home_items_sm">
+      <div class="home_items_sm">
         <ins class="adsbygoogle home_items_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="1050744881"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
@@ -31,21 +31,21 @@ function (
         <header>近期活动</header><?= $recentActivities ?>
       </section>
     <?php elseif ($city === City::DALLAS) : ?>
-      <div class="google_ad home_items_sm">
+      <div class="home_items_sm">
         <ins class="adsbygoogle home_items_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
-      <div class="google_ad home_items_md">
+      <div class="home_items_md">
         <ins class="adsbygoogle home_items_md" data-ad-client="ca-pub-8257334386742604" data-ad-slot="7199412884"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
     <?php elseif ($city === City::SFBAY) : ?>
-      <div class="home_img home_items_sm"><a href="/node/131734"><img src="/data/ad/new_green_922.jpg"></a></div>
-      <div class="home_img home_items_md"><a href="/node/131734"><img src="/data/ad/lotus_spring_922.jpg"></a></div>
+      <div class="home_items_sm"><a href="/node/131734"><img src="/data/ad/new_green_922.jpg"></a></div>
+      <div class="home_items_md"><a href="/node/131734"><img src="/data/ad/lotus_spring_922.jpg"></a></div>
     <?php endif ?>
     <section class="home_items">
       <header>最新话题</header><?= $latestForumTopics ?>
