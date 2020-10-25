@@ -9,7 +9,7 @@ use lzx\cache\CacheHandler;
 use lzx\cache\PageCache;
 use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
-use lzx\exception\NotFound;
+use lzx\exception\Forbidden;
 use site\File;
 use site\dbobject\SessionEvent;
 use site\dbobject\User;
@@ -100,7 +100,7 @@ trait HandlerTrait
                     $this->logger->error('rate limit ' . $this->request->ip);
                     $rateLimiter->set($key . ':log', '', $window);
                 }
-                throw new NotFound();
+                throw new Forbidden();
             }
         }
 
