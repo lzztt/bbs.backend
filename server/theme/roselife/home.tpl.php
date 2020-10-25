@@ -18,127 +18,59 @@ function (
 ) {
 ?>
 
-  <?php if ($city === City::SFBAY) : ?>
-    <style scoped>
-      div.home_img {
-        display: none;
-      }
-
-      @media (min-width: 996px) {
-        div.home_img {
-          display: inline-block;
-          position: relative;
-          vertical-align: top;
-          width: 300px;
-          height: 250px;
-          overflow: hidden;
-        }
-      }
-    </style>
-  <?php endif ?>
-
-  <?php if ($city === City::HOUSTON) : ?>
-    <div id="home_images">
-      <div class="image_slider"><?= $imageSlider ?></div>
-      <div class="google_ad">
-        <style>
-          .responsive-ad {
-            display: inline-block;
-            width: 300px;
-            height: 250px;
-          }
-
-          @media(max-width: 767px) {
-            .responsive-ad {
-              display: none
-            }
-          }
-        </style>
-        <!-- responsive_ad -->
-        <ins class="adsbygoogle responsive-ad" data-ad-client="ca-pub-8257334386742604" data-ad-slot="1050744881"></ins>
+  <div style="display:flex; flex-flow:row wrap">
+    <div class="image_slider"><?= $imageSlider ?></div>
+    <?php if ($city === City::HOUSTON) : ?>
+      <div class="google_ad home_items_sm">
+        <ins class="adsbygoogle home_items_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="1050744881"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
-    </div>
-    <section class="items home_activities">
-      <header>近期活动</header><?= $recentActivities ?>
-    </section>
-    <section class="items">
-      <header>最新话题</header><?= $latestForumTopics ?>
-    </section>
-    <section class="items">
-      <header>最新论坛回复</header><?= $latestForumTopicReplies ?>
-    </section>
-    <section class="items home_hot_nodes">
-      <header>本周热门</header><?= $hotForumTopicsWeekly ?>
-    </section>
-    <section class="items home_hot_nodes">
-      <header>本月热门</header><?= $hotForumTopicsMonthly ?>
-    </section>
-    <section class="items">
-      <header>最新黄页</header><?= $latestYellowPages ?>
-    </section>
-    <section class="items">
-      <header>最新黄页回复</header><?= $latestYellowPageReplies ?>
-    </section>
-  <?php elseif ($city === City::DALLAS || $city === City::SFBAY) : ?>
-    <?php if ($city === City::DALLAS) : ?>
-      <div class="image_slider"><?= $imageSlider ?></div>
-      <div class="google_ad">
-        <style>
-          .responsive-ad-1 {
-            display: inline-block;
-            width: 300px;
-            height: 250px;
-          }
-
-          @media(max-width: 995px) {
-            .responsive-ad-1 {
-              display: none
-            }
-          }
-        </style>
-        <!-- responsive_ad -->
-        <ins class="adsbygoogle responsive-ad-1" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
+      <section class="home_items home_activities home_items_md">
+        <header>近期活动</header><?= $recentActivities ?>
+      </section>
+    <?php elseif ($city === City::DALLAS) : ?>
+      <div class="google_ad home_items_sm">
+        <ins class="adsbygoogle home_items_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
-      <div class="google_ad">
-        <style>
-          .responsive-ad-2 {
-            display: inline-block;
-            width: 300px;
-            height: 250px;
-          }
-
-          @media(max-width: 995px) {
-            .responsive-ad-2 {
-              display: none
-            }
-          }
-        </style>
-        <!-- responsive_ad -->
-        <ins class="adsbygoogle responsive-ad-2" data-ad-client="ca-pub-8257334386742604" data-ad-slot="7199412884"></ins>
+      <div class="google_ad home_items_md">
+        <ins class="adsbygoogle home_items_md" data-ad-client="ca-pub-8257334386742604" data-ad-slot="7199412884"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
     <?php elseif ($city === City::SFBAY) : ?>
-      <div class="image_slider"><?= $imageSlider ?></div>
-      <div class="home_img"><a href="/node/131734"><img src="/data/ad/new_green_922.jpg"></a></div>
-      <div class="home_img"><a href="/node/131734"><img src="/data/ad/lotus_spring_922.jpg"></a></div>
+      <div class="home_img home_items_sm"><a href="/node/131734"><img src="/data/ad/new_green_922.jpg"></a></div>
+      <div class="home_img home_items_md"><a href="/node/131734"><img src="/data/ad/lotus_spring_922.jpg"></a></div>
     <?php endif ?>
-    <section class="items">
+    <section class="home_items">
       <header>最新话题</header><?= $latestForumTopics ?>
     </section>
-    <section class="items">
+    <section class="home_items">
       <header>最新论坛回复</header><?= $latestForumTopicReplies ?>
     </section>
-    <section class="items home_hot_nodes">
+    <?php if ($city === City::HOUSTON) : ?>
+      <section class="home_items home_hot_nodes">
+        <header>本周热门</header><?= $hotForumTopicsWeekly ?>
+      </section>
+    <?php endif ?>
+    <section class="home_items home_hot_nodes">
       <header>本月热门</header><?= $hotForumTopicsMonthly ?>
     </section>
+    <?php if ($city === City::HOUSTON) : ?>
+      <section class="home_items">
+        <header>最新黄页</header><?= $latestYellowPages ?>
+      </section>
+      <section class="home_items">
+        <header>最新黄页回复</header><?= $latestYellowPageReplies ?>
+      </section>
+    <?php endif ?>
+  </div>
+  <?php if ($city === City::DALLAS || $city === City::SFBAY) : ?>
     <?php foreach ($groups as $group_id => $tags) : ?>
       <table>
         <thead>
