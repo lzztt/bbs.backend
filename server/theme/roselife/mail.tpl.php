@@ -15,13 +15,22 @@ function () {
             align-items: center;
         }
     </style>
-    <form method="POST">
-        From <input name='from' type='email' />
-        To <input name='to' type='email' />
-        Bcc <input name='bcc' type='email' />
-        Subject <input name='subject' />
-        Body <textarea name='body'></textarea>
-        <span></span><span><button type="submit">发送</button></span>
+    <form method="POST" autocomplete="on">
+        From
+        <input required name='from' type='email' />
+        To
+        <input required name='to' type='email' />
+        Bcc
+        <select required name="bcc">
+            <option value="ikki3355@gmail.com">ikki3355@gmail.com</option>
+            <option value="mikalotus3355@gmail.com">mikalotus3355@gmail.com</option>
+        </select>
+        Subject
+        <input required name='subject' />
+        Body
+        <textarea required name='body'></textarea>
+        <span></span>
+        <span><button type="submit">发送</button></span>
     </form>
 
 <?php
