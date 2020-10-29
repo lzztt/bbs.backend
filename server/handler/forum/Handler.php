@@ -42,9 +42,6 @@ class Handler extends Forum
 
         $nodes = $node->getForumNodeList(self::$city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
         $nids = array_column($nodes, 'id');
-        foreach ($nodes as $i => $n) {
-            $nodes[$i]['create_time'] = date('m/d/Y H:i', (int) $n['create_time']);
-        }
 
         // will not build node-forum map, would be too many nodes point to forum, too big map
         $topics = (new TopicList())

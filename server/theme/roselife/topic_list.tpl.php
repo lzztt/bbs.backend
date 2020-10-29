@@ -17,6 +17,12 @@ function (
     </div>
   </header>
   <?php if (isset($nodes)) : ?>
+    <style>
+      .pm_list > div > span:first-child > span {
+        padding-left: 0.25rem;
+        min-width: min-content;
+      }
+    </style>
     <div class='pm_list even_odd_parent'>
       <?php foreach ($nodes as $node) : ?>
         <div <?= ($node['weight'] >= 2) ? 'class="topic-sticky"' : '' ?>>
@@ -33,10 +39,12 @@ function (
               </svg>
             <?php endif ?>
             <a href="/node/<?= $node['id'] ?>"><?= $node['title'] ?></a>
+            <?php if ($node['comment_count'] > 0) : ?>
+              <span><?= $node['comment_count'] ?></span>
+            <?php endif ?>
           </span>
           <span><?= $node['creater_name'] ?></span>
-          <span class='time'><?= $node['create_time'] ?></span>
-          <span><?= $node['comment_count'] ?></span>
+          <span class='time' data-time="<?= $node['create_time'] ?>"></span>
         </div>
       <?php endforeach ?>
     </div>
