@@ -5,8 +5,6 @@ namespace site\handler\forum;
 use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
 use site\dbobject\Node;
-use site\dbobject\Tag;
-use site\gen\theme\roselife\ForumList;
 use site\gen\theme\roselife\TopicList;
 use site\handler\forum\Forum;
 
@@ -46,31 +44,14 @@ class Handler extends Forum
         $nids = array_column($nodes, 'id');
         foreach ($nodes as $i => $n) {
             $nodes[$i]['create_time'] = date('m/d/Y H:i', (int) $n['create_time']);
-            $nodes[$i]['comment_time'] = date('m/d/Y H:i', (int) $n['comment_time']);
         }
 
         // will not build node-forum map, would be too many nodes point to forum, too big map
         $topics = (new TopicList())
             ->setTid($tid)
             ->setPager($pager)
-            ->setNodes($nodes)
-            ->setAjaxUri('/api/viewcount/' . implode(',', $nids));
+            ->setNodes($nodes);
 
         $this->html->setContent($topics);
-    }
-
-    protected function nodeInfo(int $tid): array
-    {
-        $tag = new Tag($tid, 'id');
-
-        foreach ($tag->getNodeInfo((string) $tid) as $v) {
-            $v['create_time'] = date('m/d/Y H:i', (int) $v['create_time']);
-            if ($v['cid'] == 0) {
-                $node = $v;
-            } else {
-                $comment = $v;
-            }
-        }
-        return ['node' => $node, 'comment' => $comment];
     }
 }

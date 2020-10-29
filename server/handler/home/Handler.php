@@ -9,7 +9,6 @@ use site\Controller;
 use site\dbobject\Activity;
 use site\dbobject\Image;
 use site\dbobject\Node;
-use site\dbobject\Tag;
 use site\gen\theme\roselife\Home;
 use site\gen\theme\roselife\HomeItemlist;
 use site\gen\theme\roselife\ImageSlider;
