@@ -51,50 +51,15 @@ class Handler extends Controller
 
     private function bayHome(): void
     {
-        $tag = new Tag(self::$city->tidForum, 'id');
-        $tagTree = $tag->getTagTree();
-
-        $nodeInfo = [];
-        $groupTrees = [];
-        foreach ($tagTree[$tag->id]['children'] as $group_id) {
-            $groupTrees[$group_id] = [];
-            $group = $tagTree[$group_id];
-            $groupTrees[$group_id][$group_id] = $group;
-            foreach ($group['children'] as $board_id) {
-                $groupTrees[$group_id][$board_id] = $tagTree[$board_id];
-                $nodeInfo[$board_id] = $this->nodeInfo($board_id);
-                $this->cache->addParent('/forum/' . $board_id);
-            }
-        }
-
         $this->html->setContent(
             (new Home())
                 ->setCity(self::$city->id)
-                ->setLatestForumTopics($this->getLatestForumTopics(10))
-                ->setHotForumTopicsMonthly($this->getHotForumTopics(10, 30))
-                ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(10))
+                ->setLatestForumTopics($this->getLatestForumTopics(20))
+                ->setHotForumTopicsMonthly($this->getHotForumTopics(20, 30))
+                ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(20))
                 ->setImageSlider($this->getImageSlider())
-                ->setGroups($groupTrees)
-                ->setNodeInfo($nodeInfo)
         );
     }
-
-    protected function nodeInfo(int $tid): array
-    {
-        $tag = new Tag($tid, 'id');
-
-        foreach ($tag->getNodeInfo($tid) as $v) {
-            $v['create_time'] = date('m/d/Y H:i', (int) $v['create_time']);
-            if ($v['cid'] == 0) {
-                $node = $v;
-            } else {
-                $comment = $v;
-            }
-        }
-        return ['node' => $node, 'comment' => $comment];
-    }
-
-    // END DALLAS HOME
 
     private function getImageSlider(): Template
     {
