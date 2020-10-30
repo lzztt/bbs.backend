@@ -23,20 +23,57 @@ function (
   </header>
 
   <article>
+    <style>
+      .bcard {
+        display: inline-block;
+        width: 95%;
+        max-width: min(100vw, 400px);
+        margin: 0.5em;
+        border: 1px solid #006666;
+        vertical-align: top;
+      }
+
+      .bcard header {
+        background-color: gold;
+        text-align: center;
+        padding: 0.2em;
+      }
+
+      .bcard [data-before] {
+        position: relative;
+        padding: 0.1em;
+        padding-left: 5em;
+      }
+
+      .bcard [data-before]:before {
+        content: attr(data-before);
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        width: 4.5em;
+        text-align: right;
+        padding-right: 0.5em;
+        color: #006666;
+      }
+
+      .bcard footer {
+        text-align: right;
+        font-size: 0.929em;
+        color: gray;
+      }
+    </style>
     <div class="bcard">
-      <ul class='clean'>
-        <li data-before='地址'><?= $node['address'] ?></li>
-        <li data-before='电话'><?= $node['phone'] ?></li>
-        <?php if (isset($node['fax'])) : ?>
-          <li data-before='传真'><?= $node['fax'] ?></li>
-        <?php endif ?>
-        <?php if (isset($node['email'])) : ?>
-          <li data-before='电子邮箱'><a href="mailto:<?= $node['email'] ?>"><?= $node['email'] ?></a></li>
-        <?php endif ?>
-        <?php if (isset($node['website'])) : ?>
-          <li data-before='网站'><a href="<?= $node['website'] ?>" target="_blank"><?= $node['website'] ?></a></li>
-        <?php endif ?>
-      </ul>
+      <div data-before='地址'><?= $node['address'] ?></div>
+      <div data-before='电话'><?= $node['phone'] ?></div>
+      <?php if (isset($node['fax'])) : ?>
+        <div data-before='传真'><?= $node['fax'] ?></div>
+      <?php endif ?>
+      <?php if (isset($node['email'])) : ?>
+        <div data-before='电子邮箱'><a href="mailto:<?= $node['email'] ?>"><?= $node['email'] ?></a></div>
+      <?php endif ?>
+      <?php if (isset($node['website'])) : ?>
+        <div data-before='网站'><a href="<?= $node['website'] ?>" target="_blank"><?= $node['website'] ?></a></div>
+      <?php endif ?>
     </div>
     <?php if (!empty($node['HTMLbody'])) : ?>
       <div class="article_content"><?= $node['HTMLbody'] . $node['attachments'] ?></div>
