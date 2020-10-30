@@ -14,15 +14,18 @@ function (
   </header>
 
   <?php if ($nodes) : ?>
-    <div class="ajax_load" data-ajax='<?= $ajaxUri ?>'>
+    <style>
+      .bcards {
+        margin: 0.5rem;
+        display: grid;
+        grid-gap: 0.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
+      }
+    </style>
+    <div class="ajax_load bcards" data-ajax='<?= $ajaxUri ?>'>
       <style>
         .bcard {
-          display: inline-block;
-          width: 95%;
-          max-width: min(100vw, 400px);
-          margin: 0.5rem;
           border: 1px solid #006666;
-          vertical-align: top;
         }
 
         .bcard header {

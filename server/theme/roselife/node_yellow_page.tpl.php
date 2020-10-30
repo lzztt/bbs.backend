@@ -25,12 +25,9 @@ function (
   <article>
     <style>
       .bcard {
-        display: inline-block;
-        width: 95%;
         max-width: min(100vw, 400px);
         margin: 0.5rem;
         border: 1px solid #006666;
-        vertical-align: top;
       }
 
       .bcard div {
