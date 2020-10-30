@@ -28,52 +28,36 @@ function (
         display: inline-block;
         width: 95%;
         max-width: min(100vw, 400px);
-        margin: 0.5em;
+        margin: 0.5rem;
         border: 1px solid #006666;
         vertical-align: top;
       }
 
-      .bcard header {
-        background-color: gold;
-        text-align: center;
-        padding: 0.2em;
+      .bcard div {
+        display: grid;
+        grid-template-columns: 4.5rem auto;
+        grid-gap: 0.25rem;
       }
 
-      .bcard [data-before] {
-        position: relative;
-        padding: 0.1em;
-        padding-left: 5em;
-      }
-
-      .bcard [data-before]:before {
-        content: attr(data-before);
-        display: inline-block;
-        position: absolute;
-        left: 0;
-        width: 4.5em;
+      .bcard div span:nth-child(odd) {
         text-align: right;
-        padding-right: 0.5em;
         color: #006666;
-      }
-
-      .bcard footer {
-        text-align: right;
-        font-size: 0.929em;
-        color: gray;
       }
     </style>
     <div class="bcard">
-      <div data-before='地址'><?= $node['address'] ?></div>
-      <div data-before='电话'><?= $node['phone'] ?></div>
-      <?php if (isset($node['fax'])) : ?>
-        <div data-before='传真'><?= $node['fax'] ?></div>
-      <?php endif ?>
-      <?php if (isset($node['email'])) : ?>
-        <div data-before='电子邮箱'><a href="mailto:<?= $node['email'] ?>"><?= $node['email'] ?></a></div>
-      <?php endif ?>
-      <?php if (isset($node['website'])) : ?>
-        <div data-before='网站'><a href="<?= $node['website'] ?>" target="_blank"><?= $node['website'] ?></a></div>
-      <?php endif ?>
+      <div>
+        <span>地址</span><span><?= $node['address'] ?></span>
+        <span>电话</span><span><?= $node['phone'] ?></span>
+        <?php if (isset($node['fax'])) : ?>
+          <span>传真</span><span><?= $node['fax'] ?></span>
+        <?php endif ?>
+        <?php if (isset($node['email'])) : ?>
+          <span>电子邮箱</span><span><?= $node['email'] ?></span>
+        <?php endif ?>
+        <?php if (isset($node['website'])) : ?>
+          <span>网站</span><span><?= $node['website'] ?></span>
+        <?php endif ?>
+      </div>
     </div>
     <?php if (!empty($node['HTMLbody'])) : ?>
       <div class="article_content"><?= $node['HTMLbody'] . $node['attachments'] ?></div>

@@ -20,7 +20,7 @@ function (
           display: inline-block;
           width: 95%;
           max-width: min(100vw, 400px);
-          margin: 0.5em;
+          margin: 0.5rem;
           border: 1px solid #006666;
           vertical-align: top;
         }
@@ -28,29 +28,26 @@ function (
         .bcard header {
           background-color: gold;
           text-align: center;
-          padding: 0.2em;
+          padding: 0.2rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .bcard [data-before] {
-          position: relative;
-          padding: 0.1em;
-          padding-left: 5em;
+        .bcard div {
+          display: grid;
+          grid-template-columns: 4.5rem auto;
+          grid-gap: 0.25rem;
         }
 
-        .bcard [data-before]:before {
-          content: attr(data-before);
-          display: inline-block;
-          position: absolute;
-          left: 0;
-          width: 4.5em;
+        .bcard div span:nth-child(odd) {
           text-align: right;
-          padding-right: 0.5em;
           color: #006666;
         }
 
         .bcard footer {
           text-align: right;
-          font-size: 0.929em;
+          font-size: 0.929rem;
           color: gray;
         }
       </style>
@@ -58,16 +55,16 @@ function (
         <div class="bcard">
           <header><a title="<?= $n['title'] ?>" href="/node/<?= $n['id'] ?>"><?= $n['title'] ?></a></header>
           <div>
-            <div data-before='地址'><?= $n['address'] ?></div>
-            <div data-before='电话'><?= $n['phone'] ?></div>
+            <span>地址</span><span><?= $n['address'] ?></span>
+            <span>电话</span><span><?= $n['phone'] ?></span>
             <?php if (isset($n['fax'])) : ?>
-              <div data-before='传真'><?= $n['fax'] ?></div>
+              <span>传真</span><span><?= $n['fax'] ?></span>
             <?php endif ?>
             <?php if (isset($n['email'])) : ?>
-              <div data-before='电子邮箱'><?= $n['email'] ?></div>
+              <span>电子邮箱</span><span><?= $n['email'] ?></span>
             <?php endif ?>
             <?php if (isset($n['website'])) : ?>
-              <div data-before='网站'><?= $n['website'] ?></div>
+              <span>网站</span><span><?= $n['website'] ?></span>
             <?php endif ?>
           </div>
           <footer><span class="ajax_viewCount<?= $n['id'] ?>"></span>次浏览，<?= $n['rating_count'] ?>人评分，<?= $n['comment_count'] ?>条评论</footer>
