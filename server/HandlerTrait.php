@@ -97,7 +97,12 @@ trait HandlerTrait
             } else {
                 // mail error log
                 if (!$rateLimiter->exists($key . ':log')) {
-                    $this->logger->error('rate limit ' . $this->request->ip);
+                    if ($this->request->isRobot()) {
+                        $this->logger->warning('rate limit ' . $this->request->ip);
+                    } else {
+                        $this->logger->error('rate limit ' . $this->request->ip);
+                    }
+
                     $rateLimiter->set($key . ':log', '', $window);
                 }
                 throw new Forbidden();
