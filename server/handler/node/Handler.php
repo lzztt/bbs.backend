@@ -88,8 +88,7 @@ class Handler extends Node
         if (sizeof($comments) > 0) {
             foreach ($comments as $c) {
                 $c['type'] = 'comment';
-                $c['createTime'] = date('m/d/Y H:i', (int) $c['create_time']);
-                $c['lastModifiedTime'] = empty($c['lastModifiedTime']) ? '' : date('m/d/Y H:i', (int) $c['last_modified_time']);
+                $c['createTime'] = (int) $c['create_time'];
 
                 try {
                     $c['HTMLbody'] = BBCode::parse($c['body']);

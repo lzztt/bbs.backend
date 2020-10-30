@@ -4,14 +4,18 @@ function (
 ) {
 ?>
 
-  <ul class="even_odd_parent">
+  <div class="even_odd_parent">
     <?php foreach ($data as $n) : ?>
-      <li <?= array_key_exists('class', $n) ? ('class="' . $n['class'] . '"') : '' ?>>
+      <div <?= array_key_exists('class', $n) ? ('class="' . $n['class'] . '"') : '' ?>>
         <a href="<?= $n['uri'] ?>"><?= $n['text'] ?></a>
-        <span><?= $n['after'] ?></span>
-      </li>
+        <?php if (array_key_exists('time', $n)) : ?>
+          <span data-time="<?= $n['time'] ?>" data-method="<?= $n['method'] ?>"></span>
+        <?php else : ?>
+          <span><?= $n['after'] ?></span>
+        <?php endif; ?>
+      </div>
     <?php endforeach ?>
-  </ul>
+  </div>
 
 <?php
 };

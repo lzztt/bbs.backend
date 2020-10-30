@@ -59,8 +59,8 @@ function (
 
           <div class="article_content"><?= $c['HTMLbody'] ?></div>
 
-          <footer class='v_user'>
-            <div class="actions">
+          <footer>
+            <div class="v_user actions">
               <?php $urole = 'v_user_superadm' . ' v_user_' . $c['uid'] ?>
               <script>
                 const editJson_<?= $c['id'] ?> = <?= $c["editJson"] ?>;

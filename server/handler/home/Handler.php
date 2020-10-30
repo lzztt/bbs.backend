@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace site\handler\home;
 
@@ -91,7 +93,8 @@ class Handler extends Controller
 
             foreach ((new Node())->getLatestForumTopics(self::$city->tidForum, $count) as $n) {
                 $arr[] = [
-                    'after' => date('H:i', (int) $n['create_time']),
+                    'time' => (int) $n['create_time'],
+                    'method' => 'toTime',
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']
                 ];
@@ -133,7 +136,8 @@ class Handler extends Controller
 
             foreach ((new Node())->getLatestYellowPages(self::$city->tidYp, $count) as $n) {
                 $arr[] = [
-                    'after' => date('m/d', (int) $n['exp_time']),
+                    'time' => (int) $n['exp_time'],
+                    'method' => 'toDate',
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']
                 ];
@@ -155,7 +159,7 @@ class Handler extends Controller
             foreach ((new Node())->getLatestForumTopicReplies(self::$city->tidForum, $count) as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
-                    'uri' => '/node/' . $n['nid'] . '?p=l#comment' . $n['last_cid'],
+                    'uri' => '/node/' . $n['nid'] . '?p=l',
                     'text' => $n['title']
                 ];
             }
@@ -176,7 +180,7 @@ class Handler extends Controller
             foreach ((new Node())->getLatestYellowPageReplies(self::$city->tidYp, $count) as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
-                    'uri' => '/node/' . $n['nid'] . '?p=l#comment' . $n['last_cid'],
+                    'uri' => '/node/' . $n['nid'] . '?p=l',
                     'text' => $n['title']
                 ];
             }
@@ -197,7 +201,8 @@ class Handler extends Controller
             foreach ((new Activity())->getRecentActivities(10, $this->request->timestamp) as $n) {
                 $arr[] = [
                     'class' => 'activity_' . $n['class'],
-                    'after' => date('m/d', (int) $n['start_time']),
+                    'time' => (int) $n['start_time'],
+                    'method' => 'toDate',
                     'uri' => '/node/' . $n['nid'],
                     'text' => $n['title']
                 ];

@@ -32,11 +32,9 @@ function (
       <?= $p['authorPanel'] ?>
       <article>
         <header>
-          <a onclick="window.app.user(<?= $p['uid'] ?>)"><?= $p['username'] ?></a> <span class='city'><?= $p['city'] ?></span>
-          <span class='time'><?= $p['createTime'] . (empty($p['lastModifiedTime']) ? '' : ' (修改于 ' . $p['lastModifiedTime'] . ')') ?></span>
-          <?php if ($p['type'] == 'comment') : ?>
-            <span class="comment_num">#<?= $postNumStart + $index ?></span>
-          <?php endif ?>
+          <a onclick="window.app.user(<?= $p['uid'] ?>)"><?= $p['username'] ?></a>
+          <span class='city'><?= $p['city'] ?></span>
+          <span class='time' data-time="<?= $p['createTime'] ?>" data-method="toAutoTime"></span>
         </header>
 
         <div class="article_content">
@@ -64,8 +62,8 @@ function (
           <?= $p['HTMLbody'] . $p['attachments'] ?>
         </div>
 
-        <footer class='v_user'>
-          <div class="actions">
+        <footer>
+          <div class="v_user actions">
             <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
             <?php if (!empty($p['report'])) : ?>
               <button type="button" onclick="window.app.report(<?= $nid ?>)">举报</button>
