@@ -139,21 +139,16 @@ class Handler extends Node
         }
 
         if (!array_key_exists($info['uid'], $authorPanels)) {
-            $authorPanelCache = $this->getIndependentCache('ap' . $info['uid']);
-            $authorPanel = $authorPanelCache->getData();
-            if (!$authorPanel) {
-                $info['joinTime'] = (int) $info['join_time'];
-                if (!$info['avatar']) {
-                    $info['avatar'] = '';
-                }
-                $authorPanel = (new AuthorPanelForum())
-                    ->setUid((int) $info['uid'])
-                    ->setUsername($info['username'])
-                    ->setAvatar($info['avatar'])
-                    ->setJoinTime($info['joinTime'])
-                    ->setPoints((int) $info['points']);
-                $authorPanelCache->setData($authorPanel);
+            $info['joinTime'] = (int) $info['join_time'];
+            if (!$info['avatar']) {
+                $info['avatar'] = '';
             }
+            $authorPanel = (new AuthorPanelForum())
+                ->setUid((int) $info['uid'])
+                ->setUsername($info['username'])
+                ->setAvatar($info['avatar'])
+                ->setJoinTime($info['joinTime'])
+                ->setPoints((int) $info['points']);
             $authorPanels[$info['uid']] = $authorPanel;
         }
 
