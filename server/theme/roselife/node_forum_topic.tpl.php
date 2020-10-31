@@ -26,64 +26,65 @@ function (
     <?= $pager ?>
   </header>
 
-  <?php foreach ($posts as $index => $p) : ?>
-    <div class='forum_post'>
-      <a id="<?= $p['type'] . $p['id'] ?>"></a>
-      <?= $p['authorPanel'] ?>
-      <article>
-        <header>
-          <a onclick="window.app.user(<?= $p['uid'] ?>)"><?= $p['username'] ?></a>
-          <span class='city'><?= $p['city'] ?></span>
-          <span class='time' data-time="<?= $p['createTime'] ?>" data-method="toAutoTime"></span>
-        </header>
+  <?php if ($city === City::HOUSTON || $city === City::DALLAS) : ?>
+    <style>
+      .adsbygoogle {
+        display: none;
+      }
 
-        <div class="article_content">
-          <?php if ($index === 0 && ($city === City::HOUSTON || $city === City::DALLAS)) : ?>
-            <style>
-              .adsbygoogle {
-                display: none;
-              }
+      @media(min-width: 768px) {
+        .adsbygoogle {
+          display: block;
+          float: right;
+          width: 300px;
+          height: 250px;
+        }
+      }
+    </style>
+    <!-- responsive_ad -->
+    <ins class="adsbygoogle" data-ad-client="ca-pub-8257334386742604" data-ad-slot="<?= $city === City::HOUSTON ? '1050744881' : '4245946485' ?>"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  <?php endif ?>
+  <article class='message_list'>
+    <?php foreach ($posts as $index => $p) : ?>
+      <section>
+        <?= $p['authorPanel'] ?>
+        <div style="max-width: 85%;">
+          <header>
+            <a onclick="window.app.user(<?= $p['uid'] ?>)"><?= $p['username'] ?></a>
+            <span class='city'><?= $p['city'] ?></span>
+            <span class='time' data-time="<?= $p['createTime'] ?>" data-method="toAutoTime"></span>
+          </header>
 
-              @media(min-width: 768px) {
-                .adsbygoogle {
-                  display: block;
-                  float: right;
-                  width: 300px;
-                  height: 250px;
-                }
-              }
-            </style>
-            <!-- responsive_ad -->
-            <ins class="adsbygoogle" data-ad-client="ca-pub-8257334386742604" data-ad-slot="<?= $city === City::HOUSTON ? '1050744881' : '4245946485' ?>"></ins>
-            <script>
-              (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-          <?php endif ?>
-          <?= $p['HTMLbody'] . $p['attachments'] ?>
-        </div>
-
-        <footer>
-          <div class="v_user actions">
-            <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
-            <?php if (!empty($p['report'])) : ?>
-              <button type="button" onclick="window.app.report(<?= $nid ?>)">举报</button>
-            <?php endif ?>
-            <?php if ($tid == 16 && $p['type'] == 'node') : ?>
-              <button type="button" class="<?= $urole ?>" onclick="window.location.href='/node/<?= $p['id'] ?>/activity'">发布为活动</button>
-            <?php endif ?>
-            <script>
-              const editJson_<?= $p['id'] ?> = <?= $p["editJson"] ?>;
-              const quoteJson_<?= $p['id'] ?> = <?= $p["quoteJson"] ?>;
-            </script>
-            <button type="button" class="<?= $urole ?>" onclick="window.app.open<?= $p['type'] === 'node' ? 'Node' : 'Comment' ?>Editor(editJson_<?= $p['id'] ?>)">编辑</button>
-            <button type="button" class="<?= $urole ?>" onclick="window.app.delete('<?= $p['type'] ?>', <?= $p['id'] ?>)">删除</button>
-            <button type="button" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
-            <button type="button" onclick="window.app.openCommentEditor(quoteJson_<?= $p['id'] ?>)">引用</button>
+          <div class="article_content">
+            <?= $p['HTMLbody'] . $p['attachments'] ?>
           </div>
-        </footer>
-      </article>
-    </div>
-  <?php endforeach ?>
+
+          <footer>
+            <div class="v_user actions">
+              <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
+              <?php if (!empty($p['report'])) : ?>
+                <button type="button" onclick="window.app.report(<?= $nid ?>)">举报</button>
+              <?php endif ?>
+              <?php if ($tid == 16 && $p['type'] == 'node') : ?>
+                <button type="button" class="<?= $urole ?>" onclick="window.location.href='/node/<?= $p['id'] ?>/activity'">发布为活动</button>
+              <?php endif ?>
+              <script>
+                const editJson_<?= $p['id'] ?> = <?= $p["editJson"] ?>;
+                const quoteJson_<?= $p['id'] ?> = <?= $p["quoteJson"] ?>;
+              </script>
+              <button type="button" class="<?= $urole ?>" onclick="window.app.open<?= $p['type'] === 'node' ? 'Node' : 'Comment' ?>Editor(editJson_<?= $p['id'] ?>)">编辑</button>
+              <button type="button" class="<?= $urole ?>" onclick="window.app.delete('<?= $p['type'] ?>', <?= $p['id'] ?>)">删除</button>
+              <button type="button" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
+              <button type="button" onclick="window.app.openCommentEditor(quoteJson_<?= $p['id'] ?>)">引用</button>
+            </div>
+          </footer>
+        </div>
+      </section>
+    <?php endforeach ?>
+  </article>
 
   <header class="content_header">
     <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>

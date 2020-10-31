@@ -1,39 +1,27 @@
 <?php
 function (
   string $avatar,
-  string $joinTime,
+  int $joinTime,
   int $points,
   int $uid,
   string $username
 ) {
 ?>
 
-  <aside class="author_panel">
-    <div class="picture">
-      <a title="浏览用户信息" onclick="window.app.user(<?= $uid ?>)">
-        <?php if ($avatar) : ?>
-          <div class="avatar_circle" style="border: 0;">
-            <img width="128" height="128" title="<?= $username ?> 的头像" alt="<?= $username ?> 的头像" src="<?= $avatar ?>">
-          </div>
-        <?php else : ?>
-          <div class="avatar_circle">
-            <?= mb_substr($username, 0, (preg_match('/^[A-Za-z0-9]{3}/', $username) ? 3 : 2)) ?>
-          </div>
-        <?php endif ?>
-      </a>
-    </div>
+  <div style="text-align: center;">
+    <?php if ($avatar) : ?>
+      <img title="<?= $username ?> 的头像" alt="<?= $username ?> 的头像" src="<?= $avatar ?>" class="avatar_circle_responsive" style="border: 0px;" onclick="window.app.user(<?= $uid ?>)">
+    <?php else : ?>
+      <div class="avatar_circle_responsive" onclick="window.app.user(<?= $uid ?>)">
+        <?= mb_substr($username, 0, (preg_match('/^[A-Za-z0-9]{3}/', $username) ? 3 : 2)) ?>
+      </div>
+    <?php endif ?>
     <div>
-      <span>加入:</span> <?= $joinTime ?>
+      <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true" style="color:#3f51b5; cursor:pointer;" onclick='window.app.openMsgEditor({toUser: {id:<?= $uid ?>,username:"<?= $username ?>"}})'>
+        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"></path>
+      </svg>
     </div>
-    <div>
-      <span>声望:</span> <?= $points ?>
-    </div>
-    <div>
-      <button onclick='window.app.openMsgEditor({toUser: {id:<?= $uid ?>,username:"<?= $username ?>"}})'>
-        发短信
-      </button>
-    </div>
-  </aside>
+  </div>
 
 <?php
 };

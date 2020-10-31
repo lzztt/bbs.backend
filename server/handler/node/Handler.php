@@ -142,7 +142,7 @@ class Handler extends Node
             $authorPanelCache = $this->getIndependentCache('ap' . $info['uid']);
             $authorPanel = $authorPanelCache->getData();
             if (!$authorPanel) {
-                $info['joinTime'] = date('m/d/Y', (int) $info['join_time']);
+                $info['joinTime'] = (int) $info['join_time'];
                 if (!$info['avatar']) {
                     $info['avatar'] = '';
                 }
