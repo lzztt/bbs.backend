@@ -18,12 +18,12 @@ function (
   </header>
   <?php if (isset($nodes)) : ?>
     <style>
-      .pm_list > div > span:first-child > span {
+      .topic_list > div > span:first-child > span {
         padding-left: 0.25rem;
         min-width: min-content;
       }
     </style>
-    <div class='pm_list even_odd_parent'>
+    <div class='topic_list even_odd_parent'>
       <?php foreach ($nodes as $node) : ?>
         <div <?= ($node['weight'] >= 2) ? 'class="topic-sticky"' : '' ?>>
           <span>

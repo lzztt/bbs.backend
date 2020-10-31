@@ -196,12 +196,6 @@ class Handler extends Service
                 throw new ErrorMessage('错误：该条短信不存在。');
             }
 
-            foreach ($msgs as $i => $m) {
-                if (!$m['avatar']) {
-                    $msgs[$i]['avatar'] = '/data/avatars/avatar0' . rand(1, 5) . '.jpg';
-                }
-            }
-
             return ['msgs' => $msgs, 'replyTo' => $pm->getReplyTo($mid, $this->request->uid)];
         } else {
             throw new ErrorMessage('message does not exist');
