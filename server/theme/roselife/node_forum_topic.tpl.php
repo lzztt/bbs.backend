@@ -55,7 +55,7 @@ function (
           <header>
             <a onclick="window.app.user(<?= $p['uid'] ?>)"><?= $p['username'] ?></a>
             <span class='city'><?= $p['city'] ?></span>
-            <span class='time' data-time="<?= $p['createTime'] ?>" data-method="toAutoTime"></span>
+            <time data-time="<?= $p['createTime'] ?>" data-method="toAutoTime"></time>
           </header>
 
           <div class="article_content">

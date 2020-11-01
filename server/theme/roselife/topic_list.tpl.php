@@ -44,7 +44,7 @@ function (
             <?php endif ?>
           </span>
           <span><?= $node['creater_name'] ?></span>
-          <span class='time' data-time="<?= $node['create_time'] ?>"></span>
+          <time data-time="<?= $node['create_time'] ?>"></time>
         </div>
       <?php endforeach ?>
     </div>
