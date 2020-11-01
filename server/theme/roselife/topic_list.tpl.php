@@ -18,7 +18,7 @@ function (
   </header>
   <?php if (isset($nodes)) : ?>
     <style>
-      .topic_list > div > span:first-child > span {
+      .topic_list > div > span:first-child > small {
         padding-left: 0.25rem;
         min-width: min-content;
       }
@@ -40,7 +40,7 @@ function (
             <?php endif ?>
             <a href="/node/<?= $node['id'] ?>"><?= $node['title'] ?></a>
             <?php if ($node['comment_count'] > 0) : ?>
-              <span><?= $node['comment_count'] ?></span>
+              <small><?= $node['comment_count'] ?></small>
             <?php endif ?>
           </span>
           <span><?= $node['creater_name'] ?></span>
