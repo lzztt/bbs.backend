@@ -57,8 +57,6 @@ class Handler extends Node
         list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
         $pager = HtmlElement::pager($pageNo, $pageCount, '/node/' . $node['id']);
 
-        $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE; // first page start from the node and followed by comments
-
         $page = (new NodeForumTopic())
             ->setCity(self::$city->id)
             ->setNid($nid)
@@ -66,7 +64,6 @@ class Handler extends Node
             ->setCommentCount($node['comment_count'] - 1)
             ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
             ->setPager($pager)
-            ->setPostNumStart($postNumStart)
             ->setAjaxUri('/api/viewcount/' . $nid);
 
         $posts = [];
@@ -222,14 +219,11 @@ class Handler extends Node
         list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
         $pager = HtmlElement::pager($pageNo, $pageCount, '/node/' . $nid);
 
-        $postNumStart = ($pageNo - 1) * self::COMMENTS_PER_PAGE + 1;
-
         $page = (new NodeYellowPage())
             ->setNid($nid)
             ->setCommentCount((int) $node['comment_count'])
             ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
             ->setPager($pager)
-            ->setPostNumStart($postNumStart)
             ->setAjaxUri('/api/viewcount/' . $nid);
 
         $node['type'] = 'node';
@@ -254,8 +248,7 @@ class Handler extends Node
                     $nodeComment = false;
                 } else {
                     $c['type'] = 'comment';
-                    $c['createTime'] = date('m/d/Y H:i', (int) $c['create_time']);
-                    $c['lastModifiedTime'] = empty($c['lastModifiedTime']) ? '' : date('m/d/Y H:i', (int) $c['last_modified_time']);
+                    $c['createTime'] = (int) $c['create_time'];
                     try {
                         $c['HTMLbody'] = BBCode::parse($c['body']);
                     } catch (Exception $e) {

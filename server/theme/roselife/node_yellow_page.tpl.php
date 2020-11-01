@@ -9,7 +9,6 @@ function (
   int $nid,
   array $node,
   Template $pager,
-  int $postNumStart,
   array $comments
 ) {
 ?>
@@ -69,10 +68,7 @@ function (
         <article>
           <header>
             <a onclick="window.app.user(<?= $c['uid'] ?>)"><?= $c['username'] ?></a>
-            <span class='time'><?= $c['createTime'] . ($c['lastModifiedTime'] ? ' (修改于 ' . $c['lastModifiedTime'] . ')' : '') ?></span>
-            <?php if ($c['type'] == 'comment') : ?>
-              <span class="comment_num">#<?= $postNumStart + $index ?></span>
-            <?php endif ?>
+            <time data-time="<?= $c['createTime'] ?>" data-method="toAutoTime"></time>
           </header>
 
           <div class="article_content"><?= $c['HTMLbody'] ?></div>

@@ -10,7 +10,6 @@ function (
   int $commentCount,
   int $nid,
   Template $pager,
-  int $postNumStart,
   array $posts,
   int $tid
 ) {
