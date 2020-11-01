@@ -9,9 +9,9 @@ function (
       <div <?= array_key_exists('class', $n) ? ('class="' . $n['class'] . '"') : '' ?>>
         <a href="<?= $n['uri'] ?>"><?= $n['text'] ?></a>
         <?php if (array_key_exists('time', $n)) : ?>
-          <span data-time="<?= $n['time'] ?>" data-method="<?= $n['method'] ?>"></span>
+          <time data-time="<?= $n['time'] ?>" data-method="<?= $n['method'] ?>"></time>
         <?php else : ?>
-          <span><?= $n['after'] ?></span>
+          <small><?= $n['after'] ?></small>
         <?php endif; ?>
       </div>
     <?php endforeach ?>
