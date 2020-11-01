@@ -97,24 +97,23 @@ class HtmlElement extends Template
             return new self();
         }
 
-        if ($pageCount <= 7) {
+        if ($pageCount <= 5) {
             $pageFirst = 1;
             $pageLast = $pageCount;
         } else {
-            $pageFirst = $pageNo - 3;
-            $pageLast = $pageNo + 3;
+            $pageFirst = $pageNo - 2;
+            $pageLast = $pageNo + 2;
             if ($pageFirst < 1) {
                 $pageFirst = 1;
-                $pageLast = 7;
+                $pageLast = 5;
             } elseif ($pageLast > $pageCount) {
-                $pageFirst = $pageCount - 6;
+                $pageFirst = $pageCount - 4;
                 $pageLast = $pageCount;
             }
         }
 
         if ($pageNo != 1) {
             $pager[] = self::link('<<', $uri);
-            $pager[] = self::link('<', $uri . '?p=' . ($pageNo - 1));
         }
         for ($i = $pageFirst; $i <= $pageLast; $i++) {
             if ($i == $pageNo) {
@@ -124,7 +123,6 @@ class HtmlElement extends Template
             }
         }
         if ($pageNo != $pageCount) {
-            $pager[] = self::link('>', $uri . '?p=' . ($pageNo + 1));
             $pager[] = self::link('>>', $uri . '?p=' . $pageCount);
         }
         return new self('nav', $pager, ['class' => 'pager']);
