@@ -10,9 +10,9 @@ function (
 
   <div style="text-align: center;">
     <?php if ($avatar) : ?>
-      <img title="<?= $username ?> 的头像" alt="<?= $username ?> 的头像" src="<?= $avatar ?>" class="avatar_circle_responsive" style="border: 0px;" onclick="window.app.user(<?= $uid ?>)">
+      <img title="<?= $username ?> 的头像" alt="<?= $username ?> 的头像" src="<?= $avatar ?>" class="avatar_circle_responsive" style="border:0px; cursor:pointer;" onclick="window.app.user(<?= $uid ?>)">
     <?php else : ?>
-      <div class="avatar_circle_responsive" onclick="window.app.user(<?= $uid ?>)">
+      <div class="avatar_circle_responsive" style="cursor:pointer;" onclick="window.app.user(<?= $uid ?>)">
         <?= mb_substr($username, 0, (preg_match('/^[A-Za-z0-9]{3}/', $username) ? 3 : 2)) ?>
       </div>
     <?php endif ?>
