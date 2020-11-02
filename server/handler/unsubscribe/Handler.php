@@ -2,6 +2,7 @@
 
 namespace site\handler\unsubscribe;
 
+use Exception;
 use lzx\html\Template;
 use site\Controller;
 use site\dbobject\User;
@@ -17,8 +18,9 @@ class Handler extends Controller
                 $this->html->setContent(Template::fromStr('<br><br>You have been unsubscribed.<br><br>'));
             } else {
                 $user = new User($uid, 'id');
-                $user->type = 1;
-                $user->update('type');
+                throw new Exception('application error, update user->type');
+                // $user->type = 1;
+                // $user->update('type');
                 $this->html->setContent(Template::fromStr('<br><br>' . $email . ' has been unsubscribed.<br><br>'));
             }
         }

@@ -20,9 +20,7 @@ class User extends DBObject
     public $lastAccessIp;
     public $status;
     public $avatar;
-    public $type;
     public $role;
-    public $badge;
     public $points;
     public $cid;
 
