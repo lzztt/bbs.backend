@@ -59,7 +59,7 @@ trait HandlerTrait
         $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
         if ($this->session->get('uid')) {
             $key = date("d") . $handler . $this->session->get('uid');
-            $limit = 100;
+            $limit = 200;
             $window = 43200;
         } else {
             $key = date("d") . $handler . $this->request->ip;
