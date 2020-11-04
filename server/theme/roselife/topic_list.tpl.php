@@ -18,7 +18,7 @@ function (
   </header>
   <?php if (isset($nodes)) : ?>
     <style>
-      .topic_list > div > span:first-child > small {
+      .topic_list>div>span:first-child>small {
         padding-left: 0.25rem;
         min-width: min-content;
       }

@@ -113,7 +113,9 @@ def tpl_str(lines):
 
 
 def php(namespace, cls_name, classes, parameters, template):
-    return r'''<?php declare(strict_types=1);
+    return r'''<?php
+
+declare(strict_types=1);
 
 /**
  * DO NOT EDIT

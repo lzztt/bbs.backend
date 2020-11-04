@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace site;
 
@@ -7,6 +9,7 @@ use lzx\core\Request;
 use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
+use site\Handler;
 use site\Session;
 use site\dbobject\Tag;
 use site\gen\theme\roselife\Html;

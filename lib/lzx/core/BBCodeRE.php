@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace lzx\core;
 
@@ -53,7 +55,7 @@ class BBCodeRE
 
     public static function parse(string $text): string
     {
-        if (strpos($text, '[/') === false) {// if no colse tag, don't borther
+        if (strpos($text, '[/') === false) { // if no colse tag, don't borther
             $text = preg_replace('#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text);
             return nl2br($text);
         }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace site\handler\forum\node;
 
@@ -33,10 +35,12 @@ class Handler extends Forum
 
     public function createTopic(int $tid): void
     {
-        if (!$this->request->data['body']
-                || !$this->request->data['title']
-                || strlen($this->request->data['body']) < 5
-                || strlen($this->request->data['title']) < 5) {
+        if (
+            !$this->request->data['body']
+            || !$this->request->data['title']
+            || strlen($this->request->data['body']) < 5
+            || strlen($this->request->data['title']) < 5
+        ) {
             throw new ErrorMessage('Topic title or body is too short.');
         }
 

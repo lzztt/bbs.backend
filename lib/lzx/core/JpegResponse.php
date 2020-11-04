@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace lzx\core;
 
@@ -27,7 +29,7 @@ class JpegResponse extends Response
             return $image;
         }
 
-        if (! is_string($image)) {
+        if (!is_string($image)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid content (%s) provided to %s',
                 (is_object($image) ? get_class($image) : gettype($image)),

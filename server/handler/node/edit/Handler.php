@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace site\handler\node\edit;
 
@@ -42,10 +44,12 @@ class Handler extends Node
             throw new ErrorMessage('node does not exist.');
         }
 
-        if (!$this->request->data['body']
-                || !$this->request->data['title']
-                || strlen($this->request->data['body']) < 5
-                || strlen($this->request->data['title']) < 5) {
+        if (
+            !$this->request->data['body']
+            || !$this->request->data['title']
+            || strlen($this->request->data['body']) < 5
+            || strlen($this->request->data['title']) < 5
+        ) {
             throw new ErrorMessage('Topic title or body is too short.');
         }
 

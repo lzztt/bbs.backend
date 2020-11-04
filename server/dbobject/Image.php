@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace site\dbobject;
 
@@ -54,7 +56,8 @@ class Image extends DBObject
                         ':path' => $file['path'],
                         ':height' => $file['height'],
                         ':width' => $file['width'],
-                        ':city_id' => $this->cityId]);
+                        ':city_id' => $this->cityId
+                    ]);
                 } catch (Exception $e) {
                     Logger::getInstance()->logException($e);
                     continue;

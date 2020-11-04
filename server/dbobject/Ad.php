@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace site\dbobject;
 
@@ -25,6 +27,6 @@ class Ad extends DBObject
 
     public function getAllAdPayments(int $from_time = 0): array
     {
-         return $this->convertColumnNames($this->call('get_ad_payments(' . $from_time . ')'));
+        return $this->convertColumnNames($this->call('get_ad_payments(' . $from_time . ')'));
     }
 }

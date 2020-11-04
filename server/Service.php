@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace site;
 
@@ -10,6 +12,7 @@ use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\NotFound;
 use site\Config;
+use site\Handler;
 use site\Session;
 use site\dbobject\User;
 use site\gen\theme\roselife\mail\IdentCode;

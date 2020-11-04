@@ -23,7 +23,9 @@ fi
 rm -rf $tmp_file || error_exit "failed to initialize $tmp_file"
 
 cat > $tmp_file <<'EOF'
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /**
  * DO NOT EDIT
