@@ -4,7 +4,6 @@ namespace site\handler\node;
 
 use Exception;
 use lzx\core\BBCodeRE as BBCode;
-use lzx\db\MemStore;
 use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
 use lzx\html\Template;
@@ -98,7 +97,7 @@ class Handler extends Node
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
                 $c['quoteJson'] = json_encode([
                     'nodeId' => $nid,
-                    'body' => '[quote="' . $c['username'] . '"]' . $c['body'] . '[/quote]'
+                    'body' => '[quote="' . $c['username'] . '"]' . $this->removeQuote($c['body']) . '[/quote]'
                 ], self::JSON_OPTIONS);
                 if ($nodeComment) {
                     $c['type'] = 'node';
@@ -125,6 +124,11 @@ class Handler extends Node
         }
 
         $this->html->setContent($page->setPosts($posts));
+    }
+
+    private function removeQuote(string $body): string
+    {
+        return trim(preg_replace('/\[quote\="?(.*?)"?\](.*?)\[\/quote\]/ms', '', $body));
     }
 
     private function authorPanel(array $info): Template
@@ -257,7 +261,7 @@ class Handler extends Node
                     }
                     $c['quoteJson'] = json_encode([
                         'nodeId' => $nid,
-                        'body' => '[quote="' . $c['username'] . '"]' . $c['body'] . '[/quote]'
+                        'body' => '[quote="' . $c['username'] . '"]' . $this->removeQuote($c['body']) . '[/quote]'
                     ], self::JSON_OPTIONS);
                     $c['editJson'] = json_encode([
                         'nodeId' => $nid,
