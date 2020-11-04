@@ -204,7 +204,8 @@ class Handler extends Service
 
     private function getMessageList(string $mailbox): array
     {
-        $user = new User($this->request->uid, 'id');
+        $user = new User();
+        $user->id = $this->request->uid;
         if (!in_array($mailbox, self::$mailbox)) {
             throw new ErrorMessage('mailbox does not exist: ' . $mailbox);
         }
@@ -223,7 +224,8 @@ class Handler extends Service
 
     private function getNewMessageCount(): array
     {
-        $user = new User($this->request->uid, 'id');
+        $user = new User();
+        $user->id = $this->request->uid;
         return ['count' => $user->getPrivMsgsCount('new')];
     }
 }
