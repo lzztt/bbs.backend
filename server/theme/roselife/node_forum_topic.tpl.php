@@ -50,7 +50,7 @@ function (
     <?php foreach ($posts as $index => $p) : ?>
       <section>
         <?= $p['authorPanel'] ?>
-        <div style="max-width: 90%; width: 90%;">
+        <div style="max-width: 87.5%; width: 87.5%;">
           <header>
             <a onclick="window.app.user(<?= $p['uid'] ?>)"><?= $p['username'] ?></a>
             <span class='city'><?= $p['city'] ?></span>
