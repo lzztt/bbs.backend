@@ -210,9 +210,6 @@ class Handler extends Node
             throw new NotFound();
         }
 
-        $this->var['head_title'] = $node['title'];
-        $this->var['head_description'] = $node['title'];
-
         $breadcrumb = ['首页' => '/'];
         $nodeObj->id = $nid;
         $nodeObj->load('tid');

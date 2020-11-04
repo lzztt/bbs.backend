@@ -7,6 +7,10 @@ use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
 use lzx\cache\CacheHandler;
 use lzx\cache\PageCache;
+use lzx\core\Handler as CoreHandler;
+use lzx\core\Logger;
+use lzx\core\Request;
+use lzx\core\Response;
 use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
@@ -14,15 +18,31 @@ use site\File;
 use site\dbobject\SessionEvent;
 use site\dbobject\User;
 
-trait HandlerTrait
+abstract class Handler extends CoreHandler
 {
+    const UID_GUEST = 0;
+    const UID_ADMIN = 1;
+
+    public $args;
+    public $session;
+    public $config;
+
     protected static City $city;
     private static CacheHandler $cacheHandler;
     protected ?PageCache $cache = null;
     protected array $independentCacheList = [];
     protected array $cacheEvents = [];
 
-    private function staticInit(): void
+    public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
+    {
+        parent::__construct($req, $response, $logger);
+        $this->session = $session;
+        $this->config = $config;
+        $this->args = $args;
+        $this->staticInit();
+    }
+
+    protected function staticInit(): void
     {
         static $initialized = false;
 
@@ -31,8 +51,6 @@ trait HandlerTrait
         }
 
         $initialized = true;
-
-        $this->rateLimit();
 
         self::$city = $this->config->city;
         // set site info
@@ -53,7 +71,7 @@ trait HandlerTrait
         $this->updateAccessInfo();
     }
 
-    protected function rateLimit()
+    public function rateLimit()
     {
         $rateLimiter = MemStore::getRedis(3);
         $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);

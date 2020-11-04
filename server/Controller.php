@@ -2,39 +2,22 @@
 
 namespace site;
 
-use lzx\core\Handler;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
 use lzx\html\Template;
 use site\Config;
-use site\HandlerTrait;
 use site\Session;
 use site\dbobject\Tag;
 use site\gen\theme\roselife\Html;
 
 abstract class Controller extends Handler
 {
-    use HandlerTrait;
-
-    const UID_GUEST = 0;
-    const UID_ADMIN = 1;
-
-    public $args;
-    public $id;
-    public $config;
-    public $site;
-    public $session;
-    protected $var = [];
     protected Html $html;
 
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
     {
-        parent::__construct($req, $response, $logger);
-        $this->session = $session;
-        $this->config = $config;
-        $this->args = $args;
-        $this->staticInit();
+        parent::__construct($req, $response, $config, $logger, $session, $args);
 
         $this->html = new Html();
         $this->response->setContent($this->html);

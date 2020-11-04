@@ -2,7 +2,6 @@
 
 namespace site;
 
-use lzx\core\Handler;
 use lzx\core\Logger;
 use lzx\core\Mailer;
 use lzx\core\Request;
@@ -11,30 +10,17 @@ use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\NotFound;
 use site\Config;
-use site\HandlerTrait;
 use site\Session;
 use site\dbobject\User;
 use site\gen\theme\roselife\mail\IdentCode;
 
 abstract class Service extends Handler
 {
-    use HandlerTrait;
-
-    const UID_GUEST = 0;
-    const UID_ADMIN = 1;
     const METHODS = ['get', 'post', 'put', 'delete'];
-
-    public $args;
-    public $session;
 
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
     {
-        parent::__construct($req, $response, $logger);
-        $this->session = $session;
-        $this->config = $config;
-        $this->args = $args;
-        $this->staticInit();
-
+        parent::__construct($req, $response, $config, $logger, $session, $args);
         $this->response->type = Response::JSON;
     }
 

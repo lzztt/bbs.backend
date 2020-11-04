@@ -2,7 +2,6 @@
 
 namespace site;
 
-use lzx\core\Handler;
 use lzx\core\Logger;
 use lzx\core\Request;
 use lzx\core\Response;
