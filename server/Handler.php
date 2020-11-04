@@ -25,6 +25,11 @@ abstract class Handler extends CoreHandler
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
 
+    const LIMIT_ROBOT = 20;
+    const LIMIT_GUEST = 50;
+    const LIMIT_USER = 100;
+    const LIMIT_WINDOW = 86400;
+
     public $args;
     public $session;
     public $config;
@@ -41,7 +46,17 @@ abstract class Handler extends CoreHandler
         $this->session = $session;
         $this->config = $config;
         $this->args = $args;
+    }
+
+    public function beforeRun(): void
+    {
+        $this->rateLimit();
         $this->staticInit();
+    }
+
+    public function afterRun(): void
+    {
+        $this->updateAccessInfo();
     }
 
     protected function staticInit(): void
@@ -69,8 +84,6 @@ abstract class Handler extends CoreHandler
         } else {
             $this->logger->error('unsupported website: ' . $this->request->domain);
         }
-
-        $this->updateAccessInfo();
     }
 
     public function rateLimit()
@@ -79,19 +92,19 @@ abstract class Handler extends CoreHandler
         $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
         if ($this->session->get('uid')) {
             $key = date("d") . $handler . $this->session->get('uid');
-            $limit = 200;
-            $window = 43200;
+            $limit = static::LIMIT_USER * 2;
+            $window = static::LIMIT_WINDOW / 2;
         } else {
             $key = date("d") . $handler . $this->request->ip;
             if ($this->request->isRobot()) {
-                $limit = 20;
-                $window = 86400;
+                $limit = static::LIMIT_ROBOT;
+                $window = static::LIMIT_WINDOW;
             } else {
-                $limit = 50;
+                $limit = static::LIMIT_GUEST;
                 if ($key === ':api:viewcount:') {
                     $limit *= 2;
                 }
-                $window = 86400;
+                $window = static::LIMIT_WINDOW;
             }
         }
 

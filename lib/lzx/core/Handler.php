@@ -28,10 +28,6 @@ abstract class Handler
 
     abstract public function run(): void;
 
-    public function afterRun(): void
-    {
-    }
-
     protected function json(array $return = null): void
     {
         $this->response->setContent($return ? $return : (object) null);

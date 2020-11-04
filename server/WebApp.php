@@ -63,7 +63,7 @@ class WebApp extends App
 
         try {
             $ctrler = HandlerFactory::create($request, $response, $this->config, $this->logger, $session);
-            $ctrler->rateLimit();
+            $ctrler->beforeRun();
             $ctrler->run();
             $ctrler->afterRun();
         } catch (Exception $e) {
