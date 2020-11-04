@@ -108,8 +108,8 @@ abstract class Handler extends CoreHandler
             }
         }
 
-        $skip = false;
-        if ((int) $rateLimiter->get($key) > $limit) {
+        $current = (int) $rateLimiter->get($key);
+        if ($current > $limit) {
             // check if allowed bots
             $isAllowedBot = false;
             if ($this->request->isRobot()) {
@@ -126,8 +126,10 @@ abstract class Handler extends CoreHandler
             }
 
             if ($isAllowedBot) {
-                $skip = true;
-            } else {
+                $limit *= 100;
+            }
+
+            if ($current > $limit) {
                 // mail error log
                 if (!$rateLimiter->exists($key . ':log')) {
                     if ($this->request->isRobot()) {
@@ -142,10 +144,8 @@ abstract class Handler extends CoreHandler
             }
         }
 
-        if (!$skip) {
-            $rateLimiter->incr($key);
-            $rateLimiter->expire($key, $window);
-        }
+        $rateLimiter->incr($key);
+        $rateLimiter->expire($key, $window);
     }
 
     private function updateAccessInfo(): void

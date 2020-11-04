@@ -19,6 +19,7 @@ use site\gen\theme\roselife\mail\IdentCode;
 
 abstract class Service extends Handler
 {
+    const LIMIT_ROBOT = 0;
     const METHODS = ['get', 'post', 'put', 'delete'];
 
     public function __construct(Request $req, Response $response, Config $config, Logger $logger, Session $session, array $args)
