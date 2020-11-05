@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace site\handler\app;
 
 use Exception;
-use lzx\cache\CacheHandler;
 use lzx\exception\NotFound;
 use lzx\html\Template;
 use site\Controller;
@@ -17,21 +16,7 @@ class Handler extends Controller
         $app = $this->args[0];
 
         if ($app === 'default') {
-            $this->html->setContent(
-                Template::fromStr(
-                    implode(
-                        '',
-                        array_map(function ($i) {
-                            return (string) CacheHandler::getInstance()->createCache($i)->getData();
-                        }, [
-                            'latestForumTopics',
-                            'latestForumTopicReplies',
-                            'hotForumTopics7',
-                            'hotForumTopics30'
-                        ])
-                    )
-                )
-            );
+            $this->html->setContent(Template::fromStr(''));
             return;
         }
 
