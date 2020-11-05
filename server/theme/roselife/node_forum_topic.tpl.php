@@ -27,12 +27,12 @@ function (
 
   <?php if ($city === City::HOUSTON || $city === City::DALLAS) : ?>
     <style>
-      .adsbygoogle {
+      .ad_sm {
         display: none;
       }
 
       @media(min-width: 768px) {
-        .adsbygoogle {
+        .ad_sm {
           display: block;
           float: right;
           width: 300px;
@@ -41,7 +41,7 @@ function (
       }
     </style>
     <!-- responsive_ad -->
-    <ins class="adsbygoogle" data-ad-client="ca-pub-8257334386742604" data-ad-slot="<?= $city === City::HOUSTON ? '1050744881' : '4245946485' ?>"></ins>
+    <ins class="adsbygoogle ad_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="<?= $city === City::HOUSTON ? '1050744881' : '4245946485' ?>"></ins>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
     </script>

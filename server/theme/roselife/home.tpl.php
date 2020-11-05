@@ -55,6 +55,10 @@ function (
       <section class="home_items home_hot_nodes">
         <header>本周热门</header><?= $hotForumTopicsWeekly ?>
       </section>
+      <ins class="adsbygoogle ad_xs" data-ad-client="ca-pub-8257334386742604" data-ad-slot="8508282508"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     <?php endif ?>
     <section class="home_items home_hot_nodes">
       <header>本月热门</header><?= $hotForumTopicsMonthly ?>
