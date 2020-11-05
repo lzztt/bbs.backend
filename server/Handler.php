@@ -101,9 +101,6 @@ abstract class Handler extends CoreHandler
                 $window = static::LIMIT_WINDOW;
             } else {
                 $limit = static::LIMIT_GUEST;
-                if ($key === ':api:viewcount:') {
-                    $limit *= 2;
-                }
                 $window = static::LIMIT_WINDOW;
             }
         }

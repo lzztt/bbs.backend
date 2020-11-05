@@ -11,6 +11,9 @@ use site\dbobject\Node;
 
 class Handler extends Service
 {
+    const LIMIT_GUEST = 100;
+    const LIMIT_USER = 200;
+
     public function get(): void
     {
         if (!$this->args) {

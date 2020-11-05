@@ -17,6 +17,9 @@ class Handler extends Service
 {
     use SpamFilterTrait;
 
+    const LIMIT_GUEST = 0;
+    const LIMIT_USER = 1000;
+
     const TOPICS_PER_PAGE = 25;
 
     private static $mailbox = ['inbox', 'sent'];
