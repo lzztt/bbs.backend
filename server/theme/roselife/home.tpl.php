@@ -19,24 +19,14 @@ function (
   <div style="display:flex; flex-flow:row wrap">
     <div class="image_slider"><?= $imageSlider ?></div>
     <?php if ($city === City::HOUSTON) : ?>
-      <div class="home_items_sm">
-        <ins class="adsbygoogle home_items_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="1050744881"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
+      <div id="support_sm" class="home_items_sm"></div>
       <section class="home_items home_activities home_items_md">
         <header>近期活动</header><?= $recentActivities ?>
       </section>
     <?php elseif ($city === City::DALLAS) : ?>
-      <div class="home_items_sm">
-        <ins class="adsbygoogle home_items_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
+      <div id="support_sm" class="home_items_sm"></div>
       <div class="home_items_md">
-        <ins class="adsbygoogle home_items_md" data-ad-client="ca-pub-8257334386742604" data-ad-slot="7199412884"></ins>
+        <ins class="adsbygoogle home_items_md" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
@@ -55,7 +45,7 @@ function (
       <section class="home_items home_hot_nodes">
         <header>本周热门</header><?= $hotForumTopicsWeekly ?>
       </section>
-      <ins class="adsbygoogle ad_xs" data-ad-client="ca-pub-8257334386742604" data-ad-slot="8508282508"></ins>
+      <ins class="adsbygoogle ad_xs" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
       <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
       </script>

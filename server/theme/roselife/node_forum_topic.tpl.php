@@ -26,25 +26,7 @@ function (
   </header>
 
   <?php if ($city === City::HOUSTON || $city === City::DALLAS) : ?>
-    <style>
-      .ad_sm {
-        display: none;
-      }
-
-      @media(min-width: 768px) {
-        .ad_sm {
-          display: block;
-          float: right;
-          width: 300px;
-          height: 250px;
-        }
-      }
-    </style>
-    <!-- responsive_ad -->
-    <ins class="adsbygoogle ad_sm" data-ad-client="ca-pub-8257334386742604" data-ad-slot="<?= $city === City::HOUSTON ? '1050744881' : '4245946485' ?>"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <div id="support_sm" style="float:right;"></div>
   <?php endif ?>
   <article class='message_list'>
     <?php foreach ($posts as $index => $p) : ?>
