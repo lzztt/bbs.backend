@@ -41,13 +41,10 @@ function (
     <section class="home_items">
       <header>最新论坛回复</header><?= $latestForumTopicReplies ?>
     </section>
+    <?php if ($city !== City::SFBAY) : ?>
+      <div id="support_xs"></div>
+    <?php endif ?>
     <?php if ($city === City::HOUSTON) : ?>
-      <div class="ad_xs">
-        <ins class="adsbygoogle ad_xs" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
       <section class="home_items home_hot_nodes">
         <header>本周热门</header><?= $hotForumTopicsWeekly ?>
       </section>
@@ -56,6 +53,12 @@ function (
       <header>本月热门</header><?= $hotForumTopicsMonthly ?>
     </section>
     <?php if ($city === City::HOUSTON) : ?>
+      <div class="ad_xs">
+        <ins class="adsbygoogle ad_xs" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
       <section class="home_items">
         <header>最新黄页</header><?= $latestYellowPages ?>
       </section>
