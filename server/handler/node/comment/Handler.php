@@ -103,7 +103,7 @@ class Handler extends Node
             throw new ErrorMessage('错误：评论正文字数太少。');
         }
 
-        $user = new User($this->request->uid, 'createTime,points,status');
+        $user = new User($this->request->uid, 'createTime,contribution,status');
         try {
             $this->validatePost();
 

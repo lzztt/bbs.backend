@@ -73,10 +73,6 @@ class Handler extends Node
             'uid' => null,
             'username' => null,
             'avatar' => null,
-            'sex' => null,
-            'access_ip' => null,
-            'join_time' => null,
-            'points' => null,
         ];
 
         $nodeComment = ($pageNo == 1);
@@ -142,16 +138,13 @@ class Handler extends Node
         }
 
         if (!array_key_exists($info['uid'], $authorPanels)) {
-            $info['joinTime'] = (int) $info['join_time'];
             if (!$info['avatar']) {
                 $info['avatar'] = '';
             }
             $authorPanel = (new AuthorPanelForum())
                 ->setUid((int) $info['uid'])
                 ->setUsername($info['username'])
-                ->setAvatar($info['avatar'])
-                ->setJoinTime($info['joinTime'])
-                ->setPoints((int) $info['points']);
+                ->setAvatar($info['avatar']);
             $authorPanels[$info['uid']] = $authorPanel;
         }
 

@@ -47,7 +47,7 @@ class Handler extends Service
 
                 if ($reporter->status > 0) {
                     $complain->uid = $node->uid;
-                    $complain->weight = $reporter->points;
+                    $complain->weight = $reporter->contribution;
                     $complain->time = $this->request->timestamp;
                     $complain->reason = $reason;
                     $complain->status = 1;
@@ -59,7 +59,7 @@ class Handler extends Service
                     $body = $arr[0]['body'];
 
                     $title = '举报';
-                    if ($reporter->points > 0 && ($spammer->points < 2 || (strpos($body, 'http') && $spammer->points < 18) !== false)) {
+                    if ($reporter->contribution > 0 && ($spammer->contribution < 2 || (strpos($body, 'http') && $spammer->contribution < 18) !== false)) {
                         // check complains
                         $complain = new NodeComplain();
                         $complain->where('uid', $node->uid, '=');
@@ -90,7 +90,7 @@ class Handler extends Service
                             'username' => $spammer->username,
                             'email'     => $spammer->email,
                             'city'      => self::getLocationFromIp($spammer->lastAccessIp),
-                            'points'    => $spammer->points,
+                            'contribution'    => $spammer->contribution,
                             'register' => date(DATE_COOKIE, $spammer->createTime)
                         ],
                         'node'      => [
@@ -103,7 +103,7 @@ class Handler extends Service
                             'username' => $reporter->username,
                             'email'     => $reporter->email,
                             'city'      => self::getLocationFromIp($this->request->ip),
-                            'points'    => $reporter->points,
+                            'contribution'    => $reporter->contribution,
                             'register' => date(DATE_COOKIE, $reporter->createTime)
                         ]
                     ], true));

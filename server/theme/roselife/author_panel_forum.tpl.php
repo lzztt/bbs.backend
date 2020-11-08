@@ -1,8 +1,6 @@
 <?php
 function (
   string $avatar,
-  int $joinTime,
-  int $points,
   int $uid,
   string $username
 ) {

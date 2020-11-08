@@ -16,14 +16,15 @@ class User extends DBObject
     public $username;
     public $password;
     public $email;
-    public $favoriteQuotation;
+    public $about;
     public $createTime;
     public $lastAccessTime;
     public $lastAccessIp;
     public $status;
     public $avatar;
     public $role;
-    public $points;
+    public $contribution;
+    public $reputation;
     public $cid;
 
     public function __construct($id = null, string $properties = '')
