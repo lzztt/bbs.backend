@@ -46,7 +46,9 @@ class Handler extends Service
         });
         $u['onlineUserCount'] = count($uids);
 
-        $u['onlineUsers'] = $uids ? implode(', ', $user->getUsernames($uids)) : '';
+        $onlineUsers = $uids ? $user->getUsernames($uids) : [];
+        shuffle($onlineUsers);
+        $u['onlineUsers'] = implode(', ', $onlineUsers);
 
 
         // make some fake guest :)
