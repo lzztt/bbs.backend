@@ -26,7 +26,7 @@ function (
     <?php elseif ($city === City::DALLAS) : ?>
       <div id="support_sm" class="home_items_sm"></div>
       <div class="home_items_md">
-        <ins class="adsbygoogle home_items_md" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
+        <ins class="adsbygoogle home_items_md" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485" data-full-width-responsive="true"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
@@ -54,7 +54,7 @@ function (
     </section>
     <?php if ($city === City::HOUSTON) : ?>
       <div class="ad_xs">
-        <ins class="adsbygoogle ad_xs" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485"></ins>
+        <ins class="adsbygoogle ad_xs" data-ad-client="ca-pub-8257334386742604" data-ad-slot="4245946485" data-full-width-responsive="true"></ins>
         <script>
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
