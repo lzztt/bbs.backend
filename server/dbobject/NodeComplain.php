@@ -12,6 +12,7 @@ class NodeComplain extends DBObject
     public $id;
     public $uid;
     public $nid;
+    public $cid;
     public $reporterUid;
     public $weight;
     public $time;

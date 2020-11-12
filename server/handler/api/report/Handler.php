@@ -47,6 +47,7 @@ class Handler extends Service
 
                 if ($reporter->status > 0) {
                     $complain->uid = $node->uid;
+                    $complain->cid = 0;
                     $complain->weight = $reporter->contribution;
                     $complain->time = $this->request->timestamp;
                     $complain->reason = $reason;
