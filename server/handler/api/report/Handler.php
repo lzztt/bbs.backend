@@ -8,7 +8,6 @@ use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
 use site\Service;
 use site\dbobject\Comment;
-use site\dbobject\Node;
 use site\dbobject\NodeComplain;
 use site\dbobject\User;
 
@@ -18,11 +17,16 @@ class Handler extends Service
     {
         $this->validateUser();
 
-        $nid = (int) $this->request->data['nodeId'];
+        if (array_key_exists('commentId', $this->request->data)) {
+            $cid = (int) $this->request->data['commentId'];
+        } else {
+            $cid = (int) $this->request->data['nodeId'];
+        }
+
         $reason = $this->request->data['reason'];
 
         $complain = new NodeComplain();
-        $complain->nid = $nid;
+        $complain->cid = $cid;
         $complain->reporterUid = $this->request->uid;
 
         $complain->load();
@@ -30,40 +34,36 @@ class Handler extends Service
             throw new ErrorMessage('您已经举报过此帖，不能重复举报');
         }
 
-        $node = new Node($nid);
-        if (!$node->exists()) {
+        $comment = new Comment($cid);
+        if (!$comment->exists()) {
             throw new ErrorMessage('被举报的帖子不存在');
         }
 
-        if ($node->uid == $this->request->uid) {
+        if ($comment->uid == $this->request->uid) {
             throw new ErrorMessage('您不能举报自己的帖子');
         }
 
-        if ($node->status > 0) {
-            $spammer = new User($node->uid);
+        if ($comment->status === 1) {
+            $spammer = new User($comment->uid);
 
             if ($spammer->exists() && $spammer->status > 0) {
                 $reporter = new User($this->request->uid);
 
                 if ($reporter->status > 0) {
-                    $complain->uid = $node->uid;
-                    $complain->cid = 0;
+                    $complain->uid = $comment->uid;
+                    $complain->nid = $comment->nid;
+                    $complain->cid = $cid;
                     $complain->weight = $reporter->contribution;
                     $complain->time = $this->request->timestamp;
                     $complain->reason = $reason;
                     $complain->status = 1;
                     $complain->add();
 
-                    $comment = new Comment();
-                    $comment->nid = $nid;
-                    $arr = $comment->getList('id,body', 1);
-                    $body = $arr[0]['body'];
-
                     $title = '举报';
-                    if ($reporter->contribution > 0 && ($spammer->contribution < 2 || (strpos($body, 'http') && $spammer->contribution < 18) !== false)) {
+                    if ($reporter->contribution > 0 && ($spammer->contribution < 2 || (strpos($comment->body, 'http') && $spammer->contribution < 18) !== false)) {
                         // check complains
                         $complain = new NodeComplain();
-                        $complain->where('uid', $node->uid, '=');
+                        $complain->where('cid', $cid, '=');
                         $complain->where('status', 1, '=');
                         $complain->where('weight', 0, '>');
                         $reporterUids = array_unique(array_column($complain->getList('reporterUid'), 'reporterUid'));
@@ -87,17 +87,16 @@ class Handler extends Service
                     $mailer->setSubject($title . ': ' . $spammer->username . ' <' . $spammer->email . '>');
                     $mailer->setBody(print_r([
                         'spammer'  => [
-                            'id'         => 'https://' . $this->request->domain . '/user/' . $node->uid,
+                            'id'         => 'https://' . $this->request->domain . '/user/' . $comment->uid,
                             'username' => $spammer->username,
                             'email'     => $spammer->email,
                             'city'      => self::getLocationFromIp($spammer->lastAccessIp),
                             'contribution'    => $spammer->contribution,
                             'register' => date(DATE_COOKIE, $spammer->createTime)
                         ],
-                        'node'      => [
-                            'id'     => 'https://' . $this->request->domain . '/node/' . $nid,
-                            'title' => $node->title,
-                            'body'  => $body,
+                        'comment'      => [
+                            'id'     => 'https://' . $this->request->domain . '/node/' . $comment->nid,
+                            'body'  => $comment->body,
                         ],
                         'reporter' => [
                             'id'         => 'https://' . $this->request->domain . '/user/' . $reporter->id,

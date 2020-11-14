@@ -63,6 +63,7 @@ class Handler extends Controller
             $comment->uid = $this->request->uid;
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
+            $comment->status = 1;
             $comment->add();
 
             $nodeYP = new NodeYellowPage();

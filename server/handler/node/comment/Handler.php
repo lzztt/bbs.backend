@@ -65,6 +65,7 @@ class Handler extends Node
             $comment->uid = $this->request->uid;
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
+            $comment->status = 1;
             $comment->add();
 
             $node->lastCommentTime = $this->request->timestamp;

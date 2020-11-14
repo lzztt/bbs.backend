@@ -46,20 +46,23 @@ function (
           <footer>
             <div class="v_user actions">
               <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
-              <?php if (!empty($p['report'])) : ?>
-                <button type="button" onclick="window.app.report(<?= $nid ?>)">举报</button>
+              <?php if (!empty($p['status'])) : ?>
+                <button type="button" onclick="window.app.report(<?= $p['id'] ?>)">举报</button>
               <?php endif ?>
               <?php if ($tid == 16 && $p['type'] == 'node') : ?>
                 <button type="button" class="<?= $urole ?>" onclick="window.location.href='/node/<?= $p['id'] ?>/activity'">发布为活动</button>
               <?php endif ?>
+              <?php
+              $id = $p['type'] === 'node' ? $nid : $p['id'];
+              ?>
               <script>
-                const editJson_<?= $p['id'] ?> = <?= $p["editJson"] ?>;
-                const quoteJson_<?= $p['id'] ?> = <?= $p["quoteJson"] ?>;
+                const editJson_<?= $id ?> = <?= $p["editJson"] ?>;
+                const quoteJson_<?= $id ?> = <?= $p["quoteJson"] ?>;
               </script>
-              <button type="button" class="<?= $urole ?>" onclick="window.app.open<?= $p['type'] === 'node' ? 'Node' : 'Comment' ?>Editor(editJson_<?= $p['id'] ?>)">编辑</button>
-              <button type="button" class="<?= $urole ?>" onclick="window.app.delete('<?= $p['type'] ?>', <?= $p['id'] ?>)">删除</button>
+              <button type="button" class="<?= $urole ?>" onclick="window.app.open<?= $p['type'] === 'node' ? 'Node' : 'Comment' ?>Editor(editJson_<?= $id ?>)">编辑</button>
+              <button type="button" class="<?= $urole ?>" onclick="window.app.delete('<?= $p['type'] ?>', <?= $id ?>)">删除</button>
               <button type="button" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
-              <button type="button" onclick="window.app.openCommentEditor(quoteJson_<?= $p['id'] ?>)">引用</button>
+              <button type="button" onclick="window.app.openCommentEditor(quoteJson_<?= $id ?>)">引用</button>
             </div>
           </footer>
         </div>

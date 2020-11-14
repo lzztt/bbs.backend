@@ -99,8 +99,8 @@ class Handler extends Node
                 ], self::JSON_OPTIONS);
                 if ($nodeComment) {
                     $c['type'] = 'node';
-                    $c['id'] = $node['id'];
-                    $c['report'] = ($node['points'] < 5 || strpos($c['body'], 'http') !== false);
+                    // $c['id'] = $node['id'];
+                    // $c['report'] = ($node['points'] < 5 || strpos($c['body'], 'http') !== false);
                     $c['editJson'] = json_encode([
                         'tagId' => $tag->id,
                         'nodeId' => $nid,

@@ -62,6 +62,7 @@ class Handler extends Forum
             $comment->uid = $this->request->uid;
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
+            $comment->status = 1;
             $comment->add();
         } catch (Exception $e) {
             $this->logger->warning($e->getMessage(), ['post' => $this->request->data]);
