@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace site;
 
+use Exception;
 use InvalidArgumentException;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
@@ -51,6 +52,7 @@ abstract class Handler extends CoreHandler
     public function beforeRun(): void
     {
         $this->rateLimit();
+        $this->dedup();
         $this->staticInit();
     }
 
@@ -86,7 +88,21 @@ abstract class Handler extends CoreHandler
         }
     }
 
-    public function rateLimit()
+    public function dedup(): void
+    {
+        if (array_key_exists('formId', $this->request->data)) {
+            $deduper = MemStore::getRedis(MemStore::DEDUP);
+            $key = 'f:' . $this->request->data['formId'];
+            $count = $deduper->incr($key);
+            $deduper->expire($key, 3600);
+
+            if ($count > 1) {
+                throw new Exception("此信息已经提交，不能重复提交。");
+            }
+        }
+    }
+
+    public function rateLimit(): void
     {
         $rateLimiter = MemStore::getRedis(MemStore::RATE);
         $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
@@ -105,7 +121,9 @@ abstract class Handler extends CoreHandler
             }
         }
 
-        $current = (int) $rateLimiter->get($key);
+        $current = $rateLimiter->incr($key);
+        $rateLimiter->expire($key, $window);
+
         if ($current > $limit) {
             // check if allowed bots
             $isAllowedBot = false;
@@ -140,9 +158,6 @@ abstract class Handler extends CoreHandler
                 throw new Forbidden();
             }
         }
-
-        $rateLimiter->incr($key);
-        $rateLimiter->expire($key, $window);
     }
 
     private function updateAccessInfo(): void

@@ -12,6 +12,7 @@ class MemStore
     public const SESSION = 1;
     public const ONLINE = 2;
     public const RATE = 3;
+    public const DEDUP = 4;
 
     // persistent_id=$db, needs INI setting: redis.pconnect.pooling_enabled=0
     public static function getRedis(int $db = self::CACHE): Redis
