@@ -88,7 +88,7 @@ abstract class Handler extends CoreHandler
 
     public function rateLimit()
     {
-        $rateLimiter = MemStore::getRedis(3);
+        $rateLimiter = MemStore::getRedis(MemStore::RATE);
         $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
         if ($this->session->get('uid')) {
             $key = date("d") . $handler . $this->session->get('uid');

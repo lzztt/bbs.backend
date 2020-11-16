@@ -43,8 +43,8 @@ class Session
             return;
         }
 
-        $this->redis = MemStore::getRedis(1);
-        $this->redisOnline = MemStore::getRedis(2);
+        $this->redis = MemStore::getRedis(MemStore::SESSION);
+        $this->redisOnline = MemStore::getRedis(MemStore::ONLINE);
 
         $this->id = empty($_COOKIE[self::SID_NAME]) ? '' : $_COOKIE[self::SID_NAME];
 

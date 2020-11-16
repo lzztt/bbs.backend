@@ -22,7 +22,7 @@ class CacheHandler
 
     private function __construct()
     {
-        $this->db = MemStore::getRedis(0);
+        $this->db = MemStore::getRedis(MemStore::CACHE);
     }
 
     /**
