@@ -34,6 +34,8 @@ class Handler extends Comment
         $comment->body = $this->request->data['body'];
         $comment->lastModifiedTime = $this->request->timestamp;
         try {
+            $this->dedup();
+
             $comment->update('body,lastModifiedTime');
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());

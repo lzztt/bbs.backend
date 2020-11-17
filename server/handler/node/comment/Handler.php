@@ -56,6 +56,7 @@ class Handler extends Node
                 $this->validatePost();
             }
             $this->dedup();
+            $this->dedupContent($this->request->data['body']);
 
             $comment = new Comment();
             $comment->nid = $nid;
@@ -106,6 +107,7 @@ class Handler extends Node
         try {
             $this->validatePost();
             $this->dedup();
+            $this->dedupContent($this->request->data['body']);
 
             $comment = new Comment();
             $comment->nid = $nid;

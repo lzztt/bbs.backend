@@ -44,6 +44,7 @@ class Handler extends Forum
         try {
             $this->validatePost();
             $this->dedup();
+            $this->dedupContent($this->request->data['body']);
 
             $node = new Node();
             $node->tid = $tid;

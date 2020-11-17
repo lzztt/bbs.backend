@@ -103,6 +103,25 @@ abstract class Handler extends CoreHandler
         }
     }
 
+    public function dedupContent(string $text): void
+    {
+        if ($text) {
+            $clean = $this->cleanText($text, []);
+            if (strlen($clean) < 2) {
+                throw new Exception("内容太短了。");
+            }
+
+            $deduper = MemStore::getRedis(MemStore::DEDUP);
+            $key = 'c:' . $this->request->uid . ':' . md5($clean);
+            $count = $deduper->incr($key);
+            $deduper->expire($key, 86400);
+
+            if ($count > 1) {
+                throw new Exception("请维护好论坛的交流环境，不要一帖多发。");
+            }
+        }
+    }
+
     public function rateLimit(): void
     {
         $rateLimiter = MemStore::getRedis(MemStore::RATE);

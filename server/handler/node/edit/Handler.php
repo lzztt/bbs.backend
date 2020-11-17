@@ -65,6 +65,7 @@ class Handler extends Node
 
         try {
             $this->dedup();
+
             $node->update();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
