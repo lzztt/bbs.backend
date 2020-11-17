@@ -84,7 +84,9 @@ class Session
     {
         if ($this->id && $this->redis) {
             $this->redis->del('s:' . $this->id);
-            $this->redisOnline->del($this->getTimeKey($this->current['uid']));
+            if (array_key_exists('uid', $this->current)) {
+                $this->redisOnline->del($this->getTimeKey($this->current['uid']));
+            }
         }
 
         $this->id = bin2hex(random_bytes(8));
