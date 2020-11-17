@@ -17,17 +17,21 @@ class Handler extends Service
     // return: uid
     public function get(): void
     {
-        if (!$this->args || $this->args[0] != $this->session->id()) {
-            $this->json(['sessionID' => $this->session->id(), 'uid' => 0]);
-            return;
+        $return = [
+            'sessionID' => $this->session->id(),
+            'uid' => self::UID_GUEST,
+            'username' => null,
+            'role' => null
+        ];
+        if ($this->args && $this->args[0] === $this->session->id() && $this->request->uid !== self::UID_GUEST) {
+            $user = new User($this->request->uid, 'username, status');
+            if ($user->exists() && $user->status > 0) {
+                $return['uid'] = $user->id;
+                $return['username'] = $user->username;
+                $return['role'] = $user->getUserGroup();
+            }
         }
-
-        if ($this->request->uid) {
-            $user = new User($this->request->uid, 'username');
-            $this->json(['sessionID' => $this->session->id(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
-        } else {
-            $this->json(['sessionID' => $this->session->id(), 'uid' => 0, 'username' => null, 'role' => null]);
-        }
+        $this->json($return);
     }
 
     // login a user
