@@ -76,8 +76,18 @@ class Session
 
     private function startNewSession(): void
     {
-        $this->id = bin2hex(random_bytes(8));
+        $this->regenerateId();
         $this->current = self::DEFAULT_DATA;
+    }
+
+    public function regenerateId(): void
+    {
+        if ($this->id && $this->redis) {
+            $this->redis->del('s:' . $this->id);
+            $this->redisOnline->del($this->getTimeKey($this->current['uid']));
+        }
+
+        $this->id = bin2hex(random_bytes(8));
 
         setcookie(self::SID_NAME, $this->id, [
             'expires' => $this->time + 2592000,
@@ -164,10 +174,14 @@ class Session
         return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $this->id;
     }
 
-    public function deleteSession(string $id): void
+    public function deleteSession(string $id = ''): void
     {
+        if (!$id) {
+            $id = $this->id;
+            $this->id = '';
+        }
         if ($this->redis) {
-            $this->redis->del($id);
+            $this->redis->del('s:' . $id);
         }
     }
 

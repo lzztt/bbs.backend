@@ -126,8 +126,8 @@ abstract class Handler extends CoreHandler
     {
         $rateLimiter = MemStore::getRedis(MemStore::RATE);
         $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
-        if ($this->session->get('uid')) {
-            $key = date("d") . $handler . $this->session->get('uid');
+        if ($this->request->uid) {
+            $key = date("d") . $handler . $this->request->uid;
             $limit = static::LIMIT_USER * 2;
             $window = static::LIMIT_WINDOW / 2;
         } else {
@@ -165,6 +165,9 @@ abstract class Handler extends CoreHandler
             }
 
             if ($current > $limit) {
+                if ($limit === 0 && $this->request->uid === self::UID_GUEST && !$this->request->isRobot()) {
+                    $this->session->deleteSession();
+                }
                 // mail error log
                 if (!$rateLimiter->exists($key . ':log')) {
                     if ($this->request->isRobot()) {
@@ -199,7 +202,7 @@ abstract class Handler extends CoreHandler
     {
         $sessionEvent = new SessionEvent();
         $sessionEvent->sessionId = $this->session->id();
-        $sessionEvent->userId = $this->session->get('uid');
+        $sessionEvent->userId = $this->request->uid;
         $sessionEvent->event = $event;
         $sessionEvent->time = $this->request->timestamp;
         $sessionEvent->ip = inet_pton($this->request->ip);

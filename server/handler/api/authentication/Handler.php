@@ -46,6 +46,7 @@ class Handler extends Service
             $loggedIn = $user->loginWithEmail($this->request->data['email'], $this->request->data['password']);
 
             if ($loggedIn) {
+                $this->session->regenerateId();
                 $this->session->set('uid', $user->id);
                 $this->updateSessionEvent(SessionEvent::EVENT_BEGIN);
 
