@@ -9,14 +9,11 @@ use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Service;
-use site\SpamFilterTrait;
 use site\dbobject\PrivMsg;
 use site\dbobject\User;
 
 class Handler extends Service
 {
-    use SpamFilterTrait;
-
     const LIMIT_GUEST = 0;
     const LIMIT_USER = 1000;
 

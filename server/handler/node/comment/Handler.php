@@ -8,7 +8,6 @@ use Exception;
 use lzx\core\Response;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Redirect;
-use site\SpamFilterTrait;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\Node as NodeObject;
@@ -17,8 +16,6 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
-    use SpamFilterTrait;
-
     public function run(): void
     {
         $this->response->type = Response::JSON;
