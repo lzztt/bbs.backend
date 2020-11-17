@@ -18,6 +18,7 @@ class Session
     ];
 
     private string $id = '';
+    private string $originalId = '';
     private ?Redis $redis = null;
     private ?Redis $redisOnline = null;
     private int $time;
@@ -51,8 +52,6 @@ class Session
         if (!$this->loadDbSession()) {
             $this->startNewSession();
         }
-        // remove old version cookie with domain wildcard
-        // setcookie(self::SID_NAME, $this->id, $this->time - 2592000, '/', '.' . implode('.', array_slice(explode('.', $_SERVER['SERVER_NAME']), -2)));
     }
 
     private function loadDbSession(): bool
@@ -66,6 +65,7 @@ class Session
             return false;
         }
 
+        $this->originalId = $this->id;
         $this->original = $data;
         $this->original['data'] = self::decodeData($this->original['data']);
 
@@ -82,13 +82,6 @@ class Session
 
     public function regenerateId(): void
     {
-        if ($this->id && $this->redis) {
-            $this->redis->del('s:' . $this->id);
-            if (array_key_exists('uid', $this->current)) {
-                $this->redisOnline->del($this->getTimeKey($this->current['uid']));
-            }
-        }
-
         $this->id = bin2hex(random_bytes(8));
 
         setcookie(self::SID_NAME, $this->id, [
@@ -163,7 +156,12 @@ class Session
         $insert = $this->current;
         $insert['data'] = self::encodeData($this->current['data']);
         $this->redis->hMSet('s:' . $this->id, $insert);
-        $this->redis->expire('s:' . $this->id, (int) $this->current['uid'] > 0 ? 2592000 : 86400);
+        if ($this->id !== $this->originalId) {
+            $this->redis->expire('s:' . $this->id, (int) $this->current['uid'] > 0 ? 2592000 : 86400);
+            if ($this->originalId) {
+                $this->redis->del('s:' . $this->originalId);
+            }
+        }
 
         if ($this->original && $this->current['uid'] != $this->original['uid']) {
             $this->redisOnline->del($this->getTimeKey($this->original['uid']));
