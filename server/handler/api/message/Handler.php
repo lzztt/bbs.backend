@@ -82,6 +82,7 @@ class Handler extends Service
         }
         try {
             $this->validatePost();
+            $this->dedup();
         } catch (Exception $e) {
             $this->logger->warning($e->getMessage(), ['post' => $this->request->data]);
             throw new ErrorMessage($e->getMessage());

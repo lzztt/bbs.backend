@@ -58,6 +58,7 @@ class Handler extends Node
             if (self::$city->id == 1) {
                 $this->validatePost();
             }
+            $this->dedup();
 
             $comment = new Comment();
             $comment->nid = $nid;
@@ -107,6 +108,7 @@ class Handler extends Node
         $user = new User($this->request->uid, 'createTime,contribution,status');
         try {
             $this->validatePost();
+            $this->dedup();
 
             $comment = new Comment();
             $comment->nid = $nid;

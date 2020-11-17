@@ -18,6 +18,7 @@ use site\handler\node\Node;
 
 class Handler extends Node
 {
+
     public function run(): void
     {
         $this->response->type = Response::JSON;
@@ -63,6 +64,7 @@ class Handler extends Node
         $node->lastModifiedTime = $this->request->timestamp;
 
         try {
+            $this->dedup();
             $node->update();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
