@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace site;
 
-use Exception;
 use InvalidArgumentException;
 use lzx\cache\Cache;
 use lzx\cache\CacheEvent;
@@ -97,7 +96,7 @@ abstract class Handler extends CoreHandler
             $deduper->expire($key, 3600);
 
             if ($count > 1) {
-                throw new Exception("此信息已经提交，不能重复提交。");
+                throw new ErrorMessage("此信息已经提交，不能重复提交。");
             }
         }
     }
