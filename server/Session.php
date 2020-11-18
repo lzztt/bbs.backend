@@ -9,6 +9,9 @@ use lzx\db\MemStore;
 
 class Session
 {
+    private const FIVE_MINUTES = 300;
+    private const ONE_DAY = 86400;
+    private const ONE_MONTH = 2592000;
     private const SID_NAME = 'LZXSID';
     private const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
     private const DEFAULT_DATA = [
@@ -70,6 +73,13 @@ class Session
         $this->original['data'] = self::decodeData($this->original['data']);
 
         $this->current = $this->original;
+
+        if ((int) $this->current['uid'] > 0) {
+            $ttl = (int) $this->redis->ttl($this->getKey($this->id));
+            if (self::ONE_MONTH - $ttl > self::ONE_DAY) {
+                $this->regenerateId();
+            }
+        }
 
         return true;
     }
@@ -156,7 +166,7 @@ class Session
         $uidChanged = $this->original && $this->current['uid'] != $this->original['uid'];
 
         if ($idChanged || $uidChanged) {
-            $this->redis->expire($this->getKey($this->id), (int) $this->current['uid'] > 0 ? 2592000 : 86400);
+            $this->redis->expire($this->getKey($this->id), (int) $this->current['uid'] > 0 ? self::ONE_MONTH : self::ONE_DAY);
         }
 
         if ($idChanged && $this->originalId) {
@@ -167,7 +177,7 @@ class Session
             $this->redisOnline->del($this->getOnlineKey($this->original['uid'], $this->originalId));
         }
 
-        $this->redisOnline->set($this->getOnlineKey($this->current['uid'], $this->id), '', 300);
+        $this->redisOnline->set($this->getOnlineKey($this->current['uid'], $this->id), '', self::FIVE_MINUTES);
     }
 
     private function getKey(string $sessionId): string
