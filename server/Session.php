@@ -60,7 +60,7 @@ class Session
             return false;
         }
 
-        $data = $this->redis->hGetAll('s:' . $this->id);
+        $data = $this->redis->hGetAll($this->getKey($this->id));
         if (!$data) {
             return false;
         }
@@ -148,30 +148,36 @@ class Session
         if (!$this->id) {
             return;
         }
-        $this->updateDbSession();
-    }
-
-    private function updateDbSession(): void
-    {
         $insert = $this->current;
         $insert['data'] = self::encodeData($this->current['data']);
-        $this->redis->hMSet('s:' . $this->id, $insert);
-        if ($this->id !== $this->originalId) {
-            $this->redis->expire('s:' . $this->id, (int) $this->current['uid'] > 0 ? 2592000 : 86400);
-            if ($this->originalId) {
-                $this->redis->del('s:' . $this->originalId);
-            }
+        $this->redis->hMSet($this->getKey($this->id), $insert);
+
+        $idChanged = $this->id !== $this->originalId;
+        $uidChanged = $this->original && $this->current['uid'] != $this->original['uid'];
+
+        if ($idChanged || $uidChanged) {
+            $this->redis->expire($this->getKey($this->id), (int) $this->current['uid'] > 0 ? 2592000 : 86400);
         }
 
-        if ($this->original && $this->current['uid'] != $this->original['uid']) {
-            $this->redisOnline->del($this->getTimeKey($this->original['uid']));
+        if ($idChanged && $this->originalId) {
+            $this->redis->del($this->getKey($this->originalId));
         }
-        $this->redisOnline->set($this->getTimeKey($this->current['uid']), '', 300);
+
+        if ($uidChanged) {
+            $this->redisOnline->del($this->getOnlineKey($this->original['uid'], $this->originalId));
+        }
+
+        $this->redisOnline->set($this->getOnlineKey($this->current['uid'], $this->id), '', 300);
     }
 
-    private function getTimeKey(string $uid): string
+    private function getKey(string $sessionId): string
     {
-        return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $this->id;
+        return 's:' . $sessionId;
+    }
+
+    private function getOnlineKey(string $uid, string $sessionId): string
+    {
+        return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $sessionId;
     }
 
     public function deleteSession(string $id = ''): void
@@ -181,7 +187,7 @@ class Session
             $this->id = '';
         }
         if ($this->redis) {
-            $this->redis->del('s:' . $id);
+            $this->redis->del($this->getKey($id));
         }
     }
 
