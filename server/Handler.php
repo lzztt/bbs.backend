@@ -28,7 +28,7 @@ abstract class Handler extends CoreHandler
     const UID_GUEST = 0;
     const UID_ADMIN = 1;
 
-    const LIMIT_ROBOT = 20;
+    const LIMIT_ROBOT = 10;
     const LIMIT_GUEST = 50;
     const LIMIT_USER = 100;
     const LIMIT_WINDOW = 86400;
@@ -161,17 +161,17 @@ abstract class Handler extends CoreHandler
             }
 
             if ($isAllowedBot) {
-                $limit *= 100;
+                $limit *= 200;
             }
 
             if ($current > $limit) {
                 if ($limit === 0 && $this->request->uid === self::UID_GUEST && !$this->request->isRobot()) {
-                    $this->session->deleteSession();
+                    $this->session->regenerateId();
                 }
-                // mail error log
+                // log error
                 if (!$rateLimiter->exists($key . ':log')) {
-                    if ($this->request->isRobot()) {
-                        $this->logger->warning('rate limit ' . $this->request->ip);
+                    if ($this->request->isRobot() || ($limit === 0 && $this->request->uid === self::UID_GUEST)) {
+                        $this->logger->warning('rate limit ' . $this->request->ip . ' : ' . $this->request->agent);
                     } else {
                         $this->logger->error('rate limit ' . $this->request->ip);
                     }
