@@ -24,7 +24,7 @@ class Handler extends Service
             'role' => null
         ];
         if ($this->args && $this->args[0] === $this->session->id() && $this->request->uid !== self::UID_GUEST) {
-            $user = new User($this->request->uid, 'username, status');
+            $user = new User($this->request->uid, 'username,status');
             if ($user->exists() && $user->status > 0) {
                 $return['uid'] = $user->id;
                 $return['username'] = $user->username;
