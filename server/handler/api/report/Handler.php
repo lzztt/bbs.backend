@@ -17,12 +17,7 @@ class Handler extends Service
     {
         $this->validateUser();
 
-        if (array_key_exists('commentId', $this->request->data)) {
-            $cid = (int) $this->request->data['commentId'];
-        } else {
-            $cid = (int) $this->request->data['nodeId'];
-        }
-
+        $cid = (int) $this->request->data['commentId'];
         $reason = $this->request->data['reason'];
 
         $complain = new NodeComplain();
