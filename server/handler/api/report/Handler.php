@@ -6,6 +6,7 @@ namespace site\handler\api\report;
 
 use lzx\core\Mailer;
 use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\Comment;
 use site\dbobject\NodeComplain;
@@ -13,6 +14,29 @@ use site\dbobject\User;
 
 class Handler extends Service
 {
+    public function get(): void
+    {
+        if (!$this->args) {
+            throw new Forbidden();
+        }
+
+        $complain = [];
+        $nids = array_filter(array_map('intval', explode(',', $this->args[0])), function (int $v): bool {
+            return $v > 0;
+        });
+
+        if ($nids) {
+            $nc = new NodeComplain();
+            $nc->getCommentComplains($nids);
+
+            foreach ($nc->getCommentComplains($nids) as $r) {
+                $complain[(int) $r['cid']] = (int) $r['status'];
+            }
+        }
+
+        $this->json($complain);
+    }
+
     public function post(): void
     {
         $this->validateUser();

@@ -23,4 +23,17 @@ class NodeComplain extends DBObject
     {
         parent::__construct(DB::getInstance(), 'node_complaints', $id, $properties);
     }
+
+    public function getCommentComplains(array $cids): array
+    {
+        if (!$cids) {
+            return [];
+        }
+
+        return $this->db->query('
+            SELECT cid, MAX(status) AS status
+            FROM node_complaints
+            WHERE cid IN (' . implode(',', $cids) . ')
+            GROUP BY cid;');
+    }
 }

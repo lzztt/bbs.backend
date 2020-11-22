@@ -32,7 +32,7 @@ function (
     <?php foreach ($posts as $index => $p) : ?>
       <section>
         <?= $p['authorPanel'] ?>
-        <div style="max-width: 87.5%; width: 87.5%;">
+        <div id="comment<?= $p['id'] ?>" style="max-width: 87.5%; width: 87.5%;">
           <header>
             <a onclick="window.app.user(<?= $p['uid'] ?>)"><?= $p['username'] ?></a>
             <span class='city'><?= $p['city'] ?></span>
@@ -50,7 +50,7 @@ function (
                 <button type="button" class="v_user_not_<?= $p['uid'] ?>" onclick="window.app.report(<?= $p['id'] ?>)">举报</button>
               <?php endif ?>
               <?php if ($tid == 16 && $p['type'] == 'node') : ?>
-                <button type="button" class="<?= $urole ?>" onclick="window.location.href='/node/<?= $p['id'] ?>/activity'">发布为活动</button>
+                <button type="button" class="<?= $urole ?> action" onclick="window.location.href='/node/<?= $p['id'] ?>/activity'">发布为活动</button>
               <?php endif ?>
               <?php
               $id = $p['type'] === 'node' ? $nid : $p['id'];
@@ -59,8 +59,8 @@ function (
                 const editJson_<?= $id ?> = <?= $p["editJson"] ?>;
                 const quoteJson_<?= $id ?> = <?= $p["quoteJson"] ?>;
               </script>
-              <button type="button" class="<?= $urole ?>" onclick="window.app.open<?= $p['type'] === 'node' ? 'Node' : 'Comment' ?>Editor(editJson_<?= $id ?>)">编辑</button>
-              <button type="button" class="<?= $urole ?>" onclick="window.app.delete('<?= $p['type'] ?>', <?= $id ?>)">删除</button>
+              <button type="button" class="<?= $urole ?> action" onclick="window.app.open<?= $p['type'] === 'node' ? 'Node' : 'Comment' ?>Editor(editJson_<?= $id ?>)">编辑</button>
+              <button type="button" class="<?= $urole ?> action" onclick="window.app.delete('<?= $p['type'] ?>', <?= $id ?>)">删除</button>
               <button type="button" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
               <button type="button" onclick="window.app.openCommentEditor(quoteJson_<?= $id ?>)">引用</button>
             </div>
@@ -69,6 +69,9 @@ function (
       </section>
     <?php endforeach ?>
   </article>
+  <script>
+    window.app.getReport([<?= implode(",", array_column($posts, "id")) ?>]);
+  </script>
 
   <header class="content_header">
     <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>
