@@ -18,9 +18,9 @@ function (
   <header class="content_header">
     <?= $breadcrumb ?>
     <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>
-    <button type="button" class='v_user' onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
-    <button type="button" class='v_user' onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
-    <button type="button" class='v_user' onclick="fetch('/node/<?= $nid ?>/bookmark').then(() => {alert('帖子成功加入到您的收藏夹中！')})">收藏</button>
+    <button type="button" class="v_user" onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
+    <button type="button" class="v_user" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
+    <button type="button" class="v_user" onclick="fetch('/node/<?= $nid ?>/bookmark').then(() => {alert('帖子成功加入到您的收藏夹中！')})">收藏</button>
     <span class="ajax_load" data-ajax='<?= $ajaxUri ?>'><?= $commentCount ?> replies, <span class="ajax_viewCount<?= $nid ?>"></span> views</span>
     <?= $pager ?>
   </header>
@@ -70,13 +70,13 @@ function (
     <?php endforeach ?>
   </article>
   <script>
-    window.app.getReport([<?= implode(",", array_column($posts, "id")) ?>]);
+    window.app.getReport([<?= implode(',', array_column($posts, 'id')) ?>]);
   </script>
 
   <header class="content_header">
-    <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>
-    <button type="button" class='v_user' onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
-    <button type="button" class='v_user' onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
+    <span class="v_guest">您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>
+    <button type="button" class="v_user" onclick="window.app.openNodeEditor({tagId: <?= $tid ?>})">发表新话题</button>
+    <button type="button" class="v_user" onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
     <?= $pager ?>
   </header>
 
