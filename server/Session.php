@@ -95,7 +95,7 @@ class Session
         $this->id = bin2hex(random_bytes(8));
 
         setcookie(self::SID_NAME, $this->id, [
-            'expires' => $this->time + 2592000,
+            'expires' => $this->time + self::ONE_MONTH,
             'path' => '/',
             'domain' => '',
             'secure' => true,
@@ -163,7 +163,7 @@ class Session
         $this->redis->hMSet($this->getKey($this->id), $insert);
 
         $idChanged = $this->id !== $this->originalId;
-        $uidChanged = $this->original && $this->current['uid'] != $this->original['uid'];
+        $uidChanged = $this->original && $this->current['uid'] !== $this->original['uid'];
 
         if ($idChanged || $uidChanged) {
             $this->redis->expire($this->getKey($this->id), (int) $this->current['uid'] > 0 ? self::ONE_MONTH : self::ONE_DAY);
