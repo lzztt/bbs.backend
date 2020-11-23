@@ -30,7 +30,7 @@ class Handler extends Service
             $nc->getCommentComplains($nids);
 
             foreach ($nc->getCommentComplains($nids) as $r) {
-                $complain[(int) $r['cid']] = (int) $r['status'];
+                $complain[$r['cid']] = (int) $r['status'];
             }
         }
 
@@ -105,24 +105,24 @@ class Handler extends Service
                     $mailer->setTo('ikki3355@gmail.com');
                     $mailer->setSubject($title . ': ' . $spammer->username . ' <' . $spammer->email . '>');
                     $mailer->setBody(print_r([
-                        'spammer'  => [
-                            'id'         => 'https://' . $this->request->domain . '/user/' . $comment->uid,
+                        'spammer' => [
+                            'id' => 'https://' . $this->request->domain . '/user/' . $comment->uid,
                             'username' => $spammer->username,
-                            'email'     => $spammer->email,
-                            'city'      => self::getLocationFromIp($spammer->lastAccessIp),
-                            'contribution'    => $spammer->contribution,
+                            'email' => $spammer->email,
+                            'city' => self::getLocationFromIp($spammer->lastAccessIp),
+                            'contribution' => $spammer->contribution,
                             'register' => date(DATE_COOKIE, $spammer->createTime)
                         ],
-                        'comment'      => [
-                            'id'     => 'https://' . $this->request->domain . '/node/' . $comment->nid,
-                            'body'  => $comment->body,
+                        'comment' => [
+                            'id' => 'https://' . $this->request->domain . '/node/' . $comment->nid,
+                            'body' => $comment->body,
                         ],
                         'reporter' => [
-                            'id'         => 'https://' . $this->request->domain . '/user/' . $reporter->id,
+                            'id' => 'https://' . $this->request->domain . '/user/' . $reporter->id,
                             'username' => $reporter->username,
-                            'email'     => $reporter->email,
-                            'city'      => self::getLocationFromIp($this->request->ip),
-                            'contribution'    => $reporter->contribution,
+                            'email' => $reporter->email,
+                            'city' => self::getLocationFromIp($this->request->ip),
+                            'contribution' => $reporter->contribution,
                             'register' => date(DATE_COOKIE, $reporter->createTime)
                         ]
                     ], true));
