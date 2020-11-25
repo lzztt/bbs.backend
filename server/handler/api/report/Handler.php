@@ -72,14 +72,14 @@ class Handler extends Service
                     $complain->uid = $comment->uid;
                     $complain->nid = $comment->nid;
                     $complain->cid = $cid;
-                    $complain->weight = $reporter->contribution;
+                    $complain->weight = $reporter->reputation;
                     $complain->time = $this->request->timestamp;
                     $complain->reason = $reason;
                     $complain->status = 1;
                     $complain->add();
 
                     $title = '举报';
-                    if ($reporter->contribution > 0 && ($spammer->contribution < 2 || (strpos($comment->body, 'http') && $spammer->contribution < 18) !== false)) {
+                    if ($reporter->reputation > 0 && ($spammer->reputation < 2 || (strpos($comment->body, 'http') && $spammer->reputation < 18) !== false)) {
                         // check complains
                         $complain = new NodeComplain();
                         $complain->where('cid', $cid, '=');
@@ -110,7 +110,7 @@ class Handler extends Service
                             'username' => $spammer->username,
                             'email' => $spammer->email,
                             'city' => self::getLocationFromIp($spammer->lastAccessIp),
-                            'contribution' => $spammer->contribution,
+                            'reputation' => $spammer->reputation,
                             'register' => date(DATE_COOKIE, $spammer->createTime)
                         ],
                         'comment' => [
@@ -122,7 +122,7 @@ class Handler extends Service
                             'username' => $reporter->username,
                             'email' => $reporter->email,
                             'city' => self::getLocationFromIp($this->request->ip),
-                            'contribution' => $reporter->contribution,
+                            'reputation' => $reporter->reputation,
                             'register' => date(DATE_COOKIE, $reporter->createTime)
                         ]
                     ], true));

@@ -11,7 +11,6 @@ use lzx\exception\Redirect;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\Node as NodeObject;
-use site\dbobject\User;
 use site\handler\node\Node;
 
 class Handler extends Node
@@ -103,7 +102,6 @@ class Handler extends Node
             throw new ErrorMessage('错误：评论正文字数太少。');
         }
 
-        $user = new User($this->request->uid, 'createTime,contribution,status');
         try {
             $this->validatePost();
             $this->dedup();
