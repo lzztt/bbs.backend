@@ -7,7 +7,6 @@ namespace site\handler\api\bookmark;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Service;
-use site\dbobject\User;
 
 class Handler extends Service
 {
@@ -26,16 +25,14 @@ class Handler extends Service
 
         $uid = (int) $this->args[0];
 
-        if ($uid != $this->request->uid) {
+        if ($uid !== $this->request->uid) {
             throw new Forbidden();
         }
 
-        $u = new User($this->request->uid, 'id');
-
-        $nodeCount = $u->countBookmark();
+        $nodeCount = $this->user->countBookmark();
         list($pageNo, $pageCount) = $this->getPagerInfo($nodeCount, self::NODES_PER_PAGE);
 
-        $nodes = $nodeCount > 0 ? $u->listBookmark(self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE) : [];
+        $nodes = $nodeCount > 0 ? $this->user->listBookmark(self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE) : [];
 
         $this->json(['nodes' => $nodes, 'pager' => ['pageNo' => $pageNo, 'pageCount' => $pageCount]]);
     }
@@ -47,7 +44,6 @@ class Handler extends Service
      */
     public function post(): void
     {
-        $this->validateUser();
         if (!$this->request->data) {
             throw new Forbidden();
         }
@@ -57,9 +53,9 @@ class Handler extends Service
             throw new ErrorMessage('node does not exist');
         }
 
-        $u = new User($this->request->uid, 'id');
+        $this->validateUser();
 
-        $u->addBookmark($nid);
+        $this->user->addBookmark($nid);
 
         $this->json();
     }
@@ -83,9 +79,8 @@ class Handler extends Service
             }
         }
 
-        $u = new User($this->request->uid, 'id');
         foreach ($nids as $nid) {
-            $u->deleteBookmark($nid);
+            $this->user->deleteBookmark($nid);
         }
 
         $this->json();

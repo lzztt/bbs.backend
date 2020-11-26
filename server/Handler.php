@@ -39,6 +39,8 @@ abstract class Handler extends CoreHandler
 
     protected static City $city;
     private static CacheHandler $cacheHandler;
+
+    protected User $user;
     protected ?PageCache $cache = null;
     protected array $independentCacheList = [];
     protected array $cacheEvents = [];
@@ -49,6 +51,9 @@ abstract class Handler extends CoreHandler
         $this->session = $session;
         $this->config = $config;
         $this->args = $args;
+
+        $this->user = new User();
+        $this->user->id = $req->uid;
     }
 
     public function beforeRun(): void
@@ -112,7 +117,7 @@ abstract class Handler extends CoreHandler
             }
 
             $deduper = MemStore::getRedis(MemStore::DEDUP);
-            $key = 'c:' . $this->request->uid . ':' . md5($clean);
+            $key = 'c:' . $this->user->id . ':' . md5($clean);
             $count = $deduper->incr($key);
             $deduper->expire($key, 86400);
 
@@ -126,8 +131,8 @@ abstract class Handler extends CoreHandler
     {
         $rateLimiter = MemStore::getRedis(MemStore::RATE);
         $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
-        if ($this->request->uid) {
-            $key = date("d") . $handler . $this->request->uid;
+        if ($this->user->id) {
+            $key = date("d") . $handler . $this->user->id;
             $limit = static::LIMIT_USER * 2;
             $window = static::LIMIT_WINDOW / 2;
         } else {
@@ -165,12 +170,12 @@ abstract class Handler extends CoreHandler
             }
 
             if ($current > $limit) {
-                if ($limit === 0 && $this->request->uid === self::UID_GUEST && !$this->request->isRobot()) {
+                if ($limit === 0 && $this->user->id === self::UID_GUEST && !$this->request->isRobot()) {
                     $this->session->regenerateId();
                 }
                 // log error
                 if (!$rateLimiter->exists($key . ':log')) {
-                    if ($this->request->isRobot() || ($limit === 0 && $this->request->uid === self::UID_GUEST)) {
+                    if ($this->request->isRobot() || ($limit === 0 && $this->user->id === self::UID_GUEST)) {
                         $this->logger->warning('rate limit ' . $this->request->ip . ' : ' . $this->request->agent);
                     } else {
                         $this->logger->error('rate limit ' . $this->request->ip);
@@ -185,14 +190,13 @@ abstract class Handler extends CoreHandler
 
     private function updateAccessInfo(): void
     {
-        if ($this->request->uri !== '/api/stat' || $this->request->uid === self::UID_GUEST) {
+        if ($this->request->uri !== '/api/stat' || $this->user->id === self::UID_GUEST) {
             return;
         }
 
-        $user = new User($this->request->uid, 'lastAccessTime');
-        if ($this->request->timestamp - $user->lastAccessTime > 259200) { // 3 days
-            $user->lastAccessTime = $this->request->timestamp;
-            $user->update();
+        if ($this->request->timestamp - $this->user->lastAccessTime > 259200) { // 3 days
+            $this->user->lastAccessTime = $this->request->timestamp;
+            $this->user->update('lastAccessTime');
 
             $this->updateSessionEvent(SessionEvent::EVENT_UPDATE);
         }
@@ -202,7 +206,7 @@ abstract class Handler extends CoreHandler
     {
         $sessionEvent = new SessionEvent();
         $sessionEvent->sessionId = $this->session->id();
-        $sessionEvent->userId = $this->request->uid;
+        $sessionEvent->userId = $this->user->id;
         $sessionEvent->event = $event;
         $sessionEvent->time = $this->request->timestamp;
         $sessionEvent->ip = inet_pton($this->request->ip);
@@ -278,25 +282,21 @@ abstract class Handler extends CoreHandler
         }
     }
 
-    protected function validateUserExists(int $uid): void
-    {
-        if ($uid > 0) {
-            $user = new User($uid, 'status');
-            if ($user->exists() && $user->status > 0) {
-                return;
-            }
-        }
-
-        throw new ErrorMessage('用户不存在');
-    }
-
     protected function validateUser(): void
     {
-        if ($this->request->uid === self::UID_GUEST) {
+        if ($this->user->id === self::UID_GUEST) {
             throw new ErrorMessage('请先登陆');
         }
 
-        $this->validateUserExists($this->request->uid);
+        if (is_null($this->user->status)) {
+            $this->user->load();
+        }
+
+        if ($this->user->exists() && $this->user->status > 0) {
+            return;
+        }
+
+        throw new ErrorMessage('用户不存在');
     }
 
     protected function deleteUser(int $uid): void
@@ -337,7 +337,7 @@ abstract class Handler extends CoreHandler
 
             if (count($new) && count($_FILES)) {
                 $saveDir = $this->config->path['file'];
-                $saveName = $this->request->timestamp . $this->request->uid;
+                $saveName = $this->request->timestamp . $this->user->id;
                 $upload = File::saveFiles($_FILES, $saveDir, $saveName, $this->config->image);
                 foreach ($upload['saved'] as $f) {
                     $f['name'] = $new[$f['name']]['name'];
@@ -350,13 +350,9 @@ abstract class Handler extends CoreHandler
 
     protected function validatePost(): void
     {
-        $user = new User($this->request->uid, 'createTime,status');
+        $this->validateUser();
 
-        if ($user->status != 1) {
-            throw new Exception('This user account cannot post message.');
-        }
-
-        $creationDays = (int) (($this->request->timestamp - $user->createTime) / 86400);
+        $creationDays = (int) (($this->request->timestamp - $this->user->createTime) / 86400);
         if ($creationDays < 30) {
             $spamwords = (new SpamWord())->getList();
 
@@ -367,7 +363,7 @@ abstract class Handler extends CoreHandler
             $this->checkBody($this->request->data['body'], $spamwords);
 
             if ($creationDays < 10 && self::$city->domain === 'houstonbbs.com') {
-                $this->checkPostCounts($user, $creationDays);
+                $this->checkPostCounts($this->user, $creationDays);
             }
         }
     }
@@ -428,8 +424,8 @@ abstract class Handler extends CoreHandler
 
     protected function deleteSpammer(): void
     {
-        $this->logger->info('SPAMMER DELETED: uid=' . $this->request->uid);
-        $this->deleteUser($this->request->uid);
+        $this->logger->info('SPAMMER DELETED: uid=' . $this->user->id);
+        $this->deleteUser($this->user->id);
 
         $u = new User();
         $u->lastAccessIp = inet_pton($this->request->ip);

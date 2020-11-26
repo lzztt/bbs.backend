@@ -27,7 +27,7 @@ class Handler extends Comment
         }
 
         $comment = new CommentObject($cid, 'nid,uid');
-        if ($this->request->uid != 1 && $this->request->uid != $comment->uid) {
+        if ($this->request->uid !== self::UID_ADMIN && $this->request->uid !== $comment->uid) {
             $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new Forbidden();
         }

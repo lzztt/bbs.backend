@@ -24,7 +24,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        if ($this->request->uid != 1) {
+        if ($this->request->uid !== self::UID_ADMIN) {
             throw new Forbidden();
         }
 

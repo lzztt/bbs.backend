@@ -61,7 +61,7 @@ class Handler extends Service
             // user
             $uid = (int) $this->args[0];
 
-            if ($uid != $this->request->uid) {
+            if ($uid !== $this->request->uid) {
                 throw new Forbidden();
             }
         } else {

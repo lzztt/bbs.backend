@@ -20,8 +20,8 @@ abstract class DBObject
     private $values = [];
     protected $db;
     protected $table;
-    private $fields;
-    private $fields_type = [];
+    private $columns;
+    private $column_types = [];
     private $exists = null;
     private $where = [];
     private $bind_values = [];
@@ -35,12 +35,12 @@ abstract class DBObject
 
         $this->db = $db;
         $this->table = $table;
-        $this->fields = [];
+        $this->columns = [];
         foreach ($this->properties as $p) {
-            $this->fields[$p] = self::camelToUnderscore($p);
+            $this->columns[$p] = self::camelToUnderscore($p);
         }
 
-        $this->getFieldsTypeAndPKey();
+        $this->getColumnTypesAndPKey();
 
         if ($id) {
             if (!$this->pkey_property) {
@@ -90,7 +90,7 @@ abstract class DBObject
                 continue;
             }
 
-            $p = array_search($k, $this->fields);
+            $p = array_search($k, $this->columns);
             if ($p) {
                 $this->$p = $v;
                 continue;
@@ -115,7 +115,7 @@ abstract class DBObject
     private function bind(string $prop): void
     {
         if (array_key_exists($prop, $this->values)) {
-            $this->bind_values[':' . $this->fields[$prop]] = $this->values[$prop];
+            $this->bind_values[':' . $this->columns[$prop]] = $this->values[$prop];
         } else {
             throw new Exception('could not find binding value for property: ' . $prop);
         }
@@ -139,10 +139,10 @@ abstract class DBObject
             $this->values[$prop] = null;
         } else {
             if (!in_array(gettype($value), ['integer', 'string', 'double', 'boolean'])) {
-                throw new Exception('Invalid value type: ' . $this->fields[$prop] . '(' . gettype($value) . ')');
+                throw new Exception('Invalid value type: ' . $this->columns[$prop] . '(' . gettype($value) . ')');
             }
 
-            switch ($this->fields_type[$this->fields[$prop]]) {
+            switch ($this->column_types[$this->columns[$prop]]) {
                 case self::T_INT:
                     $this->values[$prop] = (int) $value;
                     break;
@@ -153,7 +153,7 @@ abstract class DBObject
                     $this->values[$prop] = (string) $value;
                     break;
                 default:
-                    throw new Exception('non-supported field data type: ' . $this->fields[$prop] . '(' . $this->fields_type[$this->fields[$prop]] . ')');
+                    throw new Exception('non-supported field data type: ' . $this->columns[$prop] . '(' . $this->column_types[$this->columns[$prop]] . ')');
             }
         }
 
@@ -249,10 +249,10 @@ abstract class DBObject
 
         if (array_key_exists($this->pkey_property, $this->values)) {
             $this->bind($this->pkey_property);
-            $this->db->query('DELETE FROM ' . $this->table . ' WHERE ' . $this->fields[$this->pkey_property] . ' = :' . $this->fields[$this->pkey_property], $this->bind_values);
+            $this->db->query('DELETE FROM ' . $this->table . ' WHERE ' . $this->columns[$this->pkey_property] . ' = :' . $this->columns[$this->pkey_property], $this->bind_values);
             $this->clear(true);
         } else {
-            throw new Exception('ERROR delete: invalid primary key value: [' . $this->fields[$this->pkey_property] . ' : ' . $this->values[$this->pkey_property] . ']');
+            throw new Exception('ERROR delete: invalid primary key value: [' . $this->columns[$this->pkey_property] . ' : ' . $this->values[$this->pkey_property] . ']');
         }
     }
 
@@ -267,18 +267,18 @@ abstract class DBObject
             throw new Exception('adding an object with no dirty properties to database');
         }
 
-        $fields = '';
+        $columns = '';
         $values = '';
         foreach ($this->properties_dirty as $p) {
-            $fields = $fields . $this->fields[$p] . ', ';
-            $values = $values . ':' . $this->fields[$p] . ', ';
+            $columns = $columns . $this->columns[$p] . ', ';
+            $values = $values . ':' . $this->columns[$p] . ', ';
             $this->bind($p);
         }
-        $fields = substr($fields, 0, -2);
+        $columns = substr($columns, 0, -2);
         $values = substr($values, 0, -2);
 
         $sql = 'INSERT '
-            . 'INTO ' . $this->table . ' (' . $fields . ') '
+            . 'INTO ' . $this->table . ' (' . $columns . ') '
             . 'VALUES (' . $values . ')';
 
         $this->db->query($sql, $this->bind_values);
@@ -326,7 +326,7 @@ abstract class DBObject
         $values = '';
 
         foreach ($props as $p) {
-            $values = $values . $this->fields[$p] . '=:' . $this->fields[$p] . ', ';
+            $values = $values . $this->columns[$p] . '=:' . $this->columns[$p] . ', ';
             $this->bind($p);
         }
 
@@ -359,9 +359,9 @@ abstract class DBObject
         if (!in_array($this->pkey_property, $props)) {
             $props[] = $this->pkey_property;
         }
-        $fields = $this->selectFields($props);
+        $columns = $this->selectColumns($props);
 
-        return $this->select($fields, $limit, $offset);
+        return $this->select($columns, $limit, $offset);
     }
 
     private function parseProperties(string $properties, array $property_pool): array
@@ -378,18 +378,18 @@ abstract class DBObject
         return $props_exist;
     }
 
-    private function selectFields(array $properties): string
+    private function selectColumns(array $properties): string
     {
-        $fields = '';
+        $columns = '';
         foreach ($properties as $p) {
-            if ($p === $this->fields[$p]) {
-                $fields = $fields . $p . ', ';
+            if ($p === $this->columns[$p]) {
+                $columns = $columns . $p . ', ';
             } else {
-                $fields = $fields . $this->fields[$p] . ' AS ' . $p . ', ';
+                $columns = $columns . $this->columns[$p] . ' AS ' . $p . ', ';
             }
         }
 
-        return substr($fields, 0, -2);
+        return substr($columns, 0, -2);
     }
 
     /**
@@ -427,7 +427,7 @@ abstract class DBObject
 
                 $bind_names = [];
                 $i = 0;
-                switch ($this->fields_type[$this->fields[$prop]]) {
+                switch ($this->column_types[$this->columns[$prop]]) {
                     case self::T_INT:
                         foreach ($value as $v) {
                             $this->bind_values[':' . $prop . $key . $i] = intval($v);
@@ -447,7 +447,7 @@ abstract class DBObject
                         }
                         break;
                     default:
-                        throw new Exception('non-supported field data type: ' . $this->fields[$prop] . '(' . $this->fields_type[$this->fields[$prop]] . ')');
+                        throw new Exception('non-supported field data type: ' . $this->columns[$prop] . '(' . $this->column_types[$this->columns[$prop]] . ')');
                 }
                 $value = '(' . implode(', ', $bind_names) . ')';
             } else {
@@ -461,13 +461,13 @@ abstract class DBObject
             }
         }
 
-        $this->where[$prop . '_' . $condition] = $this->fields[$prop] . ' ' . $condition . ' ' . $value;
+        $this->where[$prop . '_' . $condition] = $this->columns[$prop] . ' ' . $condition . ' ' . $value;
     }
 
     public function order(string $prop, bool $ascending = true): void
     {
         if (in_array($prop, $this->properties)) {
-            $this->order[$prop] = $this->fields[$prop] . ($ascending ? ' ASC' : ' DESC');
+            $this->order[$prop] = $this->columns[$prop] . ($ascending ? ' ASC' : ' DESC');
         } else {
             throw new Exception('ERROR non-existing property : ' . $prop);
         }
@@ -509,16 +509,16 @@ abstract class DBObject
         return $arr;
     }
 
-    private function getFieldsTypeAndPKey(): void
+    private function getColumnTypesAndPKey(): void
     {
-        static $fields = [];
+        static $columns = [];
         static $int_type = ['int', 'bool'];
         static $float_type = ['float', 'double', 'real'];
         static $text_type = ['char', 'text', 'binary', 'blob', 'date', 'time', 'year', 'enum'];
 
-        if (array_key_exists($this->table, $fields)) {
-            $this->fields_type = $fields[$this->table]['types'];
-            $this->pkey_property = $fields[$this->table]['pkey'];
+        if (array_key_exists($this->table, $columns)) {
+            $this->column_types = $columns[$this->table]['types'];
+            $this->pkey_property = $columns[$this->table]['pkey'];
         } else {
             $res = $this->db->query('DESCRIBE ' . $this->table);
 
@@ -527,19 +527,19 @@ abstract class DBObject
                 if ($r['Key'] == 'PRI') {
                     // no primary key found yet
                     if (is_null($this->pkey_property)) {
-                        $prop = array_search($r['Field'], $this->fields);
+                        $prop = array_search($r['Field'], $this->columns);
                         if ($prop !== false) {
                             $this->pkey_property = $prop;
                         } else {
                             throw new Exception('non-property primary key found : ' . $r['Field']);
                         }
                     } else {
-                        throw new Exception('found multiple primary keys in db table : ' . $this->fields[$this->pkey_property] . ', ' . $r['Field']);
+                        throw new Exception('found multiple primary keys in db table : ' . $this->columns[$this->pkey_property] . ', ' . $r['Field']);
                     }
                 }
 
-                // ignore fields that not set
-                if (!in_array($r['Field'], $this->fields)) {
+                // ignore columns that not set
+                if (!in_array($r['Field'], $this->columns)) {
                     continue;
                 }
 
@@ -547,7 +547,7 @@ abstract class DBObject
 
                 foreach ($int_type as $i) {
                     if (strpos($r['Type'], $i) !== false) {
-                        $this->fields_type[$r['Field']] = self::T_INT;
+                        $this->column_types[$r['Field']] = self::T_INT;
                         $found = true;
                         break;
                     }
@@ -556,7 +556,7 @@ abstract class DBObject
                 if (!$found) {
                     foreach ($float_type as $f) {
                         if (strpos($r['Type'], $f) !== false) {
-                            $this->fields_type[$r['Field']] = self::T_FLOAT;
+                            $this->column_types[$r['Field']] = self::T_FLOAT;
                             $found = true;
                             break;
                         }
@@ -565,7 +565,7 @@ abstract class DBObject
                     if (!$found) {
                         foreach ($text_type as $t) {
                             if (strpos($r['Type'], $t) !== false) {
-                                $this->fields_type[$r['Field']] = self::T_STRING;
+                                $this->column_types[$r['Field']] = self::T_STRING;
                                 $found = true;
                                 break;
                             }
@@ -578,12 +578,12 @@ abstract class DBObject
                 }
             }
 
-            if (sizeof($this->fields_type) < sizeof($this->fields)) {
-                throw new Exception('the following fields do not exist in db table: ' . implode(', ', array_diff(array_values($this->fields), array_keys($this->fields_type))));
+            if (sizeof($this->column_types) < sizeof($this->columns)) {
+                throw new Exception('the following columns do not exist in db table: ' . implode(', ', array_diff(array_values($this->columns), array_keys($this->column_types))));
             }
 
-            $fields[$this->table] = [
-                'types' => $this->fields_type,
+            $columns[$this->table] = [
+                'types' => $this->column_types,
                 'pkey' => $this->pkey_property
             ];
         }

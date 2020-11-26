@@ -18,7 +18,7 @@ class Handler extends Controller
     {
         $this->validateUser();
 
-        if ($this->request->uid != 1) {
+        if ($this->request->uid !== self::UID_ADMIN) {
             throw new Forbidden();
         }
 

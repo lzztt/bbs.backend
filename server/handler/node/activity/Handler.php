@@ -41,7 +41,7 @@ class Handler extends Node
             throw new ErrorMessage('错误：错误的讨论区。');
         }
 
-        if ($this->request->uid != $node->uid && $this->request->uid != 1) {
+        if ($this->request->uid !== $node->uid && $this->request->uid !== self::UID_ADMIN) {
             $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new ErrorMessage('错误：您只能将自己发表的帖子发布为活动。');
         }

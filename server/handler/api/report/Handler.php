@@ -58,7 +58,7 @@ class Handler extends Service
             throw new ErrorMessage('被举报的帖子不存在');
         }
 
-        if ($comment->uid == $this->request->uid) {
+        if ($comment->uid === $this->request->uid) {
             throw new ErrorMessage('您不能举报自己的帖子');
         }
 
@@ -66,7 +66,7 @@ class Handler extends Service
             $spammer = new User($comment->uid);
 
             if ($spammer->exists() && $spammer->status > 0) {
-                $reporter = new User($this->request->uid);
+                $reporter = $this->user;
 
                 if ($reporter->status > 0) {
                     $complain->uid = $comment->uid;

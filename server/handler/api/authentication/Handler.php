@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace site\handler\api\authentication;
 
+use Exception;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Service;
@@ -23,12 +24,13 @@ class Handler extends Service
             'username' => null,
             'role' => null
         ];
-        if ($this->args && $this->args[0] === $this->session->id() && $this->request->uid !== self::UID_GUEST) {
-            $user = new User($this->request->uid, 'username,status');
-            if ($user->exists() && $user->status > 0) {
-                $return['uid'] = $user->id;
-                $return['username'] = $user->username;
-                $return['role'] = $user->getUserGroup();
+        if ($this->args && $this->args[0] === $this->session->id()) {
+            try {
+                $this->validateUser();
+                $return['uid'] = $this->user->id;
+                $return['username'] = $this->user->username;
+                $return['role'] = $this->user->getUserGroup();
+            } catch (Exception $e) {
             }
         }
         $this->json($return);

@@ -19,7 +19,7 @@ class Handler extends Comment
         $comment->id = (int) $this->args[0];
         $comment->load('uid,nid,createTime');
 
-        if ($this->request->uid != 1 && $this->request->uid != $comment->uid) {
+        if ($this->request->uid !== self::UID_ADMIN && $this->request->uid !== $comment->uid) {
             $this->logger->warning('wrong action : uid = ' . $this->request->uid);
             throw new Forbidden();
         }

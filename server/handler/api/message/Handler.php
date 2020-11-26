@@ -89,7 +89,7 @@ class Handler extends Service
         // validate toUid
         $toUid = (int) $this->request->data['toUid'];
         if ($toUid) {
-            if ($toUid == $this->request->uid) {
+            if ($toUid === $this->request->uid) {
                 throw new ErrorMessage('不能给自己发送站内短信');
             }
 
@@ -145,7 +145,7 @@ class Handler extends Service
             }
         }
 
-        $sender = new User($this->request->uid, 'username,avatar');
+        $sender = $this->user;
         $this->json([
             'id'         => $pm->id,
             'mid'        => $pm->msgId,
