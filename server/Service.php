@@ -40,7 +40,7 @@ abstract class Service extends Handler
 
     protected function validateAdmin(): void
     {
-        if ($this->request->uid !== self::UID_ADMIN) {
+        if ($this->user->id !== self::UID_ADMIN) {
             throw new Forbidden();
         }
     }

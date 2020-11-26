@@ -112,7 +112,7 @@ class Handler extends Node
                 } else {
                     $c['editJson'] = json_encode([
                         'nodeId' => $nid,
-                        'commentId' =>  $c['id'],
+                        'commentId' => $c['id'],
                         'body' => $c['body'],
                         'images' => $c['files']
                     ], self::JSON_OPTIONS);
@@ -257,7 +257,7 @@ class Handler extends Node
                     ], self::JSON_OPTIONS);
                     $c['editJson'] = json_encode([
                         'nodeId' => $nid,
-                        'commentId' =>  $c['id'],
+                        'commentId' => $c['id'],
                         'body' => $c['body']
                     ], self::JSON_OPTIONS);
 

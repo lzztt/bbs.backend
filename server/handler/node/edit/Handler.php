@@ -54,8 +54,8 @@ class Handler extends Node
             throw new ErrorMessage('Topic title or body is too short.');
         }
 
-        if ($this->request->uid !== self::UID_ADMIN && $this->request->uid !== $node->uid) {
-            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
+        if ($this->user->id !== self::UID_ADMIN && $this->user->id !== $node->uid) {
+            $this->logger->warning('wrong action : uid = ' . $this->user->id);
             throw new Forbidden();
         }
 
@@ -103,8 +103,8 @@ class Handler extends Node
             throw new ErrorMessage('node does not exist.');
         }
 
-        if ($this->request->uid !== self::UID_ADMIN && $this->request->uid !== $node->uid) {
-            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
+        if ($this->user->id !== self::UID_ADMIN && $this->user->id !== $node->uid) {
+            $this->logger->warning('wrong action : uid = ' . $this->user->id);
             throw new Forbidden();
         }
 

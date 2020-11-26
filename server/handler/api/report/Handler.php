@@ -46,7 +46,7 @@ class Handler extends Service
 
         $complain = new NodeComplain();
         $complain->cid = $cid;
-        $complain->reporterUid = $this->request->uid;
+        $complain->reporterUid = $this->user->id;
 
         $complain->load();
         if ($complain->exists()) {
@@ -58,7 +58,7 @@ class Handler extends Service
             throw new ErrorMessage('被举报的帖子不存在');
         }
 
-        if ($comment->uid === $this->request->uid) {
+        if ($comment->uid === $this->user->id) {
             throw new ErrorMessage('您不能举报自己的帖子');
         }
 

@@ -48,7 +48,7 @@ class Handler extends Forum
 
             $node = new Node();
             $node->tid = $tid;
-            $node->uid = $this->request->uid;
+            $node->uid = $this->user->id;
             $node->title = $this->request->data['title'];
             $node->createTime = $this->request->timestamp;
             $node->lastCommentTime = $this->request->timestamp;
@@ -58,7 +58,7 @@ class Handler extends Forum
             $comment = new Comment();
             $comment->nid = $node->id;
             $comment->tid = $tid;
-            $comment->uid = $this->request->uid;
+            $comment->uid = $this->user->id;
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->status = 1;

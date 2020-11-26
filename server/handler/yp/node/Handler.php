@@ -24,7 +24,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        if ($this->request->uid !== self::UID_ADMIN) {
+        if ($this->user->id !== self::UID_ADMIN) {
             throw new Forbidden();
         }
 
@@ -51,7 +51,7 @@ class Handler extends Controller
 
             $node = new Node();
             $node->tid = $tid;
-            $node->uid = $this->request->uid;
+            $node->uid = $this->user->id;
             $node->title = $this->request->data['title'];
             $node->createTime = $this->request->timestamp;
             $node->status = 1;
@@ -60,7 +60,7 @@ class Handler extends Controller
             $comment = new Comment();
             $comment->nid = $node->id;
             $comment->tid = $tid;
-            $comment->uid = $this->request->uid;
+            $comment->uid = $this->user->id;
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->status = 1;

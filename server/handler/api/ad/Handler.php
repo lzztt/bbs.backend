@@ -12,7 +12,7 @@ class Handler extends Service
     /**
      * get ads
      * uri: /api/ad/name
-     *        /api/ad
+     *      /api/ad
      */
     public function get(): void
     {

@@ -143,10 +143,10 @@ class Node extends DBObject
         $today = strtotime(date("m/d/Y"));
         $stats = array_pop($this->call('get_node_stat("' . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) . '", ' . $today . ')'));
         return [
-            'nodeCount'            => $stats['node_count_total'],
-            'nodeTodayCount'     => $stats['node_count_recent'],
+            'nodeCount' => $stats['node_count_total'],
+            'nodeTodayCount' => $stats['node_count_recent'],
             'commentTodayCount' => $stats['comment_count_recent'],
-            'postCount'            => $stats['node_count_total'] + $stats['comment_count_total']
+            'postCount' => $stats['node_count_total'] + $stats['comment_count_total']
         ];
     }
 }

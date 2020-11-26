@@ -57,11 +57,11 @@ class Handler extends Service
         }
 
         $uid = 0;
-        if ($this->request->uid) {
+        if ($this->user->id) {
             // user
             $uid = (int) $this->args[0];
 
-            if ($uid !== $this->request->uid) {
+            if ($uid !== $this->user->id) {
                 throw new Forbidden();
             }
         } else {
@@ -96,7 +96,7 @@ class Handler extends Service
             $image = base64_decode(substr($this->request->data['avatar'], strpos($this->request->data['avatar'], ',') + 1));
             if ($image !== false) {
                 $config = Config::getInstance();
-                $avatarFile = '/data/avatars/' . $this->request->uid . '_' . ($this->request->timestamp % 100) . '.png';
+                $avatarFile = '/data/avatars/' . $this->user->id . '_' . ($this->request->timestamp % 100) . '.png';
                 file_put_contents($config->path['file'] . $avatarFile, $image);
                 $this->request->data['avatar'] = $avatarFile;
             } else {

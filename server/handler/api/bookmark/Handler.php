@@ -14,7 +14,7 @@ class Handler extends Service
     /**
      * get bookmarks for a user
      * uri: /api/bookmark/<uid>
-     *        /api/bookmark/<uid>?p=<pageNo>
+     *      /api/bookmark/<uid>?p=<pageNo>
      */
     public function get(): void
     {
@@ -25,7 +25,7 @@ class Handler extends Service
 
         $uid = (int) $this->args[0];
 
-        if ($uid !== $this->request->uid) {
+        if ($uid !== $this->user->id) {
             throw new Forbidden();
         }
 

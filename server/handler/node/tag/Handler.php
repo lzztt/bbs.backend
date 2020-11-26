@@ -24,7 +24,7 @@ class Handler extends Node
         $newTagID = (int) $this->args[0];
 
         $nodeObj = new NodeObject($nid, 'uid,tid');
-        if ($this->request->uid === self::UID_ADMIN || $this->request->uid === $nodeObj->uid) {
+        if ($this->user->id === self::UID_ADMIN || $this->user->id === $nodeObj->uid) {
             $oldTagID = $nodeObj->tid;
             $nodeObj->tid = $newTagID;
             $nodeObj->update('tid');
@@ -35,7 +35,7 @@ class Handler extends Node
 
             throw new Redirect('/node/' . $nid);
         } else {
-            $this->logger->warning('wrong action : uid = ' . $this->request->uid);
+            $this->logger->warning('wrong action : uid = ' . $this->user->id);
             throw new Forbidden();
         }
     }

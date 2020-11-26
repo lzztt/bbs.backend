@@ -60,7 +60,7 @@ class Handler extends Node
             $comment = new Comment();
             $comment->nid = $nid;
             $comment->tid = $node->tid;
-            $comment->uid = $this->request->uid;
+            $comment->uid = $this->user->id;
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->status = 1;
@@ -109,7 +109,7 @@ class Handler extends Node
 
             $comment = new Comment();
             $comment->nid = $nid;
-            $comment->uid = $this->request->uid;
+            $comment->uid = $this->user->id;
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->add();

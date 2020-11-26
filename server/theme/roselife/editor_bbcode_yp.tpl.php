@@ -44,7 +44,7 @@ function (
     </fieldset>
     <fieldset>
       <label class='label' for="body">内容介绍</label>
-      <textarea name="body" required placeholder="最少5个字母或3个汉字"><?= empty($body) ? '' : $body  ?></textarea>
+      <textarea name="body" required placeholder="最少5个字母或3个汉字"><?= empty($body) ? '' : $body ?></textarea>
     </fieldset>
     <fieldset>
       <label class='label'>上传图片</label>

@@ -24,7 +24,7 @@ class Handler extends Service
     /**
      * get private messages in user's mailbox (inbox,sent)
      * uri: /api/message/<mailbox>
-     *        /api/message/<mailbox>?p=<pageNo>
+     *      /api/message/<mailbox>?p=<pageNo>
      *
      * get private message
      * uri: /api/message/<mid>
@@ -89,13 +89,13 @@ class Handler extends Service
         // validate toUid
         $toUid = (int) $this->request->data['toUid'];
         if ($toUid) {
-            if ($toUid === $this->request->uid) {
+            if ($toUid === $this->user->id) {
                 throw new ErrorMessage('不能给自己发送站内短信');
             }
 
             if ($topicMid) {
                 // reply an existing message topic
-                $toUser = $pm->getReplyTo($topicMid, $this->request->uid);
+                $toUser = $pm->getReplyTo($topicMid, $this->user->id);
 
                 if (!$toUser) {
                     throw new ErrorMessage('短信不存在，未找到短信收信人');
@@ -120,7 +120,7 @@ class Handler extends Service
             throw new ErrorMessage('短信正文需最少5个字母或3个汉字');
         }
 
-        $pm->fromUid = $this->request->uid;
+        $pm->fromUid = $this->user->id;
         $pm->toUid = $user->id;
         $pm->body = $this->request->data['body'];
         $pm->time = $this->request->timestamp;
@@ -147,13 +147,13 @@ class Handler extends Service
 
         $sender = $this->user;
         $this->json([
-            'id'         => $pm->id,
-            'mid'        => $pm->msgId,
-            'time'      => $pm->time,
-            'body'      => $pm->body,
-            'uid'        => $pm->fromUid,
+            'id' => $pm->id,
+            'mid' => $pm->msgId,
+            'time' => $pm->time,
+            'body' => $pm->body,
+            'uid' => $pm->fromUid,
             'username' => $sender->username,
-            'avatar'    => $sender->avatar
+            'avatar' => $sender->avatar
         ]);
     }
 
@@ -180,9 +180,9 @@ class Handler extends Service
         foreach ($mids as $mid) {
             $pm = new PrivMsg($mid, 'id');
             try {
-                $pm->deleteByUser($this->request->uid);
+                $pm->deleteByUser($this->user->id);
             } catch (Exception $e) {
-                $this->logger->error('failed to delete message ' . $mid . ' as user ' . $this->request->uid);
+                $this->logger->error('failed to delete message ' . $mid . ' as user ' . $this->user->id);
                 $error[] = 'failed to delete message ' . $mid;
             }
         }
@@ -194,12 +194,12 @@ class Handler extends Service
     {
         if ($mid > 0) {
             $pm = new PrivMsg();
-            $msgs = $pm->getPMConversation($mid, $this->request->uid);
+            $msgs = $pm->getPMConversation($mid, $this->user->id);
             if (!$msgs) {
                 throw new ErrorMessage('错误：该条短信不存在。');
             }
 
-            return ['msgs' => $msgs, 'replyTo' => $pm->getReplyTo($mid, $this->request->uid)];
+            return ['msgs' => $msgs, 'replyTo' => $pm->getReplyTo($mid, $this->user->id)];
         } else {
             throw new ErrorMessage('message does not exist');
         }
@@ -207,16 +207,14 @@ class Handler extends Service
 
     private function getMessageList(string $mailbox): array
     {
-        $user = new User();
-        $user->id = $this->request->uid;
         if (!in_array($mailbox, self::$mailbox)) {
             throw new ErrorMessage('mailbox does not exist: ' . $mailbox);
         }
 
-        $pmCount = $user->getPrivMsgsCount($mailbox);
+        $pmCount = $this->user->getPrivMsgsCount($mailbox);
 
         list($pageNo, $pageCount) = $this->getPagerInfo($pmCount, self::TOPICS_PER_PAGE);
-        $msgs = $pmCount > 0 ? $user->getPrivMsgs($mailbox, self::TOPICS_PER_PAGE, ($pageNo - 1) * self::TOPICS_PER_PAGE) : [];
+        $msgs = $pmCount > 0 ? $this->user->getPrivMsgs($mailbox, self::TOPICS_PER_PAGE, ($pageNo - 1) * self::TOPICS_PER_PAGE) : [];
         // convert 'msgId' => 'mid',
         foreach ($msgs as $i => $m) {
             $msgs[$i]['mid'] = $m['msgId'];
@@ -227,8 +225,6 @@ class Handler extends Service
 
     private function getNewMessageCount(): array
     {
-        $user = new User();
-        $user->id = $this->request->uid;
-        return ['count' => $user->getPrivMsgsCount('new')];
+        return ['count' => $this->user->getPrivMsgsCount('new')];
     }
 }
