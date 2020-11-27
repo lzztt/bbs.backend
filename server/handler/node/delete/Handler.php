@@ -31,7 +31,6 @@ class Handler extends Node
     private function deleteForumTopic(int $nid): void
     {
         $node = new NodeObject($nid, 'uid,tid,status');
-        $tags = $node->getTags($nid);
 
         if (!$node->exists() || $node->status == 0) {
             throw new ErrorMessage('node does not exist.');

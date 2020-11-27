@@ -25,14 +25,13 @@ abstract class Forum extends Controller
         if ($tid != self::$city->tidForum) {
             if ($tid > 0) {
                 $tag = new Tag($tid, 'id');
-                $tag->load('id');
+                $tag->load('id,root');
 
                 if (!$tag->exists()) {
                     throw new NotFound();
                 }
 
-                $tagRoot = $tag->getTagRoot();
-                if (!array_key_exists(self::$city->tidForum, $tagRoot)) {
+                if (self::$city->tidForum !== $tag->root) {
                     throw new NotFound();
                 }
             } else {

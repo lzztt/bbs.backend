@@ -17,7 +17,6 @@ class Handler extends Forum
         $this->cache = $this->getPageCache();
 
         $tag = $this->getTagObj();
-        $tagRoot = $tag->getTagRoot();
         $tagTree = $tag->getTagTree();
 
         $tid = $tag->id;
@@ -25,16 +24,16 @@ class Handler extends Forum
             ->setHeadTitle($tagTree[$tid]['name'])
             ->setHeadDescription($tagTree[$tid]['name']);
 
-        !empty($tagTree[$tid]['children']) ? $this->showForumList($tid, $tagRoot, $tagTree) : $this->showTopicList($tid, $tagRoot);
+        !empty($tagTree[$tid]['children']) ? $this->showForumList() : $this->showTopicList($tid);
     }
 
     // $forum, $groups, $boards are arrays of category id
-    public function showForumList(int $tid, array $tagRoot, array $tagTree): void
+    public function showForumList(): void
     {
         throw new NotFound();
     }
 
-    public function showTopicList(int $tid, array $tagRoot): void
+    public function showTopicList(int $tid): void
     {
         $this->getCacheEvent('ForumUpdate', $tid)->addListener($this->cache);
 

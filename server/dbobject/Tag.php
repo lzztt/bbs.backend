@@ -37,32 +37,6 @@ class Tag extends DBObject
         return [];
     }
 
-    public function getTagRoot(): array
-    {
-        static $root = [];
-
-        if (isset($this->id)) {
-            if (!array_key_exists($this->id, $root)) {
-                $arr = array_reverse($this->call('get_tag_root(' . $this->id . ')'));
-
-                $tags = [];
-                foreach ($arr as $r) {
-                    $id = (int) $r['id'];
-                    $parent = is_null($r['parent']) ? null : (int) $r['parent'];
-                    $tags[$id] = [
-                        'id' => $id,
-                        'name' => $r['name'],
-                        'parent' => $parent
-                    ];
-                }
-                $root[$this->id] = $tags;
-            }
-            return $root[$this->id];
-        } else {
-            throw new Exception('no tag id set');
-        }
-    }
-
     public function getTagTree(): array
     {
         static $tree = [];

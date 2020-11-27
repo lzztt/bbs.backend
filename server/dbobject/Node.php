@@ -87,22 +87,6 @@ class Node extends DBObject
         return $this->call('get_node_view_count("' . implode(',', $nids) . '")');
     }
 
-    public function getTags(int $nid): array
-    {
-        static $tags = [];
-
-        if (!array_key_exists($nid, $tags)) {
-            $node = new Node($nid, 'tid');
-            if ($node->exists()) {
-                $tag = new Tag($node->tid, 'id');
-                $tags[$nid] = $tag->getTagRoot();
-            } else {
-                $tags[$nid] = [];
-            }
-        }
-        return $tags[$nid];
-    }
-
     public function getLatestForumTopics(int $forumRootID, int $count): array
     {
         return $this->call('get_tag_recent_nodes("' . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) . '", ' . $count . ')');

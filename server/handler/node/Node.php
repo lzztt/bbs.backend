@@ -7,6 +7,7 @@ namespace site\handler\node;
 use lzx\exception\NotFound;
 use site\Controller;
 use site\dbobject\Node as NodeObject;
+use site\dbobject\Tag;
 
 abstract class Node extends Controller
 {
@@ -26,23 +27,22 @@ abstract class Node extends Controller
         }
         array_shift($this->args);
 
-        $nodeObj = new NodeObject();
-        $tags = $nodeObj->getTags($nid);
-        if (!$tags) {
+        $node = new NodeObject($nid, 'tid');
+        if (!$node->exists()) {
             throw new NotFound();
         }
 
-        $rootTagID = array_shift(array_keys($tags));
+        $tag = new Tag($node->tid, 'root');
 
         $types = [
             self::$city->tidForum => self::FORUM_TOPIC,
             self::$city->tidYp => self::YELLOW_PAGE,
         ];
 
-        if (!array_key_exists($rootTagID, $types)) {
+        if (!array_key_exists($tag->root, $types)) {
             throw new NotFound();
         }
 
-        return [$nid, $types[$rootTagID]];
+        return [$nid, $types[$tag->root]];
     }
 }
