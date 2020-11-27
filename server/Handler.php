@@ -31,7 +31,8 @@ abstract class Handler extends CoreHandler
     const LIMIT_ROBOT = 10;
     const LIMIT_GUEST = 50;
     const LIMIT_USER = 100;
-    const LIMIT_WINDOW = 86400;
+
+    const ONE_DAY = 86400;
 
     public array $args;
     public Session $session;
@@ -53,7 +54,7 @@ abstract class Handler extends CoreHandler
         $this->args = $args;
 
         $this->user = new User();
-        $this->user->id = $req->uid;
+        $this->user->id = $session->get('uid');
     }
 
     public function beforeRun(): void
@@ -86,7 +87,7 @@ abstract class Handler extends CoreHandler
 
         // validate site for session
         if (self::$city->id) {
-            if (self::$city->id != $this->session->get('cid')) {
+            if (self::$city->id !== $this->session->get('cid')) {
                 $this->session->set('cid', self::$city->id);
             }
         } else {
@@ -119,7 +120,7 @@ abstract class Handler extends CoreHandler
             $deduper = MemStore::getRedis(MemStore::DEDUP);
             $key = 'c:' . $this->user->id . ':' . md5($clean);
             $count = $deduper->incr($key);
-            $deduper->expire($key, 86400);
+            $deduper->expire($key, self::ONE_DAY);
 
             if ($count > 1) {
                 throw new Exception("请维护好论坛的交流环境，不要一帖多发。");
@@ -134,15 +135,15 @@ abstract class Handler extends CoreHandler
         if ($this->user->id) {
             $key = date("d") . $handler . $this->user->id;
             $limit = static::LIMIT_USER * 2;
-            $window = static::LIMIT_WINDOW / 2;
+            $window = static::ONE_DAY / 2;
         } else {
             $key = date("d") . $handler . $this->request->ip;
             if ($this->request->isRobot()) {
                 $limit = static::LIMIT_ROBOT;
-                $window = static::LIMIT_WINDOW;
+                $window = static::ONE_DAY;
             } else {
                 $limit = static::LIMIT_GUEST;
-                $window = static::LIMIT_WINDOW;
+                $window = static::ONE_DAY;
             }
         }
 
@@ -357,7 +358,7 @@ abstract class Handler extends CoreHandler
     {
         $this->validateUser();
 
-        $creationDays = (int) (($this->request->timestamp - $this->user->createTime) / 86400);
+        $creationDays = (int) (($this->request->timestamp - $this->user->createTime) / self::ONE_DAY);
         if ($creationDays < 30) {
             $spamwords = (new SpamWord())->getList();
 

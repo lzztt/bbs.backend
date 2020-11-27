@@ -112,7 +112,7 @@ class Handler extends Controller
         $ul = $ulCache->getData();
         if (!$ul) {
             $arr = [];
-            $start = $this->request->timestamp - $days * 86400;
+            $start = $this->request->timestamp - $days * self::ONE_DAY;
 
             foreach ((new Node())->getHotForumTopics(self::$city->tidForum, $count, $start) as $i => $n) {
                 $arr[] = [

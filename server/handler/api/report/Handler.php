@@ -92,7 +92,7 @@ class Handler extends Service
                             $reporterIps = array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp'));
                         }
                         if (!empty($reporterIps) && count($reporterIps) >= 3) {
-                            $spammer->lockedUntil = $this->request->timestamp + 86400;
+                            $spammer->lockedUntil = $this->request->timestamp + self::ONE_DAY;
                             $spammer->update('lockedUntil');
                             $this->logoutUser($spammer->id);
                             $title = '封禁被举报用户';

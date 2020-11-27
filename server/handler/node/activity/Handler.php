@@ -77,7 +77,7 @@ class Handler extends Node
                 return;
             }
 
-            if ($endTime - $startTime > 86400) { // 1 day
+            if ($endTime - $startTime > self::ONE_DAY) {
                 $mailer = new Mailer();
                 $mailer->setTo('admin@' . $this->config->domain);
                 $mailer->setSubject('新活动 ' . $nid . ' 长于一天 (请检查)');

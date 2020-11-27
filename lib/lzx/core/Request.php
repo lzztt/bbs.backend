@@ -22,7 +22,6 @@ class Request
     public string $uri;
     public string $referer;
     public array $data;
-    public int $uid = 0;
     public int $timestamp;
     public string $agent;
 

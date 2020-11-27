@@ -47,11 +47,11 @@ class WebApp extends App
         $db = DB::getInstance($this->config->db);
         $this->setupCache();
         $session = new Session(!$request->isRobot());
-        $request->uid = $session->get('uid');
+        $uid = $session->get('uid');
 
         $this->logger->addExtraInfo([
-            'user' => $request->uid > 0
-                ? 'https://www.' . $this->config->domain . '/app/user/' . $request->uid
+            'user' => $uid > 0
+                ? 'https://www.' . $this->config->domain . '/app/user/' . $uid
                 : ($request->isRobot() ? 'ROBOT' : 'GUEST'),
             'ip' => $request->ip,
             'city' => self::getLocationFromIp($request->ip),
