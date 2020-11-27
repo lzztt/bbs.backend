@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace lzx\core;
 
 use Laminas\Diactoros\ServerRequest;
-use Laminas\Diactoros\ServerRequestFactory;
 
 class Request
 {
@@ -86,7 +85,7 @@ class Request
 
     public function isRobot(): bool
     {
-        return $this->uid === 0 && ($this->hasBadData || $this->isRobot);
+        return $this->hasBadData || $this->isRobot;
     }
 
     public function isGoogleBot(): bool
