@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace site;
 
 use Exception;
+use Laminas\Diactoros\ServerRequestFactory;
 use lzx\App;
 use lzx\cache\CacheHandler;
 use lzx\core\Request;
@@ -41,11 +42,11 @@ class WebApp extends App
 
     public function run(array $args): void
     {
-        $request = Request::getInstance();
+        $request = new Request(ServerRequestFactory::fromGlobals());
 
         $db = DB::getInstance($this->config->db);
         $this->setupCache();
-        $session = Session::getInstance(!$request->isRobot());
+        $session = new Session(!$request->isRobot());
         $request->uid = $session->get('uid');
 
         $this->logger->addExtraInfo([
@@ -59,7 +60,7 @@ class WebApp extends App
             'data' => $request->data,
         ]);
 
-        $response = Response::getInstance();
+        $response = new Response();
 
         try {
             $ctrler = HandlerFactory::create($request, $response, $this->config, $this->logger, $session);

@@ -28,18 +28,7 @@ class Session
     private array $current = [];
     private array $original = [];
 
-    public static function getInstance(bool $useDb = true): Session
-    {
-        static $instance;
-
-        if (!$instance) {
-            $instance = new self($useDb);
-        }
-
-        return $instance;
-    }
-
-    private function __construct(bool $useDb)
+    public function __construct(bool $useDb)
     {
         $this->time = (int) $_SERVER['REQUEST_TIME'];
         if (!$useDb) {

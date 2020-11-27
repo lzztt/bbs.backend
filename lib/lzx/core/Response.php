@@ -30,22 +30,12 @@ class Response
     private $sent;
     private $resp;
 
-    private function __construct()
+    public function __construct()
     {
         $this->type = self::HTML;
         $this->status = 200;
         $this->sent = false;
         $this->resp = null;
-    }
-
-    public static function getInstance(): Response
-    {
-        static $instance;
-
-        if (!isset($instance)) {
-            $instance = new self();
-        }
-        return $instance;
     }
 
     public function getStatus(): int

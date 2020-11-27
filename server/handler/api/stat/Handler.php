@@ -68,7 +68,13 @@ class Handler extends Service
             preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $data, $p);
             if ($p[2]) {
                 $rank = number_format(intval($p[2]));
-                return $this->getSiteName() . '最近三个月平均访问量<a target="_blank" href="https://www.alexa.com/siteinfo/' . $domain . '">Alexa排名</a>:<br><a target="_blank" href="https://www.alexa.com/siteinfo/' . $domain . '">第 <b>' . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', intval($_SERVER['REQUEST_TIME'])) . ')';
+                return $this->getSiteName()
+                    . '最近三个月平均访问量<a target="_blank" href="https://www.alexa.com/siteinfo/'
+                    . $domain
+                    . '">Alexa排名</a>:<br><a target="_blank" href="https://www.alexa.com/siteinfo/'
+                    . $domain . '">第 <b>'
+                    . $rank . '</b> 位</a> (更新时间: ' . date('m/d/Y H:i:s T', $this->request->timestamp)
+                    . ')';
             }
         }
 

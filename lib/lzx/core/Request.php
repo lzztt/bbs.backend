@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace lzx\core;
 
+use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\ServerRequestFactory;
 
 class Request
@@ -28,10 +29,8 @@ class Request
     private bool $hasBadData = false;
     private bool $isRobot = false;
 
-    private function __construct()
+    public function __construct(ServerRequest $req)
     {
-        $req = ServerRequestFactory::fromGlobals();
-
         $p = $req->getServerParams();
         $this->domain = $p['SERVER_NAME'];
         $this->ip = $p['REMOTE_ADDR'];
@@ -79,16 +78,6 @@ class Request
 
         $arr = explode($this->domain, $p['HTTP_REFERER']);
         $this->referer = sizeof($arr) > 1 ? $arr[1] : '';
-    }
-
-    public static function getInstance(): Request
-    {
-        static $instance;
-
-        if (!isset($instance)) {
-            $instance = new self();
-        }
-        return $instance;
     }
 
     public function isBad(): bool
