@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace site\handler\api\authentication;
 
 use Exception;
+use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Service;
@@ -43,11 +44,36 @@ class Handler extends Service
     public function post(): void
     {
         if (isset($this->request->data['password']) && isset($this->request->data['email'])) {
-            // todo: login times control
-            $user = new User();
-            $loggedIn = $user->loginWithEmail($this->request->data['email'], $this->request->data['password']);
+            // login rate control
+            $rateLimiter = MemStore::getRedis(MemStore::RATE);
+            $key = 'login:' . $this->request->ip . ':' . $this->request->data['email'];
+            $count = $rateLimiter->incr($key);
+            if ($count > 5) {
+                throw new ErrorMessage('登录次数太多，请稍后再试。');
+            }
+            $rateLimiter->expire($key, 300);
 
-            if ($loggedIn) {
+            $user = new User();
+            $user->email = $this->request->data['email'];
+            $user->load('id,username,status,password,lockedUntil');
+
+            if (!$user->exists()) {
+                throw new ErrorMessage('错误的邮箱或密码。');
+            }
+
+            if (!$user->password) {
+                throw new ErrorMessage('帐号尚未激活，请使用注册email里的安全验证码来设置初始密码。');
+            }
+
+            if ($user->status !== 1) {
+                throw new ErrorMessage('帐号已被封禁。');
+            }
+
+            if ($user->lockedUntil > $this->request->timestamp) {
+                throw new ErrorMessage('帐号被暂时封禁至' . date('Y-m-d', $user->lockedUntil) . '，请稍后再尝试登陆。');
+            }
+
+            if ($user->verifyPassword($this->request->data['password'])) {
                 $this->session->regenerateId();
                 $this->session->set('uid', $user->id);
                 $this->updateSessionEvent(SessionEvent::EVENT_BEGIN);
@@ -56,22 +82,10 @@ class Handler extends Service
                 return;
             } else {
                 $this->logger->info('Login Fail: ' . $user->email . ' | ' . $this->request->ip);
-                if ($user->exists()) {
-                    if (!$user->password) {
-                        throw new ErrorMessage('用户帐号尚未激活，请使用注册email里的安全验证码来设置初始密码。如有问题请联络网站管理员。');
-                    }
-
-                    if ($user->status == 1) {
-                        throw new ErrorMessage('错误的密码。');
-                    } else {
-                        throw new ErrorMessage('用户帐号已被封禁，如有问题请联络网站管理员。');
-                    }
-                } else {
-                    throw new ErrorMessage('用户不存在。');
-                }
+                throw new ErrorMessage('错误的邮箱或密码。');
             }
         } else {
-            throw new ErrorMessage('请填写邮箱名和密码。');
+            throw new ErrorMessage('请填写邮箱和密码。');
         }
     }
 

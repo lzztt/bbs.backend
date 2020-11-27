@@ -33,9 +33,9 @@ abstract class Handler extends CoreHandler
     const LIMIT_USER = 100;
     const LIMIT_WINDOW = 86400;
 
-    public $args;
-    public $session;
-    public $config;
+    public array $args;
+    public Session $session;
+    public Config $config;
 
     protected static City $city;
     private static CacheHandler $cacheHandler;

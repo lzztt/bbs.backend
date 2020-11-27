@@ -18,6 +18,7 @@ class User extends DBObject
     public $email;
     public $about;
     public $createTime;
+    public $lockedUntil;
     public $lastAccessTime;
     public $lastAccessIp;
     public $status;
@@ -88,17 +89,6 @@ class User extends DBObject
     private static function hashId(int $id): string
     {
         return strrev(substr(hash('md5', (string) $id), -8));
-    }
-
-    public function loginWithEmail(string $email, string $password): bool
-    {
-        $this->email = $email;
-        $this->load('id,username,status,password');
-        if ($this->exists() && $this->password && $this->status == 1) {
-            return $this->verifyPassword($password);
-        }
-
-        return false;
     }
 
     public function getUserGroup(): array

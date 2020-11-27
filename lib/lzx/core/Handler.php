@@ -15,9 +15,9 @@ abstract class Handler
 {
     use UtilTrait;
 
-    public $logger;
-    public $request;
-    public $response;
+    public Logger $logger;
+    public Request $request;
+    public Response $response;
 
     public function __construct(Request $req, Response $response, Logger $logger)
     {
