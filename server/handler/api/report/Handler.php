@@ -65,7 +65,7 @@ class Handler extends Service
         if ($comment->status === 1) {
             $spammer = new User($comment->uid);
 
-            if ($spammer->exists() && $spammer->status > 0) {
+            if ($spammer->exists() && $spammer->status > 0 && $spammer->lockedUntil < $this->request->timestamp) {
                 $reporter = $this->user;
 
                 if ($reporter->status > 0) {
@@ -92,11 +92,10 @@ class Handler extends Service
                             $reporterIps = array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp'));
                         }
                         if (!empty($reporterIps) && count($reporterIps) >= 3) {
-                            $spammer->delete();
-                            foreach ($spammer->getAllNodeIDs() as $nid) {
-                                $this->getIndependentCache('/node/' . $nid)->delete();
-                            }
-                            $title = '删除被举报用户';
+                            $spammer->lockedUntil = $this->request->timestamp + 86400;
+                            $spammer->update('lockedUntil');
+                            $this->logoutUser($spammer->id);
+                            $title = '封禁被举报用户';
                         }
                     }
 

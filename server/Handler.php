@@ -309,14 +309,19 @@ abstract class Handler extends CoreHandler
         $user->id = $uid;
         $user->delete();
 
+        $this->logoutUser($uid);
+
+        foreach ($user->getAllNodeIDs() as $nid) {
+            $this->getIndependentCache('/node/' . $nid)->delete();
+        }
+    }
+
+    protected function logoutUser(int $uid): void
+    {
         $sessionEvent = new SessionEvent();
         $sessionId = $sessionEvent->getSessionId($uid);
         if ($sessionId) {
             $this->session->deleteSession($sessionId);
-        }
-
-        foreach ($user->getAllNodeIDs() as $nid) {
-            $this->getIndependentCache('/node/' . $nid)->delete();
         }
     }
 

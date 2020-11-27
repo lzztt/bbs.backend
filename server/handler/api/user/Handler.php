@@ -192,7 +192,7 @@ class Handler extends Service
         $uid = (int) $this->args[0];
 
         // not allowed to delete admin user
-        if ($uid == 1) {
+        if ($uid === 1) {
             throw new Forbidden();
         }
 
