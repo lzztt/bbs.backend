@@ -26,10 +26,7 @@ class Handler extends Service
         });
 
         if ($nids) {
-            $nc = new NodeComplain();
-            $nc->getCommentComplains($nids);
-
-            foreach ($nc->getCommentComplains($nids) as $r) {
+            foreach ((new NodeComplain())->getCommentComplains($nids) as $r) {
                 $complain[$r['cid']] = (int) $r['status'];
             }
         }
@@ -83,14 +80,10 @@ class Handler extends Service
 
         $title = '举报';
 
-        // check complains
-        $complain = new NodeComplain();
-        $complain->where('cid', $cid, '=');
-        $complain->where('status', 1, '=');
-        $reporterUids = array_unique(array_column($complain->getList('reporterUid'), 'reporterUid'));
-        if (count($reporterUids) >= 3) {
+        $complains = $this->getComplains($cid);
+        if (count($complains) >= 3) {
             $user = new User();
-            $user->where('id', $reporterUids, 'IN');
+            $user->where('id', array_column($complains, 'reporterUid'), 'IN');
             $reporterIps = array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp'));
         }
         if (!empty($reporterIps) && count($reporterIps) >= 3) {
@@ -132,6 +125,14 @@ class Handler extends Service
         $mailer->send();
 
         $this->json();
+    }
+
+    private function getComplains(int $cid): array
+    {
+        $complain = new NodeComplain();
+        $complain->where('cid', $cid, '=');
+        $complain->where('status', 1, '=');
+        return $complain->getList('reporterUid');
     }
 
     private function updateComplainStatus(int $cid): void
