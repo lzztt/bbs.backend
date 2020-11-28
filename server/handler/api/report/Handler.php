@@ -87,7 +87,6 @@ class Handler extends Service
         $complain = new NodeComplain();
         $complain->where('cid', $cid, '=');
         $complain->where('status', 1, '=');
-        $complain->where('weight', 0, '>');
         $reporterUids = array_unique(array_column($complain->getList('reporterUid'), 'reporterUid'));
         if (count($reporterUids) >= 3) {
             $user = new User();
@@ -100,6 +99,7 @@ class Handler extends Service
             $this->logoutUser($spammer->id);
             $title = '封禁';
 
+            $this->updateComplainStatus($cid);
             $this->postTopic($spammer->username . '被系统封禁一天', '原因：' . $reason);
         }
 
@@ -132,5 +132,16 @@ class Handler extends Service
         $mailer->send();
 
         $this->json();
+    }
+
+    private function updateComplainStatus(int $cid): void
+    {
+        $complain = new NodeComplain();
+
+        $complain->where('cid', $cid, '=');
+        $complain->where('status', 1, '=');
+
+        $complain->status = 2;
+        $complain->update('status');
     }
 }
