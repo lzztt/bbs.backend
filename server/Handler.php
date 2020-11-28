@@ -17,11 +17,13 @@ use lzx\core\Response;
 use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
+use lzx\exception\Redirect;
 use lzx\geo\Reader;
 use site\File;
 use site\dbobject\SessionEvent;
 use site\dbobject\SpamWord;
 use site\dbobject\User;
+use site\handler\forum\node\Handler as NodeHandler;
 
 abstract class Handler extends CoreHandler
 {
@@ -92,6 +94,22 @@ abstract class Handler extends CoreHandler
             }
         } else {
             $this->logger->error('unsupported website: ' . $this->request->domain);
+        }
+    }
+
+    public function postTopic(string $title, string $body): void
+    {
+        $handler = new NodeHandler($this->request, $this->response, $this->config, $this->logger, $this->session, $this->args);
+        $handler->user->id = self::UID_ADMIN;
+        $handler->request->data = [
+            'title' => $title,
+            'body' => $body,
+        ];
+
+        try {
+            $handler->createTopic(25);
+        } catch (Redirect $e) {
+            $this->logger->info('posting system topic:' . $e->getMessage());
         }
     }
 
