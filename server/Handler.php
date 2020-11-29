@@ -213,7 +213,9 @@ abstract class Handler extends CoreHandler
             return;
         }
 
-        $this->user->load('lastAccessTime');
+        if (is_null($this->user->lastAccessTime)) {
+            $this->user->load('lastAccessTime');
+        }
         if ($this->request->timestamp - $this->user->lastAccessTime > 259200) { // 3 days
             $this->user->lastAccessTime = $this->request->timestamp;
             $this->user->update('lastAccessTime');
