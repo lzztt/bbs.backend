@@ -9,7 +9,6 @@ use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Service;
-use site\dbobject\SessionEvent;
 use site\dbobject\User;
 
 class Handler extends Service
@@ -76,7 +75,6 @@ class Handler extends Service
             if ($user->verifyPassword($this->request->data['password'])) {
                 $this->session->regenerateId();
                 $this->session->set('uid', $user->id);
-                $this->updateSessionEvent(SessionEvent::EVENT_BEGIN);
 
                 $this->json(['sessionID' => $this->session->id(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
                 return;
@@ -96,8 +94,6 @@ class Handler extends Service
         if (!$this->args || $this->args[0] != $this->session->id()) {
             throw new Forbidden();
         }
-
-        $this->updateSessionEvent(SessionEvent::EVENT_END);
 
         $this->session->clear(); // keep session record but clear session data
 

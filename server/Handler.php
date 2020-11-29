@@ -216,20 +216,18 @@ abstract class Handler extends CoreHandler
         if (is_null($this->user->lastAccessTime)) {
             $this->user->load('lastAccessTime');
         }
-        if ($this->request->timestamp - $this->user->lastAccessTime > 259200) { // 3 days
+        if ($this->request->timestamp - $this->user->lastAccessTime > self::ONE_DAY * 3) {
             $this->user->lastAccessTime = $this->request->timestamp;
             $this->user->update('lastAccessTime');
 
-            $this->updateSessionEvent(SessionEvent::EVENT_UPDATE);
+            $this->updateSessionEvent();
         }
     }
 
-    public function updateSessionEvent(string $event)
+    public function updateSessionEvent()
     {
         $sessionEvent = new SessionEvent();
-        $sessionEvent->sessionId = $this->session->id();
         $sessionEvent->userId = $this->user->id;
-        $sessionEvent->event = $event;
         $sessionEvent->time = $this->request->timestamp;
         $sessionEvent->ip = inet_pton($this->request->ip);
         if (strlen($this->request->agent) < 256) {
