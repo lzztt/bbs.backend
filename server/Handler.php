@@ -337,11 +337,7 @@ abstract class Handler extends CoreHandler
 
     protected function logoutUser(int $uid): void
     {
-        $sessionEvent = new SessionEvent();
-        $sessionId = $sessionEvent->getSessionId($uid);
-        if ($sessionId) {
-            $this->session->deleteSession($sessionId);
-        }
+        $this->session->deleteSessions($uid);
     }
 
     protected function getFormFiles(): array

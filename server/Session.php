@@ -154,16 +154,39 @@ class Session
         $idChanged = $this->id !== $this->originalId;
         $uidChanged = $this->original && $this->current['uid'] !== $this->original['uid'];
 
-        if ($idChanged || $uidChanged) {
-            $this->redis->expire($this->getKey($this->id), (int) $this->current['uid'] > 0 ? self::ONE_MONTH : self::ONE_DAY);
-        }
+        if ($idChanged && $this->current['uid'] !== '0') {
+            $key = 'u:' . $this->current['uid'];
 
-        if ($idChanged && $this->originalId) {
-            $this->redis->del($this->getKey($this->originalId));
+            if ($this->originalId) {
+                $this->redis->del($this->getKey($this->originalId));
+                $this->redis->sRem($key, $this->originalId);
+            }
+
+            foreach ($this->redis->sMembers($key) as $s) {
+                if (!$this->redis->exists($this->getKey($s))) {
+                    $this->redis->sRem($key, $s);
+                }
+            }
         }
 
         if ($uidChanged) {
             $this->redisOnline->del($this->getOnlineKey($this->original['uid'], $this->originalId));
+
+            if ($this->current['uid'] === '0') {
+                $key = 'u:' . $this->original['uid'];
+                $this->redis->sRem($key, $this->originalId);
+            }
+        }
+
+        if ($idChanged || $uidChanged) {
+            $this->redis->expire($this->getKey($this->id), (int) $this->current['uid'] > 0 ? self::ONE_MONTH : self::ONE_DAY);
+
+            if ($this->current['uid'] !== '0') {
+                $key = 'u:' . $this->current['uid'];
+
+                $this->redis->sAdd($key, $this->id);
+                $this->redis->expire($key, self::ONE_MONTH);
+            }
         }
 
         $this->redisOnline->set($this->getOnlineKey($this->current['uid'], $this->id), '', self::FIVE_MINUTES);
@@ -179,15 +202,14 @@ class Session
         return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $sessionId;
     }
 
-    public function deleteSession(string $id = ''): void
+    public function deleteSessions(int $uid): void
     {
-        if (!$id) {
-            $id = $this->id;
-            $this->id = '';
+        $key = 'u:' . $uid;
+        foreach ($this->redis->sMembers($key) as $s) {
+            $this->redis->del($this->getKey($s));
         }
-        if ($this->redis) {
-            $this->redis->del($this->getKey($id));
-        }
+
+        $this->redis->del($key);
     }
 
     public function getOnlineUids(): array
