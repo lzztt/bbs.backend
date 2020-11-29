@@ -14,6 +14,8 @@ class SessionEvent extends DBObject
     public $time;
     public $ip;
     public $agent;
+    public $hash;
+    public $count;
 
     public function __construct($id = null, string $properties = '')
     {

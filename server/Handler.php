@@ -213,30 +213,30 @@ abstract class Handler extends CoreHandler
             return;
         }
 
-        if (is_null($this->user->lastAccessTime)) {
-            $this->user->load('lastAccessTime');
-        }
-        if ($this->request->timestamp - $this->user->lastAccessTime > self::ONE_DAY * 3) {
-            $this->user->lastAccessTime = $this->request->timestamp;
-            $this->user->update('lastAccessTime');
-
-            $this->updateSessionEvent();
-        }
-    }
-
-    public function updateSessionEvent()
-    {
         $sessionEvent = new SessionEvent();
         $sessionEvent->userId = $this->user->id;
-        $sessionEvent->time = $this->request->timestamp;
         $sessionEvent->ip = inet_pton($this->request->ip);
         if (strlen($this->request->agent) < 256) {
-            $sessionEvent->agent = $this->request->agent;
+            $agent = $this->request->agent;
         } else {
-            $sessionEvent->agent = substr($this->request->agent, 0, 255);
+            $agent = substr($this->request->agent, 0, 255);
             $this->logger->warning("Long user agent: " . $this->request->agent);
         }
-        $sessionEvent->add();
+        $sessionEvent->hash = crc32($agent);
+        $sessionEvent->load('time,count');
+
+        if ($sessionEvent->exists()) {
+            if ($this->request->timestamp - $sessionEvent->time > self::ONE_DAY * 3) {
+                $sessionEvent->time = $this->request->timestamp;
+                $sessionEvent->count += 1;
+                $sessionEvent->update('time,count');
+            }
+        } else {
+            $sessionEvent->agent = $agent;
+            $sessionEvent->time = $this->request->timestamp;
+            $sessionEvent->count = 1;
+            $sessionEvent->add();
+        }
     }
 
     public function flushCache(): void

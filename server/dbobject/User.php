@@ -88,7 +88,7 @@ class User extends DBObject
 
     private static function hashId(int $id): string
     {
-        return strrev(substr(hash('md5', (string) $id), -8));
+        return strrev(substr(md5((string) $id), -8));
     }
 
     public function getUserGroup(): array
