@@ -20,9 +20,9 @@ class BBCodeRE
         '/\[img\](.*?)\[\/img\]/ms'
         => '<img class="bb_image" src="\1" alt="\1">',
         '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms'
-        => '<a href="\1">\2</a>',
+        => '<a rel="nofollow" href="\1">\2</a>',
         '/\[url](.*?)\[\/url\]/ms'
-        => '<a href="\1">\1</a>',
+        => '<a rel="nofollow" href="\1">\1</a>',
         '/\[size\="?(.*?)"?\](.*?)\[\/size\]/ms'
         => '<span style="font-size:\1">\2</span>',
         '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms'
