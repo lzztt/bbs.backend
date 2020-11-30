@@ -80,20 +80,27 @@ class Handler extends Service
 
         $title = '举报';
 
-        $complains = $this->getComplains($cid);
-        if (count($complains) >= 3) {
-            $user = new User();
-            $user->where('id', array_column($complains, 'reporterUid'), 'IN');
-            $reporterIps = array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp'));
+        $complainGroups = $this->getComplains($cid);
+        $user = new User();
+        $maxReporterCount = 0;
+        foreach ($complainGroups as $key => $uids) {
+            if (count($uids) > 2) {
+                $user->where('id', $uids, 'IN');
+                $uniqueUserCount = count(array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp')));
+                if ($maxReporterCount < $uniqueUserCount) {
+                    $maxReporterCount = $uniqueUserCount;
+                    $reason = $key;
+                }
+            }
         }
-        if (!empty($reporterIps) && count($reporterIps) >= 3) {
+        if ($maxReporterCount > 2) {
             $spammer->lockedUntil = $this->request->timestamp + self::ONE_DAY;
             $spammer->update('lockedUntil');
             $this->logoutUser($spammer->id);
             $title = '封禁';
 
             $this->updateComplainStatus($cid);
-            $this->postTopic($spammer->username . '被系统封禁一天', '原因：' . $reason);
+            $this->postTopic($spammer->username . '被系统封禁一天', '原因：' . $reason . PHP_EOL . '[url=/node/' . $comment->nid . ']违规帖子[/url]');
         }
 
         // send notification
@@ -132,7 +139,15 @@ class Handler extends Service
         $complain = new NodeComplain();
         $complain->where('cid', $cid, '=');
         $complain->where('status', 1, '=');
-        return $complain->getList('reporterUid');
+        $res = [];
+        foreach ($complain->getList('reporterUid,reason') as $r) {
+            if (array_key_exists($r['reason'], $res)) {
+                $res[$r['reason']][] = $r['reporterUid'];
+            } else {
+                $res[$r['reason']] = [$r['reporterUid']];
+            }
+        }
+        return $res;
     }
 
     private function updateComplainStatus(int $cid): void
