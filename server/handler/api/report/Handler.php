@@ -10,6 +10,7 @@ use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\Comment;
 use site\dbobject\NodeComplain;
+use site\dbobject\SessionEvent;
 use site\dbobject\User;
 
 class Handler extends Service
@@ -81,12 +82,24 @@ class Handler extends Service
         $title = '举报';
 
         $complainGroups = $this->getComplains($cid);
-        $user = new User();
+        $sessionEvent = new SessionEvent();
         $maxReporterCount = 0;
         foreach ($complainGroups as $key => $uids) {
             if (count($uids) > 2) {
-                $user->where('id', $uids, 'IN');
-                $uniqueUserCount = count(array_unique(array_column($user->getList('lastAccessIp'), 'lastAccessIp')));
+                $user_ips = $sessionEvent->getIps($uids);
+                $uids = array_unique(array_column($user_ips, 'user_id'));
+                $ips = array_column($user_ips, 'ip');
+                $dup_ips = array_unique(array_diff_key($ips, array_unique($ips)));
+                if ($dup_ips) {
+                    $dup_users = [];
+                    foreach ($user_ips as $r) {
+                        if (in_array($r['ip'], $dup_ips)) {
+                            $dup_users[] = $r['user_id'];
+                        }
+                    }
+                    $uids = array_diff($uids, array_unique($dup_users));
+                }
+                $uniqueUserCount = count($uids);
                 if ($maxReporterCount < $uniqueUserCount) {
                     $maxReporterCount = $uniqueUserCount;
                     $reason = $key;
