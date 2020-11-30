@@ -21,12 +21,12 @@ class Handler extends Service
         }
 
         $complain = [];
-        $nids = array_filter(array_map('intval', explode(',', $this->args[0])), function (int $v): bool {
+        $cids = array_filter(array_map('intval', explode(',', $this->args[0])), function (int $v): bool {
             return $v > 0;
         });
 
-        if ($nids) {
-            foreach ((new NodeComplain())->getCommentComplains($nids) as $r) {
+        if ($cids) {
+            foreach ((new NodeComplain())->getCommentComplains($cids) as $r) {
                 $complain[$r['cid']] = (int) $r['status'];
             }
         }
