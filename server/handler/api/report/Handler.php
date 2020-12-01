@@ -94,13 +94,17 @@ class Handler extends Service
             }
         }
         if ($maxReporterCount > 2) {
-            $spammer->lockedUntil = $this->request->timestamp + self::ONE_DAY;
+            $days = ($complain->getViolationCount($spammer->id) + 1) * 3;
+            $spammer->lockedUntil = $this->request->timestamp + self::ONE_DAY * $days;
             $spammer->update('lockedUntil');
             $this->logoutUser($spammer->id);
             $title = '封禁';
 
             $this->updateComplainStatus($cid);
-            $this->postTopic($spammer->username . '被系统封禁一天', '原因：' . $reason . PHP_EOL . '[url=/node/' . $comment->nid . ']违规帖子[/url]');
+            $this->postTopic(
+                $spammer->username . '被系统封禁' . $days . '天',
+                '原因：' . $reason . PHP_EOL . '[url=/node/' . $comment->nid . ']违规帖子[/url]'
+            );
         }
 
         // send notification

@@ -36,4 +36,12 @@ class NodeComplain extends DBObject
             WHERE cid IN (' . implode(',', $cids) . ')
             GROUP BY cid;');
     }
+
+    public function getViolationCount(int $uid): int
+    {
+        return (int) array_pop(array_pop($this->db->query('
+            SELECT COUNT(DISTINCT cid)
+            FROM node_complaints
+            WHERE status = 2 AND uid = ' . $uid . ';')));
+    }
 }
