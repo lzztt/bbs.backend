@@ -86,20 +86,7 @@ class Handler extends Service
         $maxReporterCount = 0;
         foreach ($complainGroups as $key => $uids) {
             if (count($uids) > 2) {
-                $user_ips = $sessionEvent->getIps($uids);
-                $uids = array_unique(array_column($user_ips, 'user_id'));
-                $ips = array_column($user_ips, 'ip');
-                $dup_ips = array_unique(array_diff_key($ips, array_unique($ips)));
-                if ($dup_ips) {
-                    $dup_users = [];
-                    foreach ($user_ips as $r) {
-                        if (in_array($r['ip'], $dup_ips)) {
-                            $dup_users[] = $r['user_id'];
-                        }
-                    }
-                    $uids = array_diff($uids, array_unique($dup_users));
-                }
-                $uniqueUserCount = count($uids);
+                $uniqueUserCount = self::countUserClusters($sessionEvent->getIps($uids));
                 if ($maxReporterCount < $uniqueUserCount) {
                     $maxReporterCount = $uniqueUserCount;
                     $reason = $key;
@@ -145,6 +132,45 @@ class Handler extends Service
         $mailer->send();
 
         $this->json();
+    }
+
+    private static function countUserClusters(array $user_ip_rows): int
+    {
+        $uidIpMap = [];
+        $ipUidMap = [];
+        foreach ($user_ip_rows as $r) {
+            if (array_key_exists($r['user_id'], $uidIpMap)) {
+                $uidIpMap[$r['user_id']][] = $r['ip'];
+            } else {
+                $uidIpMap[$r['user_id']] = [$r['ip']];
+            }
+            if (array_key_exists($r['ip'], $uidIpMap)) {
+                $ipUidMap[$r['ip']][] = $r['user_id'];
+            } else {
+                $ipUidMap[$r['ip']] = [$r['user_id']];
+            }
+        }
+
+        $uidStatusMap = array_fill_keys(array_keys($uidIpMap), true);
+        $count = 0;
+        foreach (array_keys($uidStatusMap) as $uid) {
+            if ($uidStatusMap[$uid]) {
+                $count++;
+                $uidStatusMap[$uid] = false;
+                // graph dfs
+                $ips = $uidIpMap[$uid];
+                while ($ips) {
+                    $ip = array_pop($ips);
+                    foreach ($ipUidMap[$ip] as $u) {
+                        if ($uidStatusMap[$u]) {
+                            $uidStatusMap[$u] = false;
+                            $ip = array_merge($ips, array_diff($uidIpMap[$u], $ips, [$ip]));
+                        }
+                    }
+                }
+            }
+        }
+        return $count;
     }
 
     private function getComplains(int $cid): array
