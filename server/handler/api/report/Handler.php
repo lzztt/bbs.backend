@@ -148,7 +148,7 @@ class Handler extends Service
             } else {
                 $uidIpMap[$r['user_id']] = [$r['ip']];
             }
-            if (array_key_exists($r['ip'], $uidIpMap)) {
+            if (array_key_exists($r['ip'], $ipUidMap)) {
                 $ipUidMap[$r['ip']][] = $r['user_id'];
             } else {
                 $ipUidMap[$r['ip']] = [$r['user_id']];
