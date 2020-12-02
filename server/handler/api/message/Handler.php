@@ -62,14 +62,6 @@ class Handler extends Service
     {
         $this->validateUser();
 
-        if (array_key_exists('topicMID', $this->request->data)) {
-            $this->request->data['topicMid'] = $this->request->data['topicMID'];
-        }
-
-        if (array_key_exists('toUID', $this->request->data)) {
-            $this->request->data['toUid'] = $this->request->data['toUID'];
-        }
-
         $topicMid = null;
         if (array_key_exists('topicMid', $this->request->data)) {
             $topicMid = (int) $this->request->data['topicMid'];

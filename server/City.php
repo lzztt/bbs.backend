@@ -16,4 +16,5 @@ class City
     public string $nameZh;
     public int $tidForum;
     public int $tidYp;
+    public int $tidSystem;
 }

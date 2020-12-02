@@ -23,6 +23,7 @@ use site\File;
 use site\dbobject\SessionEvent;
 use site\dbobject\SpamWord;
 use site\dbobject\User;
+use site\handler\api\message\Handler as MessageHandler;
 use site\handler\forum\node\Handler as NodeHandler;
 
 abstract class Handler extends CoreHandler
@@ -99,7 +100,7 @@ abstract class Handler extends CoreHandler
 
     public function postTopic(string $title, string $body): void
     {
-        $handler = new NodeHandler($this->request, $this->response, $this->config, $this->logger, $this->session, $this->args);
+        $handler = new NodeHandler(clone $this->request, clone $this->response, $this->config, $this->logger, $this->session, $this->args);
         $handler->user->id = self::UID_ADMIN;
         $handler->request->data = [
             'title' => $title,
@@ -107,9 +108,27 @@ abstract class Handler extends CoreHandler
         ];
 
         try {
-            $handler->createTopic(25);
+            $handler->createTopic(self::$city->tidSystem);
         } catch (Redirect $e) {
-            $this->logger->info('posting system topic:' . $e->getMessage());
+            $this->logger->info('system topic:' . $e->getMessage());
+        } catch (Exception $e) {
+            $this->logger->error('system topic error:' . $e->getMessage());
+        }
+    }
+
+    public function sendMessage($toUid, $body): void
+    {
+        $handler = new MessageHandler(clone $this->request, clone $this->response, $this->config, $this->logger, $this->session, $this->args);
+        $handler->user->id = self::UID_ADMIN;
+        $handler->request->data = [
+            'toUid' => $toUid,
+            'body' => $body,
+        ];
+
+        try {
+            $handler->post();
+        } catch (Exception $e) {
+            $this->logger->error('system message error:' . $e->getMessage());
         }
     }
 

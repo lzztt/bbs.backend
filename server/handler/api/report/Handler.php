@@ -96,14 +96,33 @@ class Handler extends Service
         if ($maxReporterCount > 2) {
             $days = ($complain->getViolationCount($spammer->id) + 1) * 3;
             $spammer->lockedUntil = $this->request->timestamp + self::ONE_DAY * $days;
-            $spammer->update('lockedUntil');
+            $spammer->reputation -= 3;
+            $spammer->contribution -= 3;
+            $spammer->update('lockedUntil,reputation,contribution');
             $this->logoutUser($spammer->id);
             $title = '封禁';
 
             $this->updateComplainStatus($cid);
+
+            foreach (array_merge(...array_values($complainGroups)) as $uid) {
+                $reporter = new User($uid, 'contribution,status');
+                if (!$reporter->exists() || $reporter->status !== 1) {
+                    continue;
+                }
+                $reporter->contribution += 1;
+                $reporter->update('contribution');
+                $this->sendMessage(
+                    $uid,
+                    '举报成功，您获得了1个贡献点奖励，感谢您对良好交流环境的维护！' . PHP_EOL
+                        . '处理结果：' . $spammer->username . '被封禁' . $days . '天，违规贴被标记'
+                );
+            }
+
             $this->postTopic(
                 $spammer->username . '被系统封禁' . $days . '天',
-                '原因：' . $reason . PHP_EOL . '[url=/node/' . $comment->nid . ']违规帖子[/url]'
+                '原因：' . $spammer->username . '在[url=/node/' . $comment->nid . ']这个帖子[/url]里的发言被多位用户举报。' . PHP_EOL
+                    . '类别：'  . $reason . PHP_EOL
+                    . '惩罚：用户被封禁' . $days . '天，用户的声望和贡献各减3点。'
             );
         }
 
@@ -168,7 +187,7 @@ class Handler extends Service
                     foreach ($ipUidMap[$ip] as $u) {
                         if ($uidStatusMap[$u]) {
                             $uidStatusMap[$u] = false;
-                            $ip = array_merge($ips, array_diff($uidIpMap[$u], $ips, [$ip]));
+                            $ips = array_merge($ips, array_diff($uidIpMap[$u], $ips, [$ip]));
                         }
                     }
                 }
@@ -185,9 +204,9 @@ class Handler extends Service
         $res = [];
         foreach ($complain->getList('reporterUid,reason') as $r) {
             if (array_key_exists($r['reason'], $res)) {
-                $res[$r['reason']][] = $r['reporterUid'];
+                $res[$r['reason']][] = (int) $r['reporterUid'];
             } else {
-                $res[$r['reason']] = [$r['reporterUid']];
+                $res[$r['reason']] = [(int) $r['reporterUid']];
             }
         }
         return $res;
