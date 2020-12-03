@@ -114,6 +114,8 @@ abstract class Handler extends CoreHandler
         } catch (Exception $e) {
             $this->logger->error('system topic error:' . $e->getMessage());
         }
+
+        $handler->flushCache();
     }
 
     public function sendMessage($toUid, $body): void
