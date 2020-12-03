@@ -123,7 +123,7 @@ class Handler extends Service
                 $spammer->username . '被系统封禁' . $days . '天',
                 '原因：[url=/user/' . $spammer->id . ']' . $spammer->username . '[/url]在[url=/node/' . $comment->nid . ']这个帖子[/url]里的发言被多位用户举报。' . PHP_EOL
                     . '类别：'  . $reason . PHP_EOL
-                    . '惩罚：用户被封禁' . $days . '天，用户的声望和贡献各减3点。'
+                    . '结果：用户被封禁' . $days . '天，用户的声望和贡献各减3点。'
             );
         }
 
