@@ -46,9 +46,6 @@ function (
           <footer>
             <div class="v_user actions">
               <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
-              <?php if (!empty($p['status'])) : ?>
-                <button type="button" class="v_user_not_<?= $p['uid'] ?>" onclick="window.app.report(<?= $p['id'] ?>)">举报</button>
-              <?php endif ?>
               <?php if ($tid == 16 && $p['type'] == 'node') : ?>
                 <button type="button" class="<?= $urole ?> action" onclick="window.location.href='/node/<?= $p['id'] ?>/activity'">发布为活动</button>
               <?php endif ?>

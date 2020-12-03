@@ -31,8 +31,11 @@ class NodeComplain extends DBObject
         }
 
         return $this->db->query('
-            SELECT cid, MAX(status) AS status
-            FROM node_complaints
+            SELECT uid, cid, MAX(status) AS status, MAX(time) AS lastReportTime, (
+                SELECT COUNT(DISTINCT cid)
+                FROM node_complaints
+                WHERE status = 2 AND uid =  nc.uid) AS reportCount
+            FROM node_complaints AS nc
             WHERE cid IN (' . implode(',', $cids) . ')
             GROUP BY cid;');
     }

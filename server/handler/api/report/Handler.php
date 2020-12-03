@@ -21,14 +21,36 @@ class Handler extends Service
             throw new Forbidden();
         }
 
-        $complain = [];
         $cids = array_filter(array_map('intval', explode(',', $this->args[0])), function (int $v): bool {
             return $v > 0;
         });
 
+        $complain = [];
+        foreach ((new NodeComplain())->getCommentComplains($cids) as $r) {
+            $cid = (int) $r['cid'];
+            $status =  (int) $r['status'];
+            $complain[$cid] = [
+                'status' => $status
+            ];
+
+            $skipAuthor = in_array((int) $r['uid'], [self::UID_ADMIN, $this->user->id]);
+            if ($status < 2 && !$skipAuthor) {
+                $complain[$cid]['reportableUntil'] = (int) $r['lastReportTime'] + self::ONE_DAY * 3 * (1 + (int) $r['reportCount']);
+            }
+        }
+
+        $cids = array_diff($cids, array_keys($complain));
         if ($cids) {
-            foreach ((new NodeComplain())->getCommentComplains($cids) as $r) {
-                $complain[$r['cid']] = (int) $r['status'];
+            $comment = new Comment();
+            $comment->where('id', $cids, 'IN');
+            foreach ($comment->getList('uid,createTime') as $r) {
+                $cid = (int) $r['id'];
+                $skipAuthor = in_array((int) $r['uid'], [self::UID_ADMIN, $this->user->id]);
+                if (!$skipAuthor) {
+                    $complain[$cid] = [
+                        'reportableUntil' => (int) $r['createTime'] + self::ONE_DAY * 3,
+                    ];
+                }
             }
         }
 
