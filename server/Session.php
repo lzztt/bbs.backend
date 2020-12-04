@@ -14,32 +14,28 @@ class Session
     private const ONE_MONTH = 2592000;
     private const SID_NAME = 'LZXSID';
     private const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
-    private const DEFAULT_DATA = [
-        'uid' => '0',
-        'cid' => '0',
-        'data' => [],
-    ];
 
     private string $id = '';
     private string $originalId = '';
     private ?Redis $redis = null;
     private ?Redis $redisOnline = null;
-    private int $time;
-    private array $current = [];
     private array $original = [];
+    private array $current = [
+        'uid' => '0',
+        'cid' => '0',
+        'data' => [],
+    ];
+
 
     public function __construct(bool $useDb)
     {
-        $this->time = (int) $_SERVER['REQUEST_TIME'];
         if (!$useDb) {
-            $this->current = self::DEFAULT_DATA;
             return;
         }
 
         $this->redis = MemStore::getRedis(MemStore::SESSION);
         $this->redisOnline = MemStore::getRedis(MemStore::ONLINE);
-
-        $this->id = empty($_COOKIE[self::SID_NAME]) ? '' : $_COOKIE[self::SID_NAME];
+        $this->id = $_COOKIE[self::SID_NAME];
 
         if (!$this->loadDbSession()) {
             $this->startNewSession();
@@ -52,7 +48,8 @@ class Session
             return false;
         }
 
-        $data = $this->redis->hGetAll($this->getKey($this->id));
+        $key = $this->getKey($this->id);
+        $data = $this->redis->hGetAll($key);
         if (!$data) {
             return false;
         }
@@ -64,7 +61,7 @@ class Session
         $this->current = $this->original;
 
         if ((int) $this->current['uid'] > 0) {
-            $ttl = (int) $this->redis->ttl($this->getKey($this->id));
+            $ttl = (int) $this->redis->ttl($key);
             if (self::ONE_MONTH - $ttl > self::ONE_DAY) {
                 $this->regenerateId();
             }
@@ -76,7 +73,6 @@ class Session
     private function startNewSession(): void
     {
         $this->regenerateId();
-        $this->current = self::DEFAULT_DATA;
     }
 
     public function regenerateId(): void
@@ -84,7 +80,9 @@ class Session
         $this->id = bin2hex(random_bytes(8));
 
         setcookie(self::SID_NAME, $this->id, [
-            'expires' => $this->time + self::ONE_MONTH,
+            'expires' => (int) $_SERVER['REQUEST_TIME'] + ((int) $this->current['uid'] > 0
+                ? self::ONE_MONTH
+                : self::ONE_DAY),
             'path' => '/',
             'domain' => '',
             'secure' => true,
@@ -144,17 +142,24 @@ class Session
 
     public function close(): void
     {
-        if (!$this->id) {
+        if ($this->redis === null) {
             return;
         }
         $insert = $this->current;
         $insert['data'] = self::encodeData($this->current['data']);
         $this->redis->hMSet($this->getKey($this->id), $insert);
+        $this->redisOnline->set($this->getOnlineKey($this->current['uid'], $this->id), '', self::FIVE_MINUTES);
 
+        $this->updateUserSessionMap();
+    }
+
+    private function updateUserSessionMap(): void
+    {
         $idChanged = $this->id !== $this->originalId;
         $uidChanged = $this->original && $this->current['uid'] !== $this->original['uid'];
+        $isUser = (int) $this->current['uid'] > 0;
 
-        if ($idChanged && $this->current['uid'] !== '0') {
+        if ($idChanged && $isUser) {
             $key = 'u:' . $this->current['uid'];
 
             if ($this->originalId) {
@@ -172,24 +177,21 @@ class Session
         if ($uidChanged) {
             $this->redisOnline->del($this->getOnlineKey($this->original['uid'], $this->originalId));
 
-            if ($this->current['uid'] === '0') {
+            if (!$isUser) {
                 $key = 'u:' . $this->original['uid'];
                 $this->redis->sRem($key, $this->originalId);
             }
         }
 
         if ($idChanged || $uidChanged) {
-            $this->redis->expire($this->getKey($this->id), (int) $this->current['uid'] > 0 ? self::ONE_MONTH : self::ONE_DAY);
+            $this->redis->expire($this->getKey($this->id), $isUser ? self::ONE_MONTH : self::ONE_DAY);
 
-            if ($this->current['uid'] !== '0') {
+            if ($isUser) {
                 $key = 'u:' . $this->current['uid'];
-
                 $this->redis->sAdd($key, $this->id);
                 $this->redis->expire($key, self::ONE_MONTH);
             }
         }
-
-        $this->redisOnline->set($this->getOnlineKey($this->current['uid'], $this->id), '', self::FIVE_MINUTES);
     }
 
     private function getKey(string $sessionId): string
@@ -214,7 +216,7 @@ class Session
 
     public function getOnlineUids(): array
     {
-        if (empty($this->redisOnline)) {
+        if ($this->redisOnline === null) {
             return [];
         }
 

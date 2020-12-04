@@ -14,26 +14,26 @@ use site\dbobject\User;
 class Handler extends Service
 {
     // check if a user is logged in
-    // uri: /api/authentication/<session_id>
+    // uri: /api/authentication
     // return: uid
     public function get(): void
     {
-        $return = [
-            'sessionID' => $this->session->id(),
-            'uid' => self::UID_GUEST,
-            'username' => null,
-            'role' => null
-        ];
-        if ($this->args && $this->args[0] === $this->session->id()) {
-            try {
-                $this->validateUser();
-                $return['uid'] = $this->user->id;
-                $return['username'] = $this->user->username;
-                $return['role'] = $this->user->getUserGroup();
-            } catch (Exception $e) {
-            }
+        try {
+            $this->validateUser();
+            $this->json([
+                'sessionID' => $this->session->id(),
+                'uid' => $this->user->id,
+                'username' => $this->user->username,
+                'role' => $this->user->getUserGroup()
+            ]);
+        } catch (Exception $e) {
+            $this->json([
+                'sessionID' => $this->session->id(),
+                'uid' => self::UID_GUEST,
+                'username' => null,
+                'role' => null
+            ]);
         }
-        $this->json($return);
     }
 
     // login a user
