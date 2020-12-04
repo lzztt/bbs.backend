@@ -35,7 +35,10 @@ class Session
 
         $this->redis = MemStore::getRedis(MemStore::SESSION);
         $this->redisOnline = MemStore::getRedis(MemStore::ONLINE);
-        $this->id = $_COOKIE[self::SID_NAME];
+
+        if (!empty($_COOKIE[self::SID_NAME])) {
+            $this->id = $_COOKIE[self::SID_NAME];
+        }
 
         if (!$this->loadDbSession()) {
             $this->startNewSession();

@@ -76,7 +76,12 @@ class Handler extends Service
                 $this->session->regenerateId();
                 $this->session->set('uid', $user->id);
 
-                $this->json(['sessionID' => $this->session->id(), 'uid' => $user->id, 'username' => $user->username, 'role' => $user->getUserGroup()]);
+                $this->json([
+                    'sessionID' => $this->session->id(),
+                    'uid' => $user->id,
+                    'username' => $user->username,
+                    'role' => $user->getUserGroup()
+                ]);
                 return;
             } else {
                 $this->logger->info('Login Fail: ' . $user->email . ' | ' . $this->request->ip);
