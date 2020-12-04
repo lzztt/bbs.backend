@@ -7,6 +7,7 @@ namespace site\handler\api\user;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\geo\Reader;
+use PDOException;
 use site\Config;
 use site\Service;
 use site\dbobject\User;
@@ -133,7 +134,7 @@ class Handler extends Service
             }
         }
 
-        if (!filter_var($this->request->data['email'], \FILTER_VALIDATE_EMAIL) || substr($this->request->data['email'], -8) == 'bccto.me') {
+        if (!filter_var($this->request->data['email'], FILTER_VALIDATE_EMAIL) || substr($this->request->data['email'], -8) == 'bccto.me') {
             throw new ErrorMessage('不合法的电子邮箱 : ' . $this->request->data['email']);
         }
 
@@ -166,7 +167,7 @@ class Handler extends Service
 
             try {
                 $user->add();
-            } catch (\PDOException $e) {
+            } catch (PDOException $e) {
                 throw new ErrorMessage($e->errorInfo[2]);
             }
         }
