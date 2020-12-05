@@ -96,10 +96,6 @@ class Handler extends Service
             throw new ErrorMessage('错误：被举报的用户不存在。');
         }
 
-        if ($spammer->lockedUntil > $this->request->timestamp) {
-            throw new ErrorMessage('错误：被举报的用户已被封禁。');
-        }
-
         $complain->uid = $comment->uid;
         $complain->nid = $comment->nid;
         $complain->cid = $cid;
@@ -124,8 +120,8 @@ class Handler extends Service
             }
         }
         if ($maxReporterCount > 2) {
-            $days = ($complain->getViolationCount($spammer->id) + 1) * 3;
-            $spammer->lockedUntil = $this->request->timestamp + self::ONE_DAY * $days;
+            $days = pow(3, $complain->getViolationCount($spammer->id) + 1);
+            $spammer->lockedUntil = max($spammer->lockedUntil, $this->request->timestamp) + self::ONE_DAY * $days;
             $spammer->reputation -= 3;
             $spammer->contribution -= 3;
             $spammer->update('lockedUntil,reputation,contribution');
@@ -193,6 +189,11 @@ class Handler extends Service
         $uidIpMap = [];
         $ipUidMap = [];
         foreach ($user_ip_rows as $r) {
+            if ((int) $r['user_id'] === self::UID_ADMIN) {
+                $uidIpMap[$r['user_id']] = [];
+                continue;
+            }
+
             if (array_key_exists($r['user_id'], $uidIpMap)) {
                 $uidIpMap[$r['user_id']][] = $r['ip'];
             } else {

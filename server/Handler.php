@@ -118,8 +118,12 @@ abstract class Handler extends CoreHandler
         $handler->flushCache();
     }
 
-    public function sendMessage($toUid, $body): void
+    public function sendMessage(int $toUid, string $body): void
     {
+        if ($toUid === self::UID_ADMIN) {
+            return;
+        }
+
         $handler = new MessageHandler(clone $this->request, clone $this->response, $this->config, $this->logger, $this->session, $this->args);
         $handler->user->id = self::UID_ADMIN;
         $handler->request->data = [
