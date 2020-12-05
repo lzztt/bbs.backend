@@ -15,16 +15,14 @@ class Session
     private const SID_NAME = 'LZXSID';
     private const JSON_OPTIONS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 
+    private int $cityId = 0;
     private string $id = '';
     private string $originalId = '';
+    private int $originalTtl = 0;
     private ?Redis $redis = null;
     private ?Redis $redisOnline = null;
     private array $original = [];
-    private array $current = [
-        'uid' => '0',
-        'cid' => '0',
-        'data' => [],
-    ];
+    private array $current = [];
 
 
     public function __construct(bool $useDb)
@@ -50,31 +48,50 @@ class Session
         }
 
         $key = $this->getKey($this->id);
-        $data = $this->redis->hGetAll($key);
+        $type = $this->redis->type($key);
+        if ($type === Redis::REDIS_NOT_FOUND) {
+            return;
+        }
+        $isOld = $type === Redis::REDIS_HASH;
+        $data = $isOld ? $this->redis->hGetAll($key) : $this->redis->get($key);
         if (!$data) {
             return;
         }
 
         $this->originalId = $this->id;
-        $this->original = $data;
-        $this->original['data'] = self::decodeData($this->original['data']);
+        if ($isOld) {
+            $this->original = self::decodeData($data['data']);
+            $this->original['uid'] = (int) $data['uid'];
+        } else {
+            $this->original = self::decodeData($data);
+        }
 
         $this->current = $this->original;
 
-        if ((int) $this->current['uid'] > 0) {
-            $ttl = (int) $this->redis->ttl($key);
-            if (self::ONE_MONTH - $ttl > self::ONE_DAY) {
-                $this->regenerateId();
-            }
+        if ($isOld) {
+            $this->regenerateId();
+            return;
+        }
+
+        $this->originalTtl = (int) $this->redis->ttl($key);
+        if (
+            $this->originalTtl < self::ONE_MONTH - self::ONE_DAY
+            && $this->get('uid') > 0
+        ) {
+            $this->regenerateId();
         }
     }
 
     public function regenerateId(): void
     {
+        if (!$this->redis) {
+            return;
+        }
+
         $this->id = bin2hex(random_bytes(8));
 
         setcookie(self::SID_NAME, $this->id, [
-            'expires' => (int) $_SERVER['REQUEST_TIME'] + ((int) $this->current['uid'] > 0
+            'expires' => (int) $_SERVER['REQUEST_TIME'] + ($this->get('uid') > 0
                 ? self::ONE_MONTH
                 : self::ONE_DAY),
             'path' => '/',
@@ -83,6 +100,11 @@ class Session
             'httponly' => false,
             'samesite' => 'Strict'
         ]);
+    }
+
+    public function setCityId(int $cityId): void
+    {
+        $this->cityId = $cityId;
     }
 
     private static function encodeData(array $data): string
@@ -102,24 +124,28 @@ class Session
 
     final public function get(string $name)
     {
-        if (in_array($name, ['uid', 'cid'])) {
-            return (int) $this->current[$name];
+        if ($name === 'uid') {
+            return array_key_exists('uid', $this->current) ? $this->current['uid'] : 0;
         }
 
-        return array_key_exists($name, $this->current['data']) ? $this->current['data'][$name] : null;
+        return array_key_exists($name, $this->current) ? $this->current[$name] : null;
     }
 
     final public function set(string $name, $value): void
     {
-        if (in_array($name, ['uid', 'cid'])) {
-            $this->current[$name] = (string) $value;
+        if ($name === 'uid') {
+            if (empty($value)) {
+                unset($this->current['uid']);
+            } else {
+                $this->current['uid'] = (int) $value;
+            }
             return;
         }
 
         if (is_null($value)) {
-            unset($this->current['data'][$name]);
+            unset($this->current[$name]);
         } else {
-            $this->current['data'][$name] = $value;
+            $this->current[$name] = $value;
         }
     }
 
@@ -130,58 +156,60 @@ class Session
 
     public function clear(): void
     {
-        $this->current['uid'] = '0';
-        $this->current['data'] = [];
+        $this->current = [];
     }
 
     public function close(): void
     {
-        if ($this->redis === null) {
+        if (!$this->redis || !$this->id) {
             return;
         }
-        $insert = $this->current;
-        $insert['data'] = self::encodeData($this->current['data']);
-        $this->redis->hMSet($this->getKey($this->id), $insert);
-        $this->redisOnline->set($this->getOnlineKey($this->current['uid'], $this->id), '', self::FIVE_MINUTES);
 
-        $this->updateUserSessionMap();
-    }
+        $newSession = $this->id !== $this->originalId;
+        $newData = $this->current !== $this->original;
+        $isUserNow = $this->get('uid') > 0;
 
-    private function updateUserSessionMap(): void
-    {
-        $idChanged = $this->id !== $this->originalId;
-        $uidChanged = $this->original && $this->current['uid'] !== $this->original['uid'];
-        $isUser = (int) $this->current['uid'] > 0;
+        if ($this->current) {
+            // update current session
+            if ($newSession) {
+                $this->redis->set($this->getKey($this->id), self::encodeData($this->current), $isUserNow ? self::ONE_MONTH : self::ONE_DAY);
+            } elseif ($newData) {
+                $this->redis->set($this->getKey($this->id), self::encodeData($this->current), $this->originalTtl);
+            }
+        } else {
+            // delete current session
+            if (!$newSession && $newData) {
+                $this->redis->del($this->getKey($this->id));
+            }
+        }
+        $this->redisOnline->set($this->getOnlineKey($this->get('uid'), $this->id), '', self::FIVE_MINUTES);
 
-        if ($idChanged && $isUser) {
-            $key = 'u:' . $this->current['uid'];
+        $originalUid = array_key_exists('uid', $this->original) ? $this->original['uid'] : 0;
+        $isUserBefore = $originalUid > 0;
 
+        if ($isUserBefore && ($newSession || !$isUserNow)) {
+            // clean up old user-session mapping
+            $this->redis->sRem('u:' . $originalUid, $this->originalId);
+        }
+
+        if ($newSession) {
             if ($this->originalId) {
+                // clean up old session
                 $this->redis->del($this->getKey($this->originalId));
-                $this->redis->sRem($key, $this->originalId);
+                $this->redisOnline->del($this->getOnlineKey($originalUid, $this->originalId));
             }
 
-            foreach ($this->redis->sMembers($key) as $s) {
-                if (!$this->redis->exists($this->getKey($s))) {
-                    $this->redis->sRem($key, $s);
+            if ($isUserNow) {
+                $key = 'u:' . $this->get('uid');
+
+                // clean up expired sessions
+                foreach ($this->redis->sMembers($key) as $s) {
+                    if (!$this->redis->exists($this->getKey($s))) {
+                        $this->redis->sRem($key, $s);
+                    }
                 }
-            }
-        }
 
-        if ($uidChanged) {
-            $this->redisOnline->del($this->getOnlineKey($this->original['uid'], $this->originalId));
-
-            if (!$isUser) {
-                $key = 'u:' . $this->original['uid'];
-                $this->redis->sRem($key, $this->originalId);
-            }
-        }
-
-        if ($idChanged || $uidChanged) {
-            $this->redis->expire($this->getKey($this->id), $isUser ? self::ONE_MONTH : self::ONE_DAY);
-
-            if ($isUser) {
-                $key = 'u:' . $this->current['uid'];
+                // add new user-session mapping
                 $this->redis->sAdd($key, $this->id);
                 $this->redis->expire($key, self::ONE_MONTH);
             }
@@ -193,9 +221,9 @@ class Session
         return 's:' . $sessionId;
     }
 
-    private function getOnlineKey(string $uid, string $sessionId): string
+    private function getOnlineKey(int $uid, string $sessionId): string
     {
-        return 'o:' . $this->current['cid'] . ':' . $uid . ':' . $sessionId;
+        return 'o:' . $this->cityId . ':' . $uid . ':' . $sessionId;
     }
 
     public function deleteSessions(int $uid): void
@@ -214,7 +242,7 @@ class Session
             return [];
         }
 
-        $keys = $this->redisOnline->keys('o:' . $this->current['cid'] . ':*');
+        $keys = $this->redisOnline->keys('o:' . $this->cityId . ':*');
         $uids = [];
         foreach ($keys as $k) {
             $f = explode(':', $k);

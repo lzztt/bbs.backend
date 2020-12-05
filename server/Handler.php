@@ -90,9 +90,7 @@ abstract class Handler extends CoreHandler
 
         // validate site for session
         if (self::$city->id) {
-            if (self::$city->id !== $this->session->get('cid')) {
-                $this->session->set('cid', self::$city->id);
-            }
+            $this->session->setCityId(self::$city->id);
         } else {
             $this->logger->error('unsupported website: ' . $this->request->domain);
         }

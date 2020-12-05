@@ -73,8 +73,8 @@ class Handler extends Service
             }
 
             if ($user->verifyPassword($this->request->data['password'])) {
-                $this->session->regenerateId();
                 $this->session->set('uid', $user->id);
+                $this->session->regenerateId();
 
                 $this->json([
                     'sessionID' => $this->session->id(),
