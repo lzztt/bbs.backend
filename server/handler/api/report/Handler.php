@@ -25,21 +25,29 @@ class Handler extends Service
             return $v > 0;
         });
 
-        $complain = [];
-        foreach ((new NodeComplain())->getCommentComplains($cids) as $r) {
+        $complains = [];
+        $complain = new NodeComplain();
+        foreach ($complain->getCommentComplains($cids) as $r) {
             $cid = (int) $r['cid'];
             $status =  (int) $r['status'];
-            $complain[$cid] = [
+            $complains[$cid] = [
                 'status' => $status
             ];
 
             $skipAuthor = in_array((int) $r['uid'], [self::UID_ADMIN, $this->user->id]);
             if ($status < 2 && !$skipAuthor) {
-                $complain[$cid]['reportableUntil'] = (int) $r['lastReportTime'] + self::ONE_DAY * 3 * (1 + (int) $r['reportCount']);
+                $complain->cid = $cid;
+                $complain->reporterUid = $this->user->id;
+                $complain->load('time');
+                if (!$complain->exists()) {
+                    $complains[$cid]['reportableUntil'] = (int) $r['lastReportTime'] + self::ONE_DAY * 3 * (1 + (int) $r['reportCount']);
+                } else {
+                    $complains[$cid]['myReportTime'] = $complain->time;
+                }
             }
         }
 
-        $cids = array_diff($cids, array_keys($complain));
+        $cids = array_diff($cids, array_keys($complains));
         if ($cids) {
             $comment = new Comment();
             $comment->where('id', $cids, 'IN');
@@ -47,14 +55,14 @@ class Handler extends Service
                 $cid = (int) $r['id'];
                 $skipAuthor = in_array((int) $r['uid'], [self::UID_ADMIN, $this->user->id]);
                 if (!$skipAuthor) {
-                    $complain[$cid] = [
+                    $complains[$cid] = [
                         'reportableUntil' => (int) $r['createTime'] + self::ONE_DAY * 3,
                     ];
                 }
             }
         }
 
-        $this->json($complain);
+        $this->json($complains);
     }
 
     public function post(): void
@@ -152,12 +160,12 @@ class Handler extends Service
         // send notification
         $mailer = new Mailer('complain');
         $mailer->setTo('ikki3355@gmail.com');
-        $mailer->setSubject($title . ': ' . $spammer->username . ' <' . $spammer->email . '>');
+        $mailer->setSubject($title . ' ' . $reason . ': ' . $spammer->username . ' <' . $spammer->email . '>');
         $mailer->setBody(print_r([
             'spammer' => [
-                'id' => 'https://' . $this->request->domain . '/user/' . $comment->uid,
-                'username' => $spammer->username,
-                'email' => $spammer->email,
+                'spammer' => $spammer->username
+                    . ' : ' . $spammer->email
+                    . ' : ' . 'https://' . $this->request->domain . '/user/' . $spammer->id,
                 'city' => self::getLocationFromIp($spammer->lastAccessIp),
                 'reputation' => $spammer->reputation,
                 'register' => date(DATE_COOKIE, $spammer->createTime)
@@ -167,9 +175,9 @@ class Handler extends Service
                 'body' => $comment->body,
             ],
             'reporter' => [
-                'id' => 'https://' . $this->request->domain . '/user/' . $this->user->id,
-                'username' => $this->user->username,
-                'email' => $this->user->email,
+                'reporter' => $this->user->username
+                    . ' : ' . $this->user->email
+                    . ' : ' . 'https://' . $this->request->domain . '/user/' . $this->user->id,
                 'city' => self::getLocationFromIp($this->request->ip),
                 'reputation' => $this->user->reputation,
                 'register' => date(DATE_COOKIE, $this->user->createTime)

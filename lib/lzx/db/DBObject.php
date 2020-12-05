@@ -213,7 +213,7 @@ abstract class DBObject
 
         $arr = $this->getList($properties, 1);
 
-        if (sizeof($arr) == 1) {
+        if (sizeof($arr) === 1) {
             foreach ($arr[0] as $prop => $val) {
                 $this->setValue($prop, $val);
             }
