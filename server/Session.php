@@ -40,21 +40,19 @@ class Session
             $this->id = $_COOKIE[self::SID_NAME];
         }
 
-        if (!$this->loadDbSession()) {
-            $this->startNewSession();
-        }
+        $this->loadDbSession();
     }
 
-    private function loadDbSession(): bool
+    private function loadDbSession(): void
     {
         if (!$this->id) {
-            return false;
+            return;
         }
 
         $key = $this->getKey($this->id);
         $data = $this->redis->hGetAll($key);
         if (!$data) {
-            return false;
+            return;
         }
 
         $this->originalId = $this->id;
@@ -69,13 +67,6 @@ class Session
                 $this->regenerateId();
             }
         }
-
-        return true;
-    }
-
-    private function startNewSession(): void
-    {
-        $this->regenerateId();
     }
 
     public function regenerateId(): void
