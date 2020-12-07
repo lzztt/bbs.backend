@@ -11,6 +11,7 @@ use lzx\exception\Redirect;
 use site\dbobject\Comment;
 use site\dbobject\Image;
 use site\dbobject\Node as NodeObject;
+use site\dbobject\User;
 use site\handler\node\Node;
 
 class Handler extends Node
@@ -36,7 +37,7 @@ class Handler extends Node
 
     private function commentForumTopic(int $nid): void
     {
-        $node = new NodeObject($nid, 'tid,status');
+        $node = new NodeObject($nid, 'tid,uid,title,reputation,status');
 
         if (!$node->exists() || $node->status == 0) {
             throw new ErrorMessage('node does not exist.');
@@ -85,6 +86,14 @@ class Handler extends Node
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('ForumComment')->trigger();
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
+
+        $newReputation = floor($node->getCommenterCount($nid) / 3) - $node->reputation;
+        if ($newReputation > 0) {
+            $user = new User($node->uid, 'reputation');
+            $user->reputation += $newReputation;
+            $user->update();
+            $this->sendMessage($user->id, '您获得了' . $newReputation . '个声望点，感谢发布热门话题：' . $node->title);
+        }
 
         throw new Redirect('/node/' . $nid . '?p=l#comment' . $comment->id);
     }

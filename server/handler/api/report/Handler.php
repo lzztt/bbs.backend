@@ -140,7 +140,7 @@ class Handler extends Service
                 $reporter->update('contribution');
                 $this->sendMessage(
                     $uid,
-                    '举报成功，您获得了1个贡献点奖励，感谢您对良好交流环境的维护！' . PHP_EOL
+                    '举报成功，您获得了1个贡献点，感谢您对良好交流环境的维护！' . PHP_EOL
                         . '处理结果：' . $spammer->username . '被封禁' . $days . '天，违规贴被标记'
                 );
             }

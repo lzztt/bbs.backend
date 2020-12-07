@@ -18,6 +18,7 @@ class Node extends DBObject
     public $lastCommentTime;
     public $title;
     public $viewCount;
+    public $reputation;
     public $status;
 
     public function __construct($id = null, string $properties = '')
@@ -85,6 +86,16 @@ class Node extends DBObject
     public function getViewCounts(array $nids): array
     {
         return $this->call('get_node_view_count("' . implode(',', $nids) . '")');
+    }
+
+    public function getCommenterCount(int $nid): int
+    {
+        $sql = "
+        SELECT COUNT(DISTINCT c.uid) AS count
+            FROM nodes AS n JOIN comments AS c
+                ON n.id = c.nid AND c.uid != n.uid
+            WHERE n.id = $nid;";
+        return (int) array_pop(array_pop($this->db->query($sql)));
     }
 
     public function getLatestForumTopics(int $forumRootID, int $count): array
