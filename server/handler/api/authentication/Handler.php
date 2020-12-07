@@ -54,7 +54,7 @@ class Handler extends Service
 
             $user = new User();
             $user->email = $this->request->data['email'];
-            $user->load('id,username,status,password,lockedUntil');
+            $user->load();
 
             if (!$user->exists()) {
                 throw new ErrorMessage('错误的邮箱或密码。');
@@ -70,6 +70,10 @@ class Handler extends Service
 
             if ($user->lockedUntil > $this->request->timestamp) {
                 throw new ErrorMessage('帐号被暂时封禁至' . date('Y-m-d', $user->lockedUntil) . '，请稍后再尝试登陆。');
+            }
+
+            if ($user->reputation < 0 && $user->contribution < 0) {
+                throw new ErrorMessage('用户的社区声望和贡献不足，不能登陆。');
             }
 
             if ($user->verifyPassword($this->request->data['password'])) {
