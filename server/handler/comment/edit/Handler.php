@@ -33,10 +33,11 @@ class Handler extends Comment
         }
         $comment->body = $this->request->data['body'];
         $comment->lastModifiedTime = $this->request->timestamp;
+        $comment->reportableUntil = $this->request->timestamp + self::ONE_DAY * 3;
         try {
             $this->dedup();
 
-            $comment->update('body,lastModifiedTime');
+            $comment->update();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
             throw new ErrorMessage($e->getMessage());

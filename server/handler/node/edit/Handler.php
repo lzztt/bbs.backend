@@ -81,6 +81,7 @@ class Handler extends Node
         $comment->tid = (int) $this->request->data['tagId'];
         $comment->body = $this->request->data['body'];
         $comment->lastModifiedTime = $this->request->timestamp;
+        $comment->reportableUntil = $this->request->timestamp + self::ONE_DAY * 3;
         $comment->update();
 
         $files = $this->getFormFiles();
@@ -158,6 +159,7 @@ class Handler extends Node
             $comment->id = $arr[0]['id'];
             $comment->body = $this->request->data['body'];
             $comment->lastModifiedTime = $this->request->timestamp;
+            $comment->reportableUntil = $this->request->timestamp + self::ONE_DAY * 3;
             $comment->update();
 
             $files = $this->getFormFiles();

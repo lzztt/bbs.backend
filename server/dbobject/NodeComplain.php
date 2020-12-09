@@ -31,13 +31,11 @@ class NodeComplain extends DBObject
         }
 
         return $this->db->query('
-            SELECT uid, cid, MAX(status) AS status, MAX(time) AS lastReportTime, (
-                SELECT COUNT(DISTINCT cid)
-                FROM node_complaints
-                WHERE status = 2 AND uid =  nc.uid) AS reportCount
+            SELECT nc.uid, nc.cid, MAX(nc.status) AS status, c.reportable_until AS reportableUntil
             FROM node_complaints AS nc
-            WHERE cid IN (' . implode(',', $cids) . ')
-            GROUP BY cid;');
+                JOIN comments AS c ON nc.cid = c.id
+            WHERE nc.cid IN (' . implode(',', $cids) . ')
+            GROUP BY nc.cid;');
     }
 
     public function getViolationCount(int $uid): int

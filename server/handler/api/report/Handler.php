@@ -40,9 +40,9 @@ class Handler extends Service
                 $complain->reporterUid = $this->user->id;
                 $complain->load('time');
                 if (!$complain->exists()) {
-                    $complains[$cid]['reportableUntil'] = (int) $r['lastReportTime'] + self::ONE_DAY * 3 * (1 + (int) $r['reportCount']);
+                    $complains[$cid]['reportableUntil'] = (int) $r['reportableUntil'];
                 } else {
-                    $complains[$cid]['myReportTime'] = $complain->time;
+                    $complains[$cid]['myReportTime'] = (int) $complain->time;
                 }
             }
         }
@@ -51,12 +51,12 @@ class Handler extends Service
         if ($cids) {
             $comment = new Comment();
             $comment->where('id', $cids, 'IN');
-            foreach ($comment->getList('uid,createTime') as $r) {
+            foreach ($comment->getList('uid,reportableUntil') as $r) {
                 $cid = (int) $r['id'];
                 $skipAuthor = in_array((int) $r['uid'], [self::UID_ADMIN, $this->user->id]);
                 if (!$skipAuthor) {
                     $complains[$cid] = [
-                        'reportableUntil' => (int) $r['createTime'] + self::ONE_DAY * 3,
+                        'reportableUntil' => (int) $r['reportableUntil'],
                     ];
                 }
             }
@@ -151,6 +151,9 @@ class Handler extends Service
                     . '类别：'  . $reason . PHP_EOL
                     . '结果：用户被封禁' . $days . '天，用户的声望和贡献各减3点。'
             );
+        } else {
+            $comment->reportableUntil = $this->request->timestamp + self::ONE_DAY * pow(3, $maxReporterCount);
+            $comment->update('reportableUntil');
         }
 
         // send notification
