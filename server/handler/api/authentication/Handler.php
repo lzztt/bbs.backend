@@ -72,7 +72,7 @@ class Handler extends Service
                 throw new ErrorMessage('帐号被暂时封禁至' . date('Y-m-d', $user->lockedUntil) . '，请稍后再尝试登陆。');
             }
 
-            if ($user->reputation < 0 && $user->contribution < 0) {
+            if ($user->reputation + $user->contribution < -2) {
                 throw new ErrorMessage('用户的社区声望和贡献不足，不能登陆。');
             }
 

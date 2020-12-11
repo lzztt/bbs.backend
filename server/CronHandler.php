@@ -167,9 +167,12 @@ class CronHandler extends Handler
 
         $ids = [];
         foreach ($db->query($sql) as $r) {
-            $user = new User((int) $r['reporter_uid'], 'contribution');
+            $user = new User((int) $r['reporter_uid'], 'reputation,contribution');
             $user->contribution -= 1;
             $user->update();
+            if ($user->reputation + $user->contribution < -2) {
+                $this->logoutUser($user->id);
+            }
             // send pm
             $this->sendMessage(
                 $user->id,
