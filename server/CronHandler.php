@@ -154,7 +154,7 @@ class CronHandler extends Handler
     }
 
     // daily
-    protected function doNewUserPoints(): void
+    protected function doUpdateComplaints(): void
     {
         $db = DB::getInstance();
         $sql = '
@@ -165,15 +165,30 @@ class CronHandler extends Handler
         WHERE nc.status = 1
             AND c.reportable_until < ' . $this->request->timestamp . ';';
 
+        $ids = [];
         foreach ($db->query($sql) as $r) {
             $user = new User((int) $r['reporter_uid'], 'contribution');
             $user->contribution -= 1;
             $user->update();
             // send pm
-            $this->sendMessage($user->id, '');
-            //
+            $this->sendMessage(
+                $user->id,
+                '举报失败，您损失了1点贡献。' . PHP_EOL
+                    . '原因：您的举报未获得足够的用户支持。' . PHP_EOL
+                    . '话题：' . $r['title']
+            );
+            $ids[] = (int) $r['id'];
         }
-        // $db->query('update users set points = 2 where points = 0 and create_time < unix_timestamp() - 30 * 24 * 3600;');
+
+        if (!$ids) {
+            return;
+        }
+
+        $sql = '
+        UPDATE node_complaints
+        SET status = 0
+        WHERE id IN (' . implode(',', $ids) . ');';
+        $db->query($sql);
     }
 
     // daily

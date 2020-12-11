@@ -90,6 +90,8 @@ class Handler extends Node
 
         $newReputation = floor($node->getCommenterCount($nid) / 3) - $node->reputation;
         if ($newReputation > 0) {
+            $node->reputation = $node->reputation + $newReputation;
+            $node->update();
             $user = new User($node->uid, 'reputation');
             $user->reputation += $newReputation;
             $user->update();
