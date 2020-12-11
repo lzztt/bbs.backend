@@ -17,6 +17,8 @@ class CronHandler extends Handler
 {
     public function run(): void
     {
+        $this->staticInit();
+
         $this->actions = [];
         foreach (get_class_methods(__CLASS__) as $method) {
             if (substr($method, 0, 2) === 'do') {
