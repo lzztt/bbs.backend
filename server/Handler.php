@@ -335,11 +335,13 @@ abstract class Handler extends CoreHandler
             $this->user->load();
         }
 
-        if ($this->user->exists() && $this->user->status > 0) {
-            return;
+        if (!$this->user->exists() || $this->user->status < 1) {
+            throw new ErrorMessage('用户不存在');
         }
 
-        throw new ErrorMessage('用户不存在');
+        if ($this->user->reputation + $this->user->contribution < -2) {
+            throw new ErrorMessage('用户的社区声望和贡献不足。');
+        }
     }
 
     protected function deleteUser(int $uid): void
