@@ -228,6 +228,10 @@ class Session
 
     public function deleteSessions(int $uid): void
     {
+        if (!$this->redis) {
+            $this->redis = MemStore::getRedis(MemStore::SESSION);
+        }
+
         $key = 'u:' . $uid;
         foreach ($this->redis->sMembers($key) as $s) {
             $this->redis->del($this->getKey($s));
