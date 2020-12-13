@@ -30,8 +30,7 @@ abstract class Controller extends Handler
     {
         $html = $this->html;
         $html->setCity(self::$city->id)
-            ->setDebug($this->config->mode === Config::MODE_DEV)
-            ->setTheme($this->config->theme);
+            ->setDebug($this->config->mode === Config::MODE_DEV);
 
         // set navbar
         $navbarCache = $this->getIndependentCache('page_navbar');
@@ -53,14 +52,9 @@ abstract class Controller extends Handler
         } else {
             $html->setHeadDescription($html->getHeadDescription() . ' ' . self::$city->nameZh . ' 华人 论坛 ' . self::$city->nameEn . ' Chinese Forum');
         }
-        $html->setSitename($siteName);
 
-        // set min version for css and js
-        if (!$html->getDebug()) {
-            $min_version = $this->config->path['file'] . '/themes/' . $html->getTheme() . '/min/min.current';
-            if (file_exists($min_version)) {
-                $html->setMinVersion(file_get_contents($min_version));
-            }
+        if (empty($html->getLastModifiedTime())) {
+            $html->setLastModifiedTime($this->request->timestamp);
         }
     }
 

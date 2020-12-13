@@ -5,14 +5,12 @@ use site\Config;
 
 function (
   int $city,
+  int $lastModifiedTime,
   Template $content,
-  string $head_description,
-  string $head_title,
-  string $min_version,
-  Template $page_navbar,
-  string $sitename,
-  bool $debug,
-  string $theme
+  string $headTitle,
+  string $headDescription,
+  Template $pageNavbar,
+  bool $debug
 ) {
 ?>
 

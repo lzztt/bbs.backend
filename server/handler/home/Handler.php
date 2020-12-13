@@ -17,6 +17,8 @@ use site\gen\theme\roselife\ImageSlider;
 
 class Handler extends Controller
 {
+    private $lastModifiedTime = 0;
+
     public function run(): void
     {
         $this->cache = $this->getPageCache();
@@ -91,7 +93,11 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node())->getLatestForumTopics(self::$city->tidForum, $count) as $n) {
+            $nodes = (new Node())->getLatestForumTopics(self::$city->tidForum, $count);
+            if ($nodes) {
+                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
+            }
+            foreach ($nodes as $n) {
                 $arr[] = [
                     'time' => (int) $n['create_time'],
                     'method' => 'toTime',
@@ -134,7 +140,11 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node())->getLatestYellowPages(self::$city->tidYp, $count) as $n) {
+            $nodes = (new Node())->getLatestYellowPages(self::$city->tidYp, $count);
+            if ($nodes) {
+                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
+            }
+            foreach ($nodes as $n) {
                 $arr[] = [
                     'time' => (int) $n['exp_time'],
                     'method' => 'toDate',
@@ -156,7 +166,11 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node())->getLatestForumTopicReplies(self::$city->tidForum, $count) as $n) {
+            $nodes = (new Node())->getLatestForumTopicReplies(self::$city->tidForum, $count);
+            if ($nodes) {
+                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
+            }
+            foreach ($nodes as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
                     'uri' => '/node/' . $n['nid'] . '?p=l',
@@ -177,7 +191,11 @@ class Handler extends Controller
         if (!$ul) {
             $arr = [];
 
-            foreach ((new Node())->getLatestYellowPageReplies(self::$city->tidYp, $count) as $n) {
+            $nodes = (new Node())->getLatestYellowPageReplies(self::$city->tidYp, $count);
+            if ($nodes) {
+                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
+            }
+            foreach ($nodes as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
                     'uri' => '/node/' . $n['nid'] . '?p=l',
