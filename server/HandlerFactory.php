@@ -27,7 +27,7 @@ class HandlerFactory
 
         if (!$cls) {
             $cls = HandlerRouter::$route['app'];
-            $args = ['default'];
+            $args = ['frontend_app'];
             // throw new NotFound();
         }
         return new $cls($req, $resp, $config, $logger, $session, $args);

@@ -50,6 +50,7 @@ class Handler extends Controller
                 ->setLatestYellowPageReplies(($this->getLatestYellowPageReplies(15)))
                 ->setImageSlider($this->getImageSlider())
         );
+        $this->html->setLastModifiedTime($this->lastModifiedTime);
     }
 
     private function bayHome(): void
@@ -141,10 +142,8 @@ class Handler extends Controller
             $arr = [];
 
             $nodes = (new Node())->getLatestYellowPages(self::$city->tidYp, $count);
-            if ($nodes) {
-                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
-            }
             foreach ($nodes as $n) {
+                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $n['create_time']);
                 $arr[] = [
                     'time' => (int) $n['exp_time'],
                     'method' => 'toDate',

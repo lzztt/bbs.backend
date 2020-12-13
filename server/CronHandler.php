@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace site;
 
+use Exception;
 use lzx\cache\CacheHandler;
 use lzx\core\Mailer;
 use lzx\db\DB;
@@ -218,6 +219,32 @@ class CronHandler extends Handler
 
         $cmd = $cmd . ' | ' . $gzip . ' > ' . $this->config->path['backup'] . '/' . date('Y-m-d', $this->request->timestamp - 86400) . '.sql.gz';
         echo shell_exec($cmd);
+    }
+
+    protected function doVerifyPage(): void
+    {
+        $body = self::curlGet("https://www.houstonbbs.com/");
+        if (!$body) {
+            throw new Exception('empty home page');
+        }
+
+        $file = '/tmp/cache_' . mt_rand();
+        file_put_contents($file, $body);
+        $tags = get_meta_tags($file);
+        unlink($file);
+        $pageTime = (int) $tags['mtime'];
+
+        $db = DB::getInstance();
+        $sql = '
+        SELECT MAX(create_time) AS time
+        FROM comments
+        WHERE tid < 127 AND status = 1;';
+        $dbTime = (int) array_pop(array_pop($db->query($sql)));
+
+        if ($dbTime > $pageTime + 3) {
+            echo shell_exec('/bin/bash $HOME/clear_cache.sh');
+            throw new Exception('stale home page: db=' . $dbTime . ' page=' . $pageTime);
+        }
     }
 
     protected function doAd(): void

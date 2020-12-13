@@ -12,7 +12,9 @@ trait UtilTrait
     {
         $c = curl_init($url);
         curl_setopt_array($c, [
+            CURLOPT_USERAGENT => 'curl',
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => 'gzip,deflate',
             CURLOPT_CONNECTTIMEOUT => 2,
             CURLOPT_TIMEOUT => 3
         ]);
