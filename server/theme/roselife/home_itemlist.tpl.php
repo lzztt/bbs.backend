@@ -1,9 +1,11 @@
 <?php
 function (
+  int $lastModifiedTime,
   array $data
 ) {
 ?>
 
+  <!-- <?= $lastModifiedTime ?> -->
   <div class="even_odd_parent">
     <?php foreach ($data as $n) : ?>
       <div <?= array_key_exists('class', $n) ? ('class="' . $n['class'] . '"') : '' ?>>

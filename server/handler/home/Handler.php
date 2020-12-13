@@ -95,9 +95,7 @@ class Handler extends Controller
             $arr = [];
 
             $nodes = (new Node())->getLatestForumTopics(self::$city->tidForum, $count);
-            if ($nodes) {
-                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
-            }
+            $lastModifiedTime = $nodes ? (int) $nodes[0]['create_time'] : 0;
             foreach ($nodes as $n) {
                 $arr[] = [
                     'time' => (int) $n['create_time'],
@@ -106,9 +104,13 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $ulCache);
+            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
+
+            $this->getCacheEvent('ForumNode')->addListener($ulCache);
+        } else {
+            $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
-        $this->getCacheEvent('ForumNode')->addListener($ulCache);
+        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
 
         return $ul;
     }
@@ -128,7 +130,7 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $ulCache);
+            $ul = $this->linkNodeList($arr, 0, $ulCache);
         }
 
         return $ul;
@@ -142,8 +144,9 @@ class Handler extends Controller
             $arr = [];
 
             $nodes = (new Node())->getLatestYellowPages(self::$city->tidYp, $count);
+            $lastModifiedTime = 0;
             foreach ($nodes as $n) {
-                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $n['create_time']);
+                $lastModifiedTime = max($lastModifiedTime, (int) $n['create_time']);
                 $arr[] = [
                     'time' => (int) $n['exp_time'],
                     'method' => 'toDate',
@@ -151,9 +154,11 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $ulCache);
+            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
+            $this->getCacheEvent('YellowPageNode')->addListener($ulCache);
+        } else {
+            $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
-        $this->getCacheEvent('YellowPageNode')->addListener($ulCache);
 
         return $ul;
     }
@@ -166,9 +171,7 @@ class Handler extends Controller
             $arr = [];
 
             $nodes = (new Node())->getLatestForumTopicReplies(self::$city->tidForum, $count);
-            if ($nodes) {
-                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
-            }
+            $lastModifiedTime = $nodes ? (int) $nodes[0]['create_time'] : 0;
             foreach ($nodes as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
@@ -176,9 +179,11 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $ulCache);
+            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
+            $this->getCacheEvent('ForumComment')->addListener($ulCache);
+        } else {
+            $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
-        $this->getCacheEvent('ForumComment')->addListener($ulCache);
 
         return $ul;
     }
@@ -191,9 +196,7 @@ class Handler extends Controller
             $arr = [];
 
             $nodes = (new Node())->getLatestYellowPageReplies(self::$city->tidYp, $count);
-            if ($nodes) {
-                $this->lastModifiedTime = max($this->lastModifiedTime, (int) $nodes[0]['create_time']);
-            }
+            $lastModifiedTime = $nodes ? (int) $nodes[0]['create_time'] : 0;
             foreach ($nodes as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
@@ -201,9 +204,11 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $ulCache);
+            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
+            $this->getCacheEvent('YellowPageComment')->addListener($ulCache);
+        } else {
+            $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
-        $this->getCacheEvent('YellowPageComment')->addListener($ulCache);
 
         return $ul;
     }
@@ -224,15 +229,15 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $ulCache);
+            $ul = $this->linkNodeList($arr, 0, $ulCache);
         }
 
         return $ul;
     }
 
-    private function linkNodeList(array $arr, SegmentCache $ulCache): Template
+    private function linkNodeList(array $arr, int $lastModifiedTime, SegmentCache $ulCache): Template
     {
-        $ul = (new HomeItemlist())->setData($arr);
+        $ul = (new HomeItemlist())->setData($arr)->setLastModifiedTime($lastModifiedTime);
 
         $ulCache->setData($ul);
         foreach ($arr as $n) {
@@ -240,5 +245,11 @@ class Handler extends Controller
         }
 
         return $ul;
+    }
+
+    private function getNodeListTime(string $str): int
+    {
+        // extract time from home_itemlist template
+        return preg_match('/^<!-- ([0-9]*) -->/', $str, $matches) ? (int) $matches[1] : 0;
     }
 }

@@ -203,19 +203,12 @@ class CronHandler extends Handler
         // clean database before backup
         $db = DB::getInstance();
         $db->query('CALL clean()');
-        // $cacheTables = [];
-        // foreach ($db->query('SHOW TABLES LIKE "cache_%"') as $row) {
-        //     $cacheTables[] = array_shift($row);
-        // }
         unset($db);
 
         $db = $this->config->db;
         $mysqldump = '/usr/bin/mysqldump';
         $gzip = '/bin/gzip';
         $cmd = $mysqldump . ' --opt --skip-lock-tables --single-transaction --hex-blob --routines --default-character-set=utf8mb4 --set-charset ' . $db['dsn'];
-        // foreach ($cacheTables as $t) {
-        //     $cmd = $cmd . ' --ignore-table=' . $db['dsn'] . '.' . $t;
-        // }
 
         $cmd = $cmd . ' | ' . $gzip . ' > ' . $this->config->path['backup'] . '/' . date('Y-m-d', $this->request->timestamp - 86400) . '.sql.gz';
         echo shell_exec($cmd);
