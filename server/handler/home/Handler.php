@@ -159,6 +159,7 @@ class Handler extends Controller
         } else {
             $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
+        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
 
         return $ul;
     }
@@ -184,6 +185,7 @@ class Handler extends Controller
         } else {
             $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
+        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
 
         return $ul;
     }
@@ -209,6 +211,7 @@ class Handler extends Controller
         } else {
             $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
+        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
 
         return $ul;
     }
