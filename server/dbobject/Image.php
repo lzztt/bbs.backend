@@ -72,6 +72,18 @@ class Image extends DBObject
 
     public function getRecentImages(int $city_id): array
     {
-        return $this->call('get_recent_images(' . $city_id . ')');
+        // explain shows that "where () < 1" is much faster than "group by"
+        $sql = '
+        SELECT nid, name, path, title
+        FROM images AS i
+            JOIN nodes AS n ON i.nid = n.id
+        WHERE (SELECT count(*) FROM images AS ii WHERE i.nid = ii.nid AND ii.id < i.id) < 1
+            AND n.status = 1
+            AND i.city_id = ' . $city_id . '
+            AND i.width >= 600
+            AND i.height >=300
+        ORDER BY i.id DESC
+        LIMIT 10';
+        return $this->db->query($sql);
     }
 }
