@@ -126,14 +126,30 @@ class Node extends DBObject
         FROM nodes AS n
         WHERE tid IN ('  . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) .  ')
             AND status = 1 AND create_time != last_comment_time
-            ORDER BY last_comment_time DESC LIMIT ' . $count;
+        ORDER BY last_comment_time DESC
+        LIMIT ' . $count;
 
         return $this->db->query($sql);
     }
 
     public function getLatestYellowPageReplies(int $ypRootID, int $count): array
     {
-        return $this->call('get_tag_recent_comments_yp("' . implode(',', (new Tag($ypRootID, 'id'))->getLeafTIDs()) . '", ' . $count . ')');
+        $sql = '
+        SELECT id AS nid, last_comment_time AS create_time, title,
+            (SELECT COUNT(*) - 1 FROM comments AS c WHERE c.nid = n.id) AS comment_count
+        FROM nodes AS n
+        WHERE tid IN ('  . implode(',', (new Tag($ypRootID, 'id'))->getLeafTIDs()) .  ')
+            AND status = 1 AND create_time != last_comment_time
+            AND id IN (
+                SELECT yp.nid
+                FROM node_yellowpages AS yp
+                    JOIN ads AS a ON yp.ad_id = a.id
+                WHERE a.exp_time > UNIX_TIMESTAMP()
+            )
+        ORDER BY last_comment_time DESC
+        LIMIT ' . $count;
+
+        return $this->db->query($sql);
     }
 
     public function getNodeCount(string $tids): int
