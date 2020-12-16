@@ -120,7 +120,15 @@ class Node extends DBObject
 
     public function getLatestForumTopicReplies(int $forumRootID, int $count): array
     {
-        return $this->call('get_tag_recent_comments("' . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) . '", ' . $count . ')');
+        $sql = '
+        SELECT id AS nid, last_comment_time AS create_time, title,
+            (SELECT COUNT(*) - 1 FROM comments AS c WHERE c.nid = n.id) AS comment_count
+        FROM nodes AS n
+        WHERE tid IN ('  . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) .  ')
+            AND status = 1 AND create_time != last_comment_time
+            ORDER BY last_comment_time DESC LIMIT ' . $count;
+
+        return $this->db->query($sql);
     }
 
     public function getLatestYellowPageReplies(int $ypRootID, int $count): array

@@ -81,6 +81,7 @@ class DB
      */
     public function query(string $sql, array $params = []): array
     {
+        $sql = trim(preg_replace('/\s+/', ' ', $sql));
         if (!$params) {
             if (!self::$debug) {
                 $statement = $this->db->query($sql, PDO::FETCH_ASSOC);
