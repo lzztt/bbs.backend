@@ -42,7 +42,6 @@ class Handler extends Forum
         $pager = HtmlElement::pager($pageNo, $pageCount, '/forum/' . $tid);
 
         $nodes = $node->getForumNodeList(self::$city->id, $tid, self::NODES_PER_PAGE, ($pageNo - 1) * self::NODES_PER_PAGE);
-        $nids = array_column($nodes, 'id');
 
         // will not build node-forum map, would be too many nodes point to forum, too big map
         $topics = (new TopicList())
