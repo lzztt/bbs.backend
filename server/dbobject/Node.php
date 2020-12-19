@@ -165,7 +165,7 @@ class Node extends DBObject
             'nodeCount' => $stats['node_count_total'],
             'nodeTodayCount' => $stats['node_count_recent'],
             'commentTodayCount' => $stats['comment_count_recent'],
-            'postCount' => $stats['node_count_total'] + $stats['comment_count_total']
+            'postCount' => $stats['comment_count_total']
         ];
     }
 }
