@@ -133,6 +133,10 @@ class Session
 
     final public function set(string $name, $value): void
     {
+        if (!$this->id) {
+            $this->regenerateId();
+        }
+
         if ($name === 'uid') {
             if (empty($value)) {
                 unset($this->current['uid']);
