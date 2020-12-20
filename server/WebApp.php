@@ -61,13 +61,26 @@ class WebApp extends App
         ]);
 
         $response = new Response();
-
+        $route = 'unknown';
+        $role = $request->isRobot() ? 'robot' : ($uid > 0 ? 'user' : 'guest');
+        $metric = new Metric();
         try {
             $ctrler = HandlerFactory::create($request, $response, $this->config, $this->logger, $session);
+
+            $route = str_replace(['site\\handler\\', '\\Handler', '\\'], ['', '', '/'], get_class($ctrler));
+            $counter = $metric->getOrRegisterCounter('hbbs', 'route_count', 'route counter', ['route', 'role']);
+            $counter->inc([$route, $role]);
+
             $ctrler->beforeRun();
             $ctrler->run();
             $ctrler->afterRun();
         } catch (Exception $e) {
+            $counter = $metric->getOrRegisterCounter('hbbs', 'route_exception_count', 'route exception counter', ['route', 'role', 'type']);
+            $class = get_class($e);
+            $pos = strrpos($class, '\\');
+            $type = $pos !== false ? substr($class, $pos + 1) : $class;
+            $counter->inc([$route, $role, $type]);
+
             $response->handleException($e);
         }
 

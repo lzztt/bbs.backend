@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace site\handler\app;
 
-use Exception;
 use lzx\cache\CacheHandler;
 use lzx\exception\NotFound;
 use lzx\html\Template;
@@ -14,7 +13,7 @@ class Handler extends Controller
 {
     public function run(): void
     {
-        if (!$this->args || $this->args[0] !== 'frontend_app') {
+        if (!$this->args || $this->args[0] !== 'frontend') {
             throw new NotFound();
         }
 

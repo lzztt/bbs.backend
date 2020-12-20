@@ -9,30 +9,31 @@ use Redis;
 class MemStore
 {
     public const CACHE = 0;
-    public const SESSION = 1;
+    public const METRICS = 1;
     public const ONLINE = 2;
     public const RATE = 3;
     public const DEDUP = 4;
+
+    public const SESSION = 16;
 
     // persistent_id=$db, needs INI setting: redis.pconnect.pooling_enabled=0
     public static function getRedis(int $db = self::CACHE): Redis
     {
         static $instances = [];
 
-        $id = (string) $db;
-        if (array_key_exists($id, $instances)) {
-            return $instances[$id];
+        if (array_key_exists($db, $instances)) {
+            return $instances[$db];
         }
 
         $redis = new Redis();
-        if ($db !== self::SESSION) {
-            $redis->pconnect('/run/redis/redis-server.sock', -1, 0, $id);
-            $redis->select($db);
-        } else {
-            $redis->pconnect('/run/redis-session/redis-server.sock', -1, 0, '0');
-        }
+        $socket = $db !== self::SESSION
+            ? '/run/redis/redis-server.sock'
+            : '/run/redis-session/redis-server.sock';
 
-        $instances[$id] = $redis;
+        $redis->pconnect($socket, -1, 0, (string) $db);
+        $redis->select($db % 16);
+
+        $instances[$db] = $redis;
 
         return $redis;
     }

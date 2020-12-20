@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace lzx\core;
 
 use Exception;
+use Laminas\Diactoros\Response as DiactorosResponse;
 use Laminas\Diactoros\Response\EmptyResponse;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -46,6 +47,11 @@ class Response
     public function setContent($data): void
     {
         $this->data = $data;
+    }
+
+    public function setResponse(DiactorosResponse $resp): void
+    {
+        $this->resp = $resp;
     }
 
     public function cacheContent(PageCache $cache): void

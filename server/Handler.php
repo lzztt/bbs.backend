@@ -171,14 +171,10 @@ abstract class Handler extends CoreHandler
 
     public function rateLimit(): void
     {
-        $rateLimiter = MemStore::getRedis(MemStore::RATE);
-        $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
         if ($this->user->id) {
-            $key = date("d") . $handler . $this->user->id;
             $limit = static::LIMIT_USER * 2;
             $window = static::ONE_DAY / 2;
         } else {
-            $key = date("d") . $handler . $this->request->ip;
             if ($this->request->isRobot()) {
                 $limit = static::LIMIT_ROBOT;
                 $window = static::ONE_DAY;
@@ -187,6 +183,14 @@ abstract class Handler extends CoreHandler
                 $window = static::ONE_DAY;
             }
         }
+
+        if ($limit < 0) {
+            return;
+        }
+
+        $rateLimiter = MemStore::getRedis(MemStore::RATE);
+        $handler = str_replace(['site\\handler\\', '\\Handler', '\\'], ':', static::class);
+        $key = date("d") . $handler . ($this->user->id ? $this->user->id : $this->request->ip);
 
         $current = $rateLimiter->incr($key);
         $rateLimiter->expire($key, $window);

@@ -24,12 +24,6 @@ class HandlerFactory
         }
 
         list($cls, $args) = self::getHandlerClassAndArgs($req);
-
-        if (!$cls) {
-            $cls = HandlerRouter::$route['app'];
-            $args = ['frontend_app'];
-            // throw new NotFound();
-        }
         return new $cls($req, $resp, $config, $logger, $session, $args);
     }
 
@@ -57,7 +51,9 @@ class HandlerFactory
             }
         }
 
-        return [$cls, array_values(array_diff($args, $keys))];
+        return $cls
+            ? [$cls, array_values(array_diff($args, $keys))]
+            : [HandlerRouter::$route['app'], ['frontend']];
     }
 
     private static function getURIargs(string $uri): array
