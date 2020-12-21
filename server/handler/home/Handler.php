@@ -176,7 +176,7 @@ class Handler extends Controller
             foreach ($nodes as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
-                    'uri' => '/node/' . $n['nid'] . '?p=l',
+                    'uri' => '/node/' . $n['nid'] . '?p=l#bottom',
                     'text' => $n['title']
                 ];
             }
@@ -202,7 +202,7 @@ class Handler extends Controller
             foreach ($nodes as $n) {
                 $arr[] = [
                     'after' => $n['comment_count'],
-                    'uri' => '/node/' . $n['nid'] . '?p=l',
+                    'uri' => '/node/' . $n['nid'] . '?p=l#bottom',
                     'text' => $n['title']
                 ];
             }
