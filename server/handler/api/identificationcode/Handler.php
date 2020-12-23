@@ -4,45 +4,61 @@ declare(strict_types=1);
 
 namespace site\handler\api\identificationcode;
 
+use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
+use lzx\exception\Forbidden;
 use site\Service;
-use site\dbobject\User;
 
 class Handler extends Service
 {
     /**
-     * uri: /api/identificationcode[?action=post]
-     * post: username=<username>&email=<email>&&captcha=<captcha>
+     * uri: /api/identificationcode
+     * post: email=<email>
      */
     public function post(): void
     {
-        $this->validateCaptcha();
-
-        if (!$this->request->data['username']) {
-            throw new ErrorMessage('请输入用户名');
+        if ($this->request->isRobot()) {
+            throw new Forbidden();
         }
 
-        if (!$this->request->data['email']) {
-            throw new ErrorMessage('请输入注册电子邮箱');
+        if (empty($this->request->data['email'])) {
+            throw new ErrorMessage('请输入电子邮箱。');
         }
 
-        $user = new User();
-        $user->username = $this->request->data['username'];
-        $user->load('email');
+        $email = $this->request->data['email'];
 
-        if ($user->exists()) {
-            if ($user->email != $this->request->data['email']) {
-                throw new ErrorMessage('您输入的电子邮箱与与此用户的注册邮箱不匹配，请检查是否输入了正确的注册邮箱');
-            }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || substr($email, -8) == 'bccto.me') {
+            throw new ErrorMessage('不合法的电子邮箱：' . $email);
+        }
 
-            // create user action and send out email
-            if ($this->sendIdentCode($user) === false) {
-                throw new ErrorMessage('sending email error: ' . $user->email);
-            } else {
-                $this->json();
-            }
+        // login rate control
+        $rateLimiter = MemStore::getRedis(MemStore::RATE);
+        if (!$rateLimiter->set('login:' . $this->request->ip, '', ['nx', 'ex' => 60])) {
+            throw new ErrorMessage('登录系统忙，请稍后再试。');
+        }
+
+        if ($this->isBot($this->request->ip, $email)) {
+            $this->logger->info('STOP SPAMBOT : ' . $this->request->ip . ' ' . $email);
+            throw new ErrorMessage('系统检测到可能存在的注册机器人。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。');
+        }
+
+        if ($this->sendIdentCode($email) === false) {
+            throw new ErrorMessage('发送邮件错误：' . $email);
         } else {
-            throw new ErrorMessage('你输入的用户名不存在');
+            $this->json();
         }
+    }
+
+    private function isBot(string $ip, string $email): bool
+    {
+        // TODO: check ip against current users and spammers, block if only spammers from the ip
+        $url = 'http://api.stopforumspam.org/api?json&ip=' . $ip . '&email=' . $email;
+        $data = json_decode(self::curlGet($url));
+        if ((!empty($data->ip->appears) && $data->ip->appears > 0)
+            || (!empty($data->email->appears) && $data->email->appears > 0)
+        ) {
+            return true;
+        }
+        return false;
     }
 }

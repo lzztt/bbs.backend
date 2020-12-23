@@ -55,51 +55,49 @@ abstract class Service extends Handler
         $this->session->set('captcha', null);
     }
 
-    protected function createIdentCode(int $uid): string
+    protected function createIdentCode(string $email): string
     {
-        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $code = random_int(0, 999999);
         $this->session->set('identCode', [
             'code' => $code,
-            'uid' => $uid,
+            'email' => $email,
             'attempts' => 0,
-            'expTime' => $this->request->timestamp + 3600
+            'expTime' => $this->request->timestamp + 900
         ]);
-        return $code;
+        return str_pad((string) $code, 6, '0', STR_PAD_LEFT);
     }
 
-    protected function parseIdentCode(string $code): int
+    protected function parseIdentCode(string $code): string
     {
         $c = $this->session->get('identCode');
         if (!$c) {
-            return self::UID_GUEST;
+            return '';
         }
 
         if ($c['attempts'] > 2 || $c['expTime'] < $this->request->timestamp) {
             $this->session->set('identCode', null);
-            return self::UID_GUEST;
+            return '';
         }
 
-        if ($code === $c['code']) {
+        if ((int) str_replace(' ', '', $code) === $c['code']) {
             $this->session->set('identCode', null);
-            return $c['uid'];
+            return $c['email'];
         }
 
         $c['attempts'] += 1;
         $this->session->set('identCode', $c);
-        return self::UID_GUEST;
+        return '';
     }
 
-    protected function sendIdentCode(User $user): bool
+    protected function sendIdentCode(string $email): bool
     {
         $mailer = new Mailer('system');
-        $mailer->setTo($user->email);
+        $mailer->setTo($email);
         $siteName = $this->getSiteName();
-        $mailer->setSubject($user->username . '在' . $siteName . '的用户安全验证码');
+        $mailer->setSubject('您在' . $siteName . '的安全验证码');
         $mailer->setBody(
             (string) (new IdentCode())
-                ->setUsername($user->username)
-                ->setIdentCode($this->createIdentCode($user->id))
-                ->setSitename($siteName)
+                ->setIdentCode($this->createIdentCode($email))
         );
 
         return $mailer->send();

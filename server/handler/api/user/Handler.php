@@ -6,8 +6,6 @@ namespace site\handler\api\user;
 
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
-use lzx\geo\Reader;
-use PDOException;
 use site\Config;
 use site\Service;
 use site\dbobject\User;
@@ -44,54 +42,42 @@ class Handler extends Service
     /**
      * update user info
      * As USER:
-     * uri: /api/user/<uid>?action=put
+     * uri: /api/user/<uid>
      * post: <user properties>
-     *
-     * As GUEST:
-     * uri: /api/user/<identCode>?action=put
-     * post: password=<password>
      */
     public function put(): void
     {
+        $this->validateUser();
         if (!$this->args || !is_numeric($this->args[0])) {
             throw new Forbidden();
         }
 
-        $uid = 0;
-        if ($this->user->id) {
-            // user
-            $uid = (int) $this->args[0];
+        $uid = (int) $this->args[0];
+        if ($uid !== $this->user->id) {
+            throw new Forbidden();
+        }
 
-            if ($uid !== $this->user->id) {
-                throw new Forbidden();
+        if (array_key_exists('username', $this->request->data)) {
+            $username = strtolower($this->request->data['username']);
+            $denylist = [
+                'admin',
+                array_shift(explode('.', self::$city->domain))
+            ];
+            foreach ($denylist as $w) {
+                if (strpos($username, $w) !== false) {
+                    throw new ErrorMessage('不能使用此用户名，请选用其他用户名。');
+                }
             }
-        } else {
-            // guest
-            $uid = $this->parseIdentCode($this->args[0]);
-            if (!$uid) {
-                throw new ErrorMessage('安全验证码错误，请检查使用邮件里的安全验证码');
+
+            $u = new User();
+            $u->username = $username;
+            $u->load('id');
+            if ($u->exists()) {
+                throw new ErrorMessage('此用户名已被使用，请选用其他用户名。');
             }
         }
 
         $u = new User($uid, 'id');
-
-        if (array_key_exists('password', $this->request->data)) {
-            if (array_key_exists('password_old', $this->request->data)) {
-                // user to change password
-                if (!$u->verifyPassword($this->request->data['password_old'])) {
-                    throw new ErrorMessage('更改密码失败：输入的旧密码与当前密码不符，请确认输入正确的旧密码');
-                }
-
-                if ($this->request->data['password'] != $this->request->data['password2']) {
-                    throw new ErrorMessage('更改密码失败：两次输入的新密码不一致');
-                }
-
-                unset($this->request->data['password_old']);
-                unset($this->request->data['password2']);
-            }
-
-            $this->request->data['password'] = User::hashPassword($this->request->data['password']);
-        }
 
         if (array_key_exists('avatar', $this->request->data)) {
             $image = base64_decode(substr($this->request->data['avatar'], strpos($this->request->data['avatar'], ',') + 1));
@@ -117,71 +103,7 @@ class Handler extends Service
     }
 
     /**
-     * uri: /api/user[?action=post]
-     * post: username=<username>&email=<email>&captcha=<captcha>
-     */
-    public function post(): void
-    {
-        $this->validateCaptcha();
-
-        // check username and email first
-        if (!$this->request->data['username']) {
-            throw new ErrorMessage('请填写用户名');
-        } else {
-            $username = strtolower($this->request->data['username']);
-            if (strpos($username, 'admin') !== false || strpos($username, 'bbs') !== false) {
-                throw new ErrorMessage('不合法的用户名，请选择其他用户名');
-            }
-        }
-
-        if (!filter_var($this->request->data['email'], FILTER_VALIDATE_EMAIL) || substr($this->request->data['email'], -8) == 'bccto.me') {
-            throw new ErrorMessage('不合法的电子邮箱 : ' . $this->request->data['email']);
-        }
-
-        if (isset($this->request->data['submit']) || $this->isBot($this->request->ip, $this->request->data['email'])) {
-            $this->logger->info('STOP SPAMBOT : ' . $this->request->ip . ' ' . $this->request->data['email']);
-            throw new ErrorMessage('系统检测到可能存在的注册机器人，所以不能提交您的注册申请。如果您使用的是QQ邮箱，请换用其他邮箱试试看。如果您认为这是一个错误的判断，请与网站管理员联系。');
-        }
-
-        $user = new User();
-        $user->username = $this->request->data['username'];
-        $user->password = null;
-        $user->email = $this->request->data['email'];
-        $user->lastAccessIp = inet_pton($this->request->ip);
-        $user->cid = self::$city->id;
-        $user->status = 1;
-
-        // if user record exist, means this is a new-registered user, but need to re-send identification code
-        $user->load('id');
-        if (!$user->exists()) {
-            $user->createTime = $this->request->timestamp;
-            $user->lastAccessTime = $user->createTime;
-
-            // spammer from Nanning
-            $geo = Reader::getInstance()->get($this->request->ip);
-            // from Nanning
-            if ($geo->city->en === 'Nanning') {
-                // mark as disabled
-                $user->status = 0;
-            }
-
-            try {
-                $user->add();
-            } catch (PDOException $e) {
-                throw new ErrorMessage($e->errorInfo[2]);
-            }
-        }
-
-        // create user action and send out email
-        if ($this->sendIdentCode($user) === false) {
-            throw new ErrorMessage('sending email error: ' . $user->email);
-        } else {
-            $this->json();
-        }
-    }
-
-    /**
-     * uri: /api/user/<uid>?action=delete
+     * uri: /api/user/<uid>
      */
     public function delete(): void
     {
@@ -200,17 +122,5 @@ class Handler extends Service
         $this->deleteUser($uid);
 
         $this->json();
-    }
-
-    private function isBot(string $ip, string $email): bool
-    {
-        $url = 'http://api.stopforumspam.org/api?json&ip=' . $ip . '&email=' . $email;
-        $data = json_decode(self::curlGet($url));
-        if ((!empty($data->ip->appears) && $data->ip->appears > 0)
-            || (!empty($data->email->appears) && $data->email->appears > 0)
-        ) {
-            return true;
-        }
-        return false;
     }
 }
