@@ -243,13 +243,7 @@ abstract class Handler extends CoreHandler
         $sessionEvent = new SessionEvent();
         $sessionEvent->userId = $this->user->id;
         $sessionEvent->ip = inet_pton($this->request->ip);
-        if (strlen($this->request->agent) < 256) {
-            $agent = $this->request->agent;
-        } else {
-            $agent = substr($this->request->agent, 0, 255);
-            $this->logger->warning("Long user agent: " . $this->request->agent);
-        }
-        $sessionEvent->hash = crc32($agent);
+        $sessionEvent->hash = crc32($this->request->agent);
         $sessionEvent->load('time,count');
 
         if ($sessionEvent->exists()) {
@@ -259,6 +253,12 @@ abstract class Handler extends CoreHandler
                 $sessionEvent->update('time,count');
             }
         } else {
+            if (strlen($this->request->agent) < 256) {
+                $agent = $this->request->agent;
+            } else {
+                $agent = substr($this->request->agent, 0, 255);
+                $this->logger->warning("Long user agent: " . $this->request->agent);
+            }
             $sessionEvent->agent = $agent;
             $sessionEvent->time = $this->request->timestamp;
             $sessionEvent->count = 1;

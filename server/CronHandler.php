@@ -165,7 +165,7 @@ class CronHandler extends Handler
         FROM node_complaints AS nc
             JOIN comments AS c ON nc.cid = c.id
             JOIN nodes AS n ON nc.nid = n.id
-        WHERE nc.status = 1
+        WHERE nc.status = 1 AND n.status = 1
             AND c.reportable_until < ' . $this->request->timestamp . ';';
 
         $ids = [];

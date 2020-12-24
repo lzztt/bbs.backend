@@ -39,7 +39,8 @@ class Request
 
         $this->isRobot = substr($p['SERVER_PROTOCOL'], 0, 6) === 'HTTP/1'
             || empty($p['HTTPS'])
-            || (bool) preg_match('/(http|yahoo|bot|spider)/i', $p['HTTP_USER_AGENT']);
+            || strlen($this->agent) < 45
+            || (bool) preg_match('/(http|yahoo|bot|spider)/i', $this->agent);
 
         $inputData = (string) $req->getBody();
         if (!self::validateUrl($this->uri) || ($this->isRobot && strlen($inputData) > 0)) {
