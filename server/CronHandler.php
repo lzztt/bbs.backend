@@ -229,11 +229,12 @@ class CronHandler extends Handler
 
         $db = DB::getInstance();
         $sql = '
-        SELECT MAX(create_time) AS time
-        FROM comments
-        WHERE tid < 127
-            AND status = 1
-            AND create_time > ' . ($this->request->timestamp - 3600);
+        SELECT MAX(c.create_time) AS time
+        FROM comments AS c
+            JOIN nodes AS n ON n.id = c.nid
+        WHERE c.tid < 127
+            AND n.status = 1
+            AND c.create_time >' . ($this->request->timestamp - 3600);
         $rows = $db->query($sql);
         $dbTime = $rows ? (int) array_pop(array_pop($rows)) : 0;
 
