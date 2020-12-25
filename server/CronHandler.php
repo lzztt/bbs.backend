@@ -225,6 +225,11 @@ class CronHandler extends Handler
         file_put_contents($file, $body);
         $tags = get_meta_tags($file);
         unlink($file);
+        if (!$tags) {
+            $this->logger->info('skip page cache check');
+            return;
+        }
+
         $pageTime = (int) $tags['mtime'];
 
         $db = DB::getInstance();
