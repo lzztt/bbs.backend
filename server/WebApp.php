@@ -28,7 +28,7 @@ class WebApp extends App
         parent::__construct();
 
         $this->config = Config::getInstance();
-        if ($this->config->city->domain === 'bayever.com') {
+        if ($this->config->city->id === City::SFBAY) {
             date_default_timezone_set('America/Los_Angeles');
         } else {
             date_default_timezone_set('America/Chicago');

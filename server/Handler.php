@@ -412,7 +412,7 @@ abstract class Handler extends CoreHandler
 
             $this->checkBody($this->request->data['body'], $spamwords);
 
-            if ($creationDays < 10 && self::$city->domain === 'houstonbbs.com') {
+            if ($creationDays < 10 && self::$city->id === City::HOUSTON) {
                 $this->checkPostCounts($this->user, $creationDays);
             }
         }
@@ -449,7 +449,7 @@ abstract class Handler extends CoreHandler
         foreach ($spamwords as $w) {
             if (mb_strpos($cleanText, $w) !== false) {
                 $this->deleteSpammer();
-                throw new Exception('User is blocked! You cannot post any message!');
+                throw new Exception('用户被封禁，不能发布信息！');
             }
         }
 
@@ -461,7 +461,7 @@ abstract class Handler extends CoreHandler
         $geo = Reader::getInstance()->get($this->request->ip);
         if ($geo->city->en === 'Nanning') {
             $this->deleteSpammer();
-            throw new Exception('User is blocked! You cannot post any message!');
+            throw new Exception('用户被封禁，不能发布信息！');
         }
 
         if ($geo->region->en !== 'Texas') {

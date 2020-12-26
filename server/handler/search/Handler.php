@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace site\handler\search;
 
 use lzx\html\Template;
+use site\City;
 use site\Controller;
 
 class Handler extends Controller
@@ -13,12 +14,11 @@ class Handler extends Controller
     {
         $this->cache = $this->getPageCache();
 
-        $searchEngineIDs = [
-            'houstonbbs.com' => 'f181bd1f07d3699da',
-            'dallasbbs.com' => '0173f1aadfdbf13f5',
-            'bayever.com' => '666eb4297624b23f4'
-        ];
-        $seid = $searchEngineIDs[self::$city->domain];
+        $seid = match (self::$city->id) {
+            City::HOUSTON => 'f181bd1f07d3699da',
+            City::DALLAS => '0173f1aadfdbf13f5',
+            City::SFBAY => '666eb4297624b23f4',
+        };
 
         $html = <<<HTML
 <style>

@@ -7,6 +7,7 @@ namespace site\handler\home;
 use lzx\cache\SegmentCache;
 use lzx\exception\ErrorMessage;
 use lzx\html\Template;
+use site\City;
 use site\Controller;
 use site\dbobject\Activity;
 use site\dbobject\Image;
@@ -23,12 +24,12 @@ class Handler extends Controller
     {
         $this->cache = $this->getPageCache();
 
-        switch (self::$city->domain) {
-            case 'houstonbbs.com':
+        switch (self::$city->id) {
+            case City::HOUSTON:
                 $this->houstonHome();
                 break;
-            case 'dallasbbs.com':
-            case 'bayever.com':
+            case City::DALLAS:
+            case City::SFBAY:
                 $this->bayHome();
                 break;
             default:

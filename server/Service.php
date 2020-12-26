@@ -14,7 +14,6 @@ use lzx\exception\NotFound;
 use site\Config;
 use site\Handler;
 use site\Session;
-use site\dbobject\User;
 use site\gen\theme\roselife\mail\IdentCode;
 
 abstract class Service extends Handler

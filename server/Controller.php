@@ -42,7 +42,7 @@ abstract class Controller extends Handler
         $html->setPageNavbar($navbar);
 
         // set headers
-        $siteName = self::$city->domain === 'bayever.com' ? '生活在湾区' : '缤纷' . self::$city->nameZh;
+        $siteName = self::$city->id === City::SFBAY ? '生活在湾区' : '缤纷' . self::$city->nameZh;
         if (empty($html->getHeadTitle())) {
             $html->setHeadTitle($siteName);
         }

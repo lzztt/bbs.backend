@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace site\handler\api\authentication;
 
 use Exception;
+use lzx\core\Mailer;
 use lzx\db\MemStore;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\geo\Reader;
 use PDOException;
+use site\City;
 use site\Service;
 use site\dbobject\User;
 
@@ -112,16 +114,21 @@ class Handler extends Service
             $user->cid = self::$city->id;
             $user->status = 1;
 
-            // spammer from Nanning
-            $geo = Reader::getInstance()->get($this->request->ip);
-            // from Nanning
-            if ($geo->city->en === 'Nanning') {
-                // mark as disabled
-                $user->status = 0;
-            }
-
             try {
                 $user->add();
+
+                $geo = Reader::getInstance()->get($this->request->ip);
+                if ($geo->region->en !== (self::$city->id === City::SFBAY ? 'California' : 'Texas')) {
+                    $mailer = new Mailer();
+                    $mailer->setTo($this->config->webmaster);
+                    $mailer->setSubject('user from ' . $geo->getCityWithRegion());
+                    $mailer->setBody(print_r([
+                        'user' => 'https://' . $this->request->domain . '/user/' . $user->id,
+                        'email' => 'https://www.google.com/search?q=' . $user->email,
+                        'city' => self::getLocationFromIp($user->lastAccessIp),
+                    ], true));
+                    $mailer->send();
+                }
             } catch (PDOException $e) {
                 throw new ErrorMessage($e->errorInfo[2]);
             }
