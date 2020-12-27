@@ -428,7 +428,7 @@ abstract class Handler extends CoreHandler
         ));
 
         if ($title && mb_strlen($title) - mb_strlen($cleanTitle) > 4) {
-            throw new Exception('Title is not valid!');
+            throw new Exception('标题太短了。');
         }
     }
 
@@ -438,7 +438,7 @@ abstract class Handler extends CoreHandler
 
         $bodyLen = mb_strlen($body);
         if ($bodyLen > 35 && ($bodyLen - mb_strlen($cleanBody)) / $bodyLen > 0.4) {
-            throw new Exception('Body text is not valid!');
+            throw new Exception('正文太短了。');
         }
     }
 
@@ -467,7 +467,7 @@ abstract class Handler extends CoreHandler
         if ($geo->region->en !== 'Texas') {
             $postCount = (int) array_pop(array_pop($user->call('get_user_post_count(' . $user->id . ')')));
             if ($postCount >= $creationDays) {
-                throw new Exception('Quota Limit Exceeded! You can only post no more than ' . $creationDays . ' messages up to now. Please wait one day to get more quota.');
+                throw new Exception('您的发帖数已达上限：' . $creationDays . '。请等待一天再发帖。');
             }
         }
     }
