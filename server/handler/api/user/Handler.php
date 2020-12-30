@@ -24,7 +24,9 @@ class Handler extends Service
         }
 
         $uid = (int) $this->args[0];
-        $user = new User($uid, 'username,about,createTime,lastAccessTime,lastAccessIp,avatar,contribution,reputation,status');
+        $user = new User($uid, $uid === $this->user->id
+            ? 'username,about,createTime,lastAccessTime,lastAccessIp,avatar,status,reputation,contribution'
+            : 'username,about,createTime,lastAccessTime,lastAccessIp,avatar,status,reputation');
 
         if ($user->status > 0) {
             $info = $user->toArray();
