@@ -83,13 +83,7 @@ class Handler extends Node
             foreach ($comments as $c) {
                 $c['type'] = 'comment';
                 $c['createTime'] = (int) $c['create_time'];
-
-                try {
-                    $c['HTMLbody'] = BBCode::parse($c['body']);
-                } catch (Exception $e) {
-                    $c['HTMLbody'] = nl2br($c['body']);
-                    $this->logger->logException($e);
-                }
+                $c['HTMLbody'] = $this->toHtml($c['body']);
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
                 $c['city'] = $c['access_ip'] ? self::getLocationFromIp($c['access_ip'], false) : 'N/A';
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
@@ -127,6 +121,17 @@ class Handler extends Node
     private function removeQuote(string $body): string
     {
         return trim(preg_replace('/\[quote\="?(.*?)"?\](.*?)\[\/quote\]/ms', '', $body));
+    }
+
+    private function toHtml(string $str): string
+    {
+        try {
+            $encoded = BBCode::parse($str);
+        } catch (Exception $e) {
+            $encoded = nl2br($str);
+            $this->logger->logException($e);
+        }
+        return $encoded;
     }
 
     private function authorPanel(array $info): Template
@@ -232,12 +237,7 @@ class Handler extends Node
             foreach ($comments as $c) {
                 if ($nodeComment) {
                     // show node details as the first post
-                    try {
-                        $node['HTMLbody'] = BBCode::parse($c['body']);
-                    } catch (Exception $e) {
-                        $node['HTMLbody'] = nl2br($c['body']);
-                        $this->logger->logException($e);
-                    }
+                    $node['HTMLbody'] = $this->toHtml($c['body']);
                     $node['attachments'] = $this->attachments($c['files'], $c['body']);
                     //$node['filesJSON'] = json_encode($node['files']);
 
@@ -245,12 +245,7 @@ class Handler extends Node
                 } else {
                     $c['type'] = 'comment';
                     $c['createTime'] = (int) $c['create_time'];
-                    try {
-                        $c['HTMLbody'] = BBCode::parse($c['body']);
-                    } catch (Exception $e) {
-                        $c['HTMLbody'] = nl2br($c['body']);
-                        $this->logger->logException($e);
-                    }
+                    $c['HTMLbody'] = $this->toHtml($c['body']);
                     $c['quoteJson'] = json_encode([
                         'nodeId' => $nid,
                         'body' => '[quote="' . $c['username'] . '"]' . $this->removeQuote($c['body']) . '[/quote]'

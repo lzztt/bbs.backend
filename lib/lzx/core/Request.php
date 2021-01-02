@@ -162,6 +162,6 @@ class Request
 
     private static function escapeString(string $in): string
     {
-        return trim(preg_replace('/<[^>]*>/', '', $in));
+        return trim(htmlspecialchars($in, ENT_QUOTES | ENT_HTML5));
     }
 }
