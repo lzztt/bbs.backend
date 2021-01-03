@@ -15,7 +15,7 @@ function (
 
   <header class="content_header">
     <?= $breadcrumb ?>
-    <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>或<a onclick="window.app.register()" style="cursor: pointer">注册</a>才能发表新话题或回复</span>
+    <span class='v_guest'>您需要先<a onclick="window.app.login()" style="cursor: pointer">登录</a>才能发表新话题或回复</span>
     <button type="button" class='v_user' onclick="window.app.openCommentEditor({nodeId: <?= $nid ?>})">回复</button>
     <span class="ajax_load" data-ajax='<?= $ajaxUri ?>'><?= $commentCount ?> replies, <span class="ajax_viewCount<?= $nid ?>"></span> views</span>
     <?= $pager ?>
@@ -56,7 +56,10 @@ function (
       </div>
     </div>
     <?php if (!empty($node['HTMLbody'])) : ?>
-      <div class="article_content"><?= $node['HTMLbody'] . $node['attachments'] ?></div>
+      <div class="article_content">
+        <div class="linkify"><?= $node['HTMLbody'] ?></div>
+        <?= $node['attachments'] ?>
+      </div>
     <?php endif ?>
   </article>
 
@@ -71,7 +74,7 @@ function (
             <time data-time="<?= $c['createTime'] ?>" data-method="toAutoTime"></time>
           </header>
 
-          <div class="article_content"><?= $c['HTMLbody'] ?></div>
+          <div class="article_content linkify"><?= $c['HTMLbody'] ?></div>
 
           <footer>
             <div class="v_user actions">

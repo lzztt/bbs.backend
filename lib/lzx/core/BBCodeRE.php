@@ -56,7 +56,6 @@ class BBCodeRE
     public static function parse(string $text): string
     {
         if (strpos($text, '[/') === false) { // if no colse tag, don't borther
-            $text = preg_replace('#(?<=^|[\t\r\n >\(\[\]\|])(https?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text);
             return nl2br($text);
         }
 
@@ -81,11 +80,6 @@ class BBCodeRE
         $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [__CLASS__, 'removeBr'], $text);
 
         $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [__CLASS__, 'removeBr'], $text);
-
-        // matches an "xxxx://yyyy" URL at the start of a line, or after a space.
-        // xxxx can only be alpha characters.
-        // yyyy is anything up to the first space, newline, comma, double quote or <
-        $text = preg_replace('#(?<=^|[\t\r\n >\(\[\]\|])([a-z]+?://[\w\-]+\.([\w\-]+\.)*\w+(:[0-9]+)?(/[^ "\'\(\n\r\t<\)\[\]\|]*)?)((?<![,\.])|(?!\s))#i', '<a href="\1">\1</a>', $text);
 
         return $text;
     }
