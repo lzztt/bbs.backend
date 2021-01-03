@@ -57,7 +57,7 @@ function (
     </div>
     <?php if (!empty($node['HTMLbody'])) : ?>
       <div class="article_content">
-        <div class="linkify"><?= $node['HTMLbody'] ?></div>
+        <div class="markdown"><?= $node['HTMLbody'] ?></div>
         <?= $node['attachments'] ?>
       </div>
     <?php endif ?>
@@ -74,7 +74,7 @@ function (
             <time data-time="<?= $c['createTime'] ?>" data-method="toAutoTime"></time>
           </header>
 
-          <div class="article_content linkify"><?= $c['HTMLbody'] ?></div>
+          <div class="article_content markdown"><?= $c['HTMLbody'] ?></div>
 
           <footer>
             <div class="v_user actions">

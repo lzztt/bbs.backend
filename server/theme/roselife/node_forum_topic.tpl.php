@@ -40,7 +40,7 @@ function (
           </header>
 
           <div class="article_content">
-            <div class="linkify"><?= $p['HTMLbody'] ?></div>
+            <div class="markdown"><?= $p['HTMLbody'] ?></div>
             <?= $p['attachments'] ?>
           </div>
 
