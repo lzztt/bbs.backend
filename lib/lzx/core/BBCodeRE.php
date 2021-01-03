@@ -8,21 +8,21 @@ class BBCodeRE
 {
     const BBCODE = [
         '/\[b\](.*?)\[\/b\]/ms'
-        => '<strong>\1</strong>',
+        => '__\1__',
         '/\[i\](.*?)\[\/i\]/ms'
-        => '<em>\1</em>',
+        => '_\1_',
         '/\[u\](.*?)\[\/u\]/ms'
         => '<span style="text-decoration:underline">\1</span>',
         '/\[s\](.*?)\[\/s\]/ms'
-        => '<del>\1</del>',
+        => '~~\1~~',
         '/\[img\="?(.*?)"?\](.*?)\[\/img\]/ms'
-        => '<img class="bb_image" src="\2" alt="\2">',
+        => '![\2](\1)',
         '/\[img\](.*?)\[\/img\]/ms'
-        => '<img class="bb_image" src="\1" alt="\1">',
+        => '![\1](\1)',
         '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms'
-        => '<a rel="nofollow" href="\1">\2</a>',
+        => '[\2](\1)',
         '/\[url](.*?)\[\/url\]/ms'
-        => '<a rel="nofollow" href="\1">\1</a>',
+        => '[\1](\1)',
         '/\[size\="?(.*?)"?\](.*?)\[\/size\]/ms'
         => '<span style="font-size:\1">\2</span>',
         '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms'
@@ -32,11 +32,11 @@ class BBCodeRE
         '/\[quote\="?(.*?)"?\]/ms'
         => '<blockquote data-author="\1 :">',
         '/\[list\=(.*?)\](.*?)\[\/list\]/ms'
-        => '<ol start="\1">\2</ol>',
+        => PHP_EOL . '\2' . PHP_EOL,
         '/\[list\](.*?)\[\/list\]/ms'
-        => '<ul>\1</ul>',
+        => PHP_EOL . '\1' . PHP_EOL,
         '/\[\*\]\s?(.*?)\n/ms'
-        => '<li>\1</li>',
+        => ' - \1',
         '/\[youtube\](.*?)\[\/youtube\]/ms'
         => '<iframe class="youtube" src="//www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>',
     ];
@@ -45,18 +45,13 @@ class BBCodeRE
     {
         $code = $matches[1];
         $code = str_replace(['[', ']'], ['&#91;', '&#93;'], $code);
-        return '<code class="code">' . $code . '</code>';
-    }
-
-    private static function removeBr(array $matches): string
-    {
-        return str_replace('<br />', '', $matches[0]);
+        return '```' . PHP_EOL . $code . PHP_EOL . '```';
     }
 
     public static function parse(string $text): string
     {
         if (strpos($text, '[/') === false) { // if no colse tag, don't borther
-            return nl2br($text);
+            return $text;
         }
 
         // BBCode [code]
@@ -74,12 +69,6 @@ class BBCodeRE
         $text = str_replace(['[quote]', '[/quote]'], ['<blockquote>', '</blockquote>'], $text);
 
         $text = preg_replace(array_keys(self::BBCODE), array_values(self::BBCODE), $text);
-
-        $text = nl2br($text);
-
-        $text = preg_replace_callback('/<pre>(.*?)<\/pre>/ms', [__CLASS__, 'removeBr'], $text);
-
-        $text = preg_replace_callback('/<ul>(.*?)<\/ul>/ms', [__CLASS__, 'removeBr'], $text);
 
         return $text;
     }

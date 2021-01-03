@@ -128,7 +128,7 @@ class Handler extends Node
         try {
             $encoded = BBCode::parse($str);
         } catch (Exception $e) {
-            $encoded = nl2br($str);
+            $encoded = $str;
             $this->logger->logException($e);
         }
         return $encoded;
