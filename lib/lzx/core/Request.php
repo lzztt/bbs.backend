@@ -162,6 +162,6 @@ class Request
 
     private static function escapeString(string $in): string
     {
-        return trim(htmlspecialchars($in, ENT_QUOTES | ENT_HTML5));
+        return trim(str_replace(['<', '&', '"', "'"], ['&lt;', '&amp;', '&quot;', '&apos;'], $in));
     }
 }

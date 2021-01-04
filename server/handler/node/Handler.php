@@ -89,7 +89,7 @@ class Handler extends Node
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
                 $c['quoteJson'] = json_encode([
                     'nodeId' => $nid,
-                    'body' => '[quote="' . $c['username'] . '"]' . $this->removeQuote($c['body']) . '[/quote]'
+                    'body' => '[quote=' . $c['username'] . ']' . $this->removeQuote($c['body']) . '[/quote]'
                 ], self::JSON_OPTIONS);
                 if ($nodeComment) {
                     $c['type'] = 'node';

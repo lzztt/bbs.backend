@@ -8,11 +8,11 @@ class BBCodeRE
 {
     const BBCODE = [
         '/\[b\](.*?)\[\/b\]/ms'
-        => '__\1__',
+        => '**\1**',
         '/\[i\](.*?)\[\/i\]/ms'
-        => '_\1_',
+        => '*\1*',
         '/\[u\](.*?)\[\/u\]/ms'
-        => '<span style="text-decoration:underline">\1</span>',
+        => '**\1**',
         '/\[s\](.*?)\[\/s\]/ms'
         => '~~\1~~',
         '/\[img\="?(.*?)"?\](.*?)\[\/img\]/ms'
@@ -24,7 +24,7 @@ class BBCodeRE
         '/\[url](.*?)\[\/url\]/ms'
         => '[\1](\1)',
         '/\[size\="?(.*?)"?\](.*?)\[\/size\]/ms'
-        => '<span style="font-size:\1">\2</span>',
+        => '### \2',
         '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms'
         => '<span style="color:\1">\2</span>',
         '/\[bgcolor\="?(.*?)"?\](.*?)\[\/bgcolor\]/ms'
