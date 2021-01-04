@@ -89,7 +89,7 @@ class Handler extends Node
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
                 $c['quoteJson'] = json_encode([
                     'nodeId' => $nid,
-                    'body' => '[quote=' . $c['username'] . ']' . $this->removeQuote($c['body']) . '[/quote]'
+                    'body' => $this->quote($c['username'], $c['body'], (int) $c['id'] < 653132)
                 ], self::JSON_OPTIONS);
                 if ($nodeComment) {
                     $c['type'] = 'node';
@@ -118,9 +118,27 @@ class Handler extends Node
         $this->html->setContent($page->setPosts($posts));
     }
 
-    private function removeQuote(string $body): string
+    private function quote(string $name, string $body, $bbcode = false): string
     {
-        return trim(preg_replace('/\[quote\="?(.*?)"?\](.*?)\[\/quote\]/ms', '', $body));
+        if ($bbcode) {
+            $body = trim(preg_replace('/\[quote\="?(.*?)"?\](.*?)\[\/quote\]/ms', '', $body));
+        }
+
+        $lines = [];
+        foreach (explode(PHP_EOL, $body) as $line) {
+            if (!$lines && !trim($line)) {
+                continue;
+            }
+            if (!str_starts_with($line, '> ')) {
+                $lines[] = $line;
+            }
+        }
+
+        while ($lines && !trim(end($lines))) {
+            array_pop($lines);
+        }
+
+        return '> **' . $name . ':**  ' . PHP_EOL . '> ' . implode(PHP_EOL . '> ', $lines) . PHP_EOL . PHP_EOL;
     }
 
     private function toHtml(string $str): string
@@ -248,7 +266,7 @@ class Handler extends Node
                     $c['HTMLbody'] = $this->toHtml($c['body']);
                     $c['quoteJson'] = json_encode([
                         'nodeId' => $nid,
-                        'body' => '[quote="' . $c['username'] . '"]' . $this->removeQuote($c['body']) . '[/quote]'
+                        'body' =>  $this->quote($c['username'], $c['body'], (int) $c['id'] < 653132)
                     ], self::JSON_OPTIONS);
                     $c['editJson'] = json_encode([
                         'nodeId' => $nid,

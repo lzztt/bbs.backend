@@ -30,7 +30,7 @@ class BBCodeRE
         '/\[bgcolor\="?(.*?)"?\](.*?)\[\/bgcolor\]/ms'
         => '<span style="background-color:\1">\2</span>',
         '/\[quote\="?(.*?)"?\]/ms'
-        => '<blockquote data-author="\1 :">',
+        => '> **\1:**  ' . PHP_EOL,
         '/\[list\=(.*?)\](.*?)\[\/list\]/ms'
         => PHP_EOL . '\2' . PHP_EOL,
         '/\[list\](.*?)\[\/list\]/ms'
@@ -66,7 +66,7 @@ class BBCodeRE
             $text = $text . str_repeat('[/quote]', $unclosed);
         }
 
-        $text = str_replace(['[quote]', '[/quote]'], ['<blockquote>', '</blockquote>'], $text);
+        $text = str_replace(['[quote]', '[/quote]'], ['> ', PHP_EOL . PHP_EOL], $text);
 
         $text = preg_replace(array_keys(self::BBCODE), array_values(self::BBCODE), $text);
 
