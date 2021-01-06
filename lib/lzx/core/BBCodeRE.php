@@ -7,21 +7,19 @@ namespace lzx\core;
 class BBCodeRE
 {
     const BBCODE = [
-        '/\[b\](.*?)\[\/b\]/ms'
-        => '**\1**',
-        '/\[i\](.*?)\[\/i\]/ms'
-        => '*\1*',
-        '/\[u\](.*?)\[\/u\]/ms'
-        => '**\1**',
-        '/\[s\](.*?)\[\/s\]/ms'
-        => '~~\1~~',
+        '/\[\/?[b,u]\]/ms'
+        => '**',
+        '/\[\/?i\]/ms'
+        => '*',
+        '/\[\/?s\]/ms'
+        => '~~',
         '/\[img\="?(.*?)"?\](.*?)\[\/img\]/ms'
         => '![\2](\1)',
         '/\[img\](.*?)\[\/img\]/ms'
         => '![\1](\1)',
         '/\[url\="?(.*?)"?\](.*?)\[\/url\]/ms'
         => '[\2](\1)',
-        '/\[url](.*?)\[\/url\]/ms'
+        '/\[url\](.*?)\[\/url\]/ms'
         => '[\1](\1)',
         '/\[size\="?(.*?)"?\](.*?)\[\/size\]/ms'
         => '### \2',
@@ -33,10 +31,10 @@ class BBCodeRE
         => '> **\1:**  ' . PHP_EOL,
         '/\[list\=(.*?)\](.*?)\[\/list\]/ms'
         => PHP_EOL . '\2' . PHP_EOL,
-        '/\[list\](.*?)\[\/list\]/ms'
-        => PHP_EOL . '\1' . PHP_EOL,
-        '/\[\*\]\s?(.*?)\n/ms'
-        => ' - \1',
+        '/\[\/?list\]/ms'
+        => PHP_EOL,
+        '/\[\*\]\s?/ms'
+        => ' - ',
         '/\[youtube\](.*?)\[\/youtube\]/ms'
         => '<iframe class="youtube" src="//www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>',
     ];
