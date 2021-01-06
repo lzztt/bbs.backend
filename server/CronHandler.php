@@ -161,7 +161,7 @@ class CronHandler extends Handler
     {
         $db = DB::getInstance();
         $sql = '
-        SELECT nc.id, n.title, nc.uid, nc.reporter_uid
+        SELECT nc.id, nc.nid, n.title, nc.uid, nc.reporter_uid
         FROM node_complaints AS nc
             JOIN comments AS c ON nc.cid = c.id
             JOIN nodes AS n ON nc.nid = n.id
@@ -181,7 +181,7 @@ class CronHandler extends Handler
                 $user->id,
                 '举报失败，您损失了1点贡献。' . PHP_EOL
                     . '原因：您的举报未获得足够的用户支持。' . PHP_EOL
-                    . '话题：' . $r['title']
+                    . '话题：[' . $r['title'] . '](/node/' . $r['nid'] . ')'
             );
             $ids[] = (int) $r['id'];
         }

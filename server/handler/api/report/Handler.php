@@ -9,6 +9,7 @@ use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Service;
 use site\dbobject\Comment;
+use site\dbobject\Node;
 use site\dbobject\NodeComplain;
 use site\dbobject\SessionEvent;
 use site\dbobject\User;
@@ -129,6 +130,7 @@ class Handler extends Service
             $title = '封禁';
 
             $this->updateComplainStatus($cid);
+            $node = new Node($comment->nid, 'title');
 
             foreach (array_merge(...array_values($complainGroups)) as $uid) {
                 $reporter = new User($uid, 'contribution,status');
@@ -141,13 +143,14 @@ class Handler extends Service
                 $this->sendMessage(
                     $uid,
                     '举报成功，您获得了1个贡献点，感谢您对良好交流环境的维护！' . PHP_EOL
-                        . '处理结果：' . $spammer->username . '被封禁' . $days . '天，违规贴被标记'
+                        . '结果：[' . $spammer->username . '](/user/' . $spammer->id . ')被封禁' . $days . '天，违规帖被标记' . PHP_EOL
+                        . '话题：[' . $node->title . '](/node/' . $node->id . ')'
                 );
             }
 
             $this->postTopic(
                 $spammer->username . '被系统封禁' . $days . '天',
-                '原因：[url=/user/' . $spammer->id . ']' . $spammer->username . '[/url]在[url=/node/' . $comment->nid . ']这个帖子[/url]里的发言被多位用户举报。' . PHP_EOL
+                '原因：[' . $spammer->username . '](/user/' . $spammer->id . ')在[' . $node->title . '](/node/' . $node->id . ')里的发帖被多位用户举报。' . PHP_EOL
                     . '类别：'  . $reason . PHP_EOL
                     . '结果：用户被封禁' . $days . '天，用户的声望和贡献各减3点。'
             );
