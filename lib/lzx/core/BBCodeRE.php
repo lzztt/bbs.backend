@@ -55,15 +55,6 @@ class BBCodeRE
         // BBCode [code]
         $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [__CLASS__, 'escape'], $text);
 
-        $unclosed = ((int) preg_match_all('/\[quote\="?(.*?)"?\]/ms', $text, $matches)) + substr_count($text, '[quote]') - substr_count($text, '[/quote]');
-
-        if ($unclosed < 0) {
-            $text = str_repeat('[quote]', (-$unclosed)) . $text;
-        }
-        if ($unclosed > 0) {
-            $text = $text . str_repeat('[/quote]', $unclosed);
-        }
-
         $text = str_replace(['[quote]', '[/quote]'], ['> ', PHP_EOL . PHP_EOL], $text);
 
         $text = preg_replace(array_keys(self::BBCODE), array_values(self::BBCODE), $text);
