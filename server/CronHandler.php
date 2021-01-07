@@ -6,8 +6,10 @@ namespace site;
 
 use Exception;
 use lzx\cache\CacheHandler;
+use lzx\core\BBCodeRE;
 use lzx\core\Mailer;
 use lzx\db\DB;
+use site\dbobject\Comment;
 use site\dbobject\RentThread;
 use site\dbobject\User;
 use site\gen\theme\roselife\mail\Activity;
@@ -280,6 +282,19 @@ class CronHandler extends Handler
 
         if ($mailer->send() === false) {
             $this->logger->error('sending expiring ads email error.');
+        }
+    }
+
+    protected function doBackfill(): void
+    {
+        $comment = new Comment();
+        $comment->where('body', '%[/%', 'LIKE');
+        $comment->where('id', [5537, 50983, 498094], 'NOT IN');
+
+        foreach ($comment->getList('id,body') as $c) {
+            $cmnt = new Comment((int) $c['id'], 'id');
+            $cmnt->body = BBCodeRE::parse($c['body']);
+            $cmnt->update('body');
         }
     }
 }
