@@ -7,10 +7,6 @@ namespace lzx\core;
 class BBCodeRE
 {
     const BBCODE = [
-        '/\[color\="?(.*?)"?\](.*?)\[\/color\]/ms'
-        => '<span style="color:\1">\2</span>',
-        '/\[bgcolor\="?(.*?)"?\](.*?)\[\/bgcolor\]/ms'
-        => '<span style="background-color:\1">\2</span>',
         '/\[youtube\](.*?)\[\/youtube\]/ms'
         => '<iframe class="youtube" src="//www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe>',
     ];
@@ -30,8 +26,6 @@ class BBCodeRE
 
         // BBCode [code]
         $text = preg_replace_callback('/\[code\](.*?)\[\/code\]/ms', [__CLASS__, 'escape'], $text);
-
-        $text = str_replace(['[quote]', '[/quote]'], ['> ', PHP_EOL . PHP_EOL], $text);
 
         $text = preg_replace(array_keys(self::BBCODE), array_values(self::BBCODE), $text);
 
