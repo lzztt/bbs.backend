@@ -128,13 +128,12 @@ class Handler extends Node
 
             $this->html->setContent(
                 (new EditorBbcodeYp())
-                    ->setAds($contents['ads'])
                     ->setTitle($contents['title'])
                     ->setAddress($contents['address'])
                     ->setPhone($contents['phone'])
                     ->setEmail($contents['email'])
                     ->setWebsite($contents['website'])
-                    ->setBody($comment->boday)
+                    ->setBody($comment->body)
                     ->setFiles($image->getList('id,name,path'))
             );
         } else {

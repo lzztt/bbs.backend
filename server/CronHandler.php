@@ -6,7 +6,6 @@ namespace site;
 
 use Exception;
 use lzx\cache\CacheHandler;
-use lzx\core\BBCodeRE;
 use lzx\core\Mailer;
 use lzx\db\DB;
 use site\dbobject\Comment;
@@ -293,8 +292,8 @@ class CronHandler extends Handler
 
         foreach ($comment->getList('id,body') as $c) {
             $cmnt = new Comment((int) $c['id'], 'id');
-            $cmnt->body = BBCodeRE::parse($c['body']);
-            $cmnt->update('body');
+            // $cmnt->body = BBCodeRE::parse($c['body']);
+            // $cmnt->update('body');
         }
     }
 }

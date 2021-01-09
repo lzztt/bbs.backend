@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace site\handler\node;
 
-use Exception;
-use lzx\core\BBCodeRE as BBCode;
 use lzx\exception\NotFound;
 use lzx\html\HtmlElement;
 use lzx\html\Template;
@@ -83,13 +81,13 @@ class Handler extends Node
             foreach ($comments as $c) {
                 $c['type'] = 'comment';
                 $c['createTime'] = (int) $c['create_time'];
-                $c['HTMLbody'] = $this->toHtml($c['body']);
+                $c['HTMLbody'] = $c['body'];
                 $c['authorPanel'] = $this->authorPanel(array_intersect_key($c, $authorPanelInfo));
                 $c['city'] = $c['access_ip'] ? self::getLocationFromIp($c['access_ip'], false) : 'N/A';
                 $c['attachments'] = $this->attachments($c['files'], $c['body']);
                 $c['quoteJson'] = json_encode([
                     'nodeId' => $nid,
-                    'body' => $this->quote($c['username'], $c['body'], (int) $c['id'] < 653132)
+                    'body' => $this->quote($c['username'], $c['body'])
                 ], self::JSON_OPTIONS);
                 if ($nodeComment) {
                     $c['type'] = 'node';
@@ -118,12 +116,8 @@ class Handler extends Node
         $this->html->setContent($page->setPosts($posts));
     }
 
-    private function quote(string $name, string $body, $bbcode = false): string
+    private function quote(string $name, string $body): string
     {
-        if ($bbcode) {
-            $body = trim(preg_replace('/\[quote\="?(.*?)"?\](.*?)\[\/quote\]/ms', '', $body));
-        }
-
         $lines = [];
         foreach (explode(PHP_EOL, $body) as $line) {
             if (!$lines && !trim($line)) {
@@ -139,17 +133,6 @@ class Handler extends Node
         }
 
         return '> **' . $name . ':**  ' . PHP_EOL . '> ' . implode(PHP_EOL . '> ', $lines) . PHP_EOL . PHP_EOL;
-    }
-
-    private function toHtml(string $str): string
-    {
-        try {
-            $encoded = BBCode::parse($str);
-        } catch (Exception $e) {
-            $encoded = $str;
-            $this->logger->logException($e);
-        }
-        return $encoded;
     }
 
     private function authorPanel(array $info): Template
@@ -255,7 +238,7 @@ class Handler extends Node
             foreach ($comments as $c) {
                 if ($nodeComment) {
                     // show node details as the first post
-                    $node['HTMLbody'] = $this->toHtml($c['body']);
+                    $node['HTMLbody'] = $c['body'];
                     $node['attachments'] = $this->attachments($c['files'], $c['body']);
                     //$node['filesJSON'] = json_encode($node['files']);
 
@@ -263,10 +246,10 @@ class Handler extends Node
                 } else {
                     $c['type'] = 'comment';
                     $c['createTime'] = (int) $c['create_time'];
-                    $c['HTMLbody'] = $this->toHtml($c['body']);
+                    $c['HTMLbody'] = $c['body'];
                     $c['quoteJson'] = json_encode([
                         'nodeId' => $nid,
-                        'body' =>  $this->quote($c['username'], $c['body'], (int) $c['id'] < 653132)
+                        'body' =>  $this->quote($c['username'], $c['body'])
                     ], self::JSON_OPTIONS);
                     $c['editJson'] = json_encode([
                         'nodeId' => $nid,
