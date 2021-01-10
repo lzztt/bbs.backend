@@ -46,11 +46,8 @@ function (
 
           <footer>
             <div class="v_user actions">
-              <?php $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'] ?>
-              <?php if ($tid == 16 && $p['type'] == 'node') : ?>
-                <button type="button" class="<?= $urole ?> action" onclick="window.location.href='/node/<?= $nid ?>/activity'">发布为活动</button>
-              <?php endif ?>
               <?php
+              $urole = 'v_user_superadm v_user_tagadm_' . $tid . ' v_user_' . $p['uid'];
               $id = $p['type'] === 'node' ? $nid : $p['id'];
               ?>
               <script>
