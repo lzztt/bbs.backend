@@ -17,7 +17,7 @@ function (
     <div class="image_slider"><?= $imageSlider ?></div>
     <?php if ($city === City::HOUSTON) : ?>
       <div id="support_sm" class="home_items_sm"></div>
-      <section class="home_items home_hot_nodes home_items_md">
+      <section class="home_items home_items_sm_down_bottom">
         <header>本月热门</header><?= $hotForumTopicsMonthly ?>
       </section>
     <?php elseif ($city === City::DALLAS) : ?>
@@ -41,7 +41,7 @@ function (
     <?php if ($city !== City::SFBAY) : ?>
       <div id="support_xs"></div>
     <?php endif ?>
-    <section class="home_items home_hot_nodes">
+    <section class="home_items">
       <?php if ($city === City::HOUSTON) : ?>
         <header>本周热门</header><?= $hotForumTopicsWeekly ?>
       <?php else : ?>
