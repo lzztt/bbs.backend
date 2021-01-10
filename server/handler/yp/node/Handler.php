@@ -84,9 +84,8 @@ class Handler extends Controller
 
             $tag = new Tag($tid, 'parent');
 
-            foreach (['latestYellowPages', '/yp/' . $tid, '/yp/' . $tag->parent, '/'] as $key) {
-                $this->getIndependentCache($key)->delete();
-            }
+            $this->getCacheEvent('YellowPageUpdate')->trigger();
+            $this->getIndependentCache('/yp/' . $tid)->delete();
 
             $this->sendConfirmationEmail(new Ad($nodeYP->adId), $node->id);
 

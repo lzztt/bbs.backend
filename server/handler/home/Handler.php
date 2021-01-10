@@ -9,7 +9,6 @@ use lzx\exception\ErrorMessage;
 use lzx\html\Template;
 use site\City;
 use site\Controller;
-use site\dbobject\Activity;
 use site\dbobject\Image;
 use site\dbobject\Node;
 use site\gen\theme\roselife\Home;
@@ -39,17 +38,17 @@ class Handler extends Controller
 
     private function houstonHome(): void
     {
+        $nodes = (new Node())->getLatestYellowPages(self::$city->tidYp, 15);
+        $count = intdiv(count($nodes), 3);
+
         $this->html->setContent(
             (new Home())
                 ->setCity(self::$city->id)
-                ->setRecentActivities($this->getRecentActivities())
-                ->setLatestForumTopics($this->getLatestForumTopics(15))
-                ->setHotForumTopicsWeekly($this->getHotForumTopics(15, 7))
-                ->setHotForumTopicsMonthly($this->getHotForumTopics(15, 30))
-                ->setLatestYellowPages($this->getLatestYellowPages(15))
-                ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(15))
-                ->setLatestYellowPageReplies(($this->getLatestYellowPageReplies(15)))
                 ->setImageSlider($this->getImageSlider())
+                ->setLatestForumTopics($this->getLatestForumTopics(20 - $count, array_splice($nodes, 0, $count)))
+                ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(20 - $count, array_splice($nodes, 0, $count)))
+                ->setHotForumTopicsWeekly($this->getHotForumTopics(20 - count($nodes), 7, $nodes))
+                ->setHotForumTopicsMonthly($this->getHotForumTopics(10, 30))
         );
         $this->html->setLastModifiedTime($this->lastModifiedTime);
     }
@@ -59,10 +58,10 @@ class Handler extends Controller
         $this->html->setContent(
             (new Home())
                 ->setCity(self::$city->id)
-                ->setLatestForumTopics($this->getLatestForumTopics(20))
-                ->setHotForumTopicsMonthly($this->getHotForumTopics(20, 30))
-                ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(20))
                 ->setImageSlider($this->getImageSlider())
+                ->setLatestForumTopics($this->getLatestForumTopics(20))
+                ->setLatestForumTopicReplies($this->getLatestForumTopicReplies(20))
+                ->setHotForumTopicsMonthly($this->getHotForumTopics(20, 30))
         );
     }
 
@@ -88,7 +87,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getLatestForumTopics(int $count): Template
+    private function getLatestForumTopics(int $count, array $ads = []): Template
     {
         $ulCache = $this->cache->getSegment('latestForumTopics');
         $ul = $ulCache->getData();
@@ -105,9 +104,20 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
+            foreach ($ads as $n) {
+                $arr[] = [
+                    'time' => (int) $n['exp_time'],
+                    'method' => 'toDate',
+                    'uri' => '/node/' . $n['nid'],
+                    'text' => '🏷️ ' . $n['title']
+                ];
+            }
             $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
 
             $this->getCacheEvent('ForumNode')->addListener($ulCache);
+            if (self::$city->id === City::HOUSTON) {
+                $this->getCacheEvent('YellowPageUpdate')->addListener($ulCache);
+            }
         } else {
             $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
@@ -116,7 +126,7 @@ class Handler extends Controller
         return $ul;
     }
 
-    private function getHotForumTopics(int $count, int $days): Template
+    private function getHotForumTopics(int $count, int $days, array $ads = []): Template
     {
         $ulCache = $this->cache->getSegment('hotForumTopics' . $days);
         $ul = $ulCache->getData();
@@ -131,41 +141,28 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, 0, $ulCache);
-        }
 
-        return $ul;
-    }
-
-    private function getLatestYellowPages(int $count): Template
-    {
-        $ulCache = $this->cache->getSegment('latestYellowPages');
-        $ul = $ulCache->getData();
-        if (!$ul) {
-            $arr = [];
-
-            $nodes = (new Node())->getLatestYellowPages(self::$city->tidYp, $count);
-            $lastModifiedTime = 0;
-            foreach ($nodes as $n) {
-                $lastModifiedTime = max($lastModifiedTime, (int) $n['create_time']);
+            foreach ($ads as $n) {
                 $arr[] = [
                     'time' => (int) $n['exp_time'],
                     'method' => 'toDate',
                     'uri' => '/node/' . $n['nid'],
-                    'text' => $n['title']
+                    'text' => '🏷️ ' . $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
-            $this->getCacheEvent('YellowPageNode')->addListener($ulCache);
-        } else {
-            $lastModifiedTime = $this->getNodeListTime((string) $ul);
+
+            $ul = $this->linkNodeList($arr, 0, $ulCache);
+
+            if (self::$city->id === City::HOUSTON) {
+                $this->getCacheEvent('YellowPageUpdate')->addListener($ulCache);
+            }
         }
-        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
 
         return $ul;
     }
 
-    private function getLatestForumTopicReplies(int $count): Template
+
+    private function getLatestForumTopicReplies(int $count, array $ads = []): Template
     {
         $ulCache = $this->cache->getSegment('latestForumTopicReplies');
         $ul = $ulCache->getData();
@@ -181,60 +178,26 @@ class Handler extends Controller
                     'text' => $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
-            $this->getCacheEvent('ForumComment')->addListener($ulCache);
-        } else {
-            $lastModifiedTime = $this->getNodeListTime((string) $ul);
-        }
-        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
 
-        return $ul;
-    }
-
-    private function getLatestYellowPageReplies(int $count): Template
-    {
-        $ulCache = $this->cache->getSegment('latestYellowPageReplies');
-        $ul = $ulCache->getData();
-        if (!$ul) {
-            $arr = [];
-
-            $nodes = (new Node())->getLatestYellowPageReplies(self::$city->tidYp, $count);
-            $lastModifiedTime = $nodes ? (int) $nodes[0]['create_time'] : 0;
-            foreach ($nodes as $n) {
+            foreach ($ads as $n) {
                 $arr[] = [
-                    'after' => $n['comment_count'],
-                    'uri' => '/node/' . $n['nid'] . '?p=l#bottom',
-                    'text' => $n['title']
-                ];
-            }
-            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
-            $this->getCacheEvent('YellowPageComment')->addListener($ulCache);
-        } else {
-            $lastModifiedTime = $this->getNodeListTime((string) $ul);
-        }
-        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
-
-        return $ul;
-    }
-
-    private function getRecentActivities(): Template
-    {
-        $ulCache = $this->cache->getSegment('recentActivities');
-        $ul = $ulCache->getData();
-        if (!$ul) {
-            $arr = [];
-
-            foreach ((new Activity())->getRecentActivities(10, $this->request->timestamp) as $n) {
-                $arr[] = [
-                    'class' => 'activity_' . $n['class'],
-                    'time' => (int) $n['start_time'],
+                    'time' => (int) $n['exp_time'],
                     'method' => 'toDate',
                     'uri' => '/node/' . $n['nid'],
-                    'text' => $n['title']
+                    'text' => '🏷️ ' . $n['title']
                 ];
             }
-            $ul = $this->linkNodeList($arr, 0, $ulCache);
+
+            $ul = $this->linkNodeList($arr, $lastModifiedTime, $ulCache);
+
+            $this->getCacheEvent('ForumComment')->addListener($ulCache);
+            if (self::$city->id === City::HOUSTON) {
+                $this->getCacheEvent('YellowPageUpdate')->addListener($ulCache);
+            }
+        } else {
+            $lastModifiedTime = $this->getNodeListTime((string) $ul);
         }
+        $this->lastModifiedTime = max($this->lastModifiedTime, $lastModifiedTime);
 
         return $ul;
     }
@@ -245,7 +208,7 @@ class Handler extends Controller
 
         $ulCache->setData($ul);
         foreach ($arr as $n) {
-            $ulCache->addParent(strtok($n['uri'], '?#'));
+            $ulCache->addParent(preg_replace('/[?#].*/', '', $n['uri']));
         }
 
         return $ul;

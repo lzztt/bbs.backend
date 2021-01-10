@@ -51,9 +51,7 @@ class Handler extends Service
         }
         $ad->expTime = strtotime($exp_time . ' +' . $this->request->data['adTime'] . ' months');
         $ad->update('expTime');
-        foreach (['latestYellowPages', '/'] as $key) {
-            $this->getIndependentCache($key)->delete();
-        }
+        $this->getCacheEvent('YellowPageUpdate')->trigger();
         $this->sendConfirmationEmail($ad);
 
         $this->json(['adName' => $ad->name, 'amount' => $ap->amount, 'expTime' => $ad->expTime]);

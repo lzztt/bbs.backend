@@ -238,7 +238,7 @@ class CronHandler extends Handler
         SELECT MAX(c.create_time) AS time
         FROM comments AS c
             JOIN nodes AS n ON n.id = c.nid
-        WHERE c.tid < 127
+        WHERE c.tid < 26
             AND n.status = 1
             AND c.create_time >' . ($this->request->timestamp - 3600);
         $rows = $db->query($sql);

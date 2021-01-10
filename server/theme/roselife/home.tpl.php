@@ -10,9 +10,6 @@ function (
   Template $imageSlider,
   Template $latestForumTopicReplies,
   Template $latestForumTopics,
-  Template $latestYellowPageReplies,
-  Template $latestYellowPages,
-  Template $recentActivities
 ) {
 ?>
 
@@ -20,8 +17,8 @@ function (
     <div class="image_slider"><?= $imageSlider ?></div>
     <?php if ($city === City::HOUSTON) : ?>
       <div id="support_sm" class="home_items_sm"></div>
-      <section class="home_items home_activities home_items_md">
-        <header>近期活动</header><?= $recentActivities ?>
+      <section class="home_items home_hot_nodes home_items_md">
+        <header>本月热门</header><?= $hotForumTopicsMonthly ?>
       </section>
     <?php elseif ($city === City::DALLAS) : ?>
       <div id="support_sm" class="home_items_sm"></div>
@@ -44,13 +41,12 @@ function (
     <?php if ($city !== City::SFBAY) : ?>
       <div id="support_xs"></div>
     <?php endif ?>
-    <?php if ($city === City::HOUSTON) : ?>
-      <section class="home_items home_hot_nodes">
-        <header>本周热门</header><?= $hotForumTopicsWeekly ?>
-      </section>
-    <?php endif ?>
     <section class="home_items home_hot_nodes">
-      <header>本月热门</header><?= $hotForumTopicsMonthly ?>
+      <?php if ($city === City::HOUSTON) : ?>
+        <header>本周热门</header><?= $hotForumTopicsWeekly ?>
+      <?php else : ?>
+        <header>本月热门</header><?= $hotForumTopicsMonthly ?>
+      <?php endif ?>
     </section>
     <?php if ($city === City::HOUSTON) : ?>
       <div class="ad_xs">
@@ -59,12 +55,6 @@ function (
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
-      <section class="home_items">
-        <header>最新黄页</header><?= $latestYellowPages ?>
-      </section>
-      <section class="home_items">
-        <header>最新黄页回复</header><?= $latestYellowPageReplies ?>
-      </section>
     <?php endif ?>
   </div>
   <div id='site_stat' class='ajax_load' data-ajax='/api/stat'>
