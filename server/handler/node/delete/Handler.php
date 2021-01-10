@@ -7,7 +7,6 @@ namespace site\handler\node\delete;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\Redirect;
-use site\dbobject\Activity;
 use site\dbobject\Node as NodeObject;
 use site\handler\node\Node;
 
@@ -43,11 +42,6 @@ class Handler extends Node
 
         $node->status = 0;
         $node->update('status');
-
-        $activity = new Activity($nid, 'nid');
-        if ($activity->exists()) {
-            $activity->delete();
-        }
 
         $this->getCacheEvent('NodeUpdate', $nid)->trigger();
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();

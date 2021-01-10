@@ -11,7 +11,6 @@ use lzx\db\DB;
 use site\dbobject\Comment;
 use site\dbobject\RentThread;
 use site\dbobject\User;
-use site\gen\theme\roselife\mail\Activity;
 use site\gen\theme\roselife\mail\Ad;
 use site\gen\theme\roselife\mail\RentThread as MailRentThread;
 
@@ -69,92 +68,6 @@ class CronHandler extends Handler
             $mailer->send();
             $db->query('UPDATE rent_threads SET status = "contacted" WHERE id = ' . $t['id']);
         }
-    }
-
-    protected function doActivity(): void
-    {
-        // config cache
-        $db = DB::getInstance();
-        $site = 'houston';
-
-        $cacheHandler = CacheHandler::getInstance();
-        $cacheHandler->setPath($this->config->path['cache']);
-        $cacheHandler->setDomain($site);
-        $cacheHandler->setLogger($this->logger);
-
-        $cache = $cacheHandler->createCache('recentActivities');
-        $refreshTimeFile = $this->config->path['log'] . '/activity_cache_refresh_time.txt';
-
-        $activities = $db->query('SELECT a.start_time, n.id, n.title, u.username, u.email FROM activities AS a JOIN nodes AS n ON a.nid = n.id JOIN users AS u ON n.uid = u.id WHERE a.status IS NULL');
-        if (sizeof($activities) > 0) {
-            $mailer = new Mailer();
-
-            foreach ($activities as $a) {
-                $mailer->setTo($a['email']);
-                $mailer->setSubject($a['username'] . ' 的活动详情（已激活）');
-                $mailer->setBody(
-                    (string) (new Activity())
-                        ->setNid((int) $a['id'])
-                        ->setTitle($a['title'])
-                        ->setUsername($a['username'])
-                        ->setDomain('www.' . self::$city->domain)
-                        ->setSitename('HoustonBBS')
-                );
-
-                if ($mailer->send() === false) {
-                    $this->logger->info('sending new activity activation email error.');
-                    continue;
-                }
-
-                $db->query('UPDATE activities SET status = 1 WHERE nid = ' . $a['id']);
-
-                $newActivities[] = '[TITLE] ' . $a['title'] . PHP_EOL . ' [URL] https://www.' . self::$city->domain . '/node/' . $a['id'];
-            }
-
-            // delete cache and reschedule next refresh time
-            $cache->delete();
-            $cache->flush();
-            $refreshTime = is_readable($refreshTimeFile) ? (int) file_get_contents($refreshTimeFile) : 0;
-            $currentTime = $this->request->timestamp;
-            $newActivityStartTime = $activities[0]['start_time'];
-            if ($refreshTime < $currentTime || $refreshTime > $newActivityStartTime) {
-                $this->updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime);
-            }
-
-            $mailer->setTo('admin@' . self::$city->domain);
-            $mailer->setSubject('[活动] ' . sizeof($activities) . '个新活动已被系统自动激活');
-            $mailer->setBody(implode("\n\n", $newActivities));
-            $mailer->send();
-        } else {
-            // refresh cache based on the next refresh timestamp
-            $refreshTime = is_readable($refreshTimeFile) ? intval(file_get_contents($refreshTimeFile)) : 0;
-            $currentTime = $this->request->timestamp;
-            if ($currentTime > $refreshTime) {
-                $cache->delete();
-                $cache->flush();
-                $this->updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime);
-            }
-        }
-    }
-
-    protected function updateActivityCacheRefreshTime($refreshTimeFile, $db, $refreshTime, $currentTime): void
-    {
-        $nextRefreshTime = $currentTime + 604800;
-        $sql = 'SELECT start_time, end_time FROM activities WHERE status = 1 AND (start_time > ' . $currentTime . ' OR end_time > ' . $currentTime . ')';
-        foreach ($db->query($sql) as $r) {
-            if ($r['start_time'] < $currentTime) {
-                // current activity
-                if ($r['end_time'] < $nextRefreshTime) {
-                    $nextRefreshTime = $r['end_time'];
-                }
-            } else {
-                // future activity
-                if ($r['start_time'] < $nextRefreshTime) {
-                    $nextRefreshTime = $r['start_time'];
-                }
-            }
-        }
-        file_put_contents($refreshTimeFile, $nextRefreshTime);
     }
 
     // daily
