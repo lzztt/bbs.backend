@@ -61,6 +61,9 @@ class Handler extends Service
 
         if (array_key_exists('username', $this->request->data)) {
             $username = strtolower($this->request->data['username']);
+            if (empty($username)) {
+                throw new ErrorMessage('不能使用此用户名，请选用其他用户名。');
+            }
             $denylist = [
                 'admin',
                 array_shift(explode('.', self::$city->domain))
