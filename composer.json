@@ -1,0 +1,26 @@
+{
+    "name": "bbs/backend",
+    "description": "web backend",
+    "type": "project",
+    "authors": [
+        {
+            "name": "long",
+            "email": "long@example.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "lzx\\": "lib/lzx/",
+            "site\\": "server/",
+            "script\\": "script/"
+        }
+    },
+    "require": {
+        "monolog/monolog": "^2.0",
+        "laminas/laminas-diactoros": "^2.2",
+        "laminas/laminas-httphandlerrunner": "^1.1",
+        "gregwar/captcha": "^1.1",
+        "swiftmailer/swiftmailer": "^6.2",
+        "promphp/prometheus_client_php": "^2.2"
+    }
+}
