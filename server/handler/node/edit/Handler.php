@@ -132,7 +132,7 @@ class Handler extends Node
                     ->setAddress($contents['address'])
                     ->setPhone($contents['phone'])
                     ->setEmail($contents['email'])
-                    ->setWebsite($contents['website'])
+                    ->setWebsite($contents['website'] ?? '')
                     ->setBody($comment->body)
                     ->setFiles($image->getList('id,name,path'))
             );
