@@ -8,9 +8,9 @@ use lzx\exception\Forbidden;
 use lzx\html\Template;
 use site\Controller;
 use site\gen\theme\roselife\Mail;
-use Swift_SendmailTransport;
-use Swift_Mailer;
-use Swift_Message;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
 
 class Handler extends Controller
 {
@@ -25,25 +25,23 @@ class Handler extends Controller
         if (!$this->request->data) {
             $this->html->setContent(new Mail());
         } else {
-            $transport = new Swift_SendmailTransport('/usr/sbin/sendmail -t');
+            $transport = Transport::fromDsn('sendmail://default');
             // Create the Mailer using your created Transport
-            $mailer = new Swift_Mailer($transport);
+            $mailer = new Mailer($transport);
 
             $data = (object) $this->request->data;
             // Create a message
-            $message = (new Swift_Message($data->subject))
-                ->setFrom([$data->from])
-                ->setTo([$data->to])
-                ->setBcc([$data->bcc])
-                ->setBody($data->body);
-
-            $msgId = $message->getHeaders()->get('Message-ID');
-            $msgId->setId(explode('@', $msgId->getId())[0] . '@' . explode('@', $data->from)[1]);
+            $message = (new Email())
+                ->from($data->from)
+                ->to($data->to)
+                ->bcc($data->bcc)
+                ->subject($data->subject)
+                ->text($data->body);
 
             // Send the message
-            $result = $mailer->send($message);
+            $mailer->send($message);
 
-            $this->html->setContent(Template::fromStr('sent mail count: ' . $result));
+            $this->html->setContent(Template::fromStr('mail sent'));
         }
     }
 }
