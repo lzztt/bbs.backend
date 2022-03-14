@@ -44,16 +44,6 @@ abstract class Service extends Handler
         }
     }
 
-    protected function validateCaptcha(): void
-    {
-        $input = $this->request->data['captcha'];
-        $captcha = $this->session->get('captcha');
-        if (!$input || !$captcha || strtolower($input) !== strtolower($captcha)) {
-            throw new ErrorMessage('图形验证码错误');
-        }
-        $this->session->set('captcha', null);
-    }
-
     protected function createIdentCode(string $email): string
     {
         $code = random_int(0, 999999);
