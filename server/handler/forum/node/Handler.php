@@ -62,7 +62,6 @@ class Handler extends Forum
             $comment->body = $this->request->data['body'];
             $comment->createTime = $this->request->timestamp;
             $comment->reportableUntil = $this->request->timestamp + self::ONE_DAY * 3;
-            $comment->status = 1;
             $comment->add();
         } catch (Exception $e) {
             $this->logger->warning($e->getMessage(), ['post' => $this->request->data]);

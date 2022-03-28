@@ -31,9 +31,9 @@ class Node extends DBObject
         return $this->call('get_tag_nodes_forum(' . $cid . ', ' . $tid . ', ' . $limit . ', ' . $offset . ')');
     }
 
-    public function getForumNode(int $id, bool $useNewVersion = false): array
+    public function getForumNode(int $id): array
     {
-        $sp = $useNewVersion ? 'get_forum_node_2' : 'get_forum_node';
+        $sp = 'get_forum_node';
         $arr = $this->call($sp . '(' . $id . ')');
 
         if (sizeof($arr) > 0) {
@@ -45,9 +45,9 @@ class Node extends DBObject
         }
     }
 
-    public function getForumNodeComments(int $id, int $limit, int $offset, bool $useNewVersion = false): array
+    public function getForumNodeComments(int $id, int $limit, int $offset): array
     {
-        $sp = $useNewVersion ? 'get_forum_node_comments_2' : 'get_forum_node_comments';
+        $sp = 'get_forum_node_comments';
         $arr = $this->call($sp . '(' . $id . ', ' . $limit . ', ' . $offset . ')');
 
         foreach ($arr as $i => $r) {

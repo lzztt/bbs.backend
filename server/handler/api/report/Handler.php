@@ -83,7 +83,7 @@ class Handler extends Service
         }
 
         $comment = new Comment($cid);
-        if (!$comment->exists() || $comment->status !== 1) {
+        if (!$comment->exists()) {
             throw new ErrorMessage('错误：被举报的帖子不存在。');
         }
 

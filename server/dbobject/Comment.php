@@ -17,7 +17,6 @@ class Comment extends DBObject
     public $createTime;
     public $lastModifiedTime;
     public $reportableUntil;
-    public $status;
 
     public function __construct($id = null, string $properties = '')
     {
