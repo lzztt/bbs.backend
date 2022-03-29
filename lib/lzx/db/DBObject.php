@@ -309,7 +309,8 @@ abstract class DBObject
             return;
         }
 
-        $props = $this->parseProperties($properties, $this->properties_dirty);
+        $props = $this->parseProperties($properties, $this->properties);
+        $props = array_intersect($props, $this->properties_dirty);
 
         if (!$props) {
             throw new Exception('updating property set is empty');
