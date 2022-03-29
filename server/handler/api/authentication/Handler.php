@@ -146,6 +146,12 @@ class Handler extends Service
             throw new ErrorMessage('用户的社区声望和贡献不足，不能登陆。');
         }
 
+        if ($this->request->timestamp > $user->lastAccessTime + 86400) {
+            $user->lastAccessTime = $this->request->timestamp;
+            $user->lastAccessIp = inet_pton($this->request->ip);
+            $user->update('lastAccessTime,lastAccessIp');
+        }
+
         $this->session->set('uid', $user->id);
         $this->session->regenerateId();
 

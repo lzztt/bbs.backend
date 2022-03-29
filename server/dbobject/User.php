@@ -23,7 +23,6 @@ class User extends DBObject
     public $lastAccessIp;
     public $status;
     public $avatar;
-    public $role;
     public $contribution;
     public $reputation;
     public $cid;
