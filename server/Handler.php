@@ -343,6 +343,10 @@ abstract class Handler extends CoreHandler
             throw new ErrorMessage('用户不存在');
         }
 
+        if (empty($this->user->username)) {
+            throw new ErrorMessage('您尚未设置用户名，请重新登陆。');
+        }
+
         if ($this->user->reputation + $this->user->contribution < -2) {
             throw new ErrorMessage('用户的社区声望和贡献不足。');
         }
