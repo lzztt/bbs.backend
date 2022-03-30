@@ -57,32 +57,6 @@ class Node extends DBObject
         return $arr;
     }
 
-    public function getYellowPageNodeList(string $tids, int $limit, int $offset): array
-    {
-        return $this->call('get_tag_nodes_yp("' . $tids . '",' . $limit . ',' . $offset . ')');
-    }
-
-    public function getYellowPageNode(int $id): array
-    {
-        $arr = $this->call('get_yp_node(' . $id . ')');
-        if (sizeof($arr) > 0) {
-            return $arr[0];
-        } else {
-            return [];
-        }
-    }
-
-    public function getYellowPageNodeComments(int $id, int $limit, int $offset): array
-    {
-        $arr = $this->call('get_yp_node_comments(' . $id . ', ' . $limit . ', ' . $offset . ')');
-
-        if ($offset == 0) {
-            $arr[0]['files'] = $this->call('get_comment_images(' . $arr[0]['id'] . ')');
-        }
-
-        return $arr;
-    }
-
     public function getViewCounts(array $nids): array
     {
         return $this->call('get_node_view_count("' . implode(',', $nids) . '")');
@@ -115,7 +89,7 @@ class Node extends DBObject
 
     public function getLatestYellowPages(int $count): array
     {
-        return $this->call('get_tag_recent_nodes_yp("' . $count . ')');
+        return $this->call('get_tag_recent_nodes_yp(' . $count . ')');
     }
 
     public function getLatestForumTopicReplies(int $forumRootID, int $count): array
@@ -126,26 +100,6 @@ class Node extends DBObject
         FROM nodes AS n
         WHERE tid IN ('  . implode(',', (new Tag($forumRootID, 'id'))->getLeafTIDs()) .  ')
             AND status = 1 AND create_time != last_comment_time
-        ORDER BY last_comment_time DESC
-        LIMIT ' . $count;
-
-        return $this->db->query($sql);
-    }
-
-    public function getLatestYellowPageReplies(int $ypRootID, int $count): array
-    {
-        $sql = '
-        SELECT id AS nid, last_comment_time AS create_time, title,
-            (SELECT COUNT(*) - 1 FROM comments AS c WHERE c.nid = n.id) AS comment_count
-        FROM nodes AS n
-        WHERE tid IN ('  . implode(',', (new Tag($ypRootID, 'id'))->getLeafTIDs()) .  ')
-            AND status = 1 AND create_time != last_comment_time
-            AND id IN (
-                SELECT yp.nid
-                FROM node_yellowpages AS yp
-                    JOIN ads AS a ON yp.ad_id = a.id
-                WHERE a.exp_time > UNIX_TIMESTAMP()
-            )
         ORDER BY last_comment_time DESC
         LIMIT ' . $count;
 

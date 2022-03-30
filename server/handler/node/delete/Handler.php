@@ -15,16 +15,8 @@ class Handler extends Node
     public function run(): void
     {
         $this->validateUser();
-
-        list($nid, $type) = $this->getNodeType();
-        switch ($type) {
-            case self::FORUM_TOPIC:
-                $this->deleteForumTopic($nid);
-                break;
-            case self::YELLOW_PAGE:
-                $this->deleteYellowPage($nid);
-                break;
-        }
+        $nid = $this->getNodeId();
+        $this->deleteForumTopic($nid);
     }
 
     private function deleteForumTopic(int $nid): void
@@ -47,23 +39,5 @@ class Handler extends Node
         $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
 
         throw new Redirect('/forum/' . $node->tid);
-    }
-
-    private function deleteYellowPage(int $nid): void
-    {
-        if ($this->user->id !== self::UID_ADMIN) {
-            $this->logger->warning('wrong action : uid = ' . $this->user->id);
-            throw new Forbidden();
-        }
-        $node = new NodeObject($nid, 'tid,status');
-        if ($node->exists() && $node->status > 0) {
-            $node->status = 0;
-            $node->update('status');
-        }
-
-        $this->getCacheEvent('NodeUpdate', $nid)->trigger();
-        $this->getCacheEvent('YellowPageUpdate', $node->tid)->trigger();
-
-        throw new Redirect('/yp/' . $node->tid);
     }
 }

@@ -32,10 +32,6 @@ class Handler extends Comment
             $this->getCacheEvent('ForumUpdate', $node->tid)->trigger();
         }
 
-        if (in_array($node->tid, (new Tag(self::$city->tidYp, 'id'))->getLeafTIDs())) { // yellow page tag
-            $this->getCacheEvent('YellowPageComment', $node->tid)->trigger();
-        }
-
         $comment->delete();
         if ($comment->createTime === $node->lastCommentTime) {
             $c = new CommentObject();

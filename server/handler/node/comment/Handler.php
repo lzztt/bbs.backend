@@ -23,16 +23,8 @@ class Handler extends Node
         $this->validateUser();
 
         unset($this->request->data['title']);
-
-        list($nid, $type) = $this->getNodeType();
-        switch ($type) {
-            case self::FORUM_TOPIC:
-                $this->commentForumTopic($nid);
-                break;
-            case self::YELLOW_PAGE:
-                $this->commentYellowPage($nid);
-                break;
-        }
+        $nid = $this->getNodeId();
+        $this->commentForumTopic($nid);
     }
 
     private function commentForumTopic(int $nid): void
@@ -98,40 +90,5 @@ class Handler extends Node
         }
 
         throw new Redirect('/node/' . $nid . '?p=l#comment' . $comment->id);
-    }
-
-    private function commentYellowPage(int $nid): void
-    {
-        // create new comment
-        $node = new NodeObject($nid, 'status');
-
-        if (!$node->exists() || $node->status == 0) {
-            throw new ErrorMessage('node does not exist.');
-        }
-
-        if (strlen($this->request->data['body']) < 5) {
-            throw new ErrorMessage('错误：评论正文字数太少。');
-        }
-
-        try {
-            $this->validatePost();
-            $this->dedup();
-            $this->dedupContent($this->request->data['body']);
-
-            $comment = new Comment();
-            $comment->nid = $nid;
-            $comment->uid = $this->user->id;
-            $comment->body = $this->request->data['body'];
-            $comment->createTime = $this->request->timestamp;
-            $comment->add();
-        } catch (Exception $e) {
-            $this->logger->warning($e->getMessage(), ['post' => $this->request->data]);
-            throw new ErrorMessage($e->getMessage());
-        }
-
-        $this->getCacheEvent('NodeUpdate', $nid)->trigger();
-        $this->getCacheEvent('YellowPageComment')->trigger();
-
-        throw new Redirect('/node/' . $nid . '?p=l#commentomment' . $comment->id);
     }
 }

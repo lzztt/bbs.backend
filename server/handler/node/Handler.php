@@ -22,15 +22,8 @@ class Handler extends Node
     {
         $this->cache = $this->getPageCache();
 
-        list($nid, $type) = $this->getNodeType();
-        switch ($type) {
-            case self::FORUM_TOPIC:
-                $this->displayForumTopic($nid);
-                break;
-            case self::YELLOW_PAGE:
-                $this->displayYellowPage($nid);
-                break;
-        }
+        $nid = $this->getNodeId();
+        $this->displayForumTopic($nid);
 
         $this->getCacheEvent('NodeUpdate', $nid)->addListener($this->cache);
     }
@@ -201,71 +194,5 @@ class Handler extends Node
         }
 
         return $attachments;
-    }
-
-    private function displayYellowPage(int $nid): void
-    {
-        $nodeObj = new NodeObject();
-        $node = $nodeObj->getYellowPageNode($nid);
-        if (!$node) {
-            throw new NotFound();
-        }
-
-        $breadcrumb = ['首页' => '/'];
-        $nodeObj->id = $nid;
-        $nodeObj->load('tid');
-        $tag = new Tag($nodeObj->tid, 'name');
-        $breadcrumb[$tag->name] = '/yp/' . $nodeObj->tid;
-        $breadcrumb[$node['title']] = null;
-
-        list($pageNo, $pageCount) = $this->getPagerInfo((int) $node['comment_count'], self::COMMENTS_PER_PAGE);
-        $pager = HtmlElement::pager($pageNo, $pageCount, '/node/' . $nid);
-
-        $page = (new NodeYellowPage())
-            ->setNid($nid)
-            ->setCommentCount((int) $node['comment_count'])
-            ->setBreadcrumb(HtmlElement::breadcrumb($breadcrumb))
-            ->setPager($pager)
-            ->setAjaxUri('/api/viewcount/' . $nid);
-
-        $node['type'] = 'node';
-
-        $nodeComment = ($pageNo == 1);
-        $comments = $nodeObj->getYellowPageNodeComments($nid, self::COMMENTS_PER_PAGE, ($pageNo - 1) * self::COMMENTS_PER_PAGE);
-
-        $cmts = [];
-        if (sizeof($comments) > 0) {
-            foreach ($comments as $c) {
-                if ($nodeComment) {
-                    // show node details as the first post
-                    $node['HTMLbody'] = $c['body'];
-                    $node['attachments'] = $this->attachments($c['files'], $c['body']);
-                    //$node['filesJSON'] = json_encode($node['files']);
-
-                    $nodeComment = false;
-                } else {
-                    $c['type'] = 'comment';
-                    $c['createTime'] = (int) $c['create_time'];
-                    $c['HTMLbody'] = $c['body'];
-                    $c['quoteJson'] = json_encode([
-                        'nodeId' => $nid,
-                        'body' =>  $this->quote($c['username'], $c['body'])
-                    ], self::JSON_OPTIONS);
-                    $c['editJson'] = json_encode([
-                        'nodeId' => $nid,
-                        'commentId' => $c['id'],
-                        'body' => $c['body']
-                    ], self::JSON_OPTIONS);
-
-                    $cmts[] = $c;
-                }
-            }
-        }
-
-
-        $page->setNode($node)
-            ->setComments(($cmts));
-
-        $this->html->setContent($page);
     }
 }
