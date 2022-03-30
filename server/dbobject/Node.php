@@ -113,9 +113,9 @@ class Node extends DBObject
         return array_column($this->getHotForumTopics($forumRootID, $count, $timestamp), 'nid');
     }
 
-    public function getLatestYellowPages(int $ypRootID, int $count): array
+    public function getLatestYellowPages(int $count): array
     {
-        return $this->call('get_tag_recent_nodes_yp("' . implode(',', (new Tag($ypRootID, 'id'))->getLeafTIDs()) . '", ' . $count . ')');
+        return $this->call('get_tag_recent_nodes_yp("' . $count . ')');
     }
 
     public function getLatestForumTopicReplies(int $forumRootID, int $count): array

@@ -38,7 +38,7 @@ class Handler extends Controller
 
     private function houstonHome(): void
     {
-        $nodes = (new Node())->getLatestYellowPages(self::$city->tidYp, 15);
+        $nodes = (new Node())->getLatestYellowPages(15);
         $count = intdiv(count($nodes), 3);
 
         $this->html->setContent(
