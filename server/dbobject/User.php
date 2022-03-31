@@ -134,7 +134,7 @@ class User extends DBObject
 
     public function getPrivMsgs(string $type, int $limit, int $offset = 0): array
     {
-        $proc = $type !== 'sent' ? 'get_pm_list_inbox_2' : 'get_pm_list_sent_2';
+        $proc = $type !== 'sent' ? 'get_pm_list_inbox' : 'get_pm_list_sent';
         return $this->convertColumnNames($this->call($proc . '(' . $this->id . ',' . $limit . ',' . $offset . ')'));
     }
 
