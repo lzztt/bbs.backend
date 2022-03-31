@@ -74,10 +74,4 @@ class Tag extends DBObject
             throw new Exception('no tag id set');
         }
     }
-
-    // get the information for the latest updated node
-    public function getNodeInfo(): array
-    {
-        return $this->call('get_tag_node_info_1(' . $this->id . ')');
-    }
 }

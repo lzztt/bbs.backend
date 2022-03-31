@@ -74,8 +74,7 @@ class Session
         }
 
         $this->originalTtl = (int) $this->redis->ttl($key);
-        if (
-            $this->originalTtl < self::ONE_MONTH - self::ONE_DAY
+        if ($this->originalTtl < self::ONE_MONTH - self::ONE_DAY
             && $this->get('uid') > 0
         ) {
             $this->regenerateId();

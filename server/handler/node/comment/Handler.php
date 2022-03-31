@@ -35,8 +35,7 @@ class Handler extends Node
             throw new ErrorMessage('node does not exist.');
         }
 
-        if (
-            !$this->request->data['body']
+        if (!$this->request->data['body']
             || strlen($this->request->data['body']) < 5
         ) {
             throw new ErrorMessage('错误：评论正文字数太少。');

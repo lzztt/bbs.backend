@@ -32,8 +32,7 @@ class Handler extends Forum
 
     public function createTopic(int $tid): void
     {
-        if (
-            !$this->request->data['body']
+        if (!$this->request->data['body']
             || !$this->request->data['title']
             || strlen($this->request->data['body']) < 5
             || strlen($this->request->data['title']) < 5
