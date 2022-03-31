@@ -12,7 +12,6 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use lzx\cache\PageCache;
-use lzx\core\JpegResponse;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use lzx\exception\NotFound;
@@ -100,9 +99,6 @@ class Response
             switch ($this->type) {
                 case self::JSON:
                     $this->resp = (new JsonResponse($this->data))->withEncodingOptions(JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-                    break;
-                case self::JPEG:
-                    $this->resp = new JpegResponse((string) $this->data);
                     break;
                 default:
                     $this->resp = new HtmlResponse((string) $this->data);
