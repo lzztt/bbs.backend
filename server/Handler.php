@@ -329,7 +329,7 @@ abstract class Handler extends CoreHandler
         }
     }
 
-    protected function validateUser(): void
+    protected function validateUser(bool $checkUsername = true): void
     {
         if ($this->user->id === self::UID_GUEST) {
             throw new ErrorMessage('请先登陆');
@@ -343,7 +343,7 @@ abstract class Handler extends CoreHandler
             throw new ErrorMessage('用户不存在');
         }
 
-        if (empty($this->user->username)) {
+        if ($checkUsername && empty($this->user->username)) {
             throw new ErrorMessage('您尚未设置用户名，请重新登陆。');
         }
 

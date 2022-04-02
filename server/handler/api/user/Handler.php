@@ -49,7 +49,7 @@ class Handler extends Service
      */
     public function put(): void
     {
-        $this->validateUser();
+        $this->validateUser(checkUsername: !array_key_exists('username', $this->request->data));
         if (!$this->args || !is_numeric($this->args[0])) {
             throw new Forbidden();
         }
