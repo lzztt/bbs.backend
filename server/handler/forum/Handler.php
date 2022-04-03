@@ -24,13 +24,11 @@ class Handler extends Forum
             ->setHeadTitle($tagTree[$tid]['name'])
             ->setHeadDescription($tagTree[$tid]['name']);
 
-        !empty($tagTree[$tid]['children']) ? $this->showForumList() : $this->showTopicList($tid);
-    }
+        if (!empty($tagTree[$tid]['children'])) {
+            throw new NotFound();
+        }
 
-    // $forum, $groups, $boards are arrays of category id
-    public function showForumList(): void
-    {
-        throw new NotFound();
+        $this->showTopicList($tid);
     }
 
     public function showTopicList(int $tid): void
