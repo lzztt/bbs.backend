@@ -49,7 +49,7 @@ class WebApp extends App
         $session = new Session(!$request->isRobot());
         $uid = $session->get('uid');
 
-        $this->logger->addExtraInfo([
+        $this->logger->addContext([
             'user' => $uid > 0
                 ? 'https://www.' . $this->config->domain . '/app/user/' . $uid
                 : ($request->isRobot() ? 'ROBOT' : 'GUEST'),

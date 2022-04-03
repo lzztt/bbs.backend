@@ -56,10 +56,10 @@ class Logger extends MonoLogger
         return implode(DIRECTORY_SEPARATOR, array_slice($path, 0, $endCount)) . DIRECTORY_SEPARATOR;
     }
 
-    public function addExtraInfo(array $extra): void
+    public function addContext(array $context): void
     {
-        $this->mailHandler->pushProcessor(function (array $record) use ($extra): array {
-            $record['extra'] += $extra;
+        $this->mailHandler->pushProcessor(function (array $record) use ($context): array {
+            $record['extra'] += $context;
             return $record;
         });
     }

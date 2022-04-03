@@ -24,7 +24,7 @@ class CronApp extends App
         $this->config = Config::getInstance();
         $this->logger->setFile($this->config->path['log'] . '/' . $this->config->domain . '.log');
         $this->logger->setEmail($this->config->webmaster, 'web error: cron', 'logger@' . $this->config->domain);
-        $this->logger->addExtraInfo(['user' => 'cron']);
+        $this->logger->addContext(['user' => 'cron']);
     }
 
     public function run(array $args): void
