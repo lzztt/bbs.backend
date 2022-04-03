@@ -12,7 +12,6 @@ class Tag extends DBObject
 {
     public $id;
     public $name;
-    public $description;
     public $parent;
     public $root;
     public $weight;
@@ -54,7 +53,6 @@ class Tag extends DBObject
                     $tags[$id] = [
                         'id' => $id,
                         'name' => $r['name'],
-                        'description' => $r['description'],
                         'parent' => $parent,
                     ];
                     if (!is_null($parent)) {
