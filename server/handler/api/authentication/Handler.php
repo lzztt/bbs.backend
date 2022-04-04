@@ -109,8 +109,6 @@ class Handler extends Service
         if (!$user->exists()) {
             // create new user
             $user->createTime = $this->request->timestamp;
-            $user->lastAccessTime = $this->request->timestamp;
-            $user->lastAccessIp = inet_pton($this->request->ip);
             $user->cid = self::$city->id;
             $user->status = 1;
 
@@ -125,7 +123,7 @@ class Handler extends Service
                     $mailer->setBody(print_r([
                         'user' => 'https://' . $this->request->domain . '/user/' . $user->id,
                         'email' => 'https://www.google.com/search?q=' . $user->email,
-                        'city' => self::getLocationFromIp($user->lastAccessIp),
+                        'city' => self::getLocationFromIp($this->request->ip),
                     ], true));
                     $mailer->send();
                 }
@@ -144,12 +142,6 @@ class Handler extends Service
 
         if ($user->reputation + $user->contribution < -2) {
             throw new ErrorMessage('用户的社区声望和贡献不足，不能登陆。');
-        }
-
-        if ($this->request->timestamp > $user->lastAccessTime + 86400) {
-            $user->lastAccessTime = $this->request->timestamp;
-            $user->lastAccessIp = inet_pton($this->request->ip);
-            $user->update('lastAccessTime,lastAccessIp');
         }
 
         $this->session->set('uid', $user->id);

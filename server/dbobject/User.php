@@ -19,8 +19,6 @@ class User extends DBObject
     public $about;
     public $createTime;
     public $lockedUntil;
-    public $lastAccessTime;
-    public $lastAccessIp;
     public $status;
     public $avatar;
     public $contribution;

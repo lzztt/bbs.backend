@@ -7,6 +7,7 @@ namespace site\handler\api\user;
 use lzx\exception\ErrorMessage;
 use lzx\exception\Forbidden;
 use site\Config;
+use site\dbobject\SessionEvent;
 use site\Service;
 use site\dbobject\User;
 
@@ -25,13 +26,16 @@ class Handler extends Service
 
         $uid = (int) $this->args[0];
         $user = new User($uid, $uid === $this->user->id
-            ? 'username,about,createTime,lastAccessTime,lastAccessIp,avatar,status,reputation,contribution'
-            : 'username,about,createTime,lastAccessTime,lastAccessIp,avatar,status,reputation');
+            ? 'username,about,createTime,avatar,status,reputation,contribution'
+            : 'username,about,createTime,avatar,status,reputation');
 
+        $se = new SessionEvent();
+        $se->userId = $uid;
+        $se->load('time,ip');
         if ($user->status > 0) {
             $info = $user->toArray();
-            unset($info['lastAccessIp']);
-            $info['lastAccessCity'] = self::getLocationFromIp((string) $user->lastAccessIp);
+            $info['lastAccessTime'] = $se->time;
+            $info['lastAccessCity'] = self::getLocationFromIp((string) $se->ip);
             $info['topics'] = $user->getRecentNodes(self::$city->tidForum, 10);
             $info['comments'] = $user->getRecentComments(self::$city->tidForum, 10);
 

@@ -160,6 +160,9 @@ class Handler extends Service
         }
 
         // send notification
+        $se = new SessionEvent();
+        $se->userId = $spammer->id;
+        $se->load('ip');
         $mailer = new Mailer('complain');
         $mailer->setTo('ikki3355@gmail.com');
         $mailer->setSubject($title . ' ' . $reason . ': ' . $spammer->username . ' <' . $spammer->email . '>');
@@ -168,7 +171,7 @@ class Handler extends Service
                 'spammer' => $spammer->username
                     . ' : ' . $spammer->email
                     . ' : ' . 'https://' . $this->request->domain . '/user/' . $spammer->id,
-                'city' => self::getLocationFromIp($spammer->lastAccessIp),
+                'city' => self::getLocationFromIp($se->ip),
                 'reputation' => $spammer->reputation,
                 'register' => date(DATE_COOKIE, $spammer->createTime)
             ],

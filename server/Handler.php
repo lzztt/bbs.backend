@@ -481,24 +481,24 @@ abstract class Handler extends CoreHandler
         $this->logger->info('SPAMMER DELETED: uid=' . $this->user->id);
         $this->deleteUser($this->user->id);
 
-        $u = new User();
-        $u->lastAccessIp = inet_pton($this->request->ip);
-        $u->status = 1;
-        $users = $u->getList('createTime');
-
-        $deleteAll = true;
-        foreach ($users as $u) {
-            if ($this->request->timestamp - (int) $u['createTime'] > 2592000) {
-                $deleteAll = false;
-                break;
-            }
+        $se = new SessionEvent();
+        $se->ip = inet_pton($this->request->ip);
+        $uids = array_column($se->getList('userId'), 'userId');
+        if (empty($uids)) {
+            return;
         }
 
-        if ($deleteAll) {
-            $this->logger->info('SPAMMER DELETED (IP=' . $this->request->ip . '): uid=' . implode(',', array_column($users, 'id')));
-            foreach ($users as $u) {
-                $this->deleteUser((int) $u['id']);
-            }
+        $u = new User();
+        $u->where('userId', $uids, 'IN');
+        $u->where('createTime', $this->request->timestamp - 2592000, '<');  // older than 30 days
+        $u->status = 1;
+        if ($u->getCount() > 0) {
+            return;
+        }
+
+        $this->logger->info('SPAMMER DELETED (IP=' . $this->request->ip . '): uid=' . implode(',', $uids));
+        foreach ($uids as $uid) {
+            $this->deleteUser((int) $uid);
         }
     }
 }
