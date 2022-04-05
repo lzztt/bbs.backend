@@ -66,7 +66,7 @@ class Handler extends Service
 
         if ($data) {
             preg_match('#<POPULARITY URL="(.*?)" TEXT="([0-9]+){1,}"#si', $data, $p);
-            if ($p[2]) {
+            if (count($p) > 2 && $p[2]) {
                 $rank = number_format(intval($p[2]));
                 return $this->getSiteName()
                     . '最近三个月平均访问量<a target="_blank" href="https://www.alexa.com/siteinfo/'
