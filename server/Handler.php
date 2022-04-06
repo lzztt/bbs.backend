@@ -329,6 +329,14 @@ abstract class Handler extends CoreHandler
         }
     }
 
+    protected function getTempUsername(): string {
+        return 'tmp' . substr($this->session->id(), 3);
+    }
+
+    protected function isTempUsername($username): bool {
+        return strlen($username) == strlen($this->session->id()) && substr($username, 0, 3) == 'tmp';
+    }
+
     protected function validateUser(bool $checkUsername = true): void
     {
         if ($this->user->id === self::UID_GUEST) {
@@ -343,7 +351,7 @@ abstract class Handler extends CoreHandler
             throw new ErrorMessage('用户不存在');
         }
 
-        if ($checkUsername && empty($this->user->username)) {
+        if ($checkUsername && $this->isTempUsername($this->user->username)) {
             throw new ErrorMessage('您尚未设置用户名，请重新登陆。');
         }
 

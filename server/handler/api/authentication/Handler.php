@@ -111,6 +111,7 @@ class Handler extends Service
             $user->createTime = $this->request->timestamp;
             $user->cid = self::$city->id;
             $user->status = 1;
+            $user->username = $this->getTempUsername();
 
             try {
                 $user->add();
@@ -142,6 +143,10 @@ class Handler extends Service
 
         if ($user->reputation + $user->contribution < -2) {
             throw new ErrorMessage('用户的社区声望和贡献不足，不能登陆。');
+        }
+
+        if ($this->isTempUsername($user->username)) {
+            $user->username = '';
         }
 
         $this->session->set('uid', $user->id);
