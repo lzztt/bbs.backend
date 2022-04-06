@@ -41,4 +41,35 @@ class SessionEvent extends DBObject
             FROM user_ip)
         SELECT user_id, ip FROM ip_rank WHERE rn < 4;');
     }
+
+    public function add(): void
+    {
+        parent::add();
+
+        // clean up
+        // keep the last 3 agents
+        $this->db->query('
+        DELETE se.*
+        FROM session_events AS se
+            JOIN (
+                SELECT hash, ROW_NUMBER() OVER (ORDER BY MAX(time) DESC) AS rn
+                FROM session_events
+                WHERE user_id = ' . $this->userId . '
+                GROUP BY hash
+                ) AS t
+            ON se.hash = t.hash
+        WHERE t.rn > 3 AND se.user_id = ' . $this->userId . ';');
+
+        // keep the last 3 ips per agent
+        $this->db->query('
+        DELETE se.*
+        FROM session_events AS se
+            JOIN (
+                SELECT id, ROW_NUMBER() OVER (PARTITION BY hash ORDER BY time DESC) AS rn
+                FROM session_events
+                WHERE user_id = ' . $this->userId . '
+                ) AS t
+            ON se.id = t.id
+        WHERE t.rn > 3 and se.user_id = ' . $this->userId . ';');
+    }
 }
