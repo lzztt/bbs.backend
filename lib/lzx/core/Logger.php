@@ -9,6 +9,7 @@ use Monolog\Handler\BufferHandler;
 use Monolog\Handler\NativeMailerHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger as MonoLogger;
+use Monolog\LogRecord;
 use Throwable;
 use lzx\core\TraceProcessor;
 
@@ -58,8 +59,8 @@ class Logger extends MonoLogger
 
     public function addContext(array $context): void
     {
-        $this->mailHandler->pushProcessor(function (array $record) use ($context): array {
-            $record['extra'] += $context;
+        $this->mailHandler->pushProcessor(function (LogRecord $record) use ($context): LogRecord {
+            $record->extra += $context;
             return $record;
         });
     }

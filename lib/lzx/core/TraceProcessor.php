@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace lzx\core;
 
 use Throwable;
+use Monolog\LogRecord;
 
 class TraceProcessor
 {
@@ -17,15 +18,15 @@ class TraceProcessor
         $this->pathPrefixLength = strlen($pathPrefixToTrim);
     }
 
-    public function __invoke(array $record)
+    public function __invoke(LogRecord $record)
     {
-        if (array_key_exists('exception', $record['context']) && $record['context']['exception'] instanceof Throwable) {
-            $traces = array_reverse($record['context']['exception']->getTrace());
-            unset($record['context']['exception']);
+        if (array_key_exists('exception', $record->context) && $record->context['exception'] instanceof Throwable) {
+            $traces = array_reverse($record->context['exception']->getTrace());
+            unset($record->context['exception']);
         } else {
             $traces = self::getCurrentTrace();
         }
-        $record['extra']['trace'] = $this->formatTrace($traces);
+        $record->extra['trace'] = $this->formatTrace($traces);
         return $record;
     }
 
