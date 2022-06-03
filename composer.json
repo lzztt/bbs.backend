@@ -16,7 +16,7 @@
         }
     },
     "require": {
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.0",
         "laminas/laminas-diactoros": "^2.2",
         "laminas/laminas-httphandlerrunner": "^2.1",
         "promphp/prometheus_client_php": "^2.2",

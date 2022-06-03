@@ -329,11 +329,13 @@ abstract class Handler extends CoreHandler
         }
     }
 
-    protected function getTempUsername(): string {
+    protected function getTempUsername(): string
+    {
         return 'tmp' . substr($this->session->id(), 3);
     }
 
-    protected function isTempUsername($username): bool {
+    protected function isTempUsername($username): bool
+    {
         return strlen($username) == strlen($this->session->id()) && substr($username, 0, 3) == 'tmp';
     }
 
