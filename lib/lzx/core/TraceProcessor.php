@@ -22,7 +22,6 @@ class TraceProcessor
     {
         if (array_key_exists('exception', $record->context) && $record->context['exception'] instanceof Throwable) {
             $traces = array_reverse($record->context['exception']->getTrace());
-            unset($record->context['exception']);
         } else {
             $traces = self::getCurrentTrace();
         }
