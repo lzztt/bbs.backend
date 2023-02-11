@@ -67,7 +67,6 @@ function (
         <br>
         今日新主题 <span class='ajax_nodeTodayCount'></span> 个，今日新评论 <span class='ajax_commentTodayCount'></span> 个，今日新用户 <span class='ajax_userTodayCount'></span> 个
       </section>
-      <section><span class='ajax_alexa'></span></section>
     </div>
   </div>
 
