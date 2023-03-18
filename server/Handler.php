@@ -426,7 +426,7 @@ abstract class Handler extends CoreHandler
 
             $this->checkBody($this->request->data['body'], $spamwords);
 
-            if ($creationDays < 10 && self::$city->id === City::HOUSTON) {
+            if (self::$city->id === City::HOUSTON) {
                 $this->checkPostCounts($this->user, $creationDays);
             }
         }
@@ -473,15 +473,11 @@ abstract class Handler extends CoreHandler
     protected function checkPostCounts(User $user, int $creationDays): void
     {
         $geo = Reader::getInstance()->get($this->request->ip);
-        if ($geo->city->en === 'Nanning') {
-            $this->deleteSpammer();
-            throw new Exception('用户被封禁，不能发布信息！');
-        }
-
         if ($geo->region->en !== 'Texas') {
             $postCount = (int) array_pop(array_pop($user->call('get_user_post_count(' . $user->id . ')')));
-            if ($postCount >= $creationDays) {
-                throw new Exception('您的发帖数已达上限：' . $creationDays . '。请等待一天再发帖。');
+            $postLimit = intval($creationDays / 3);
+            if ($postCount >= $postLimit) {
+                throw new Exception('您的发帖数已达新用户上限：' . $postLimit . '。请等待几天再发帖。');
             }
         }
     }
