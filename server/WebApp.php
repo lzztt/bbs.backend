@@ -51,7 +51,7 @@ class WebApp extends App
 
         $this->logger->addContext([
             'user' => $uid > 0
-                ? 'https://www.' . $this->config->domain . '/app/user/' . $uid
+                ? 'https://www.' . $this->config->domain . '/user/' . $uid
                 : ($request->isRobot() ? 'ROBOT' : 'GUEST'),
             'ip' => $request->ip,
             'city' => self::getLocationFromIp($request->ip),

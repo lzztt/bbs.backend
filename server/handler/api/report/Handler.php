@@ -171,7 +171,7 @@ class Handler extends Service
                 'spammer' => $spammer->username
                     . ' : ' . $spammer->email
                     . ' : ' . 'https://' . $this->request->domain . '/user/' . $spammer->id,
-                'city' => self::getLocationFromIp($se->ip),
+                'city' => $se->ip ? self::getLocationFromIp($se->ip) : '',
                 'reputation' => $spammer->reputation,
                 'register' => date(DATE_COOKIE, $spammer->createTime)
             ],
